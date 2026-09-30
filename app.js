@@ -760,6 +760,9 @@ function setupEventListeners() {
   closeDetailModalBtn.addEventListener('click', () => closeDetailModal());
   bottomCloseDetailBtn.addEventListener('click', () => closeDetailModal());
   document.getElementById('closeDetailModalTopRightBtn')?.addEventListener('click', () => closeDetailModal());
+  document.getElementById('detailEditCourseBtn')?.addEventListener('click', () => {
+    if (activeCourseForDetail) openCourseModal(activeCourseForDetail);
+  });
 
   tabStudentsBtn.addEventListener('click', () => switchDetailTab('students'));
   tabAttendanceBtn.addEventListener('click', () => switchDetailTab('attendance'));
@@ -1826,6 +1829,29 @@ function handleSaveCourse(e) {
   if (id) {
     currentCourses = currentCourses.map(c => {
       if (c.id === id) {
+        // Güncellenen ders günleri ve tatillere göre kursiyer devamsızlık kayıtlarını senkronize et
+        const cleanedStudents = (c.students || []).map(std => {
+          const filteredAbs = (std.dailyAbsences || []).filter(d => {
+            if (!d.date) return false;
+            const dObj = new Date(d.date + 'T00:00:00');
+            if (isNaN(dObj.getTime())) return false;
+            const dayName = TURKISH_DAYS_MAP[dObj.getDay()];
+            return selectedDays.includes(dayName) && !currentOffDays.some(o => o.date === d.date);
+          });
+          const totalAbsent = filteredAbs.reduce((sum, d) => sum + Number(d.hours || 0), 0);
+          const maxAllowed = Math.floor(totalHours / 5);
+          let att = std.attendance;
+          if (att === 'Devamsız' && totalAbsent <= maxAllowed && std.result !== 'Devamsız') {
+            att = 'Devamlı';
+          }
+          return {
+            ...std,
+            dailyAbsences: filteredAbs,
+            absentHours: totalAbsent,
+            attendance: att
+          };
+        });
+
         return {
           ...c,
           templateId: selectedTmplId,
@@ -1848,7 +1874,8 @@ function handleSaveCourse(e) {
           startTime,
           endTime,
           offDays: [...currentOffDays],
-          syllabus: (tmpl && tmpl.syllabus && tmpl.syllabus.length > 0) ? tmpl.syllabus : (c.syllabus || [])
+          syllabus: (tmpl && tmpl.syllabus && tmpl.syllabus.length > 0) ? tmpl.syllabus : (c.syllabus || []),
+          students: cleanedStudents
         };
       }
       return c;
@@ -1886,6 +1913,17 @@ function handleSaveCourse(e) {
   DataStore.saveCourses(currentCourses);
   closeCourseModal();
   renderTeacherDashboard();
+
+  // Kurs detay modalı açıksa veya düzenleme yapılan kurs aktif kurs ise anında yenile
+  if (activeCourseForDetail && activeCourseForDetail.id === id) {
+    const updated = currentCourses.find(c => c.id === id);
+    if (updated) {
+      activeCourseForDetail = updated;
+      if (detailModal && !detailModal.classList.contains('hidden')) {
+        openCourseDetail(id);
+      }
+    }
+  }
 }
 
 window.editCourse = function(courseId) {
@@ -1906,6 +1944,34 @@ window.deleteCourse = function(courseId) {
 window.openCourseDetail = function(courseId) {
   activeCourseForDetail = currentCourses.find(c => c.id === courseId);
   if (!activeCourseForDetail) return;
+
+  // Aktif kurs günleri ve tatiller dışındaki eski/hayalet devamsızlık kayıtlarını temizle
+  const activeDays = (activeCourseForDetail.days && activeCourseForDetail.days.length > 0)
+    ? activeCourseForDetail.days
+    : ['Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma'];
+  const offDayDates = new Set((activeCourseForDetail.offDays || []).map(o => o.date));
+  let studentsChanged = false;
+
+  (activeCourseForDetail.students || []).forEach(std => {
+    if (Array.isArray(std.dailyAbsences) && std.dailyAbsences.length > 0) {
+      const origLen = std.dailyAbsences.length;
+      std.dailyAbsences = std.dailyAbsences.filter(d => {
+        if (!d.date) return false;
+        const dObj = new Date(d.date + 'T00:00:00');
+        if (isNaN(dObj.getTime())) return false;
+        const dayName = TURKISH_DAYS_MAP[dObj.getDay()];
+        return activeDays.includes(dayName) && !offDayDates.has(d.date);
+      });
+      if (std.dailyAbsences.length !== origLen) {
+        studentsChanged = true;
+        std.absentHours = std.dailyAbsences.reduce((sum, d) => sum + Number(d.hours || 0), 0);
+      }
+    }
+  });
+
+  if (studentsChanged) {
+    DataStore.saveCourses(currentCourses);
+  }
 
   currentAttendanceDateIndex = -1;
 
@@ -1938,8 +2004,14 @@ window.openCourseDetail = function(courseId) {
     studentAddedNotice.classList.add('hidden');
   }
 
-  switchDetailTab('students');
-  renderStudentTable();
+  // Eğer belirli bir sekme zaten açıksa onu koru, değilse varsayılan 'students' sekmesini aç
+  let currentActiveTab = 'students';
+  if (tabAttendanceContent && !tabAttendanceContent.classList.contains('hidden')) currentActiveTab = 'attendance';
+  else if (tabExamsContent && !tabExamsContent.classList.contains('hidden')) currentActiveTab = 'exams';
+  else if (tabSyllabusContent && !tabSyllabusContent.classList.contains('hidden')) currentActiveTab = 'syllabus';
+  else if (tabDocumentsContent && !tabDocumentsContent.classList.contains('hidden')) currentActiveTab = 'documents';
+
+  switchDetailTab(currentActiveTab);
   renderDetailSyllabus();
 
   detailModal.classList.remove('hidden');
@@ -2510,7 +2582,7 @@ function getValidCourseDates(course) {
   let end = course.endDate ? new Date(course.endDate + 'T23:59:59') : null;
 
   let curr = new Date(start);
-  let safetyLimit = 600; // Sonsuz döngü koruması
+  let safetyLimit = 1000; // Sonsuz döngü koruması
 
   while (safetyLimit-- > 0) {
     const yyyy = curr.getFullYear();
@@ -2523,23 +2595,11 @@ function getValidCourseDates(course) {
       validDates.push(dateStr);
     }
 
-    if (end && curr >= end && validDates.length >= totalSessionsNeeded) {
-      break;
-    }
-    if (validDates.length >= totalSessionsNeeded && (!end || curr >= end)) {
+    if (validDates.length >= totalSessionsNeeded) {
       break;
     }
     curr.setDate(curr.getDate() + 1);
   }
-
-  // Kursiyerlerin daha önce girilmiş olan devamsızlık tarihleri varsa onları da listeye ekle
-  (course.students || []).forEach(s => {
-    (s.dailyAbsences || []).forEach(d => {
-      if (d.date && !validDates.includes(d.date)) {
-        validDates.push(d.date);
-      }
-    });
-  });
 
   validDates.sort();
 
@@ -3299,6 +3359,25 @@ function handleAddDailyAttEntry() {
     return;
   }
 
+  const dObj = new Date(date + 'T00:00:00');
+  const dayName = TURKISH_DAYS_MAP[dObj.getDay()];
+  const activeDays = (activeCourseForDetail.days && activeCourseForDetail.days.length > 0)
+    ? activeCourseForDetail.days
+    : ['Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma'];
+  const offDayDates = new Set((activeCourseForDetail.offDays || []).map(o => o.date));
+
+  if (!activeDays.includes(dayName)) {
+    alert(`Seçilen tarih (${formatDate(date)} - ${dayName}) bu kursun ders günleri (${activeDays.join(', ')}) arasında yer almamaktadır.`);
+    dailyAttDateInput?.focus();
+    return;
+  }
+
+  if (offDayDates.has(date)) {
+    alert(`Seçilen tarih (${formatDate(date)}) tatil veya ders yapılmayan gün olarak işaretlenmiştir.`);
+    dailyAttDateInput?.focus();
+    return;
+  }
+
   const note = (dailyAttNoteInput?.value || '').trim();
 
   // Aynı tarihe zaten giriş yapılmış mı kontrolü
@@ -3869,6 +3948,12 @@ function generateDefterHtml(course) {
   const dailyHours = Number(course.dailyHours) || 4;
   const validDates = getValidCourseDates(course);
   const syllabus = course.syllabus || [];
+  const courseDays = (course.days && course.days.length > 0)
+    ? course.days.join(', ')
+    : 'Pazartesi, Salı, Çarşamba, Perşembe, Cuma';
+  const courseTimeText = (course.startTime && course.endTime)
+    ? `${course.startTime} - ${course.endTime}`
+    : 'Belirtilmedi';
 
   // Kursiyerleri alfabetik sırala (Türkçe alfabe duyarlı)
   const sortedStudents = [...(course.students || [])].sort((a, b) => {
@@ -4139,6 +4224,21 @@ function generateDefterHtml(course) {
               <td style="border-bottom: 1px dotted #888;">${endDate}</td>
             </tr>
             <tr>
+              <td style="font-weight: bold; font-style: italic;">Kurs Günleri</td>
+              <td style="font-weight: bold;">:</td>
+              <td style="border-bottom: 1px dotted #888;">${escapeHtml(courseDays)}</td>
+            </tr>
+            <tr>
+              <td style="font-weight: bold; font-style: italic;">Ders Saatleri</td>
+              <td style="font-weight: bold;">:</td>
+              <td style="border-bottom: 1px dotted #888;">${escapeHtml(courseTimeText)} (${dailyHours} Saat/Gün)</td>
+            </tr>
+            <tr>
+              <td style="font-weight: bold; font-style: italic;">Toplam Kurs Süresi</td>
+              <td style="font-weight: bold;">:</td>
+              <td style="border-bottom: 1px dotted #888;">${totalHours} Saat</td>
+            </tr>
+            <tr>
               <td style="font-weight: bold; font-style: italic;">Öğretmenin Adı</td>
               <td style="font-weight: bold;">:</td>
               <td style="border-bottom: 1px dotted #888; font-weight: 600;">${escapeHtml(instructor)}</td>
@@ -4163,7 +4263,7 @@ function generateDefterHtml(course) {
           </div>
           <div style="display: flex; justify-content: space-between; font-size: 8.5pt; font-weight: bold; margin-bottom: 6px;">
             <div>KURS ONAY NO: ${escapeHtml(courseNumber)}</div>
-            <div>Dönem / Tarih: ${startDate} - ${endDate}</div>
+            <div>Dönem / Günler: ${startDate} - ${endDate} (${escapeHtml(courseDays)})</div>
           </div>
 
           <!-- 31 Günlük Yoklama Tablosu -->
