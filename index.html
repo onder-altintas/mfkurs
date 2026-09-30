@@ -2152,226 +2152,213 @@
           </span>
         </div>
 
-        <!-- 1. Belge: Kursiyer Karar Durumu Kartı -->
-        <div class="p-5 rounded-2xl border-2 border-[#335C67]/30 dark:border-[#335C67]/60 bg-white dark:bg-[#152125] shadow-xs space-y-4 hover:border-[#335C67] transition">
-          <div class="flex flex-col lg:flex-row lg:items-start justify-between gap-4">
-            <div class="flex items-start gap-3.5">
-              <div class="p-3.5 rounded-2xl bg-gradient-to-br from-[#335C67] via-[#284952] to-[#540B0E] text-white shadow-md shrink-0 border border-[#FFF3B0]/30">
-                <i data-lucide="file-text" class="w-6 h-6 text-[#FFF3B0]"></i>
-              </div>
-              <div class="space-y-1.5">
-                <div class="flex flex-wrap items-center gap-2">
-                  <h5 class="font-extrabold text-base text-slate-800 dark:text-slate-100">
-                    Kursiyer Karar Durumu
-                  </h5>
-                  <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-[#FFF3B0] text-[#540B0E] border border-[#E09F3E]/40">
-                    1. Belge
-                  </span>
-                  <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
-                    Otomatik Doldurulur
-                  </span>
+        <!-- Kartlar Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+          <!-- 1. Belge Kartı: Karar Durumu -->
+          <div class="flex flex-col justify-between p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-[#23353c] bg-white dark:bg-[#152125] shadow-xs hover:border-[#335C67] dark:hover:border-[#FFF3B0]/60 transition gap-3.5">
+            <div class="space-y-2.5">
+              <div class="flex items-start justify-between gap-3">
+                <div class="flex items-center gap-3">
+                  <div class="p-2.5 rounded-xl bg-gradient-to-br from-[#335C67] via-[#284952] to-[#540B0E] text-white shadow-xs shrink-0">
+                    <i data-lucide="file-text" class="w-5 h-5 text-[#FFF3B0]"></i>
+                  </div>
+                  <div>
+                    <h5 class="font-extrabold text-sm sm:text-base text-slate-800 dark:text-slate-100">
+                      Kursiyer Karar Durumu
+                    </h5>
+                    <div class="flex items-center gap-1.5 mt-0.5">
+                      <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-[#FFF3B0] text-[#540B0E] border border-[#E09F3E]/40">1. Belge</span>
+                      <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-slate-100 dark:bg-[#10191b] text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-[#23353c]">Dikey A4</span>
+                    </div>
+                  </div>
                 </div>
-                <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed max-w-2xl">
-                  e-Yaygın ve otomasyona kayıtlı tüm kursiyerler alfabetik olarak sıralanır. Modül başarı ve devamsızlık durumlarına göre karar hanesi kursun seçili belge türüne göre otomatik doldurulur (<strong>Sertifika</strong> veya <strong>Katılım Belgesi</strong>, <strong>Transkript</strong> veya <strong>Devamsız</strong>). Kursiyer sayısı 25'i aşmadığında tüm tablo, özet ve resmi imzalar tek sayfaya sığacak şekilde resmi şablon çıktısı üretir.
-                </p>
               </div>
+              <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                Kursiyerlerin başarı ve devamsızlık durumlarına göre resmi karar ve belge türü tutanağıdır.
+              </p>
+            </div>
+
+            <!-- Canlı İstatistik -->
+            <div id="kararDurumuStatsBar" class="p-2.5 bg-slate-50 dark:bg-[#10191b] rounded-xl border border-slate-200 dark:border-[#23353c] text-xs">
+              <span class="text-slate-400">Belge verileri hesaplanıyor...</span>
             </div>
 
             <!-- Butonlar -->
-            <div class="flex flex-row lg:flex-col items-center gap-2 shrink-0 w-full lg:w-52">
+            <div class="flex items-center gap-2 pt-1 border-t border-slate-100 dark:border-[#23353c]">
               <button
                 type="button"
                 id="previewKararDurumuBtn"
                 onclick="openKararDurumuPreview()"
-                class="flex-1 lg:w-full flex items-center justify-center gap-2 px-3.5 py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-[#10191b] dark:hover:bg-[#19272c] text-slate-800 dark:text-slate-100 rounded-xl text-xs font-bold transition cursor-pointer border border-slate-200 dark:border-[#2b3e45]"
+                class="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-[#10191b] dark:hover:bg-[#19272c] text-slate-800 dark:text-slate-100 rounded-xl text-xs font-bold transition cursor-pointer border border-slate-200 dark:border-[#2b3e45]"
               >
                 <i data-lucide="eye" class="w-4 h-4 text-[#335C67] dark:text-[#FFF3B0]"></i>
-                <span>Belgeyi Önizle & İncele</span>
+                <span>Önizle</span>
               </button>
-
               <button
                 type="button"
                 onclick="triggerPrintKararDurumu()"
-                class="flex-1 lg:w-full flex items-center justify-center gap-2 px-3.5 py-2.5 bg-[#335C67] hover:bg-[#274851] text-white rounded-xl text-xs font-bold shadow-sm transition cursor-pointer"
+                class="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-[#335C67] hover:bg-[#274851] text-white rounded-xl text-xs font-bold shadow-xs transition cursor-pointer"
               >
                 <i data-lucide="printer" class="w-4 h-4 text-[#FFF3B0]"></i>
-                <span>Yazdır / PDF Olarak Kaydet</span>
+                <span>Yazdır / PDF</span>
               </button>
             </div>
           </div>
 
-          <!-- Canlı İstatistik ve Kurs Verisi Özeti -->
-          <div id="kararDurumuStatsBar" class="p-3 bg-slate-50 dark:bg-[#10191b] rounded-xl border border-slate-200 dark:border-[#23353c] text-xs">
-            <span class="text-slate-400">Belge verileri hesaplanıyor...</span>
-          </div>
-        </div>
-
-        <!-- 2. Belge: Yoklama ve Ders Defteri Kartı -->
-        <div class="p-5 rounded-2xl border-2 border-emerald-500/30 dark:border-emerald-500/60 bg-white dark:bg-[#152125] shadow-xs space-y-4 hover:border-emerald-600 transition">
-          <div class="flex flex-col lg:flex-row lg:items-start justify-between gap-4">
-            <div class="flex items-start gap-3.5">
-              <div class="p-3.5 rounded-2xl bg-gradient-to-br from-emerald-700 via-teal-800 to-[#335C67] text-white shadow-md shrink-0 border border-emerald-300/30">
-                <i data-lucide="book-open" class="w-6 h-6 text-[#FFF3B0]"></i>
-              </div>
-              <div class="space-y-1.5">
-                <div class="flex flex-wrap items-center gap-2">
-                  <h5 class="font-extrabold text-base text-slate-800 dark:text-slate-100">
-                    Yoklama ve Ders Defteri
-                  </h5>
-                  <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-[#FFF3B0] text-[#540B0E] border border-[#E09F3E]/40">
-                    2. Belge
-                  </span>
-                  <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
-                    Otomatik Doldurulur
-                  </span>
+          <!-- 2. Belge Kartı: Yoklama ve Ders Defteri -->
+          <div class="flex flex-col justify-between p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-[#23353c] bg-white dark:bg-[#152125] shadow-xs hover:border-emerald-600 dark:hover:border-emerald-500 transition gap-3.5">
+            <div class="space-y-2.5">
+              <div class="flex items-start justify-between gap-3">
+                <div class="flex items-center gap-3">
+                  <div class="p-2.5 rounded-xl bg-gradient-to-br from-emerald-700 via-teal-800 to-[#335C67] text-white shadow-xs shrink-0">
+                    <i data-lucide="book-open" class="w-5 h-5 text-[#FFF3B0]"></i>
+                  </div>
+                  <div>
+                    <h5 class="font-extrabold text-sm sm:text-base text-slate-800 dark:text-slate-100">
+                      Yoklama ve Ders Defteri
+                    </h5>
+                    <div class="flex items-center gap-1.5 mt-0.5">
+                      <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-[#FFF3B0] text-[#540B0E] border border-[#E09F3E]/40">2. Belge</span>
+                      <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-slate-100 dark:bg-[#10191b] text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-[#23353c]">Dikey A4</span>
+                    </div>
+                  </div>
                 </div>
-                <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed max-w-2xl">
-                  Resmi MEB formatında kapak sayfası, 31 günlük detaylı sınıf yoklama listesi (gelenler <strong>.</strong>, gelmeyenlerin <strong>kaç ders saati gelmediği</strong>), kurs günlerine göre saat saat işlenen konuların ve öğretmen imzalarının yer aldığı günlük ders defteri sayfaları ile kapanış onay tutanağını eksiksiz doldurur.
-                </p>
               </div>
+              <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                Kapak sayfası, 31 günlük yoklama cetveli ve saatlik günlük ders defteri sayfalarıdır.
+              </p>
+            </div>
+
+            <!-- Canlı İstatistik -->
+            <div id="defterStatsBar" class="p-2.5 bg-slate-50 dark:bg-[#10191b] rounded-xl border border-slate-200 dark:border-[#23353c] text-xs">
+              <span class="text-slate-400">Defter verileri hesaplanıyor...</span>
             </div>
 
             <!-- Butonlar -->
-            <div class="flex flex-row lg:flex-col items-center gap-2 shrink-0 w-full lg:w-52">
+            <div class="flex items-center gap-2 pt-1 border-t border-slate-100 dark:border-[#23353c]">
               <button
                 type="button"
                 id="previewDefterBtn"
                 onclick="openDefterPreview()"
-                class="flex-1 lg:w-full flex items-center justify-center gap-2 px-3.5 py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-[#10191b] dark:hover:bg-[#19272c] text-slate-800 dark:text-slate-100 rounded-xl text-xs font-bold transition cursor-pointer border border-slate-200 dark:border-[#2b3e45]"
+                class="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-[#10191b] dark:hover:bg-[#19272c] text-slate-800 dark:text-slate-100 rounded-xl text-xs font-bold transition cursor-pointer border border-slate-200 dark:border-[#2b3e45]"
               >
                 <i data-lucide="eye" class="w-4 h-4 text-emerald-600 dark:text-emerald-400"></i>
-                <span>Defteri Önizle & İncele</span>
+                <span>Önizle</span>
               </button>
-
               <button
                 type="button"
                 onclick="triggerPrintDefter()"
-                class="flex-1 lg:w-full flex items-center justify-center gap-2 px-3.5 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold shadow-sm transition cursor-pointer"
+                class="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold shadow-xs transition cursor-pointer"
               >
                 <i data-lucide="printer" class="w-4 h-4 text-[#FFF3B0]"></i>
-                <span>Yazdır / PDF Olarak Kaydet</span>
+                <span>Yazdır / PDF</span>
               </button>
             </div>
           </div>
 
-          <!-- Canlı İstatistik ve Defter Bilgisi -->
-          <div id="defterStatsBar" class="p-3 bg-slate-50 dark:bg-[#10191b] rounded-xl border border-slate-200 dark:border-[#23353c] text-xs">
-            <span class="text-slate-400">Defter verileri hesaplanıyor...</span>
-          </div>
-        </div>
-
-        <!-- 3. Belge: Modül Değerlendirme Çizelgesi (Not Çizelgesi) Kartı -->
-        <div class="p-5 rounded-2xl border-2 border-indigo-500/30 dark:border-indigo-500/60 bg-white dark:bg-[#152125] shadow-xs space-y-4 hover:border-indigo-600 transition">
-          <div class="flex flex-col lg:flex-row lg:items-start justify-between gap-4">
-            <div class="flex items-start gap-3.5">
-              <div class="p-3.5 rounded-2xl bg-gradient-to-br from-indigo-700 via-blue-800 to-[#335C67] text-white shadow-md shrink-0 border border-indigo-300/30">
-                <i data-lucide="graduation-cap" class="w-6 h-6 text-[#FFF3B0]"></i>
-              </div>
-              <div class="space-y-1.5">
-                <div class="flex flex-wrap items-center gap-2">
-                  <h5 class="font-extrabold text-base text-slate-800 dark:text-slate-100">
-                    Modül Değerlendirme Çizelgesi (Not Çizelgesi)
-                  </h5>
-                  <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-[#FFF3B0] text-[#540B0E] border border-[#E09F3E]/40">
-                    3. Belge
-                  </span>
-                  <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-100 text-indigo-800 border border-indigo-300">
-                    Otomatik Doldurulur
-                  </span>
-                  <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-300">
-                    Yatay A4
-                  </span>
+          <!-- 3. Belge Kartı: Modül Değerlendirme (Not) Çizelgesi -->
+          <div class="flex flex-col justify-between p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-[#23353c] bg-white dark:bg-[#152125] shadow-xs hover:border-indigo-600 dark:hover:border-indigo-500 transition gap-3.5">
+            <div class="space-y-2.5">
+              <div class="flex items-start justify-between gap-3">
+                <div class="flex items-center gap-3">
+                  <div class="p-2.5 rounded-xl bg-gradient-to-br from-indigo-700 via-blue-800 to-[#335C67] text-white shadow-xs shrink-0">
+                    <i data-lucide="graduation-cap" class="w-5 h-5 text-[#FFF3B0]"></i>
+                  </div>
+                  <div>
+                    <h5 class="font-extrabold text-sm sm:text-base text-slate-800 dark:text-slate-100">
+                      Modül Değerlendirme Çizelgesi
+                    </h5>
+                    <div class="flex items-center gap-1.5 mt-0.5">
+                      <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-[#FFF3B0] text-[#540B0E] border border-[#E09F3E]/40">3. Belge</span>
+                      <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-300">Yatay A4</span>
+                    </div>
+                  </div>
                 </div>
-                <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed max-w-2xl">
-                  Kursa kayıtlı tüm kursiyerlerin modül bazlı teorik ve pratik sınav notlarını, devamsızlık durumlarını (<strong>D</strong>), sınava girmeyenleri (<strong>G</strong>) ve kurs sonu "<strong>TAMAMLADI</strong> / <strong>TAMAMLAMADI</strong>" başarı durumlarını resmi MEB ve İBB Meslek Fabrikası formatında (20 modüle kadar, boş modüller çizili) yatay A4 çıktısı olarak hazırlar.
-                </p>
               </div>
+              <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                Modül bazlı teorik ve pratik sınav notları ile kurs tamamlama başarı durum çizelgesidir.
+              </p>
+            </div>
+
+            <!-- Canlı İstatistik -->
+            <div id="notCizelgesiStatsBar" class="p-2.5 bg-slate-50 dark:bg-[#10191b] rounded-xl border border-slate-200 dark:border-[#23353c] text-xs">
+              <span class="text-slate-400">Çizelge verileri hesaplanıyor...</span>
             </div>
 
             <!-- Butonlar -->
-            <div class="flex flex-row lg:flex-col items-center gap-2 shrink-0 w-full lg:w-52">
+            <div class="flex items-center gap-2 pt-1 border-t border-slate-100 dark:border-[#23353c]">
               <button
                 type="button"
                 id="previewNotCizelgesiBtn"
                 onclick="openNotCizelgesiPreview()"
-                class="flex-1 lg:w-full flex items-center justify-center gap-2 px-3.5 py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-[#10191b] dark:hover:bg-[#19272c] text-slate-800 dark:text-slate-100 rounded-xl text-xs font-bold transition cursor-pointer border border-slate-200 dark:border-[#2b3e45]"
+                class="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-[#10191b] dark:hover:bg-[#19272c] text-slate-800 dark:text-slate-100 rounded-xl text-xs font-bold transition cursor-pointer border border-slate-200 dark:border-[#2b3e45]"
               >
                 <i data-lucide="eye" class="w-4 h-4 text-indigo-600 dark:text-indigo-400"></i>
-                <span>Çizelgeyi Önizle & İncele</span>
+                <span>Önizle</span>
               </button>
-
               <button
                 type="button"
                 onclick="triggerPrintNotCizelgesi()"
-                class="flex-1 lg:w-full flex items-center justify-center gap-2 px-3.5 py-2.5 bg-indigo-700 hover:bg-indigo-800 text-white rounded-xl text-xs font-bold shadow-sm transition cursor-pointer"
+                class="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-indigo-700 hover:bg-indigo-800 text-white rounded-xl text-xs font-bold shadow-xs transition cursor-pointer"
               >
                 <i data-lucide="printer" class="w-4 h-4 text-[#FFF3B0]"></i>
-                <span>Yazdır / PDF Olarak Kaydet</span>
+                <span>Yazdır / PDF</span>
               </button>
             </div>
           </div>
 
-          <!-- Canlı İstatistik ve Çizelge Bilgisi -->
-          <div id="notCizelgesiStatsBar" class="p-3 bg-slate-50 dark:bg-[#10191b] rounded-xl border border-slate-200 dark:border-[#23353c] text-xs">
-            <span class="text-slate-400">Çizelge verileri hesaplanıyor...</span>
-          </div>
-        </div>
-
-        <!-- 4. Belge: Sınav Tutanağı (Sınav Katılım Listesi) Kartı -->
-        <div class="p-5 rounded-2xl border-2 border-rose-500/30 dark:border-rose-500/60 bg-white dark:bg-[#152125] shadow-xs space-y-4 hover:border-rose-600 transition">
-          <div class="flex flex-col lg:flex-row lg:items-start justify-between gap-4">
-            <div class="flex items-start gap-3.5">
-              <div class="p-3.5 rounded-2xl bg-gradient-to-br from-rose-700 via-red-800 to-[#540B0E] text-white shadow-md shrink-0 border border-rose-300/30">
-                <i data-lucide="clipboard-check" class="w-6 h-6 text-[#FFF3B0]"></i>
-              </div>
-              <div class="space-y-1.5">
-                <div class="flex flex-wrap items-center gap-2">
-                  <h5 class="font-extrabold text-base text-slate-800 dark:text-slate-100">
-                    Sınav Tutanağı (Sınav Katılım Listesi)
-                  </h5>
-                  <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-[#FFF3B0] text-[#540B0E] border border-[#E09F3E]/40">
-                    4. Belge
-                  </span>
-                  <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-100 text-rose-800 border border-rose-300">
-                    Otomatik Doldurulur
-                  </span>
-                  <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-100 text-blue-800 border border-blue-300">
-                    Dikey A4
-                  </span>
+          <!-- 4. Belge Kartı: Sınav Tutanağı -->
+          <div class="flex flex-col justify-between p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-[#23353c] bg-white dark:bg-[#152125] shadow-xs hover:border-rose-600 dark:hover:border-rose-500 transition gap-3.5">
+            <div class="space-y-2.5">
+              <div class="flex items-start justify-between gap-3">
+                <div class="flex items-center gap-3">
+                  <div class="p-2.5 rounded-xl bg-gradient-to-br from-rose-700 via-red-800 to-[#540B0E] text-white shadow-xs shrink-0">
+                    <i data-lucide="clipboard-check" class="w-5 h-5 text-[#FFF3B0]"></i>
+                  </div>
+                  <div>
+                    <h5 class="font-extrabold text-sm sm:text-base text-slate-800 dark:text-slate-100">
+                      Sınav Tutanağı
+                    </h5>
+                    <div class="flex items-center gap-1.5 mt-0.5">
+                      <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-[#FFF3B0] text-[#540B0E] border border-[#E09F3E]/40">4. Belge</span>
+                      <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-slate-100 dark:bg-[#10191b] text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-[#23353c]">Dikey A4</span>
+                    </div>
+                  </div>
                 </div>
-                <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed max-w-2xl">
-                  Kursiyerlerin sınav katılım imzalarının alındığı resmi sınav katılım tutanağıdır. Kursiyer isimleri alfabetik olarak sıralanır, alt kısımda sınava katılan kişi sayısı onay cümlesi ve eğitmen imza tutanağı otomatik oluşturulur.
-                </p>
               </div>
+              <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                Kursiyerlerin sınav katılım imzalarının alındığı resmi sınav katılım tutanağıdır.
+              </p>
+            </div>
+
+            <!-- Canlı İstatistik -->
+            <div id="sinavTutanagiStatsBar" class="p-2.5 bg-slate-50 dark:bg-[#10191b] rounded-xl border border-slate-200 dark:border-[#23353c] text-xs">
+              <span class="text-slate-400">Tutanak verileri hesaplanıyor...</span>
             </div>
 
             <!-- Butonlar -->
-            <div class="flex flex-row lg:flex-col items-center gap-2 shrink-0 w-full lg:w-52">
+            <div class="flex items-center gap-2 pt-1 border-t border-slate-100 dark:border-[#23353c]">
               <button
                 type="button"
                 id="previewSinavTutanagiBtn"
                 onclick="openSinavTutanagiPreview()"
-                class="flex-1 lg:w-full flex items-center justify-center gap-2 px-3.5 py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-[#10191b] dark:hover:bg-[#19272c] text-slate-800 dark:text-slate-100 rounded-xl text-xs font-bold transition cursor-pointer border border-slate-200 dark:border-[#2b3e45]"
+                class="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-[#10191b] dark:hover:bg-[#19272c] text-slate-800 dark:text-slate-100 rounded-xl text-xs font-bold transition cursor-pointer border border-slate-200 dark:border-[#2b3e45]"
               >
                 <i data-lucide="eye" class="w-4 h-4 text-rose-600 dark:text-rose-400"></i>
-                <span>Tutanağı Önizle & İncele</span>
+                <span>Önizle</span>
               </button>
-
               <button
                 type="button"
                 onclick="triggerPrintSinavTutanagi()"
-                class="flex-1 lg:w-full flex items-center justify-center gap-2 px-3.5 py-2.5 bg-rose-700 hover:bg-rose-800 text-white rounded-xl text-xs font-bold shadow-sm transition cursor-pointer"
+                class="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-rose-700 hover:bg-rose-800 text-white rounded-xl text-xs font-bold shadow-xs transition cursor-pointer"
               >
                 <i data-lucide="printer" class="w-4 h-4 text-[#FFF3B0]"></i>
-                <span>Yazdır / PDF Olarak Kaydet</span>
+                <span>Yazdır / PDF</span>
               </button>
             </div>
           </div>
 
-          <!-- Canlı İstatistik ve Tutanak Bilgisi -->
-          <div id="sinavTutanagiStatsBar" class="p-3 bg-slate-50 dark:bg-[#10191b] rounded-xl border border-slate-200 dark:border-[#23353c] text-xs">
-            <span class="text-slate-400">Tutanak verileri hesaplanıyor...</span>
-          </div>
         </div>
 
       </div>
@@ -2839,7 +2826,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
   <!-- Firebase Bulut Servisi & Veri Deposu -->
-  <script src="firebase.js?v=20260930_1701"></script>
-  <script src="app.js?v=20260930_1701"></script>
+  <script src="firebase.js?v=20260930_1705"></script>
+  <script src="app.js?v=20260930_1705"></script>
 </body>
 </html>
