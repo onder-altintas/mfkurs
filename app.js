@@ -3948,6 +3948,43 @@ function renderDocumentsTab() {
       </div>
     `;
   }
+
+  const sinavTutanagiStatsBar = document.getElementById('sinavTutanagiStatsBar');
+  if (sinavTutanagiStatsBar) {
+    const totalHours = Number(activeCourseForDetail.totalHours) || 0;
+    const maxAllowed = Math.floor(totalHours / 5);
+    let eligibleCount = 0;
+    let devamsizCount = 0;
+
+    students.forEach(s => {
+      const absentHours = Number(s.absentHours || 0);
+      const isDevamsiz = (s.attendance === 'Devamsız') || 
+                         (s.result === 'Devamsız') ||
+                         (totalHours > 0 && absentHours > maxAllowed);
+      if (isDevamsiz) devamsizCount++;
+      else eligibleCount++;
+    });
+
+    sinavTutanagiStatsBar.innerHTML = `
+      <div class="flex flex-wrap items-center justify-between gap-3 w-full">
+        <div class="flex flex-wrap items-center gap-2">
+          <span class="font-bold text-slate-700 dark:text-slate-200">Tutanak Özeti:</span>
+          <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-white dark:bg-[#152125] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-[#2b3e45] rounded-lg font-bold">
+            <span>Toplam:</span> <strong class="text-rose-700 dark:text-rose-400">${students.length}</strong> Kursiyer
+          </span>
+          <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 rounded-lg font-bold">
+            <span>Sınava Katılan / Katılabilecek:</span> <strong>${eligibleCount}</strong> Kişi
+          </span>
+          <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-rose-50 dark:bg-rose-950/40 text-rose-800 dark:text-rose-300 border border-rose-200 dark:border-rose-800 rounded-lg font-bold">
+            <span>Devamsız (Katılamaz):</span> <strong>${devamsizCount}</strong> Kişi
+          </span>
+        </div>
+        <div class="text-[11px] text-slate-400">
+          ${students.length <= 25 ? 'Resmi Tek Sayfa Sınav Tutanağı' : 'Resmi Sınav Tutanağı'} • Dikey A4
+        </div>
+      </div>
+    `;
+  }
 }
 
 window.openKararDurumuPreview = function() {
@@ -4430,6 +4467,8 @@ window.triggerPrintDocument = function(documentName) {
     triggerPrintDefter();
   } else if (documentName && (documentName.includes('Not') || documentName.includes('Çizelge') || documentName.includes('Modül'))) {
     triggerPrintNotCizelgesi();
+  } else if (documentName && (documentName.includes('Sınav') || documentName.includes('Tutanak') || documentName.includes('Katılım'))) {
+    triggerPrintSinavTutanagi();
   } else {
     triggerPrintKararDurumu();
   }
@@ -4756,6 +4795,161 @@ window.triggerPrintNotCizelgesi = function() {
   window.print();
   printArea.classList.add('hidden');
   styleTag?.remove();
+};
+
+// =================== RESMİ EVRAK 4: SINAV TUTANAĞI (SINAV KATILIM LİSTESİ) ===================
+
+function generateSinavTutanagiHtml(course) {
+  if (!course) return '<p class="p-6 text-center text-slate-500">Kurs bilgisi bulunamadı.</p>';
+
+  const institution = course.institution || course.centerName || 'İBB MESLEK FABRİKASI ŞUBE MÜDÜRLÜĞÜ';
+  const courseName = course.name || course.title || 'Kurs';
+  const instructor = course.instructor || (currentUser?.fullName || 'Kurs Öğretmeni');
+  const examDateStr = course.endDate ? formatShortDate(course.endDate) : '...../...../202..';
+
+  // Kursiyerleri alfabetik sırala (Türkçe alfabe duyarlı)
+  const sortedStudents = [...(course.students || [])].sort((a, b) => {
+    const nameA = (a.fullName || `${a.firstName || ''} ${a.lastName || ''}`).trim();
+    const nameB = (b.fullName || `${b.firstName || ''} ${b.lastName || ''}`).trim();
+    return nameA.localeCompare(nameB, 'tr', { sensitivity: 'base' });
+  });
+
+  const totalHours = Number(course.totalHours) || 0;
+  const maxAllowed = Math.floor(totalHours / 5);
+
+  let eligibleCount = 0;
+  sortedStudents.forEach(s => {
+    const absentHours = Number(s.absentHours || 0);
+    const isDevamsiz = (s.attendance === 'Devamsız') || 
+                       (s.result === 'Devamsız') ||
+                       (totalHours > 0 && absentHours > maxAllowed);
+    if (!isDevamsiz) eligibleCount++;
+  });
+
+  const totalRows = Math.max(25, sortedStudents.length);
+  let rowsHtml = '';
+
+  for (let i = 1; i <= totalRows; i++) {
+    if (i <= sortedStudents.length) {
+      const s = sortedStudents[i - 1];
+      const sFullName = (s.fullName || `${s.firstName || ''} ${s.lastName || ''}`).trim();
+      const absentHours = Number(s.absentHours || 0);
+      const isDevamsiz = (s.attendance === 'Devamsız') || 
+                         (s.result === 'Devamsız') ||
+                         (totalHours > 0 && absentHours > maxAllowed);
+
+      rowsHtml += `
+        <tr style="height: 25px;">
+          <td style="border: 1px solid black; text-align: center; font-weight: bold; font-size: 8pt; padding: 2px;">
+            ${i}
+          </td>
+          <td style="border: 1px solid black; padding: 2px 8px; font-size: 8.5pt; text-align: left; font-weight: 500;">
+            ${escapeHtml(sFullName)}
+          </td>
+          <td style="border: 1px solid black; text-align: center; font-size: 7.5pt; padding: 2px;">
+            ${isDevamsiz ? '<span style="color: #b91c1c; font-weight: bold; font-size: 7pt;">DEVAMSIZ</span>' : '&nbsp;'}
+          </td>
+        </tr>
+      `;
+    } else {
+      rowsHtml += `
+        <tr style="height: 25px;">
+          <td style="border: 1px solid black; text-align: center; font-weight: bold; font-size: 8pt; padding: 2px;">
+            ${i}
+          </td>
+          <td style="border: 1px solid black; padding: 2px 8px;">&nbsp;</td>
+          <td style="border: 1px solid black; padding: 2px;">&nbsp;</td>
+        </tr>
+      `;
+    }
+  }
+
+  const participatedStr = eligibleCount > 0 ? `${eligibleCount}` : '......';
+
+  return `
+    <div class="sinav-tutanagi-document" style="font-family: Arial, Helvetica, sans-serif; color: #000; line-height: 1.3; width: 100%; max-width: 800px; margin: 0 auto; background: #fff; padding: 30px 40px; box-sizing: border-box;">
+      
+      <!-- BAŞLIK -->
+      <div style="text-align: center; margin-bottom: 25px; line-height: 1.45;">
+        <h2 style="font-size: 11pt; font-weight: bold; margin: 0; text-transform: uppercase; letter-spacing: 0.5px;">
+          ${escapeHtml(institution)}
+        </h2>
+        <div style="font-size: 10pt; font-weight: bold; margin: 4px 0 0 0; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px dotted #666; display: inline-block; padding: 0 10px;">
+          ${escapeHtml(courseName)} KURSU
+        </div>
+        <h1 style="font-size: 11.5pt; font-weight: bold; margin: 6px 0 0 0; text-transform: uppercase; letter-spacing: 0.8px;">
+          SINAV KATILIM LİSTESİ
+        </h1>
+      </div>
+
+      <!-- TABLO -->
+      <table style="width: 100%; border-collapse: collapse; border: 1.5px solid black; font-size: 8pt;">
+        <thead>
+          <tr style="background: #fafafa; height: 26px;">
+            <th style="border: 1px solid black; width: 65px; text-align: center; font-weight: bold; font-size: 8pt; padding: 3px;">
+              SIRA NO
+            </th>
+            <th style="border: 1px solid black; width: 55%; text-align: center; font-weight: bold; font-size: 8pt; padding: 3px;">
+              ADI SOYADI
+            </th>
+            <th style="border: 1px solid black; width: 35%; text-align: center; font-weight: bold; font-size: 8pt; padding: 3px;">
+              İMZA
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rowsHtml}
+          <!-- Tarafımca Onay Cümlesi -->
+          <tr>
+            <td colspan="3" style="border: 1.5px solid black; padding: 8px 12px; font-weight: bold; font-size: 8.5pt; text-align: left; background: #fff;">
+              Tarafımca ${examDateStr} Tarihinde gerçekleştirilen sınava ${participatedStr} kişi katılmıştır.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- ALT İMZA ALANI -->
+      <div style="display: flex; justify-content: flex-end; margin-top: 25px; text-align: center;">
+        <div style="min-width: 180px; font-size: 8.5pt; line-height: 1.5;">
+          <div>${examDateStr}</div>
+          <div style="margin-top: 32px; font-weight: bold; font-size: 9pt;">${escapeHtml(instructor)}</div>
+          <div style="font-size: 8pt; color: #222;">Ad Soyad - İmza</div>
+        </div>
+      </div>
+
+    </div>
+  `;
+}
+
+window.openSinavTutanagiPreview = function() {
+  if (!activeCourseForDetail) return;
+  const container = document.getElementById('sinavTutanagiPreviewContainer');
+  const modal = document.getElementById('sinavTutanagiModal');
+  if (container) {
+    container.innerHTML = generateSinavTutanagiHtml(activeCourseForDetail);
+  }
+  modal?.classList.remove('hidden');
+  refreshLucide();
+};
+
+window.closeSinavTutanagiPreview = function() {
+  const modal = document.getElementById('sinavTutanagiModal');
+  modal?.classList.add('hidden');
+};
+
+window.triggerPrintSinavTutanagi = function() {
+  if (!activeCourseForDetail) return;
+  const printArea = document.getElementById('printArea');
+  const printAreaContent = document.getElementById('printAreaContent');
+  if (!printArea || !printAreaContent) return;
+
+  // Dikey A4 olduğundan landscapePrintStyle kaldırılır
+  document.getElementById('landscapePrintStyle')?.remove();
+
+  printAreaContent.innerHTML = generateSinavTutanagiHtml(activeCourseForDetail);
+  printArea.classList.remove('hidden');
+  window.print();
+  printArea.classList.add('hidden');
 };
 
 // Yardımcı Fonksiyonlar
