@@ -3662,29 +3662,29 @@ function generateKararDurumuHtml(course) {
 
       <!-- Kurs Üst Bilgileri (2 Kolonlu Kompakt Tablo) -->
       <div style="margin-bottom: 8px; font-size: 8.5pt;">
-        <table style="border: none; border-collapse: collapse; width: 100%; margin: 0; line-height: 1.25;">
+        <table style="border: none; border-collapse: collapse; width: 100%; margin: 0; line-height: 1.3;">
           <tr>
-            <td style="font-weight: bold; width: 19%; padding: 1.5px 0;">Kursun Açıldığı Yer</td>
-            <td style="width: 2%; font-weight: bold; padding: 1.5px 0;">:</td>
-            <td style="width: 37%; padding: 1.5px 0;">${escapeHtml(institution)}</td>
-            <td style="font-weight: bold; width: 22%; padding: 1.5px 0;">Kurs Başlangıç / Bitiş</td>
-            <td style="width: 2%; font-weight: bold; padding: 1.5px 0;">:</td>
-            <td style="width: 18%; padding: 1.5px 0;">${startDateFormatted} - ${endDateFormatted}</td>
+            <td style="font-weight: bold; white-space: nowrap; width: 1%; padding: 1.5px 4px 1.5px 0;">Kursun Açıldığı Yer</td>
+            <td style="font-weight: bold; width: 1%; padding: 1.5px 6px 1.5px 0;">:</td>
+            <td style="padding: 1.5px 16px 1.5px 0;">${escapeHtml(institution)}</td>
+            <td style="font-weight: bold; white-space: nowrap; width: 1%; padding: 1.5px 4px 1.5px 0;">Kurs Başlangıç / Bitiş</td>
+            <td style="font-weight: bold; width: 1%; padding: 1.5px 6px 1.5px 0;">:</td>
+            <td style="padding: 1.5px 0;">${startDateFormatted} - ${endDateFormatted}</td>
           </tr>
           <tr>
-            <td style="font-weight: bold; padding: 1.5px 0;">Kursun Adı</td>
-            <td style="font-weight: bold; padding: 1.5px 0;">:</td>
-            <td style="padding: 1.5px 0; font-weight: 600;">${escapeHtml(courseName)}</td>
-            <td style="font-weight: bold; padding: 1.5px 0;">Kursun Günleri</td>
-            <td style="font-weight: bold; padding: 1.5px 0;">:</td>
+            <td style="font-weight: bold; white-space: nowrap; width: 1%; padding: 1.5px 4px 1.5px 0;">Kursun Adı</td>
+            <td style="font-weight: bold; width: 1%; padding: 1.5px 6px 1.5px 0;">:</td>
+            <td style="padding: 1.5px 16px 1.5px 0; font-weight: 600;">${escapeHtml(courseName)}</td>
+            <td style="font-weight: bold; white-space: nowrap; width: 1%; padding: 1.5px 4px 1.5px 0;">Kursun Günleri</td>
+            <td style="font-weight: bold; width: 1%; padding: 1.5px 6px 1.5px 0;">:</td>
             <td style="padding: 1.5px 0;">${escapeHtml(courseDays)}</td>
           </tr>
           <tr>
-            <td style="font-weight: bold; padding: 1.5px 0;">Kursun Öğretmeni</td>
-            <td style="font-weight: bold; padding: 1.5px 0;">:</td>
-            <td style="padding: 1.5px 0;">${escapeHtml(instructor)}</td>
-            <td style="font-weight: bold; padding: 1.5px 0;">Kurs Numarası</td>
-            <td style="font-weight: bold; padding: 1.5px 0;">:</td>
+            <td style="font-weight: bold; white-space: nowrap; width: 1%; padding: 1.5px 4px 1.5px 0;">Kursun Öğretmeni</td>
+            <td style="font-weight: bold; width: 1%; padding: 1.5px 6px 1.5px 0;">:</td>
+            <td style="padding: 1.5px 16px 1.5px 0;">${escapeHtml(instructor)}</td>
+            <td style="font-weight: bold; white-space: nowrap; width: 1%; padding: 1.5px 4px 1.5px 0;">Kurs Numarası</td>
+            <td style="font-weight: bold; width: 1%; padding: 1.5px 6px 1.5px 0;">:</td>
             <td style="padding: 1.5px 0; font-family: monospace;">${escapeHtml(courseNumber)}</td>
           </tr>
         </table>
@@ -3782,7 +3782,9 @@ function renderDocumentsTab() {
 
   if (defterStatsBar) {
     const validDates = getValidCourseDates(activeCourseForDetail);
-    const dayChunksCount = Math.ceil(validDates.length / 3) || 1;
+    const dailyHours = Number(activeCourseForDetail.dailyHours) || 4;
+    const daysPerPage = dailyHours <= 4 ? 6 : 3;
+    const dayChunksCount = Math.ceil(validDates.length / daysPerPage) || 1;
     const totalPages = dayChunksCount + 3; // 1 Kapak + 1 Yoklama + N Defter + 1 Kapanış
     defterStatsBar.innerHTML = `
       <div class="flex flex-wrap items-center justify-between gap-3 w-full">
@@ -3845,10 +3847,10 @@ function formatDayMonth(dateStr) {
     const clean = String(dateStr).split('T')[0];
     const p = clean.split('-');
     if (p.length === 3) {
-      return `${p[2]}/${p[1]}`;
+      return `${p[2]}/${p[1]}/${p[0]}`;
     }
     const d = new Date(dateStr);
-    return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}`;
+    return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
   } catch {
     return dateStr;
   }
@@ -3885,8 +3887,8 @@ function generateDefterHtml(course) {
 
   for (let c = 1; c <= maxDayCols; c++) {
     attHeadersNumbersHtml += `<th style="border: 1px solid black; padding: 2px 1px; width: 18px; font-size: 7.5pt; text-align: center; font-weight: bold;">${c}</th>`;
-    const dateFormatted = c <= attendanceDates.length ? formatDayMonth(attendanceDates[c - 1]) : '.../20';
-    attHeadersDatesHtml += `<th style="border: 1px solid black; padding: 2px 1px; font-size: 6pt; text-align: center; font-weight: normal; writing-mode: vertical-lr; transform: rotate(180deg); height: 42px; white-space: nowrap;">${dateFormatted}</th>`;
+    const dateFormatted = c <= attendanceDates.length ? formatDayMonth(attendanceDates[c - 1]) : '.../.../20..';
+    attHeadersDatesHtml += `<th style="border: 1px solid black; padding: 2px 1px; font-size: 5.5pt; text-align: center; font-weight: normal; writing-mode: vertical-lr; transform: rotate(180deg); height: 56px; white-space: nowrap;">${dateFormatted}</th>`;
   }
 
   // Yoklama Tablosu Kursiyer Satırları (En az 40 satır - resmi şablon standardı)
@@ -3969,10 +3971,17 @@ function generateDefterHtml(course) {
     }
   }
 
-  // Günlük Ders Defteri Sayfaları (Her sayfada 3 sütun / 3 ders günü)
+  // Günlük Ders Defteri Sayfaları
+  // Kural: Eğer bir günde 4 ve 4'ten az saat ders işlenmiş ise (dailyHours <= 4), sütun ikiye bölünür
+  // ve yarıdan sonra başka gün eklenir (bir sayfada 3 sütun x 2 = 6 gün yer alır).
+  // 4 saatten fazla ise (dailyHours > 4), sütun bölünmez ve bir güne tam sütun ayrılır (sayfada 3 gün).
+  const isSplitColumn = (dailyHours <= 4);
+  const daysPerCol = isSplitColumn ? 2 : 1;
+  const daysPerPage = 3 * daysPerCol;
+
   const dayChunks = [];
-  for (let i = 0; i < validDates.length; i += 3) {
-    dayChunks.push(validDates.slice(i, i + 3));
+  for (let i = 0; i < validDates.length; i += daysPerPage) {
+    dayChunks.push(validDates.slice(i, i + daysPerPage));
   }
   if (dayChunks.length === 0) {
     dayChunks.push([new Date().toISOString().split('T')[0]]);
@@ -3981,75 +3990,105 @@ function generateDefterHtml(course) {
   const totalDefterPages = dayChunks.length;
   const overallDefterBookPages = totalDefterPages + 3; // 1 Kapak + 1 Yoklama + N Defter + 1 Kapanış
 
+  function buildDaySlotHtml(dStr, globalDayIndex, isHalfSlot, isTopSlot) {
+    if (dStr) {
+      const dFormatted = formatShortDate(dStr);
+      let hourBlocksHtml = '';
+
+      for (let h = 1; h <= dailyHours; h++) {
+        const overallHour = (globalDayIndex * dailyHours) + h;
+        if (overallHour <= totalHours) {
+          const syllabusItem = syllabus.find(s => Number(s.hour) === overallHour);
+          const topicText = syllabusItem?.topic || `${courseName} Uygulamaları ve Değerlendirme`;
+
+          hourBlocksHtml += `
+            <div style="border-bottom: 1px solid black; padding: ${isHalfSlot ? '3px 5px' : '4px 6px'}; min-height: ${isHalfSlot ? '38px' : '48px'}; display: flex; flex-direction: column; justify-content: space-between; box-sizing: border-box;">
+              <div style="font-size: ${isHalfSlot ? '7.5pt' : '8pt'}; line-height: 1.25;">
+                <strong>${h}. Ders:</strong> ${escapeHtml(topicText)}
+              </div>
+              <div style="font-size: 6.5pt; text-align: right; color: #555; margin-top: 2px;">
+                Öğretmenin İmzası: ....................
+              </div>
+            </div>
+          `;
+        } else {
+          hourBlocksHtml += `
+            <div style="border-bottom: 1px solid black; padding: ${isHalfSlot ? '3px 5px' : '4px 6px'}; min-height: ${isHalfSlot ? '38px' : '48px'}; box-sizing: border-box;">
+              &nbsp;
+            </div>
+          `;
+        }
+      }
+
+      return `
+        <div style="display: flex; flex-direction: column; justify-content: space-between; ${isHalfSlot ? 'height: 50%; box-sizing: border-box;' + (isTopSlot ? ' border-bottom: 2px solid black;' : '') : 'height: 100%; box-sizing: border-box;'}">
+          <div>
+            <div style="border-bottom: 1.5px solid black; padding: ${isHalfSlot ? '3px 4px' : '5px'}; text-align: center; font-weight: bold; font-size: ${isHalfSlot ? '8.5pt' : '9pt'}; background: #fdfdfd;">
+              Tarih: ${dFormatted}
+            </div>
+            <div style="padding: 2px 4px; font-weight: bold; font-size: ${isHalfSlot ? '7.5pt' : '8pt'}; border-bottom: 1px solid black; background: #fafafa;">
+              İşlenen Konu
+            </div>
+            ${hourBlocksHtml}
+          </div>
+          <div style="border-top: 1px solid black; text-align: center; font-weight: bold; font-size: ${isHalfSlot ? '7.5pt' : '8pt'}; padding: ${isHalfSlot ? '3px' : '4px'}; background: #f9f9f9;">
+            Kontrol Eden
+          </div>
+        </div>
+      `;
+    } else {
+      // Boş gün alanı
+      return `
+        <div style="display: flex; flex-direction: column; justify-content: space-between; ${isHalfSlot ? 'height: 50%; box-sizing: border-box;' + (isTopSlot ? ' border-bottom: 2px solid black;' : '') : 'height: 100%; box-sizing: border-box;'}">
+          <div>
+            <div style="border-bottom: 1.5px solid black; padding: ${isHalfSlot ? '3px 4px' : '5px'}; text-align: center; font-weight: bold; font-size: ${isHalfSlot ? '8.5pt' : '9pt'}; background: #fdfdfd;">
+              Tarih: ....../....../20...
+            </div>
+            <div style="padding: 2px 4px; font-weight: bold; font-size: ${isHalfSlot ? '7.5pt' : '8pt'}; border-bottom: 1px solid black; background: #fafafa;">
+              İşlenen Konu
+            </div>
+            <div style="min-height: ${isHalfSlot ? '150px' : '250px'};"></div>
+          </div>
+          <div style="border-top: 1px solid black; text-align: center; font-weight: bold; font-size: ${isHalfSlot ? '7.5pt' : '8pt'}; padding: ${isHalfSlot ? '3px' : '4px'}; background: #f9f9f9;">
+            Kontrol Eden
+          </div>
+        </div>
+      `;
+    }
+  }
+
   let defterPagesHtml = '';
 
   dayChunks.forEach((chunk, chunkIdx) => {
     let colsHtml = '';
 
     for (let cIdx = 0; cIdx < 3; cIdx++) {
-      if (cIdx < chunk.length) {
-        const dStr = chunk[cIdx];
-        const globalDayIndex = (chunkIdx * 3) + cIdx;
-        const dFormatted = formatShortDate(dStr);
+      if (isSplitColumn) {
+        const topDayIndex = (cIdx * 2);
+        const topDStr = topDayIndex < chunk.length ? chunk[topDayIndex] : null;
+        const topGlobalIdx = (chunkIdx * daysPerPage) + topDayIndex;
+        const topHtml = buildDaySlotHtml(topDStr, topGlobalIdx, true, true);
 
-        let hourBlocksHtml = '';
-        for (let h = 1; h <= dailyHours; h++) {
-          const overallHour = (globalDayIndex * dailyHours) + h;
-          if (overallHour <= totalHours) {
-            const syllabusItem = syllabus.find(s => Number(s.hour) === overallHour);
-            const topicText = syllabusItem?.topic || `${courseName} Uygulamaları ve Değerlendirme`;
-
-            hourBlocksHtml += `
-              <div style="border-bottom: 1px solid black; padding: 4px 6px; min-height: 48px; display: flex; flex-direction: column; justify-content: space-between; box-sizing: border-box;">
-                <div style="font-size: 8pt; line-height: 1.25;">
-                  <strong>${overallHour}. Saat:</strong> ${escapeHtml(topicText)}
-                </div>
-                <div style="font-size: 7pt; text-align: right; color: #555; margin-top: 3px;">
-                  Öğretmenin İmzası: ....................
-                </div>
-              </div>
-            `;
-          } else {
-            hourBlocksHtml += `
-              <div style="border-bottom: 1px solid black; padding: 4px 6px; min-height: 48px; box-sizing: border-box;">
-                &nbsp;
-              </div>
-            `;
-          }
-        }
+        const btmDayIndex = (cIdx * 2) + 1;
+        const btmDStr = btmDayIndex < chunk.length ? chunk[btmDayIndex] : null;
+        const btmGlobalIdx = (chunkIdx * daysPerPage) + btmDayIndex;
+        const btmHtml = buildDaySlotHtml(btmDStr, btmGlobalIdx, true, false);
 
         colsHtml += `
           <div style="border: 1px solid black; width: 33.33%; display: flex; flex-direction: column; justify-content: space-between; box-sizing: border-box;">
-            <div>
-              <div style="border-bottom: 1.5px solid black; padding: 5px; text-align: center; font-weight: bold; font-size: 9pt; background: #fdfdfd;">
-                Tarih: ${dFormatted}
-              </div>
-              <div style="padding: 2px 4px; font-weight: bold; font-size: 8pt; border-bottom: 1px solid black; background: #fafafa;">
-                İşlenen Konu
-              </div>
-              ${hourBlocksHtml}
-            </div>
-            <div style="border-top: 1.5px solid black; text-align: center; font-weight: bold; font-size: 8pt; padding: 4px; background: #f9f9f9;">
-              Kontrol Eden
-            </div>
+            ${topHtml}
+            ${btmHtml}
           </div>
         `;
       } else {
-        // Boş gün sütunu (3 sütuna tamamlamak için)
+        const dIndex = cIdx;
+        const dStr = dIndex < chunk.length ? chunk[dIndex] : null;
+        const globalIdx = (chunkIdx * daysPerPage) + dIndex;
+        const colHtml = buildDaySlotHtml(dStr, globalIdx, false, false);
+
         colsHtml += `
           <div style="border: 1px solid black; width: 33.33%; display: flex; flex-direction: column; justify-content: space-between; box-sizing: border-box;">
-            <div>
-              <div style="border-bottom: 1.5px solid black; padding: 5px; text-align: center; font-weight: bold; font-size: 9pt; background: #fdfdfd;">
-                Tarih: ....../....../20...
-              </div>
-              <div style="padding: 2px 4px; font-weight: bold; font-size: 8pt; border-bottom: 1px solid black; background: #fafafa;">
-                İşlenen Konu
-              </div>
-              <div style="min-height: 250px;"></div>
-            </div>
-            <div style="border-top: 1.5px solid black; text-align: center; font-weight: bold; font-size: 8pt; padding: 4px; background: #f9f9f9;">
-              Kontrol Eden
-            </div>
+            ${colHtml}
           </div>
         `;
       }
