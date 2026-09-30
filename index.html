@@ -1537,6 +1537,25 @@
               </div>
             </div>
 
+            <!-- Türkiye Resmi Tatilleri Bilgilendirme Notu -->
+            <div class="p-2.5 bg-rose-50/90 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900 rounded-xl text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-rose-900 dark:text-rose-200">
+              <div class="flex items-center gap-2">
+                <span class="text-base shrink-0">🇹🇷</span>
+                <span class="text-[11px] leading-tight">
+                  <strong>Türkiye Resmi Tatilleri</strong> (Yılbaşı, 23 Nisan, 1 Mayıs, 19 Mayıs, 15 Temmuz, 30 Ağustos, 29 Ekim, Ramazan & Kurban Bayramı) sistem tarafından <strong>otomatik olarak tatil</strong> kabul edilir ve ders günlerinden muaf tutulur.
+                </span>
+              </div>
+              <button
+                type="button"
+                id="autoFillHolidaysBtn"
+                onclick="autoLoadHolidaysIntoForm()"
+                class="shrink-0 px-2.5 py-1.5 bg-white hover:bg-rose-100 text-rose-800 border border-rose-300 rounded-lg text-[11px] font-bold transition shadow-xs cursor-pointer flex items-center justify-center gap-1 self-start sm:self-auto"
+                title="Kurs tarihlerine denk gelen Türkiye resmi tatillerini listeye ekler"
+              >
+                <span>Resmi Tatilleri Listele</span>
+              </button>
+            </div>
+
             <div class="grid grid-cols-1 sm:grid-cols-12 gap-2 items-center">
               <div class="sm:col-span-5">
                 <input
@@ -2925,7 +2944,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
   <!-- Firebase Bulut Servisi & Veri Deposu -->
-  <script src="firebase.js?v=20260930_1710"></script>
-  <script src="app.js?v=20260930_1710"></script>
+  <script src="firebase.js?v=20260930_1725"></script>
+  <script src="app.js?v=20260930_1725"></script>
 </body>
 </html>

@@ -1664,11 +1664,15 @@ window.removeOffDay = function(index) {
 function handleAddOffDay() {
   if (!offDayDateInput) return;
   const dateVal = offDayDateInput.value;
-  const reasonVal = offDayReasonInput.value.trim() || 'Tatil / Ders Yapılmadı';
+  let reasonVal = offDayReasonInput.value.trim();
   if (!dateVal) {
     alert('Lütfen ders yapılmayan tarihi seçiniz.');
     offDayDateInput.focus();
     return;
+  }
+
+  if (!reasonVal) {
+    reasonVal = getTurkishHolidayName(dateVal) || 'Tatil / Ders Yapılmadı';
   }
 
   if (currentOffDays.some(d => d.date === dateVal)) {
@@ -1688,6 +1692,56 @@ function handleAddOffDay() {
   offDayReasonInput.value = '';
   renderOffDays();
 }
+
+window.autoLoadHolidaysIntoForm = function() {
+  const startVal = courseFormStartDate.value;
+  if (!startVal) {
+    alert('Lütfen önce kurs başlangıç tarihini seçin.');
+    courseFormStartDate.focus();
+    return;
+  }
+
+  let endVal = courseFormEndDate.value;
+  if (!endVal) {
+    const d = new Date(startVal + 'T00:00:00');
+    d.setMonth(d.getMonth() + 6);
+    endVal = d.toISOString().split('T')[0];
+  }
+
+  const selectedDays = [];
+  courseFormDays.forEach(cb => {
+    if (cb.checked) selectedDays.push(cb.value);
+  });
+  const daysToCheck = selectedDays.length > 0 ? selectedDays : ['Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma'];
+
+  const holidays = getTurkishHolidaysBetween(startVal, endVal).filter(h => {
+    const dObj = new Date(h.date + 'T00:00:00');
+    const dayName = TURKISH_DAYS_MAP[dObj.getDay()];
+    return daysToCheck.includes(dayName);
+  });
+
+  if (holidays.length === 0) {
+    alert('Seçilen tarih aralığında ve kurs günlerinde herhangi bir resmi tatil bulunamadı.');
+    return;
+  }
+
+  let addedCount = 0;
+  holidays.forEach(h => {
+    if (!currentOffDays.some(d => d.date === h.date)) {
+      currentOffDays.push({
+        id: `od_${Date.now()}_${Math.random()}`,
+        date: h.date,
+        reason: h.name
+      });
+      addedCount++;
+    }
+  });
+
+  currentOffDays.sort((a, b) => new Date(a.date) - new Date(b.date));
+  renderOffDays();
+
+  alert(`Kurs günlerine denk gelen ${addedCount} adet Türkiye resmi tatili listeye eklendi.`);
+};
 
 function openCourseModal(courseToEdit = null) {
   courseModal.classList.remove('hidden');
@@ -1836,7 +1890,7 @@ function handleSaveCourse(e) {
             const dObj = new Date(d.date + 'T00:00:00');
             if (isNaN(dObj.getTime())) return false;
             const dayName = TURKISH_DAYS_MAP[dObj.getDay()];
-            return selectedDays.includes(dayName) && !currentOffDays.some(o => o.date === d.date);
+            return selectedDays.includes(dayName) && !currentOffDays.some(o => o.date === d.date) && !isTurkishOfficialHoliday(d.date);
           });
           const totalAbsent = filteredAbs.reduce((sum, d) => sum + Number(d.hours || 0), 0);
           const maxAllowed = Math.floor(totalHours / 5);
@@ -1960,7 +2014,7 @@ window.openCourseDetail = function(courseId) {
         const dObj = new Date(d.date + 'T00:00:00');
         if (isNaN(dObj.getTime())) return false;
         const dayName = TURKISH_DAYS_MAP[dObj.getDay()];
-        return activeDays.includes(dayName) && !offDayDates.has(d.date);
+        return activeDays.includes(dayName) && !offDayDates.has(d.date) && !isTurkishOfficialHoliday(d.date);
       });
       if (std.dailyAbsences.length !== origLen) {
         studentsChanged = true;
@@ -2193,17 +2247,41 @@ function renderDetailSyllabus() {
 
   const detailOffDaysContainer = document.getElementById('detailOffDaysContainer');
   if (detailOffDaysContainer) {
-    const offDays = activeCourseForDetail.offDays || [];
-    if (offDays.length > 0) {
+    const validDates = getValidCourseDates(activeCourseForDetail);
+    const startDate = validDates[0] || activeCourseForDetail.startDate;
+    const endDate = validDates[validDates.length - 1] || activeCourseForDetail.endDate;
+    const activeDays = (activeCourseForDetail.days && activeCourseForDetail.days.length > 0)
+      ? activeCourseForDetail.days
+      : ['Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma'];
+
+    const userOffDays = activeCourseForDetail.offDays || [];
+    const rangeHolidays = getTurkishHolidaysBetween(startDate, endDate).filter(h => {
+      const dObj = new Date(h.date + 'T00:00:00');
+      const dName = TURKISH_DAYS_MAP[dObj.getDay()];
+      return activeDays.includes(dName) && !userOffDays.some(u => u.date === h.date);
+    });
+
+    const totalExcluded = userOffDays.length + rangeHolidays.length;
+
+    if (totalExcluded > 0) {
       detailOffDaysContainer.innerHTML = `
-        <div class="mb-3 p-3 bg-rose-50 border border-rose-200 rounded-xl space-y-1.5">
-          <div class="text-xs font-bold text-rose-900 flex items-center gap-1.5 uppercase tracking-wider">
-            <i data-lucide="calendar-off" class="w-4 h-4 text-rose-600"></i>
-            <span>Ders Yapılmayan Günler / Tatiller (${offDays.length} Gün)</span>
+        <div class="mb-3 p-3 bg-rose-50/80 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900 rounded-xl space-y-1.5">
+          <div class="text-xs font-bold text-rose-900 dark:text-rose-200 flex items-center justify-between gap-1.5">
+            <div class="flex items-center gap-1.5 uppercase tracking-wider">
+              <i data-lucide="calendar-off" class="w-4 h-4 text-rose-600"></i>
+              <span>Ders Yapılmayan Günler & Resmi Tatiller (${totalExcluded} Gün)</span>
+            </div>
+            <span class="text-[10px] text-rose-700 dark:text-rose-300 font-semibold">Resmi tatiller ders saatine sayılmaz</span>
           </div>
           <div class="flex flex-wrap gap-2 pt-1">
-            ${offDays.map(od => `
-              <span class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-white text-rose-800 border border-rose-200 rounded-lg text-xs font-medium shadow-xs">
+            ${rangeHolidays.map(h => `
+              <span class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-white dark:bg-[#152125] text-rose-800 dark:text-rose-200 border border-rose-300 dark:border-rose-800 rounded-lg text-xs font-medium shadow-xs" title="Türkiye Resmi Tatili">
+                <span class="text-xs">🇹🇷</span>
+                <span><strong>${formatDate(h.date)}:</strong> ${escapeHtml(h.name)}</span>
+              </span>
+            `).join('')}
+            ${userOffDays.map(od => `
+              <span class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-white dark:bg-[#152125] text-slate-800 dark:text-slate-200 border border-slate-300 dark:border-[#2b3e45] rounded-lg text-xs font-medium shadow-xs">
                 <i data-lucide="calendar-x" class="w-3.5 h-3.5 text-rose-500"></i>
                 <span><strong>${formatDate(od.date)}:</strong> ${escapeHtml(od.reason || 'Ders Yapılmadı')}</span>
               </span>
@@ -2548,6 +2626,141 @@ function handleSaveBulkStudents() {
   alert(`${parsed.length} kursiyer başarıyla kursa eklendi!`);
 }
 
+// =================== TÜRKİYE RESMİ TATİLLERİ (ULUSAL & DİNİ BAYRAMLAR) ===================
+
+const TURKISH_FIXED_HOLIDAYS = {
+  '01-01': 'Yılbaşı',
+  '04-23': '23 Nisan Ulusal Egemenlik ve Çocuk Bayramı',
+  '05-01': '1 Mayıs Emek ve Dayanışma Günü',
+  '05-19': '19 Mayıs Atatürk\'ü Anma, Gençlik ve Spor Bayramı',
+  '07-15': '15 Temmuz Demokrasi ve Milli Birlik Günü',
+  '08-30': '30 Ağustos Zafer Bayramı',
+  '10-28': '28 Ekim Cumhuriyet Bayramı Arefesi',
+  '10-29': '29 Ekim Cumhuriyet Bayramı'
+};
+
+const TURKISH_RELIGIOUS_HOLIDAYS = {
+  // 2024
+  '2024-04-09': 'Ramazan Bayramı Arefesi',
+  '2024-04-10': 'Ramazan Bayramı 1. Gün',
+  '2024-04-11': 'Ramazan Bayramı 2. Gün',
+  '2024-04-12': 'Ramazan Bayramı 3. Gün',
+  '2024-06-15': 'Kurban Bayramı Arefesi',
+  '2024-06-16': 'Kurban Bayramı 1. Gün',
+  '2024-06-17': 'Kurban Bayramı 2. Gün',
+  '2024-06-18': 'Kurban Bayramı 3. Gün',
+  '2024-06-19': 'Kurban Bayramı 4. Gün',
+
+  // 2025
+  '2025-03-29': 'Ramazan Bayramı Arefesi',
+  '2025-03-30': 'Ramazan Bayramı 1. Gün',
+  '2025-03-31': 'Ramazan Bayramı 2. Gün',
+  '2025-04-01': 'Ramazan Bayramı 3. Gün',
+  '2025-06-05': 'Kurban Bayramı Arefesi',
+  '2025-06-06': 'Kurban Bayramı 1. Gün',
+  '2025-06-07': 'Kurban Bayramı 2. Gün',
+  '2025-06-08': 'Kurban Bayramı 3. Gün',
+  '2025-06-09': 'Kurban Bayramı 4. Gün',
+
+  // 2026
+  '2026-03-19': 'Ramazan Bayramı Arefesi',
+  '2026-03-20': 'Ramazan Bayramı 1. Gün',
+  '2026-03-21': 'Ramazan Bayramı 2. Gün',
+  '2026-03-22': 'Ramazan Bayramı 3. Gün',
+  '2026-05-26': 'Kurban Bayramı Arefesi',
+  '2026-05-27': 'Kurban Bayramı 1. Gün',
+  '2026-05-28': 'Kurban Bayramı 2. Gün',
+  '2026-05-29': 'Kurban Bayramı 3. Gün',
+  '2026-05-30': 'Kurban Bayramı 4. Gün',
+
+  // 2027
+  '2027-03-09': 'Ramazan Bayramı Arefesi',
+  '2027-03-10': 'Ramazan Bayramı 1. Gün',
+  '2027-03-11': 'Ramazan Bayramı 2. Gün',
+  '2027-03-12': 'Ramazan Bayramı 3. Gün',
+  '2027-05-16': 'Kurban Bayramı Arefesi',
+  '2027-05-17': 'Kurban Bayramı 1. Gün',
+  '2027-05-18': 'Kurban Bayramı 2. Gün',
+  '2027-05-19': 'Kurban Bayramı 3. Gün',
+  '2027-05-20': 'Kurban Bayramı 4. Gün',
+
+  // 2028
+  '2028-02-26': 'Ramazan Bayramı Arefesi',
+  '2028-02-27': 'Ramazan Bayramı 1. Gün',
+  '2028-02-28': 'Ramazan Bayramı 2. Gün',
+  '2028-02-29': 'Ramazan Bayramı 3. Gün',
+  '2028-05-04': 'Kurban Bayramı Arefesi',
+  '2028-05-05': 'Kurban Bayramı 1. Gün',
+  '2028-05-06': 'Kurban Bayramı 2. Gün',
+  '2028-05-07': 'Kurban Bayramı 3. Gün',
+  '2028-05-08': 'Kurban Bayramı 4. Gün',
+
+  // 2029
+  '2029-02-14': 'Ramazan Bayramı Arefesi',
+  '2029-02-15': 'Ramazan Bayramı 1. Gün',
+  '2029-02-16': 'Ramazan Bayramı 2. Gün',
+  '2029-02-17': 'Ramazan Bayramı 3. Gün',
+  '2029-04-23': 'Kurban Bayramı Arefesi',
+  '2029-04-24': 'Kurban Bayramı 1. Gün',
+  '2029-04-25': 'Kurban Bayramı 2. Gün',
+  '2029-04-26': 'Kurban Bayramı 3. Gün',
+  '2029-04-27': 'Kurban Bayramı 4. Gün',
+
+  // 2030
+  '2030-02-04': 'Ramazan Bayramı Arefesi',
+  '2030-02-05': 'Ramazan Bayramı 1. Gün',
+  '2030-02-06': 'Ramazan Bayramı 2. Gün',
+  '2030-02-07': 'Ramazan Bayramı 3. Gün',
+  '2030-04-13': 'Kurban Bayramı Arefesi',
+  '2030-04-14': 'Kurban Bayramı 1. Gün',
+  '2030-04-15': 'Kurban Bayramı 2. Gün',
+  '2030-04-16': 'Kurban Bayramı 3. Gün',
+  '2030-04-17': 'Kurban Bayramı 4. Gün'
+};
+
+function getTurkishHolidayName(dateStr) {
+  if (!dateStr) return null;
+  // Dini bayram kontrolü (Tam YYYY-MM-DD)
+  if (TURKISH_RELIGIOUS_HOLIDAYS[dateStr]) {
+    return TURKISH_RELIGIOUS_HOLIDAYS[dateStr];
+  }
+  // Sabit resmi bayram kontrolü (MM-DD)
+  const parts = dateStr.split('-');
+  if (parts.length === 3) {
+    const mmDd = `${parts[1]}-${parts[2]}`;
+    if (TURKISH_FIXED_HOLIDAYS[mmDd]) {
+      return TURKISH_FIXED_HOLIDAYS[mmDd];
+    }
+  }
+  return null;
+}
+
+function isTurkishOfficialHoliday(dateStr) {
+  return getTurkishHolidayName(dateStr) !== null;
+}
+
+function getTurkishHolidaysBetween(startDateStr, endDateStr) {
+  if (!startDateStr || !endDateStr) return [];
+  const holidays = [];
+  let curr = new Date(startDateStr + 'T00:00:00');
+  const end = new Date(endDateStr + 'T23:59:59');
+  if (isNaN(curr.getTime()) || isNaN(end.getTime())) return [];
+
+  let safety = 1200;
+  while (curr <= end && safety-- > 0) {
+    const yyyy = curr.getFullYear();
+    const mm = String(curr.getMonth() + 1).padStart(2, '0');
+    const dd = String(curr.getDate()).padStart(2, '0');
+    const dStr = `${yyyy}-${mm}-${dd}`;
+    const hName = getTurkishHolidayName(dStr);
+    if (hName) {
+      holidays.push({ date: dStr, name: hName });
+    }
+    curr.setDate(curr.getDate() + 1);
+  }
+  return holidays;
+}
+
 // =================== DEVAMSIZLIK TAKİP & GİRİŞ EKRANI (DERS GÜNLERİ & KUTUCUK GİRİŞİ) ===================
 
 const TURKISH_DAYS_MAP = {
@@ -2560,7 +2773,7 @@ const TURKISH_DAYS_MAP = {
   6: 'Cumartesi'
 };
 
-// Kursun geçerli ders günlerini (tatiller hariç, kurs günlerine göre) hesaplar
+// Kursun geçerli ders günlerini (Türkiye resmi tatilleri ve özel tatiller hariç, kurs günlerine göre) hesaplar
 function getValidCourseDates(course) {
   if (!course) return [];
   const validDates = [];
@@ -2579,11 +2792,8 @@ function getValidCourseDates(course) {
   let start = course.startDate ? new Date(course.startDate + 'T00:00:00') : new Date();
   if (isNaN(start.getTime())) start = new Date();
 
-  // Bitiş tarihi
-  let end = course.endDate ? new Date(course.endDate + 'T23:59:59') : null;
-
   let curr = new Date(start);
-  let safetyLimit = 1000; // Sonsuz döngü koruması
+  let safetyLimit = 1200; // Sonsuz döngü koruması
 
   while (safetyLimit-- > 0) {
     const yyyy = curr.getFullYear();
@@ -2592,7 +2802,11 @@ function getValidCourseDates(course) {
     const dateStr = `${yyyy}-${mm}-${dd}`;
     const dayName = TURKISH_DAYS_MAP[curr.getDay()];
 
-    if (activeDays.includes(dayName) && !offDayDates.has(dateStr)) {
+    const isHoliday = isTurkishOfficialHoliday(dateStr);
+    const isManualOffDay = offDayDates.has(dateStr);
+
+    // Hem aktif günlerde olmalı hem de resmi tatil veya manuel tatil OLMAMALI
+    if (activeDays.includes(dayName) && !isManualOffDay && !isHoliday) {
       validDates.push(dateStr);
     }
 
@@ -3373,8 +3587,9 @@ function handleAddDailyAttEntry() {
     return;
   }
 
-  if (offDayDates.has(date)) {
-    alert(`Seçilen tarih (${formatDate(date)}) tatil veya ders yapılmayan gün olarak işaretlenmiştir.`);
+  if (offDayDates.has(date) || isTurkishOfficialHoliday(date)) {
+    const hName = getTurkishHolidayName(date);
+    alert(`Seçilen tarih (${formatDate(date)}) resmi tatil veya ders yapılmayan gündür${hName ? ` (${hName})` : ''}. Resmi tatillerde ders işlenemez ve devamsızlık kaydedilemez.`);
     dailyAttDateInput?.focus();
     return;
   }
