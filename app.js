@@ -4810,6 +4810,7 @@ function generateSinavTutanagiHtml(course) {
 
   const institution = course.institution || course.centerName || 'İBB MESLEK FABRİKASI ŞUBE MÜDÜRLÜĞÜ';
   const courseName = course.name || course.title || 'Kurs';
+  const instructor = course.instructor || (currentUser?.fullName || 'Kurs Eğitmeni');
 
   // Kursiyerleri alfabetik sırala (Türkçe alfabe duyarlı)
   const sortedStudents = [...(course.students || [])].sort((a, b) => {
@@ -4898,8 +4899,8 @@ function generateSinavTutanagiHtml(course) {
       <div style="display: flex; justify-content: flex-end; margin-top: 25px; text-align: center;">
         <div style="min-width: 180px; font-size: 8.5pt; line-height: 1.5;">
           <div>....../....../202...</div>
-          <div style="margin-top: 32px; font-weight: 500; font-size: 8.5pt; color: #333;">........................................</div>
-          <div style="margin-top: 4px; font-size: 8pt; color: #222; font-weight: 600;">Ad Soyad - İmza</div>
+          <div style="margin-top: 30px; font-weight: bold; font-size: 9pt; color: #111;">${escapeHtml(instructor)}</div>
+          <div style="margin-top: 4px; font-size: 8pt; color: #333;">Ad Soyad - İmza</div>
         </div>
       </div>
 
