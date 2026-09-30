@@ -2013,6 +2013,7 @@ window.openCourseDetail = function(courseId) {
 
   switchDetailTab(currentActiveTab);
   renderDetailSyllabus();
+  renderDocumentsTab();
 
   detailModal.classList.remove('hidden');
   refreshLucide();
@@ -3818,172 +3819,189 @@ function generateKararDurumuHtml(course) {
 
 function renderDocumentsTab() {
   if (!activeCourseForDetail) return;
-  const statsBar = document.getElementById('kararDurumuStatsBar');
-  const defterStatsBar = document.getElementById('defterStatsBar');
 
   const docType = (activeCourseForDetail && activeCourseForDetail.documentType) ? activeCourseForDetail.documentType : 'Sertifika';
-  const students = activeCourseForDetail.students || [];
-  let successCount = 0;
-  let transcriptCount = 0;
-  let failedCount = 0;
+  const students = Array.isArray(activeCourseForDetail.students) ? activeCourseForDetail.students : [];
+  const totalHours = Number(activeCourseForDetail.totalHours) || 0;
+  const maxAllowed = Math.floor(totalHours / 5);
 
-  students.forEach(s => {
-    const dec = getStudentKararDurumu(s, activeCourseForDetail);
-    if (dec === docType) successCount++;
-    else if (dec === 'Transkript') transcriptCount++;
-    else if (dec === 'Devamsız') failedCount++;
-  });
+  // 1. Karar Durumu Özeti
+  try {
+    const statsBar = document.getElementById('kararDurumuStatsBar');
+    if (statsBar) {
+      let successCount = 0;
+      let transcriptCount = 0;
+      let failedCount = 0;
 
-  if (statsBar) {
-    statsBar.innerHTML = `
-      <div class="flex flex-wrap items-center justify-between gap-3 w-full">
-        <div class="flex flex-wrap items-center gap-2">
-          <span class="font-bold text-slate-700 dark:text-slate-200">Karar İstatistikleri:</span>
-          <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-white dark:bg-[#152125] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-[#2b3e45] rounded-lg font-bold">
-            <span>Toplam:</span> <strong class="text-[#335C67] dark:text-[#FFF3B0]">${students.length}</strong> Kursiyer
-          </span>
-          <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 rounded-lg font-bold">
-            <span>${escapeHtml(docType)}:</span> <strong>${successCount}</strong>
-          </span>
-          <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800 rounded-lg font-bold">
-            <span>Transkript:</span> <strong>${transcriptCount}</strong>
-          </span>
-          <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-rose-50 dark:bg-rose-950/40 text-rose-800 dark:text-rose-300 border border-rose-200 dark:border-rose-800 rounded-lg font-bold">
-            <span>Devamsız:</span> <strong>${failedCount}</strong>
-          </span>
+      students.forEach(s => {
+        const dec = getStudentKararDurumu(s, activeCourseForDetail);
+        if (dec === docType) successCount++;
+        else if (dec === 'Transkript') transcriptCount++;
+        else if (dec === 'Devamsız') failedCount++;
+      });
+
+      statsBar.innerHTML = `
+        <div class="flex flex-wrap items-center justify-between gap-3 w-full">
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="font-bold text-slate-700 dark:text-slate-200">Karar İstatistikleri:</span>
+            <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-white dark:bg-[#152125] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-[#2b3e45] rounded-lg font-bold">
+              <span>Toplam:</span> <strong class="text-[#335C67] dark:text-[#FFF3B0]">${students.length}</strong> Kursiyer
+            </span>
+            <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 rounded-lg font-bold">
+              <span>${escapeHtml(docType)}:</span> <strong>${successCount}</strong>
+            </span>
+            <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800 rounded-lg font-bold">
+              <span>Transkript:</span> <strong>${transcriptCount}</strong>
+            </span>
+            <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-rose-50 dark:bg-rose-950/40 text-rose-800 dark:text-rose-300 border border-rose-200 dark:border-rose-800 rounded-lg font-bold">
+              <span>Devamsız:</span> <strong>${failedCount}</strong>
+            </span>
+          </div>
+          <div class="text-[11px] text-slate-400">
+            ${students.length <= 25 ? 'Resmi Tek Sayfa Karar Belgesi Çıktısı' : 'Resmi Karar Belgesi Çıktısı'}
+          </div>
         </div>
-        <div class="text-[11px] text-slate-400">
-          ${students.length <= 25 ? 'Resmi Tek Sayfa Karar Belgesi Çıktısı' : 'Resmi Karar Belgesi Çıktısı'}
-        </div>
-      </div>
-    `;
+      `;
+    }
+  } catch (err) {
+    console.error('Error rendering kararDurumuStatsBar:', err);
   }
 
-  if (defterStatsBar) {
-    const validDates = getValidCourseDates(activeCourseForDetail);
-    const dailyHours = Number(activeCourseForDetail.dailyHours) || 4;
-    const daysPerPage = dailyHours <= 4 ? 6 : 3;
-    const dayChunksCount = Math.ceil(validDates.length / daysPerPage) || 1;
-    const totalPages = dayChunksCount + 3; // 1 Kapak + 1 Yoklama + N Defter + 1 Kapanış
-    defterStatsBar.innerHTML = `
-      <div class="flex flex-wrap items-center justify-between gap-3 w-full">
-        <div class="flex flex-wrap items-center gap-2">
-          <span class="font-bold text-slate-700 dark:text-slate-200">Defter Bilgileri:</span>
-          <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-white dark:bg-[#152125] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-[#2b3e45] rounded-lg font-bold">
-            <span>Ders Günleri:</span> <strong class="text-emerald-700 dark:text-emerald-400">${validDates.length}</strong> Gün
-          </span>
-          <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-white dark:bg-[#152125] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-[#2b3e45] rounded-lg font-bold">
-            <span>Günlük Ders:</span> <strong>${activeCourseForDetail.dailyHours || 4}</strong> Saat
-          </span>
-          <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-white dark:bg-[#152125] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-[#2b3e45] rounded-lg font-bold">
-            <span>Toplam Süre:</span> <strong>${activeCourseForDetail.totalHours || 120}</strong> Saat
-          </span>
-          <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 rounded-lg font-bold">
-            <span>Toplam Resmi Sayfa:</span> <strong>${totalPages}</strong> Sayfa
-          </span>
+  // 2. Defter Özeti
+  try {
+    const defterStatsBar = document.getElementById('defterStatsBar');
+    if (defterStatsBar) {
+      const validDates = getValidCourseDates(activeCourseForDetail);
+      const dailyHours = Number(activeCourseForDetail.dailyHours) || 4;
+      const daysPerPage = dailyHours <= 4 ? 6 : 3;
+      const dayChunksCount = Math.ceil(validDates.length / daysPerPage) || 1;
+      const totalPages = dayChunksCount + 3; // 1 Kapak + 1 Yoklama + N Defter + 1 Kapanış
+      defterStatsBar.innerHTML = `
+        <div class="flex flex-wrap items-center justify-between gap-3 w-full">
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="font-bold text-slate-700 dark:text-slate-200">Defter Bilgileri:</span>
+            <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-white dark:bg-[#152125] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-[#2b3e45] rounded-lg font-bold">
+              <span>Ders Günleri:</span> <strong class="text-emerald-700 dark:text-emerald-400">${validDates.length}</strong> Gün
+            </span>
+            <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-white dark:bg-[#152125] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-[#2b3e45] rounded-lg font-bold">
+              <span>Günlük Ders:</span> <strong>${activeCourseForDetail.dailyHours || 4}</strong> Saat
+            </span>
+            <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-white dark:bg-[#152125] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-[#2b3e45] rounded-lg font-bold">
+              <span>Toplam Süre:</span> <strong>${activeCourseForDetail.totalHours || 120}</strong> Saat
+            </span>
+            <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 rounded-lg font-bold">
+              <span>Toplam Resmi Sayfa:</span> <strong>${totalPages}</strong> Sayfa
+            </span>
+          </div>
+          <div class="text-[11px] text-slate-400">
+            Kapak, 31 Günlük Yoklama, Günlük Defter Sayfaları ve Kapanış Tutanağı
+          </div>
         </div>
-        <div class="text-[11px] text-slate-400">
-          Kapak, 31 Günlük Yoklama, Günlük Defter Sayfaları ve Kapanış Tutanağı
-        </div>
-      </div>
-    `;
+      `;
+    }
+  } catch (err) {
+    console.error('Error rendering defterStatsBar:', err);
   }
 
-  const notCizelgesiStatsBar = document.getElementById('notCizelgesiStatsBar');
-  if (notCizelgesiStatsBar) {
-    const moduleCount = activeCourseForDetail.moduleCount ? Math.max(1, Number(activeCourseForDetail.moduleCount)) : 1;
-    const docType = (activeCourseForDetail && activeCourseForDetail.documentType) ? activeCourseForDetail.documentType : 'Sertifika';
-    const totalHours = Number(activeCourseForDetail.totalHours) || 0;
-    const maxAllowed = Math.floor(totalHours / 5);
+  // 3. Not Çizelgesi Özeti
+  try {
+    const notCizelgesiStatsBar = document.getElementById('notCizelgesiStatsBar');
+    if (notCizelgesiStatsBar) {
+      const moduleCount = activeCourseForDetail.moduleCount ? Math.max(1, Number(activeCourseForDetail.moduleCount)) : 1;
+      let docTypeCount = 0;
+      let transcriptCount = 0;
+      let failedCount = 0;
+      let devamsizCount = 0;
 
-    let docTypeCount = 0;
-    let transcriptCount = 0;
-    let failedCount = 0;
-    let devamsizCount = 0;
-
-    students.forEach(s => {
-      const absentHours = Number(s.absentHours || 0);
-      const isDevamsiz = (s.attendance === 'Devamsız') || 
-                         (s.result === 'Devamsız') ||
-                         (totalHours > 0 && absentHours > maxAllowed);
-      if (isDevamsiz) {
-        devamsizCount++;
-      } else {
-        let pCount = 0;
-        for (let m = 1; m <= moduleCount; m++) {
-          const sc = s.moduleScores ? s.moduleScores[m] : null;
-          if (sc !== null && sc !== undefined && sc !== '' && !isNaN(Number(sc)) && Number(sc) >= 50) {
-            pCount++;
+      students.forEach(s => {
+        const absentHours = Number(s.absentHours || 0);
+        const isDevamsiz = (s.attendance === 'Devamsız') || 
+                           (s.result === 'Devamsız') ||
+                           (totalHours > 0 && absentHours > maxAllowed);
+        if (isDevamsiz) {
+          devamsizCount++;
+        } else {
+          let pCount = 0;
+          for (let m = 1; m <= moduleCount; m++) {
+            const sc = s.moduleScores ? s.moduleScores[m] : null;
+            if (sc !== null && sc !== undefined && sc !== '' && !isNaN(Number(sc)) && Number(sc) >= 50) {
+              pCount++;
+            }
           }
+          if (pCount === moduleCount) docTypeCount++;
+          else if (pCount === 0) failedCount++;
+          else transcriptCount++;
         }
-        if (pCount === moduleCount) docTypeCount++;
-        else if (pCount === 0) failedCount++;
-        else transcriptCount++;
-      }
-    });
+      });
 
-    notCizelgesiStatsBar.innerHTML = `
-      <div class="flex flex-wrap items-center justify-between gap-3 w-full">
-        <div class="flex flex-wrap items-center gap-2">
-          <span class="font-bold text-slate-700 dark:text-slate-200">Çizelge Özeti:</span>
-          <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-white dark:bg-[#152125] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-[#2b3e45] rounded-lg font-bold">
-            <span>Toplam:</span> <strong class="text-indigo-600 dark:text-indigo-400">${students.length}</strong> Kursiyer
-          </span>
-          <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 rounded-lg font-bold">
-            <span>${escapeHtml(docType)}:</span> <strong>${docTypeCount}</strong>
-          </span>
-          <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800 rounded-lg font-bold">
-            <span>Transkript:</span> <strong>${transcriptCount}</strong>
-          </span>
-          <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-rose-50 dark:bg-rose-950/40 text-rose-800 dark:text-rose-300 border border-rose-200 dark:border-rose-800 rounded-lg font-bold">
-            <span>Başarısız:</span> <strong>${failedCount}</strong>
-          </span>
-          <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-rose-50 dark:bg-rose-950/40 text-rose-800 dark:text-rose-300 border border-rose-200 dark:border-rose-800 rounded-lg font-bold">
-            <span>Devamsız:</span> <strong>${devamsizCount}</strong>
-          </span>
+      notCizelgesiStatsBar.innerHTML = `
+        <div class="flex flex-wrap items-center justify-between gap-3 w-full">
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="font-bold text-slate-700 dark:text-slate-200">Çizelge Özeti:</span>
+            <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-white dark:bg-[#152125] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-[#2b3e45] rounded-lg font-bold">
+              <span>Toplam:</span> <strong class="text-indigo-600 dark:text-indigo-400">${students.length}</strong> Kursiyer
+            </span>
+            <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 rounded-lg font-bold">
+              <span>${escapeHtml(docType)}:</span> <strong>${docTypeCount}</strong>
+            </span>
+            <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800 rounded-lg font-bold">
+              <span>Transkript:</span> <strong>${transcriptCount}</strong>
+            </span>
+            <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-rose-50 dark:bg-rose-950/40 text-rose-800 dark:text-rose-300 border border-rose-200 dark:border-rose-800 rounded-lg font-bold">
+              <span>Başarısız:</span> <strong>${failedCount}</strong>
+            </span>
+            <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-rose-50 dark:bg-rose-950/40 text-rose-800 dark:text-rose-300 border border-rose-200 dark:border-rose-800 rounded-lg font-bold">
+              <span>Devamsız:</span> <strong>${devamsizCount}</strong>
+            </span>
+          </div>
+          <div class="text-[11px] text-slate-400">
+            Resmi Not Çizelgesi • ${moduleCount} Modüllü Yatay A4 Belgesi
+          </div>
         </div>
-        <div class="text-[11px] text-slate-400">
-          Resmi Not Çizelgesi • ${moduleCount} Modüllü Yatay A4 Belgesi
-        </div>
-      </div>
-    `;
+      `;
+    }
+  } catch (err) {
+    console.error('Error rendering notCizelgesiStatsBar:', err);
   }
 
-  const sinavTutanagiStatsBar = document.getElementById('sinavTutanagiStatsBar');
-  if (sinavTutanagiStatsBar) {
-    const totalHours = Number(activeCourseForDetail.totalHours) || 0;
-    const maxAllowed = Math.floor(totalHours / 5);
-    let eligibleCount = 0;
-    let devamsizCount = 0;
+  // 4. Sınav Tutanağı Özeti
+  try {
+    const sinavTutanagiStatsBar = document.getElementById('sinavTutanagiStatsBar');
+    if (sinavTutanagiStatsBar) {
+      let eligibleCount = 0;
+      let devamsizCount = 0;
 
-    students.forEach(s => {
-      const absentHours = Number(s.absentHours || 0);
-      const isDevamsiz = (s.attendance === 'Devamsız') || 
-                         (s.result === 'Devamsız') ||
-                         (totalHours > 0 && absentHours > maxAllowed);
-      if (isDevamsiz) devamsizCount++;
-      else eligibleCount++;
-    });
+      students.forEach(s => {
+        const absentHours = Number(s.absentHours || 0);
+        const isDevamsiz = (s.attendance === 'Devamsız') || 
+                           (s.result === 'Devamsız') ||
+                           (totalHours > 0 && absentHours > maxAllowed);
+        if (isDevamsiz) devamsizCount++;
+        else eligibleCount++;
+      });
 
-    sinavTutanagiStatsBar.innerHTML = `
-      <div class="flex flex-wrap items-center justify-between gap-3 w-full">
-        <div class="flex flex-wrap items-center gap-2">
-          <span class="font-bold text-slate-700 dark:text-slate-200">Tutanak Özeti:</span>
-          <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-white dark:bg-[#152125] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-[#2b3e45] rounded-lg font-bold">
-            <span>Toplam:</span> <strong class="text-rose-700 dark:text-rose-400">${students.length}</strong> Kursiyer
-          </span>
-          <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 rounded-lg font-bold">
-            <span>Sınava Katılan / Katılabilecek:</span> <strong>${eligibleCount}</strong> Kişi
-          </span>
-          <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-rose-50 dark:bg-rose-950/40 text-rose-800 dark:text-rose-300 border border-rose-200 dark:border-rose-800 rounded-lg font-bold">
-            <span>Devamsız (Katılamaz):</span> <strong>${devamsizCount}</strong> Kişi
-          </span>
+      sinavTutanagiStatsBar.innerHTML = `
+        <div class="flex flex-wrap items-center justify-between gap-3 w-full">
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="font-bold text-slate-700 dark:text-slate-200">Tutanak Özeti:</span>
+            <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-white dark:bg-[#152125] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-[#2b3e45] rounded-lg font-bold">
+              <span>Toplam:</span> <strong class="text-rose-700 dark:text-rose-400">${students.length}</strong> Kursiyer
+            </span>
+            <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 rounded-lg font-bold">
+              <span>Sınava Katılan / Katılabilecek:</span> <strong>${eligibleCount}</strong> Kişi
+            </span>
+            <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-rose-50 dark:bg-rose-950/40 text-rose-800 dark:text-rose-300 border border-rose-200 dark:border-rose-800 rounded-lg font-bold">
+              <span>Devamsız (Katılamaz):</span> <strong>${devamsizCount}</strong> Kişi
+            </span>
+          </div>
+          <div class="text-[11px] text-slate-400">
+            ${students.length <= 25 ? 'Resmi Tek Sayfa Sınav Tutanağı' : 'Resmi Sınav Tutanağı'} • Dikey A4
+          </div>
         </div>
-        <div class="text-[11px] text-slate-400">
-          ${students.length <= 25 ? 'Resmi Tek Sayfa Sınav Tutanağı' : 'Resmi Sınav Tutanağı'} • Dikey A4
-        </div>
-      </div>
-    `;
+      `;
+    }
+  } catch (err) {
+    console.error('Error rendering sinavTutanagiStatsBar:', err);
   }
 }
 
