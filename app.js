@@ -3892,22 +3892,34 @@ function renderDocumentsTab() {
   const notCizelgesiStatsBar = document.getElementById('notCizelgesiStatsBar');
   if (notCizelgesiStatsBar) {
     const moduleCount = activeCourseForDetail.moduleCount ? Math.max(1, Number(activeCourseForDetail.moduleCount)) : 1;
-    let completedCount = 0;
-    let notCompletedCount = 0;
+    const docType = (activeCourseForDetail && activeCourseForDetail.documentType) ? activeCourseForDetail.documentType : 'Sertifika';
+    const totalHours = Number(activeCourseForDetail.totalHours) || 0;
+    const maxAllowed = Math.floor(totalHours / 5);
+
+    let docTypeCount = 0;
+    let transcriptCount = 0;
+    let failedCount = 0;
+    let devamsizCount = 0;
+
     students.forEach(s => {
-      const isDevamsiz = (s.attendance === 'Devamsız') || (s.result === 'Devamsız');
-      let allPassed = !isDevamsiz;
-      if (allPassed) {
+      const absentHours = Number(s.absentHours || 0);
+      const isDevamsiz = (s.attendance === 'Devamsız') || 
+                         (s.result === 'Devamsız') ||
+                         (totalHours > 0 && absentHours > maxAllowed);
+      if (isDevamsiz) {
+        devamsizCount++;
+      } else {
+        let pCount = 0;
         for (let m = 1; m <= moduleCount; m++) {
           const sc = s.moduleScores ? s.moduleScores[m] : null;
-          if (sc === null || sc === undefined || sc === '' || isNaN(Number(sc)) || Number(sc) < 50) {
-            allPassed = false;
-            break;
+          if (sc !== null && sc !== undefined && sc !== '' && !isNaN(Number(sc)) && Number(sc) >= 50) {
+            pCount++;
           }
         }
+        if (pCount === moduleCount) docTypeCount++;
+        else if (pCount === 0) failedCount++;
+        else transcriptCount++;
       }
-      if (allPassed) completedCount++;
-      else notCompletedCount++;
     });
 
     notCizelgesiStatsBar.innerHTML = `
@@ -3917,18 +3929,21 @@ function renderDocumentsTab() {
           <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-white dark:bg-[#152125] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-[#2b3e45] rounded-lg font-bold">
             <span>Toplam:</span> <strong class="text-indigo-600 dark:text-indigo-400">${students.length}</strong> Kursiyer
           </span>
-          <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-white dark:bg-[#152125] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-[#2b3e45] rounded-lg font-bold">
-            <span>Modül Sayısı:</span> <strong>${moduleCount}</strong> Modül
-          </span>
           <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 rounded-lg font-bold">
-            <span>Tamamladı:</span> <strong>${completedCount}</strong>
+            <span>${escapeHtml(docType)}:</span> <strong>${docTypeCount}</strong>
+          </span>
+          <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800 rounded-lg font-bold">
+            <span>Transkript:</span> <strong>${transcriptCount}</strong>
           </span>
           <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-rose-50 dark:bg-rose-950/40 text-rose-800 dark:text-rose-300 border border-rose-200 dark:border-rose-800 rounded-lg font-bold">
-            <span>Tamamlamadı / Devamsız:</span> <strong>${notCompletedCount}</strong>
+            <span>Başarısız:</span> <strong>${failedCount}</strong>
+          </span>
+          <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-rose-50 dark:bg-rose-950/40 text-rose-800 dark:text-rose-300 border border-rose-200 dark:border-rose-800 rounded-lg font-bold">
+            <span>Devamsız:</span> <strong>${devamsizCount}</strong>
           </span>
         </div>
         <div class="text-[11px] text-slate-400">
-          Resmi Not Çizelgesi • 20 Modül Kapasiteli Yatay A4 Belgesi
+          Resmi Not Çizelgesi • ${moduleCount} Modüllü Yatay A4 Belgesi
         </div>
       </div>
     `;
@@ -4431,6 +4446,9 @@ function generateNotCizelgesiHtml(course) {
   const courseNumber = course.code || course.id || '-';
   const classroom = course.classroom || institution;
   const moduleCount = course.moduleCount ? Math.max(1, Number(course.moduleCount)) : 1;
+  const docType = (course && course.documentType) ? course.documentType : 'Sertifika';
+  const totalHours = Number(course.totalHours) || 0;
+  const maxAllowed = Math.floor(totalHours / 5);
   const startDate = formatShortDate(course.startDate);
   const endDate = formatShortDate(course.endDate);
 
@@ -4463,16 +4481,20 @@ function generateNotCizelgesiHtml(course) {
     if (i <= sortedStudents.length) {
       const s = sortedStudents[i - 1];
       const sFullName = (s.fullName || `${s.firstName || ''} ${s.lastName || ''}`).trim();
-      const isDevamsiz = (s.attendance === 'Devamsız') || (s.result === 'Devamsız');
+      const absentHours = Number(s.absentHours || 0);
+      const isDevamsiz = (s.attendance === 'Devamsız') || 
+                         (s.result === 'Devamsız') ||
+                         (totalHours > 0 && absentHours > maxAllowed);
       const modScores = s.moduleScores || {};
 
-      let allPassed = !isDevamsiz;
+      let passedCount = 0;
+      let failedCount = 0;
       let moduleCellsHtml = '';
 
       for (let m = 1; m <= maxModules; m++) {
         if (m <= moduleCount) {
           if (isDevamsiz) {
-            allPassed = false;
+            failedCount++;
             moduleCellsHtml += `
               <td style="border: 1px solid black; text-align: center; font-size: 8pt; font-weight: bold; color: #b91c1c; padding: 1px;">
                 D
@@ -4482,7 +4504,11 @@ function generateNotCizelgesiHtml(course) {
             const sc = modScores[m];
             if (sc !== null && sc !== undefined && sc !== '' && !isNaN(Number(sc))) {
               const numSc = Number(sc);
-              if (numSc < 50) allPassed = false;
+              if (numSc >= 50) {
+                passedCount++;
+              } else {
+                failedCount++;
+              }
               moduleCellsHtml += `
                 <td style="border: 1px solid black; text-align: center; font-size: 8pt; font-weight: 600; padding: 1px;">
                   ${numSc}
@@ -4490,7 +4516,7 @@ function generateNotCizelgesiHtml(course) {
               `;
             } else {
               // Devam ettiği halde sınava girmediyse 'G'
-              allPassed = false;
+              failedCount++;
               moduleCellsHtml += `
                 <td style="border: 1px solid black; text-align: center; font-size: 7.5pt; font-weight: bold; color: #b45309; padding: 1px;">
                   G
@@ -4508,15 +4534,34 @@ function generateNotCizelgesiHtml(course) {
         }
       }
 
-      const sonucText = isDevamsiz ? 'DEVAMSIZ' : (allPassed ? 'TAMAMLADI' : 'TAMAMLAMADI');
-      const sonucColor = allPassed ? '#15803d' : '#b91c1c';
+      // Sonuç Belirleme:
+      // 1. Devamsızlığı varsa: "Devamsız"
+      // 2. Tüm modüllerden başarılı ise: docType ("Sertifika" veya "Katılım Belgesi")
+      // 3. Herhangi bir modülden kaldı diğerlerinden geçti ise: "Transkript"
+      // 4. Tüm modüllerden kaldıysa: "Başarısız"
+      let sonucText = '';
+      let sonucColor = '';
+
+      if (isDevamsiz) {
+        sonucText = 'Devamsız';
+        sonucColor = '#b91c1c';
+      } else if (passedCount === moduleCount) {
+        sonucText = docType;
+        sonucColor = '#15803d';
+      } else if (passedCount === 0) {
+        sonucText = 'Başarısız';
+        sonucColor = '#b91c1c';
+      } else {
+        sonucText = 'Transkript';
+        sonucColor = '#b45309';
+      }
 
       rowsHtml += `
         <tr style="height: 20px;">
           <td style="border: 1px solid black; text-align: center; font-size: 8pt; font-weight: bold; padding: 1px;">${i}</td>
           <td style="border: 1px solid black; padding: 1px 6px; font-size: 8pt; font-weight: 500; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px;">${escapeHtml(sFullName)}</td>
           ${moduleCellsHtml}
-          <td style="border: 1px solid black; text-align: center; font-size: 7pt; font-weight: bold; color: ${sonucColor}; padding: 1px; white-space: nowrap;">
+          <td style="border: 1px solid black; text-align: center; font-size: 7.5pt; font-weight: bold; color: ${sonucColor}; padding: 1px; white-space: nowrap;">
             ${sonucText}
           </td>
         </tr>
@@ -4634,9 +4679,10 @@ function generateNotCizelgesiHtml(course) {
           </tr>
           <tr style="background: #fff;">
             ${moduleHeadersHtml}
-            <th style="border: 1px solid black; width: 85px; padding: 2px; font-size: 6pt; text-align: center; font-weight: normal; line-height: 1.2;">
-              Tüm modülleri başardıysa<br>
-              <strong style="font-size: 6.5pt;">"TAMAMLADI"</strong>
+            <th style="border: 1px solid black; width: 85px; padding: 2px; font-size: 5.5pt; text-align: center; font-weight: normal; line-height: 1.25;">
+              Tüm modüller başarılı ise<br>
+              <strong style="font-size: 6.5pt;">"${escapeHtml(docType)}"</strong><br>
+              <span style="color: #444; font-size: 5pt;">Transkript / Başarısız / Devamsız</span>
             </th>
           </tr>
         </thead>
