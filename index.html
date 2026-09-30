@@ -1,0 +1,2581 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kurs Sonu Evrak & Müfredat Yönetim Sistemi</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              teal: '#335C67',
+              cream: '#FFF3B0',
+              amber: '#E09F3E',
+              terracotta: '#9E2A2B',
+              burgundy: '#540B0E',
+            },
+            palette: {
+              teal: '#335C67',
+              cream: '#FFF3B0',
+              amber: '#E09F3E',
+              terracotta: '#9E2A2B',
+              burgundy: '#540B0E',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    :root {
+      --color-teal: #335C67;
+      --color-cream: #FFF3B0;
+      --color-amber: #E09F3E;
+      --color-terracotta: #9E2A2B;
+      --color-burgundy: #540B0E;
+    }
+
+    /* Koyu Tema Geçişleri ve Eleman İyileştirmeleri */
+    html.dark body {
+      background-color: #0d1517;
+      color: #e5edf0;
+    }
+
+    html.dark .bg-white {
+      background-color: #152125 !important;
+      border-color: #23353c !important;
+    }
+
+    html.dark .bg-slate-50 {
+      background-color: #111b1d !important;
+      border-color: #23353c !important;
+    }
+
+    html.dark .bg-slate-100 {
+      background-color: #19272c !important;
+      border-color: #23353c !important;
+    }
+
+    html.dark .text-slate-800,
+    html.dark .text-slate-900 {
+      color: #f1f6f8 !important;
+    }
+
+    html.dark .text-slate-700 {
+      color: #cbd8dc !important;
+    }
+
+    html.dark .text-slate-600 {
+      color: #9cb2ba !important;
+    }
+
+    html.dark .text-slate-500 {
+      color: #79949f !important;
+    }
+
+    html.dark .text-slate-400 {
+      color: #637f8a !important;
+    }
+
+    html.dark .border-slate-200,
+    html.dark .border-slate-100,
+    html.dark .border-slate-300 {
+      border-color: #23353c !important;
+    }
+
+    html.dark input:not([type="checkbox"]):not([type="radio"]),
+    html.dark select,
+    html.dark textarea {
+      background-color: #10191b !important;
+      color: #f1f6f8 !important;
+      border-color: #2b3e45 !important;
+    }
+
+    html.dark input::placeholder,
+    html.dark textarea::placeholder {
+      color: #55727d !important;
+    }
+
+    html.dark table th {
+      background-color: #10191b !important;
+      color: #cbd8dc !important;
+      border-color: #23353c !important;
+    }
+
+    html.dark table td {
+      border-color: #23353c !important;
+    }
+
+    html.dark tr:hover td {
+      background-color: #172428 !important;
+    }
+
+    /* Print Stilleri */
+    @media print {
+      @page {
+        size: A4 portrait;
+        margin: 12mm 12mm 12mm 12mm;
+      }
+      body {
+        background: #fff !important;
+        color: #000 !important;
+      }
+      body * {
+        visibility: hidden;
+      }
+      #printArea, #printArea * {
+        visibility: visible;
+      }
+      #printArea {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        margin: 0 !important;
+        padding: 0 !important;
+        display: block !important;
+        background: #fff !important;
+        color: #000 !important;
+      }
+      .print-page-break {
+        page-break-before: always !important;
+        break-before: page !important;
+      }
+      .defter-page {
+        page-break-after: always !important;
+        break-after: page !important;
+        box-sizing: border-box;
+      }
+      .defter-page:last-child {
+        page-break-after: auto !important;
+        break-after: auto !important;
+      }
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased min-h-screen transition-colors duration-200">
+
+  <!-- ================= GİRİŞ / LOGIN EKRANI ================= -->
+  <div id="loginScreen" class="min-h-screen bg-gradient-to-br from-[#121c1f] via-[#335C67] to-[#540B0E] flex items-center justify-center p-4 sm:p-6 lg:p-8 relative">
+    
+    <!-- Giriş Ekranı Tema Değiştirici -->
+    <div class="absolute top-4 right-4 z-20">
+      <button
+        type="button"
+        id="loginThemeToggle"
+        class="px-3.5 py-2 rounded-xl border border-white/20 bg-white/10 hover:bg-white/25 backdrop-blur-md text-white transition flex items-center gap-2 text-xs font-semibold cursor-pointer shadow-sm"
+        title="Temayı Değiştir"
+      >
+        <i id="loginThemeIcon" data-lucide="sun" class="w-4 h-4 text-[#FFF3B0]"></i>
+        <span id="loginThemeText">Açık Tema</span>
+      </button>
+    </div>
+
+    <!-- Arka plan ışık efektleri -->
+    <div class="absolute inset-0 overflow-hidden pointer-events-none">
+      <div class="absolute -top-40 -right-40 w-96 h-96 bg-[#E09F3E]/15 rounded-full blur-3xl"></div>
+      <div class="absolute -bottom-40 -left-40 w-96 h-96 bg-[#FFF3B0]/10 rounded-full blur-3xl"></div>
+    </div>
+
+    <div class="relative w-full max-w-5xl grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+      
+      <!-- Sol Tanıtım Bölümü -->
+      <div class="lg:col-span-6 text-white space-y-6">
+        <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#FFF3B0]/15 border border-[#FFF3B0]/30 text-[#FFF3B0] text-xs sm:text-sm font-medium">
+          <i data-lucide="sparkles" class="w-4 h-4 text-[#FFF3B0]"></i>
+          <span>Otomatik Evrak & Kurs Yönetim Sistemi</span>
+        </div>
+
+        <div class="space-y-3">
+          <div class="flex items-center gap-3">
+            <div class="p-3 bg-[#335C67] rounded-2xl shadow-lg border border-[#FFF3B0]/30">
+              <i data-lucide="file-check-2" class="w-8 h-8 text-[#FFF3B0]"></i>
+            </div>
+            <h1 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-white">
+              Kurs Sonu <span class="text-[#FFF3B0]">Evrakları</span>
+            </h1>
+          </div>
+          <p class="text-slate-200 text-sm sm:text-base leading-relaxed">
+            Kurs merkezleri tanımlama, ders saati ve konu müfredat planı hazırlama, kursiyer not ve devam takibi ve dönem sonu resmi evraklarını tek tıkla otomatik oluşturma sistemi.
+          </p>
+        </div>
+
+        <!-- Özellikler -->
+        <div class="space-y-3 pt-2">
+          <div class="flex items-start gap-3 text-slate-200 text-sm">
+            <i data-lucide="shield-check" class="w-5 h-5 text-[#E09F3E] shrink-0 mt-0.5"></i>
+            <span><strong>Admin Paneli:</strong> Kurs merkezlerini ve her saat için anlatılacak konu planlarını (müfredat) merkezi olarak yönetin.</span>
+          </div>
+          <div class="flex items-start gap-3 text-slate-200 text-sm">
+            <i data-lucide="check-circle-2" class="w-5 h-5 text-[#FFF3B0] shrink-0 mt-0.5"></i>
+            <span><strong>Eğitmen Alanı:</strong> Eğitmenler hazır merkez ve kurs şablonlarını seçerek kendi kurs ve kursiyerlerini yönetir.</span>
+          </div>
+          <div class="flex items-start gap-3 text-slate-200 text-sm">
+            <i data-lucide="check-circle-2" class="w-5 h-5 text-[#FFF3B0] shrink-0 mt-0.5"></i>
+            <span><strong>Resmi Şablonlar & Arşiv:</strong> Sınav tutanakları, not çizelgesi ve saatlik ders defteri tek tıkla yazdırılabilir.</span>
+          </div>
+        </div>
+
+        <!-- Bilgilendirme Notu -->
+        <div class="p-4 rounded-xl bg-black/30 border border-white/10 backdrop-blur-sm flex items-start gap-3">
+          <i data-lucide="info" class="w-5 h-5 text-[#FFF3B0] shrink-0 mt-0.5"></i>
+          <div class="text-xs text-slate-200 space-y-1">
+            <p class="font-semibold text-[#FFF3B0]">Hazır Deneme Hesapları:</p>
+            <p>Admin paneline erişmek için <strong>Admin Hesabını</strong>, öğretmen deneyimi için <strong>Eğitmen Hesaplarını</strong> tek tıkla kullanabilirsiniz.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sağ Giriş Formu -->
+      <div class="lg:col-span-6">
+        <div class="bg-white/95 dark:bg-[#152125]/95 backdrop-blur-md rounded-3xl p-6 sm:p-8 shadow-2xl border border-white/20 dark:border-[#335C67]/40">
+          <div class="text-center mb-6">
+            <h2 class="text-xl sm:text-2xl font-bold text-slate-800 dark:text-slate-100">
+              Sisteme Giriş Yapın
+            </h2>
+            <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">
+              Kullanıcı adı ve şifrenizle panelinize erişin
+            </p>
+          </div>
+
+          <!-- Hata Mesajı -->
+          <div id="loginError" class="hidden mb-4 p-3.5 rounded-xl bg-[#9E2A2B]/10 border border-[#9E2A2B]/30 text-[#9E2A2B] text-xs sm:text-sm font-medium flex items-center gap-2">
+            <i data-lucide="alert-circle" class="w-4 h-4 shrink-0 text-[#9E2A2B]"></i>
+            <span id="loginErrorText">Kullanıcı adı veya şifre hatalı!</span>
+          </div>
+
+          <form id="loginForm" class="space-y-4">
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5 uppercase tracking-wider">
+                Kullanıcı Adı
+              </label>
+              <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                  <i data-lucide="user" class="w-5 h-5"></i>
+                </div>
+                <input
+                  type="text"
+                  id="loginUsername"
+                  placeholder="Örn: admin veya egitmen1"
+                  required
+                  class="w-full pl-11 pr-4 py-2.5 bg-slate-50 dark:bg-[#10191b] border border-slate-200 dark:border-[#2b3e45] rounded-xl text-slate-800 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-[#335C67] focus:bg-white transition"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5 uppercase tracking-wider">
+                Şifre
+              </label>
+              <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                  <i data-lucide="lock" class="w-5 h-5"></i>
+                </div>
+                <input
+                  type="password"
+                  id="loginPassword"
+                  placeholder="••••••"
+                  required
+                  class="w-full pl-11 pr-11 py-2.5 bg-slate-50 dark:bg-[#10191b] border border-slate-200 dark:border-[#2b3e45] rounded-xl text-slate-800 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-[#335C67] focus:bg-white transition"
+                />
+                <button
+                  type="button"
+                  id="togglePasswordBtn"
+                  class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600"
+                >
+                  <i data-lucide="eye" id="eyeIcon" class="w-5 h-5"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- Beni Hatırla -->
+            <div class="flex items-center justify-between pt-1">
+              <label class="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-400 hover:text-slate-800 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  id="rememberMeCheckbox"
+                  checked
+                  class="w-4 h-4 rounded border-slate-300 text-[#335C67] focus:ring-[#335C67] cursor-pointer"
+                />
+                <span class="font-medium">Beni Hatırla</span>
+              </label>
+            </div>
+
+            <button
+              type="submit"
+              class="w-full py-3 px-4 bg-gradient-to-r from-[#335C67] to-[#540B0E] hover:from-[#274851] hover:to-[#43090b] text-white font-semibold rounded-xl shadow-lg shadow-[#335C67]/25 flex items-center justify-center gap-2 transition cursor-pointer"
+            >
+              <span>Giriş Yap</span>
+              <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            </button>
+          </form>
+
+          <!-- Hazır Deneme Hesapları -->
+          <div class="mt-6 pt-5 border-t border-slate-100 dark:border-[#23353c] space-y-2.5">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+                <i data-lucide="key" class="w-4 h-4 text-[#E09F3E]"></i>
+                Test İçin Tanımlı Hesaplar
+              </span>
+              <span class="text-[11px] text-slate-400">Tek tıkla giriş</span>
+            </div>
+
+            <!-- Admin Kartı -->
+            <button
+              type="button"
+              id="quickLoginAdmin"
+              class="w-full p-3 text-left rounded-xl border border-[#540B0E]/30 bg-[#540B0E]/5 hover:bg-[#540B0E]/15 hover:border-[#540B0E] transition text-xs group cursor-pointer flex items-center justify-between"
+            >
+              <div>
+                <div class="flex items-center gap-2">
+                  <span class="font-bold text-[#540B0E] dark:text-[#FFF3B0]">Yönetici (Admin Paneli)</span>
+                  <span class="px-2 py-0.5 rounded bg-[#540B0E] text-white text-[10px] font-bold">Admin</span>
+                </div>
+                <div class="text-slate-600 dark:text-slate-400 text-[11px] mt-0.5">Kurs Merkezleri & Müfredat Konuları Yönetimi</div>
+              </div>
+              <div class="font-mono text-[11px] text-[#540B0E] dark:text-[#FFF3B0] bg-white dark:bg-[#10191b] px-2.5 py-1 rounded-lg border border-[#540B0E]/30 shadow-xs">
+                admin / 123
+              </div>
+            </button>
+
+            <!-- Eğitmen Kartları -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <button
+                type="button"
+                id="quickLoginUser1"
+                class="p-2.5 text-left rounded-xl border border-slate-200 dark:border-[#23353c] bg-slate-50 dark:bg-[#10191b] hover:bg-[#335C67]/10 hover:border-[#335C67] transition text-xs group cursor-pointer"
+              >
+                <div class="font-bold text-slate-800 dark:text-slate-200 group-hover:text-[#335C67] dark:group-hover:text-[#FFF3B0]">Ahmet Yılmaz</div>
+                <div class="text-slate-500 text-[10px]">Bilişim Eğitmeni</div>
+                <div class="mt-1 font-mono text-[10px] text-slate-600 dark:text-slate-400 bg-white dark:bg-[#152125] px-1.5 py-0.5 rounded border border-slate-200 dark:border-[#23353c] inline-block">
+                  egitmen1 / 123456
+                </div>
+              </button>
+
+              <button
+                type="button"
+                id="quickLoginUser2"
+                class="p-2.5 text-left rounded-xl border border-slate-200 dark:border-[#23353c] bg-slate-50 dark:bg-[#10191b] hover:bg-[#335C67]/10 hover:border-[#335C67] transition text-xs group cursor-pointer"
+              >
+                <div class="font-bold text-slate-800 dark:text-slate-200 group-hover:text-[#335C67] dark:group-hover:text-[#FFF3B0]">Ayşe Demir</div>
+                <div class="text-slate-500 text-[10px]">El Sanatları Eğitmeni</div>
+                <div class="mt-1 font-mono text-[10px] text-slate-600 dark:text-slate-400 bg-white dark:bg-[#152125] px-1.5 py-0.5 rounded border border-slate-200 dark:border-[#23353c] inline-block">
+                  egitmen2 / 123456
+                </div>
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ================= DASHBOARD & ADMIN EKRANI ================= -->
+  <div id="dashboardScreen" class="hidden min-h-screen flex flex-col">
+    
+    <!-- Navbar -->
+    <header class="bg-white dark:bg-[#152125] border-b border-slate-200 dark:border-[#23353c] sticky top-0 z-30 shadow-xs transition-colors">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+        
+        <div class="flex items-center gap-3">
+          <div class="p-2 bg-gradient-to-tr from-[#335C67] to-[#540B0E] rounded-xl text-white shadow-md shadow-[#335C67]/20 border border-[#FFF3B0]/30">
+            <i data-lucide="file-check-2" class="w-6 h-6 text-[#FFF3B0]"></i>
+          </div>
+          <div>
+            <div class="font-bold text-slate-800 dark:text-slate-100 text-base sm:text-lg leading-tight flex items-center gap-2">
+              <span>Kurs Sonu Evrakları</span>
+              <span id="roleBadge" class="px-2 py-0.5 text-[10px] uppercase font-bold tracking-wider rounded bg-[#FFF3B0] text-[#540B0E] border border-[#E09F3E]/40">
+                Öğretici Paneli
+              </span>
+            </div>
+            <div class="text-[11px] text-slate-500 dark:text-slate-400">
+              Evrak, Müfredat ve Merkez Yönetimi
+            </div>
+          </div>
+        </div>
+
+        <!-- Üst Gezinme Menüsü (SADECE Admin için Paneller Arası Geçiş) -->
+        <div id="navViewSwitcher" class="items-center bg-slate-100 dark:bg-[#10191b] p-1 rounded-xl" style="display: none !important;">
+          <button
+            id="navTeacherViewBtn"
+            class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-white dark:bg-[#152125] text-slate-800 dark:text-slate-100 shadow-xs cursor-pointer flex items-center gap-1.5 transition"
+          >
+            <i data-lucide="book-open" class="w-4 h-4 text-[#335C67]"></i>
+            <span>Kurslarım & Evraklar</span>
+          </button>
+          <button
+            id="navAdminViewBtn"
+            class="px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 cursor-pointer flex items-center gap-1.5 transition"
+          >
+            <i data-lucide="settings" class="w-4 h-4 text-[#540B0E]"></i>
+            <span>Admin Yönetim Paneli</span>
+          </button>
+        </div>
+
+        <!-- Sağ Taraf: Tema Değiştirici, Kullanıcı Profili ve Çıkış -->
+        <div class="flex items-center gap-2.5 sm:gap-3.5">
+          
+          <!-- Hızlı Tema Değiştirici -->
+          <button
+            type="button"
+            id="navbarThemeToggle"
+            title="Açık / Koyu Tema Değiştir"
+            class="px-3 py-1.5 rounded-xl border border-slate-200 dark:border-[#2b3e45] bg-slate-50 dark:bg-[#10191b] hover:bg-slate-100 dark:hover:bg-[#19272c] text-slate-700 dark:text-slate-200 transition flex items-center gap-1.5 text-xs font-semibold cursor-pointer shadow-2xs"
+          >
+            <i id="navbarThemeIcon" data-lucide="sun" class="w-4 h-4 text-[#E09F3E]"></i>
+            <span id="navbarThemeText" class="hidden sm:inline">Açık</span>
+          </button>
+
+          <button
+            type="button"
+            id="userProfileBtn"
+            class="flex items-center gap-2.5 pl-3 border-l border-slate-200 dark:border-[#23353c] p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-[#19272c] transition cursor-pointer group text-left"
+            title="Profil Bilgilerini Düzenle"
+          >
+            <div class="relative">
+              <img
+                id="userAvatar"
+                src=""
+                alt="Avatar"
+                class="w-9 h-9 rounded-full object-cover ring-2 ring-[#335C67]/40 group-hover:ring-[#335C67] transition"
+              />
+              <span class="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-500 border-2 border-white dark:border-[#152125] rounded-full"></span>
+            </div>
+            <div class="hidden md:block text-left">
+              <div class="flex items-center gap-1.5">
+                <span id="userFullName" class="text-xs font-bold text-slate-800 dark:text-slate-100 leading-none group-hover:text-[#335C67] dark:group-hover:text-[#FFF3B0] transition">
+                  -
+                </span>
+                <i data-lucide="edit-3" class="w-3 h-3 text-slate-400 group-hover:text-[#335C67] dark:group-hover:text-[#FFF3B0] transition"></i>
+              </div>
+              <div id="userTitle" class="text-[11px] text-slate-500 dark:text-slate-400 mt-1 leading-none">
+                -
+              </div>
+            </div>
+          </button>
+
+          <button
+            id="logoutBtn"
+            title="Güvenli Çıkış Yap"
+            class="p-2 text-slate-500 dark:text-slate-400 hover:text-[#9E2A2B] hover:bg-[#9E2A2B]/10 rounded-xl transition border border-transparent hover:border-[#9E2A2B]/20 flex items-center gap-1.5 text-xs font-semibold cursor-pointer"
+          >
+            <i data-lucide="log-out" class="w-4 h-4"></i>
+            <span class="hidden sm:inline">Çıkış</span>
+          </button>
+        </div>
+
+      </div>
+    </header>
+
+    <!-- Mobil Admin Görünüm Butonları -->
+    <div id="mobileNavSwitcher" class="bg-slate-100 dark:bg-[#10191b] p-2 border-b border-slate-200 dark:border-[#23353c] justify-center gap-2" style="display: none !important;">
+      <button id="mobileTeacherBtn" class="px-3 py-1.5 bg-white dark:bg-[#152125] text-xs font-bold rounded-lg shadow-xs">Kurslarım</button>
+      <button id="mobileAdminBtn" class="px-3 py-1.5 text-xs font-bold text-slate-600 dark:text-slate-400 rounded-lg">Admin Paneli</button>
+    </div>
+
+    <!-- ================= 1. GÖRÜNÜM: ÖĞRETİCİ / KURS DASHBOARD ================= -->
+    <main id="teacherSection" class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6">
+      
+      <!-- Hoş Geldiniz Banner'ı (İnce & Sade) -->
+      <div class="bg-gradient-to-r from-[#335C67] via-[#284952] to-[#540B0E] rounded-2xl px-5 py-3.5 sm:px-6 sm:py-4 text-white shadow-md relative overflow-hidden border border-[#335C67]/40">
+        <div class="absolute right-0 top-0 bottom-0 w-1/3 bg-white/5 rounded-l-full pointer-events-none"></div>
+        <div class="absolute -bottom-8 -right-8 w-32 h-32 bg-[#E09F3E]/20 rounded-full blur-xl pointer-events-none"></div>
+        
+        <div class="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div class="flex flex-wrap items-center gap-2 sm:gap-4">
+            <h2 class="text-lg sm:text-xl font-bold tracking-tight text-white flex items-center gap-1.5">
+              <span>Hoş Geldiniz,</span>
+              <span id="welcomeUserName" class="text-[#FFF3B0]">-</span>
+            </h2>
+            <div class="flex items-center gap-1.5 text-[#FFF3B0]/90 text-xs font-medium bg-black/20 px-2.5 py-1 rounded-lg border border-white/10">
+              <i data-lucide="calendar" class="w-3.5 h-3.5 text-[#E09F3E]"></i>
+              <span id="currentDateText">28 Eylül 2026</span>
+              <span class="text-white/40">•</span>
+              <span id="userInstitution" class="text-white font-semibold">-</span>
+            </div>
+          </div>
+
+          <div class="shrink-0">
+            <button
+              id="openNewCourseModalBtn"
+              class="w-full sm:w-auto px-4 py-2 bg-[#FFF3B0] text-[#540B0E] hover:bg-white font-bold text-xs sm:text-sm rounded-xl shadow-md transition flex items-center justify-center gap-2 group cursor-pointer"
+            >
+              <i data-lucide="plus" class="w-4 h-4 text-[#540B0E] group-hover:rotate-90 transition-transform duration-200"></i>
+              <span>Yeni Kurs Ekle</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- İstatistik Kartları (Palette Colors) -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="bg-white dark:bg-[#152125] p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-[#23353c] shadow-xs flex items-center gap-4 transition-colors">
+          <div class="p-3 rounded-xl bg-[#335C67]/10 text-[#335C67] dark:text-[#FFF3B0]">
+            <i data-lucide="book-open" class="w-6 h-6"></i>
+          </div>
+          <div>
+            <div id="statTotalCourses" class="text-xl sm:text-2xl font-bold text-slate-800 dark:text-slate-100">0</div>
+            <div class="text-xs text-slate-500 dark:text-slate-400 font-medium">Toplam Kurslarım</div>
+          </div>
+        </div>
+
+        <div class="bg-white dark:bg-[#152125] p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-[#23353c] shadow-xs flex items-center gap-4 transition-colors">
+          <div class="p-3 rounded-xl bg-[#E09F3E]/10 text-[#E09F3E]">
+            <i data-lucide="check-circle-2" class="w-6 h-6"></i>
+          </div>
+          <div>
+            <div id="statActiveCourses" class="text-xl sm:text-2xl font-bold text-slate-800 dark:text-slate-100">0</div>
+            <div class="text-xs text-slate-500 dark:text-slate-400 font-medium">Devam Eden Kurslar</div>
+          </div>
+        </div>
+
+        <div class="bg-white dark:bg-[#152125] p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-[#23353c] shadow-xs flex items-center gap-4 transition-colors">
+          <div class="p-3 rounded-xl bg-[#540B0E]/10 text-[#540B0E] dark:text-[#FFF3B0]">
+            <i data-lucide="folder-archive" class="w-6 h-6"></i>
+          </div>
+          <div>
+            <div id="statCompletedCourses" class="text-xl sm:text-2xl font-bold text-slate-800 dark:text-slate-100">0</div>
+            <div class="text-xs text-slate-500 dark:text-slate-400 font-medium">Arşiv (Tamamlanan)</div>
+          </div>
+        </div>
+
+        <div class="bg-white dark:bg-[#152125] p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-[#23353c] shadow-xs flex items-center gap-4 transition-colors">
+          <div class="p-3 rounded-xl bg-[#9E2A2B]/10 text-[#9E2A2B]">
+            <i data-lucide="users" class="w-6 h-6"></i>
+          </div>
+          <div>
+            <div id="statTotalStudents" class="text-xl sm:text-2xl font-bold text-slate-800 dark:text-slate-100">0</div>
+            <div class="text-xs text-slate-500 dark:text-slate-400 font-medium">Toplam Kursiyer</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Kurslar Listesi & Arama & Filtreleme -->
+      <div class="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 shadow-xs space-y-6">
+        
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <h3 class="text-lg font-bold text-slate-800">
+              Kurs Yönetim Paneli
+            </h3>
+            <p class="text-xs text-slate-500">
+              Kayıtlı kurslarınız arasından seçim yaparak kursiyer ve evrak işlemlerine geçebilirsiniz.
+            </p>
+          </div>
+
+          <!-- Arama ve Filtre Butonları -->
+          <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
+            <div class="relative">
+              <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+              <input
+                type="text"
+                id="searchCourseInput"
+                placeholder="Kurs adı veya kodu ara..."
+                class="w-full sm:w-64 pl-9 pr-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-sky-500 focus:bg-white transition"
+              />
+            </div>
+
+            <div class="flex items-center gap-1 bg-slate-100 p-1 rounded-xl">
+              <button
+                id="filterAllBtn"
+                class="filter-btn active px-3 py-1.5 rounded-lg text-xs font-semibold bg-white text-slate-800 shadow-xs cursor-pointer"
+              >
+                Tümü (<span id="countAll">0</span>)
+              </button>
+              <button
+                id="filterActiveBtn"
+                class="filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 cursor-pointer"
+              >
+                Aktif (<span id="countActive">0</span>)
+              </button>
+              <button
+                id="filterCompletedBtn"
+                class="filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 cursor-pointer"
+              >
+                Tamamlanan (<span id="countCompleted">0</span>)
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Kurs Kartları Grid -->
+        <div id="courseListGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+
+        <!-- Kurs Bulunamadı Görünümü -->
+        <div id="noCoursesState" class="hidden text-center py-12 px-4 rounded-2xl border-2 border-dashed border-slate-200">
+          <div class="w-12 h-12 rounded-2xl bg-sky-50 text-sky-600 flex items-center justify-center mx-auto mb-3">
+            <i data-lucide="book-open" class="w-6 h-6"></i>
+          </div>
+          <h4 class="font-bold text-slate-700 text-sm">Kayıtlı Kurs Bulunamadı</h4>
+          <p class="text-xs text-slate-500 max-w-sm mx-auto mt-1 mb-4">
+            Henüz kurs eklenmedi. "Yeni Kurs Ekle" butonuna basarak adminin tanımladığı merkez ve şablonlardan kurs açabilirsiniz.
+          </p>
+          <button
+            id="emptyStateAddBtn"
+            class="inline-flex items-center gap-2 px-4 py-2 bg-sky-600 hover:bg-sky-700 text-white text-xs font-semibold rounded-xl shadow-xs transition cursor-pointer"
+          >
+            <i data-lucide="plus" class="w-4 h-4"></i>
+            <span>İlk Kursunuzu Ekleyin</span>
+          </button>
+        </div>
+
+      </div>
+
+    </main>
+
+    <!-- ================= 2. GÖRÜNÜM: ADMIN YÖNETİM PANELİ ================= -->
+    <main id="adminSection" class="hidden flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6">
+      
+      <!-- Admin Başlık Banner -->
+      <div class="bg-gradient-to-r from-[#540B0E] via-[#381a1f] to-[#335C67] rounded-3xl p-6 sm:p-8 text-white shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4 border border-[#540B0E]/40">
+        <div>
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FFF3B0]/15 text-[#FFF3B0] text-xs font-semibold border border-[#FFF3B0]/30 mb-2">
+            <i data-lucide="shield-check" class="w-4 h-4 text-[#FFF3B0]"></i>
+            <span>Sistem & Kurum Yönetimi</span>
+          </div>
+          <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight">Admin Yönetim Paneli</h2>
+          <p class="text-slate-200 text-xs sm:text-sm mt-1 max-w-2xl">
+            Kurs merkezlerini tanımlayın, yeni kurslar ekleyin ve her saat için anlatılacak resmi müfredat ve konu dağılım planlarını hazırlayın.
+          </p>
+        </div>
+
+        <div class="flex items-center gap-2.5">
+          <button
+            id="openAddCenterModalBtn"
+            class="px-4 py-2.5 bg-[#335C67] hover:bg-[#274851] text-white rounded-xl text-xs font-bold shadow-md shadow-[#335C67]/30 flex items-center gap-2 transition cursor-pointer"
+          >
+            <i data-lucide="building-2" class="w-4 h-4 text-[#FFF3B0]"></i>
+            <span>Yeni Merkez</span>
+          </button>
+
+          <button
+            id="openAddCourseTmplModalBtn"
+            class="px-4 py-2.5 bg-[#E09F3E] hover:bg-[#c9892c] text-white rounded-xl text-xs font-bold shadow-md shadow-[#E09F3E]/30 flex items-center gap-2 transition cursor-pointer"
+          >
+            <i data-lucide="book-plus" class="w-4 h-4 text-white"></i>
+            <span>Yeni Kurs/Müfredat</span>
+          </button>
+
+          <button
+            id="openAddUserModalBtn"
+            class="px-4 py-2.5 bg-[#540B0E] hover:bg-[#40080a] text-white rounded-xl text-xs font-bold shadow-md shadow-[#540B0E]/30 flex items-center gap-2 transition cursor-pointer border border-[#FFF3B0]/20"
+          >
+            <i data-lucide="user-plus" class="w-4 h-4 text-[#FFF3B0]"></i>
+            <span>Yeni Kullanıcı Ekle</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Admin Alt Sekmeleri -->
+      <div class="flex border-b border-slate-200 bg-white rounded-t-2xl px-6 pt-3 shadow-xs overflow-x-auto">
+        <button
+          id="adminTabCentersBtn"
+          class="flex items-center gap-2 px-5 py-3 text-xs sm:text-sm font-bold border-b-2 border-indigo-600 text-indigo-700 transition cursor-pointer whitespace-nowrap"
+        >
+          <i data-lucide="building-2" class="w-4 h-4"></i>
+          <span>Kurs Merkezleri (<span id="adminCentersCount">0</span>)</span>
+        </button>
+
+        <button
+          id="adminTabTemplatesBtn"
+          class="flex items-center gap-2 px-5 py-3 text-xs sm:text-sm font-bold border-b-2 border-transparent text-slate-600 hover:text-slate-900 transition cursor-pointer whitespace-nowrap"
+        >
+          <i data-lucide="layers" class="w-4 h-4"></i>
+          <span>Kurs ve Müfredat Planları (<span id="adminTemplatesCount">0</span>)</span>
+        </button>
+
+        <button
+          id="adminTabUsersBtn"
+          class="flex items-center gap-2 px-5 py-3 text-xs sm:text-sm font-bold border-b-2 border-transparent text-slate-600 hover:text-slate-900 transition cursor-pointer whitespace-nowrap"
+        >
+          <i data-lucide="users-2" class="w-4 h-4"></i>
+          <span>Kullanıcı Yönetimi & Yetkiler (<span id="adminUsersCount">0</span>)</span>
+        </button>
+      </div>
+
+      <!-- Admin Sekme 1: Kurs Merkezleri -->
+      <div id="adminTabCentersContent" class="space-y-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5" id="centersGrid">
+          <!-- JS ile doldurulacak -->
+        </div>
+      </div>
+
+      <!-- Admin Sekme 2: Kurs ve Saatlik Müfredat Planları -->
+      <div id="adminTabTemplatesContent" class="hidden space-y-4">
+        <div class="grid grid-cols-1 gap-5" id="templatesGrid">
+          <!-- JS ile doldurulacak -->
+        </div>
+      </div>
+
+      <!-- Admin Sekme 3: Kullanıcı Yönetimi & Şifreler & Yetkiler -->
+      <div id="adminTabUsersContent" class="hidden space-y-4">
+        <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <h3 class="font-bold text-slate-800 text-base flex items-center gap-2">
+                <i data-lucide="shield-check" class="w-5 h-5 text-purple-600"></i>
+                <span>Sistemdeki Tüm Kullanıcı Hesapları</span>
+              </h3>
+              <p class="text-xs text-slate-500">
+                Kullanıcıların kullanıcı adlarını, şifrelerini görebilir, değiştirebilir ve Admin yetkisi tanımlayabilirsiniz.
+              </p>
+            </div>
+            <button
+              id="adminAddUserSecondaryBtn"
+              class="inline-flex items-center gap-1.5 px-3.5 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-bold shadow-xs transition cursor-pointer self-start sm:self-auto"
+            >
+              <i data-lucide="user-plus" class="w-4 h-4"></i>
+              <span>+ Yeni Kullanıcı Oluştur</span>
+            </button>
+          </div>
+
+          <!-- Kullanıcı Tablosu -->
+          <div class="overflow-x-auto border border-slate-200 rounded-xl">
+            <table class="w-full text-left text-xs text-slate-600">
+              <thead class="bg-slate-50 text-slate-700 uppercase font-semibold border-b border-slate-200">
+                <tr>
+                  <th class="px-4 py-3">Kullanıcı</th>
+                  <th class="px-4 py-3">Kullanıcı Adı</th>
+                  <th class="px-4 py-3">Şifre (Görünür)</th>
+                  <th class="px-4 py-3">Sistem Rolü / Yetki</th>
+                  <th class="px-4 py-3 text-right">İşlemler</th>
+                </tr>
+              </thead>
+              <tbody id="adminUsersTableBody" class="divide-y divide-slate-100">
+                <!-- JS ile render edilecek -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </main>
+
+  </div>
+
+  <!-- ================= MODAL: KURS MERKEZİ EKLE / DÜZENLE ================= -->
+  <div id="centerModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+    <div class="bg-white rounded-2xl w-full max-w-lg shadow-2xl border border-slate-100 flex flex-col">
+      <div class="flex items-center justify-between p-5 border-b border-slate-100 bg-slate-50 rounded-t-2xl">
+        <div class="flex items-center gap-2.5">
+          <div class="p-2 bg-indigo-100 text-indigo-700 rounded-xl">
+            <i data-lucide="building-2" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 id="centerModalTitle" class="text-base font-bold text-slate-800">Yeni Kurs Merkezi Ekle</h3>
+            <p class="text-xs text-slate-500">Resmi evrak ve onaylarda kullanılacak kurum bilgileri</p>
+          </div>
+        </div>
+        <button id="closeCenterModalBtn" class="p-2 text-slate-400 hover:text-slate-600 rounded-lg cursor-pointer">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <form id="centerForm" class="p-6 space-y-4">
+        <input type="hidden" id="centerFormId" value="" />
+        
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1.5 uppercase tracking-wider">Kurs Merkezi Adı *</label>
+          <input
+            type="text"
+            id="centerFormName"
+            required
+            placeholder="Örn: Kadıköy Halk Eğitimi Merkezi"
+            class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition"
+          />
+          <p class="text-[11px] text-slate-400 mt-1.5">
+            Eğitmenler yeni kurs açarken bu kurs merkezi ismini doğrudan listeden seçecektir.
+          </p>
+        </div>
+
+        <div class="flex justify-end gap-2.5 pt-3 border-t border-slate-100">
+          <button
+            type="button"
+            id="cancelCenterModalBtn"
+            class="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-xl cursor-pointer"
+          >
+            İptal
+          </button>
+          <button
+            type="submit"
+            class="px-5 py-2 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl shadow cursor-pointer"
+          >
+            Kaydet
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ================= MODAL: KURS & SAATLİK MÜFREDAT EKLE / DÜZENLE ================= -->
+  <div id="courseTmplModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+    <div class="bg-white rounded-2xl w-full max-w-3xl max-h-[92vh] overflow-y-auto shadow-2xl border border-slate-100 flex flex-col">
+      <div class="flex items-center justify-between p-5 border-b border-slate-100 bg-slate-50 rounded-t-2xl">
+        <div class="flex items-center gap-2.5">
+          <div class="p-2 bg-sky-100 text-sky-700 rounded-xl">
+            <i data-lucide="book-open-check" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 id="courseTmplModalTitle" class="text-base font-bold text-slate-800">Yeni Kurs ve Müfredat Tanımla</h3>
+            <p class="text-xs text-slate-500">Kurs saati, genel içeriği ve her saat için anlatılacak konu planı</p>
+          </div>
+        </div>
+        <button id="closeCourseTmplModalBtn" class="p-2 text-slate-400 hover:text-slate-600 rounded-lg cursor-pointer">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <form id="courseTmplForm" class="p-6 space-y-4">
+        <input type="hidden" id="tmplFormId" value="" />
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <div class="md:col-span-2">
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Kurs Adı *</label>
+            <input
+              type="text"
+              id="tmplFormName"
+              required
+              placeholder="Örn: Bilgisayar İşletmenliği"
+              class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-sky-500"
+            />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Kurs Kodu</label>
+            <input
+              type="text"
+              id="tmplFormCode"
+              placeholder="BLG-160"
+              class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-sky-500"
+            />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Alan / Kategori</label>
+            <select
+              id="tmplFormCategory"
+              class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs"
+            >
+              <option value="Bilişim Teknolojileri">Bilişim Teknolojileri</option>
+              <option value="Kişisel Gelişim">Kişisel Gelişim</option>
+              <option value="El Sanatları">El Sanatları</option>
+              <option value="Yabancı Dil">Yabancı Dil</option>
+              <option value="Mesleki Eğitim">Mesleki Eğitim</option>
+              <option value="Diğer">Diğer</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Toplam Kurs Saati *</label>
+            <input
+              type="number"
+              id="tmplFormTotalHours"
+              required
+              min="1"
+              placeholder="160"
+              class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-sky-500 font-bold"
+            />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1 flex items-center gap-1">
+              <i data-lucide="layers" class="w-3.5 h-3.5 text-sky-600"></i>
+              <span>Modül Sayısı *</span>
+            </label>
+            <input
+              type="number"
+              id="tmplFormModuleCount"
+              required
+              min="1"
+              max="20"
+              value="1"
+              placeholder="1"
+              class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-sky-500 font-bold text-sky-900 bg-sky-50/50"
+            />
+          </div>
+          <div class="md:col-span-2">
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Genel Açıklama</label>
+            <input
+              type="text"
+              id="tmplFormDescription"
+              placeholder="Kursun hedefi ve genel içeriği..."
+              class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-sky-500"
+            />
+          </div>
+        </div>
+
+        <!-- Saatlik Konu Dağılımı (Syllabus) Bölümü -->
+        <div class="pt-3 border-t border-slate-100 space-y-3">
+          <div class="flex items-center justify-between">
+            <div>
+              <h4 class="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
+                <i data-lucide="clock" class="w-4 h-4 text-sky-600"></i>
+                <span>Saatlik Ders Konuları (Ders Defteri & Evrak Müfredatı)</span>
+              </h4>
+              <p class="text-[11px] text-slate-500">Her saat için işlenecek konuyu satır satır veya toplu girin</p>
+            </div>
+            <button
+              type="button"
+              id="addSyllabusRowBtn"
+              class="px-2.5 py-1 bg-sky-50 text-sky-700 hover:bg-sky-100 rounded-lg text-xs font-bold border border-sky-200 flex items-center gap-1 cursor-pointer"
+            >
+              <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+              <span>+ Saat Ekle</span>
+            </button>
+          </div>
+
+          <!-- Saatlik Liste Tablosu / Inputları -->
+          <div class="max-h-64 overflow-y-auto border border-slate-200 rounded-xl">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-slate-50 text-slate-700 font-semibold border-b border-slate-200">
+                <tr>
+                  <th class="px-3 py-2 w-20">Saat No</th>
+                  <th class="px-3 py-2">Anlatılacak Konu / Kazanım</th>
+                  <th class="px-3 py-2 w-12 text-center">Sil</th>
+                </tr>
+              </thead>
+              <tbody id="syllabusTableBody" class="divide-y divide-slate-100 bg-white">
+                <!-- Dinamik satırlar -->
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Toplu Konu Yapıştırma Butonu ve Kutusu -->
+          <details class="text-xs text-slate-600 bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+            <summary class="font-semibold text-slate-700 cursor-pointer select-none">
+              Toplu Konu Yapıştır (Her satır 1 saatlik ders olur)
+            </summary>
+            <div class="mt-2 space-y-2">
+              <textarea
+                id="bulkSyllabusInput"
+                rows="3"
+                placeholder="1. Saat konusu&#10;2. Saat konusu&#10;3. Saat konusu..."
+                class="w-full p-2 bg-white border border-slate-200 rounded-lg text-xs"
+              ></textarea>
+              <button
+                type="button"
+                id="applyBulkSyllabusBtn"
+                class="px-3 py-1 bg-slate-700 hover:bg-slate-800 text-white rounded-lg text-xs font-semibold cursor-pointer"
+              >
+                Toplu Konuları Listeye Aktar
+              </button>
+            </div>
+          </details>
+        </div>
+
+        <div class="flex justify-end gap-2.5 pt-3 border-t border-slate-100">
+          <button
+            type="button"
+            id="cancelCourseTmplModalBtn"
+            class="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-xl cursor-pointer"
+          >
+            İptal
+          </button>
+          <button
+            type="submit"
+            class="px-5 py-2 text-xs font-bold text-white bg-sky-600 hover:bg-sky-700 rounded-xl shadow cursor-pointer"
+          >
+            Müfredatı Kaydet
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ================= MODAL: KİŞİSEL PROFİL DÜZENLEME ================= -->
+  <div id="profileModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+    <div class="bg-white dark:bg-[#152125] rounded-2xl w-full max-w-md shadow-2xl border border-slate-100 dark:border-[#23353c] flex flex-col overflow-hidden transition-colors">
+      
+      <!-- Modal Başlık -->
+      <div class="flex items-center justify-between p-5 border-b border-slate-100 dark:border-[#23353c] bg-slate-50 dark:bg-[#10191b]">
+        <div class="flex items-center gap-2.5">
+          <div class="p-2 bg-[#335C67]/10 dark:bg-[#335C67]/30 text-[#335C67] dark:text-[#FFF3B0] rounded-xl">
+            <i data-lucide="user-pen" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="text-base font-bold text-slate-800 dark:text-slate-100">Profil Bilgilerini Düzenle</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400">Kişisel bilgilerinizi ve giriş şifrenizi güncelleyin</p>
+          </div>
+        </div>
+        <button type="button" id="closeProfileModalBtn" class="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-lg cursor-pointer">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Profil Formu -->
+      <form id="profileForm" class="p-6 space-y-3.5">
+        
+        <!-- Avatar Önizleme & URL -->
+        <div class="flex items-center gap-3.5 p-3 bg-slate-50 dark:bg-[#10191b] rounded-xl border border-slate-200 dark:border-[#2b3e45]">
+          <img
+            id="profilePreviewAvatar"
+            src=""
+            alt="Profil"
+            class="w-12 h-12 rounded-full object-cover ring-2 ring-[#335C67] shadow-sm shrink-0"
+          />
+          <div class="flex-1 space-y-1">
+            <label class="block text-[11px] font-semibold text-slate-600 dark:text-slate-400">Profil Fotoğrafı (URL)</label>
+            <input
+              type="url"
+              id="profileAvatarUrl"
+              placeholder="https://images.unsplash.com/..."
+              class="w-full px-3 py-1.5 bg-white dark:bg-[#152125] border border-slate-200 dark:border-[#2b3e45] rounded-lg text-xs focus:ring-2 focus:ring-[#335C67] focus:outline-none"
+            />
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Adı Soyadı *</label>
+          <input
+            type="text"
+            id="profileFullName"
+            required
+            placeholder="Örn: Selin Yılmaz"
+            class="w-full px-3.5 py-2 bg-slate-50 dark:bg-[#10191b] border border-slate-200 dark:border-[#2b3e45] rounded-xl text-xs focus:ring-2 focus:ring-[#335C67] focus:outline-none font-medium"
+          />
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Kullanıcı Adı *</label>
+            <input
+              type="text"
+              id="profileUsername"
+              required
+              placeholder="egitmen1"
+              class="w-full px-3.5 py-2 bg-slate-50 dark:bg-[#10191b] border border-slate-200 dark:border-[#2b3e45] rounded-xl text-xs focus:ring-2 focus:ring-[#335C67] focus:outline-none font-mono"
+            />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Şifre *</label>
+            <input
+              type="text"
+              id="profilePassword"
+              required
+              placeholder="••••••"
+              class="w-full px-3.5 py-2 bg-slate-50 dark:bg-[#10191b] border border-slate-200 dark:border-[#2b3e45] rounded-xl text-xs focus:ring-2 focus:ring-[#335C67] focus:outline-none font-mono"
+            />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Unvan / Branş</label>
+            <input
+              type="text"
+              id="profileTitle"
+              placeholder="Bilişim Eğitmeni"
+              class="w-full px-3.5 py-2 bg-slate-50 dark:bg-[#10191b] border border-slate-200 dark:border-[#2b3e45] rounded-xl text-xs focus:ring-2 focus:ring-[#335C67] focus:outline-none"
+            />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Kurum / Merkez</label>
+            <input
+              type="text"
+              id="profileInstitution"
+              placeholder="Halk Eğitimi Merkezi"
+              class="w-full px-3.5 py-2 bg-slate-50 dark:bg-[#10191b] border border-slate-200 dark:border-[#2b3e45] rounded-xl text-xs focus:ring-2 focus:ring-[#335C67] focus:outline-none"
+            />
+          </div>
+        </div>
+
+        <!-- Rol Bilgisi (Bilgilendirme) -->
+        <div class="flex items-center justify-between p-2.5 bg-slate-100 dark:bg-[#10191b] rounded-xl text-xs border border-slate-200 dark:border-[#23353c]">
+          <span class="text-slate-500 dark:text-slate-400">Sistem Rolü:</span>
+          <span id="profileRoleBadge" class="font-bold px-2 py-0.5 rounded text-[11px] bg-[#335C67] text-white">
+            Eğitmen
+          </span>
+        </div>
+
+        <div class="flex justify-end gap-2.5 pt-3 border-t border-slate-100 dark:border-[#23353c]">
+          <button
+            type="button"
+            id="cancelProfileModalBtn"
+            class="px-4 py-2 text-xs font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#19272c] rounded-xl cursor-pointer"
+          >
+            İptal
+          </button>
+          <button
+            type="submit"
+            class="px-5 py-2 text-xs font-bold text-white bg-[#335C67] hover:bg-[#284952] rounded-xl shadow cursor-pointer flex items-center gap-1.5"
+          >
+            <i data-lucide="check" class="w-4 h-4"></i>
+            <span>Değişiklikleri Kaydet</span>
+          </button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+
+  <!-- ================= MODAL: KULLANICI OLUŞTUR / DÜZENLE / ŞİFRE DEĞİŞTİR ================= -->
+  <div id="userModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+    <div class="bg-white rounded-2xl w-full max-w-md shadow-2xl border border-slate-100 flex flex-col">
+      <div class="flex items-center justify-between p-5 border-b border-slate-100 bg-slate-50 rounded-t-2xl">
+        <div class="flex items-center gap-2.5">
+          <div class="p-2 bg-purple-100 text-purple-700 rounded-xl">
+            <i data-lucide="user-cog" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 id="userModalTitle" class="text-base font-bold text-slate-800">Yeni Kullanıcı Hesabı Ekle</h3>
+            <p class="text-xs text-slate-500">Giriş bilgileri, şifre ve sistem yetkisi</p>
+          </div>
+        </div>
+        <button id="closeUserModalBtn" class="p-2 text-slate-400 hover:text-slate-600 rounded-lg cursor-pointer">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <form id="userForm" class="p-6 space-y-3.5">
+        <input type="hidden" id="userFormId" value="" />
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Adı Soyadı *</label>
+          <input
+            type="text"
+            id="userFormFullName"
+            required
+            placeholder="Örn: Selin Yılmaz"
+            class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-purple-500"
+          />
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Kullanıcı Adı (Giriş) *</label>
+            <input
+              type="text"
+              id="userFormUsername"
+              required
+              placeholder="selin.yilmaz"
+              class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-purple-500 font-mono"
+            />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Şifre *</label>
+            <input
+              type="text"
+              id="userFormPassword"
+              required
+              placeholder="123456"
+              class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-purple-500 font-mono"
+            />
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Unvan / Branş</label>
+          <input
+            type="text"
+            id="userFormTitle"
+            placeholder="Örn: Bilişim Teknolojileri Eğitmeni"
+            class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-purple-500"
+          />
+        </div>
+
+        <!-- Yetki / Rol Seçimi -->
+        <div class="p-3 bg-purple-50/70 border border-purple-200 rounded-xl space-y-2">
+          <label class="block text-xs font-bold text-purple-950 uppercase tracking-wider flex items-center gap-1.5">
+            <i data-lucide="shield" class="w-4 h-4 text-purple-700"></i>
+            <span>Sistem Yetkisi / Rolü</span>
+          </label>
+          
+          <div class="space-y-1.5 text-xs">
+            <label class="flex items-center gap-2 text-slate-700 cursor-pointer">
+              <input type="radio" name="userRole" value="teacher" id="roleTeacher" checked class="text-purple-600 focus:ring-purple-500" />
+              <span><strong>Eğitmen (Standart Yetki):</strong> Yalnızca kendi kurslarını ve evraklarını yönetebilir.</span>
+            </label>
+            <label class="flex items-center gap-2 text-purple-900 cursor-pointer">
+              <input type="radio" name="userRole" value="admin" id="roleAdmin" class="text-purple-600 focus:ring-purple-500" />
+              <span><strong>Sistem Yöneticisi (Admin Yetkisi):</strong> Kurs merkezleri, müfredatlar ve tüm kullanıcıları yönetebilir.</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="flex justify-end gap-2.5 pt-3 border-t border-slate-100">
+          <button
+            type="button"
+            id="cancelUserModalBtn"
+            class="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-xl cursor-pointer"
+          >
+            İptal
+          </button>
+          <button
+            type="submit"
+            class="px-5 py-2 text-xs font-bold text-white bg-purple-600 hover:bg-purple-700 rounded-xl shadow cursor-pointer"
+          >
+            Kullanıcıyı Kaydet
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ================= MODAL: EĞİTMEN YENİ KURS AÇMA / DÜZENLEME ================= -->
+  <div id="courseModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+    <div class="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl border border-slate-100 flex flex-col">
+      
+      <div class="flex items-center justify-between p-5 border-b border-slate-100 bg-slate-50 rounded-t-2xl">
+        <div class="flex items-center gap-3">
+          <div class="p-2.5 bg-sky-100 text-sky-700 rounded-xl">
+            <i data-lucide="book-plus" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 id="courseModalTitle" class="text-lg font-bold text-slate-800">Yeni Kurs Ekle</h3>
+            <p class="text-xs text-slate-500">Hazır şablonlardan ve merkezlerden seçerek kurs açabilirsiniz.</p>
+          </div>
+        </div>
+        <button id="closeCourseModalBtn" class="p-2 text-slate-400 hover:text-slate-600 rounded-lg cursor-pointer">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <form id="courseForm" class="p-6 space-y-4">
+        <input type="hidden" id="courseFormId" value="" />
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Kurs Adı Açılır Listesi -->
+          <div class="md:col-span-2">
+            <label class="block text-xs font-semibold text-slate-700 mb-1 flex items-center gap-1.5">
+              <i data-lucide="book-open" class="w-4 h-4 text-sky-600"></i>
+              <span>Kurs Adı (Açılır Listeden Seçiniz) *</span>
+            </label>
+            <select
+              id="courseFormTemplateSelect"
+              required
+              class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:bg-white transition"
+            >
+              <option value="">-- Kurs Seçiniz --</option>
+            </select>
+            <p class="text-[11px] text-slate-400 mt-1">
+              Admin panelinde tanımlanan resmi kurslar listelenir. Kurs seçildiğinde toplam saat ve saatlik müfredat otomatik bağlanır.
+            </p>
+          </div>
+
+          <!-- Kurs Merkezi Açılır Listesi -->
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1 flex items-center gap-1.5">
+              <i data-lucide="building-2" class="w-4 h-4 text-indigo-600"></i>
+              <span>Kurs Merkezi *</span>
+            </label>
+            <select
+              id="courseFormInstitutionSelect"
+              required
+              class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-500 focus:bg-white transition"
+            >
+              <!-- Merkezler listesi JS ile yüklenecek -->
+            </select>
+          </div>
+
+          <!-- Kurs Sorumlusu -->
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1 flex items-center gap-1.5">
+              <i data-lucide="user-check" class="w-4 h-4 text-emerald-600"></i>
+              <span>Kurs Sorumlusu (Müdür Yrd. / Yetkili)</span>
+            </label>
+            <input
+              type="text"
+              id="courseFormSupervisor"
+              placeholder="Örn: Mehmet Ali Şahin (Müdür Yrd.)"
+              class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-500 focus:bg-white transition"
+            />
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Kurs / Modül Kodu</label>
+            <input
+              type="text"
+              id="courseFormCode"
+              placeholder="Örn: BLG-2026-01"
+              class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-sky-500"
+            />
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Alan / Kategori</label>
+            <select
+              id="courseFormCategory"
+              class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm"
+            >
+              <option value="Bilişim Teknolojileri">Bilişim Teknolojileri</option>
+              <option value="El Sanatları">El Sanatları</option>
+              <option value="Yabancı Dil">Yabancı Dil</option>
+              <option value="Kişisel Gelişim">Kişisel Gelişim</option>
+              <option value="Mesleki Eğitim">Mesleki Eğitim</option>
+              <option value="Diğer">Diğer</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Eğitmen / Öğretici</label>
+            <input
+              type="text"
+              id="courseFormInstructor"
+              placeholder="Örn: Ahmet Yılmaz"
+              class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-sky-500"
+            />
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Toplam Ders Saati</label>
+            <input
+              type="number"
+              id="courseFormTotalHours"
+              placeholder="120"
+              min="1"
+              class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-sky-500 font-bold"
+            />
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1 flex items-center gap-1">
+              <i data-lucide="layers" class="w-3.5 h-3.5 text-sky-600"></i>
+              <span>Modül Sayısı *</span>
+            </label>
+            <input
+              type="number"
+              id="courseFormModuleCount"
+              required
+              min="1"
+              max="20"
+              value="1"
+              placeholder="1"
+              class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-sky-900 bg-sky-50/40 focus:ring-2 focus:ring-sky-500"
+            />
+            <p class="text-[10px] text-slate-400 mt-0.5">Her modül sonunda otomatik sınav alanı oluşturulur</p>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Başlangıç Tarihi *</label>
+            <input
+              type="date"
+              id="courseFormStartDate"
+              required
+              class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-sky-500"
+            />
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Bitiş Tarihi</label>
+            <input
+              type="date"
+              id="courseFormEndDate"
+              class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-sky-500"
+            />
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Kurs Durumu</label>
+            <select
+              id="courseFormStatus"
+              class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm"
+            >
+              <option value="active">Devam Eden Kurs (Aktif)</option>
+              <option value="completed">Tamamlanan Kurs (Arşiv)</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Derslik / Atölye</label>
+            <input
+              type="text"
+              id="courseFormClassroom"
+              placeholder="Örn: 2 Nolu Atölye"
+              class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-sky-500"
+            />
+          </div>
+
+          <!-- Haftalık Ders Günleri ve Zaman Çizelgesi Bölümü -->
+          <div class="md:col-span-2 p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-3.5">
+            <div>
+              <span class="text-xs font-bold text-slate-800 flex items-center gap-1.5 uppercase tracking-wider">
+                <i data-lucide="calendar-clock" class="w-4 h-4 text-sky-600"></i>
+                <span>Ders Günleri ve Saat Programı</span>
+              </span>
+              <p class="text-[11px] text-slate-400">Kursun haftalık işleneceği günleri, günlük ders saatini ve başlangıç-bitiş saatlerini belirleyin</p>
+            </div>
+
+            <!-- Kursun Yapılacağı Günler -->
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1.5">Kursun Yapılacağı Günler</label>
+              <div class="flex flex-wrap gap-2" id="courseDaysContainer">
+                <label class="day-checkbox-label cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 bg-white text-xs font-semibold text-slate-700 hover:border-sky-300 transition select-none">
+                  <input type="checkbox" name="courseDay" value="Pazartesi" class="course-day-checkbox text-sky-600 rounded focus:ring-sky-500">
+                  <span>Pazartesi</span>
+                </label>
+                <label class="day-checkbox-label cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 bg-white text-xs font-semibold text-slate-700 hover:border-sky-300 transition select-none">
+                  <input type="checkbox" name="courseDay" value="Salı" class="course-day-checkbox text-sky-600 rounded focus:ring-sky-500">
+                  <span>Salı</span>
+                </label>
+                <label class="day-checkbox-label cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 bg-white text-xs font-semibold text-slate-700 hover:border-sky-300 transition select-none">
+                  <input type="checkbox" name="courseDay" value="Çarşamba" class="course-day-checkbox text-sky-600 rounded focus:ring-sky-500">
+                  <span>Çarşamba</span>
+                </label>
+                <label class="day-checkbox-label cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 bg-white text-xs font-semibold text-slate-700 hover:border-sky-300 transition select-none">
+                  <input type="checkbox" name="courseDay" value="Perşembe" class="course-day-checkbox text-sky-600 rounded focus:ring-sky-500">
+                  <span>Perşembe</span>
+                </label>
+                <label class="day-checkbox-label cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 bg-white text-xs font-semibold text-slate-700 hover:border-sky-300 transition select-none">
+                  <input type="checkbox" name="courseDay" value="Cuma" class="course-day-checkbox text-sky-600 rounded focus:ring-sky-500">
+                  <span>Cuma</span>
+                </label>
+                <label class="day-checkbox-label cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 bg-white text-xs font-semibold text-slate-700 hover:border-sky-300 transition select-none">
+                  <input type="checkbox" name="courseDay" value="Cumartesi" class="course-day-checkbox text-sky-600 rounded focus:ring-sky-500">
+                  <span>Cumartesi</span>
+                </label>
+                <label class="day-checkbox-label cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 bg-white text-xs font-semibold text-slate-700 hover:border-sky-300 transition select-none">
+                  <input type="checkbox" name="courseDay" value="Pazar" class="course-day-checkbox text-sky-600 rounded focus:ring-sky-500">
+                  <span>Pazar</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Günlük Ders Saati & Başlama - Bitiş Saatleri -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 border-t border-slate-200/70">
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1 flex items-center gap-1">
+                  <i data-lucide="clock" class="w-3.5 h-3.5 text-sky-600"></i>
+                  <span>Günlük Ders Saati</span>
+                </label>
+                <input
+                  type="number"
+                  id="courseFormDailyHours"
+                  min="1"
+                  max="12"
+                  placeholder="Örn: 4"
+                  class="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:ring-2 focus:ring-sky-500"
+                />
+              </div>
+
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1 flex items-center gap-1">
+                  <i data-lucide="play" class="w-3.5 h-3.5 text-emerald-600"></i>
+                  <span>Ders Başlama Saati</span>
+                </label>
+                <input
+                  type="time"
+                  id="courseFormStartTime"
+                  class="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-mono font-bold text-slate-800 focus:ring-2 focus:ring-sky-500"
+                />
+              </div>
+
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1 flex items-center gap-1">
+                  <i data-lucide="square" class="w-3.5 h-3.5 text-rose-600"></i>
+                  <span>Ders Bitiş Saati</span>
+                </label>
+                <input
+                  type="time"
+                  id="courseFormEndTime"
+                  class="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-mono font-bold text-slate-800 focus:ring-2 focus:ring-sky-500"
+                />
+              </div>
+            </div>
+          </div>
+
+          <!-- Ders Yapılmayan Günler / Tatiller Ekleme Alanı -->
+          <div class="md:col-span-2 p-3.5 bg-slate-50 border border-slate-200 rounded-2xl space-y-3">
+            <div class="flex items-center justify-between">
+              <div>
+                <span class="text-xs font-bold text-slate-700 flex items-center gap-1.5 uppercase tracking-wider">
+                  <i data-lucide="calendar-off" class="w-4 h-4 text-rose-600"></i>
+                  <span>Ders Yapılmayan Günler / Tatiller</span>
+                </span>
+                <p class="text-[11px] text-slate-400">Resmi tatil, bayram, kar tatili vb. ders işlenmeyen günleri ekleyin</p>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-12 gap-2 items-center">
+              <div class="sm:col-span-5">
+                <input
+                  type="date"
+                  id="offDayDateInput"
+                  class="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs"
+                />
+              </div>
+              <div class="sm:col-span-5">
+                <input
+                  type="text"
+                  id="offDayReasonInput"
+                  placeholder="Tatil Sebebi (Örn: 23 Nisan Tatili)"
+                  class="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs"
+                />
+              </div>
+              <div class="sm:col-span-2">
+                <button
+                  type="button"
+                  id="addOffDayBtn"
+                  class="w-full py-1.5 px-2 bg-rose-600 hover:bg-rose-700 text-white rounded-lg text-xs font-bold transition flex items-center justify-center gap-1 cursor-pointer"
+                >
+                  <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                  <span>Gün Ekle</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Eklenen Tatil Günleri Etiketleri -->
+            <div id="offDaysListContainer" class="flex flex-wrap gap-2 pt-1 min-h-[28px]">
+              <span class="text-[11px] text-slate-400 italic">Henüz tatil günü eklenmedi.</span>
+            </div>
+          </div>
+
+          <div class="md:col-span-2">
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Açıklama / Not</label>
+            <textarea
+              id="courseFormDescription"
+              rows="2"
+              placeholder="Kurs notları..."
+              class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm"
+            ></textarea>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
+          <button
+            type="button"
+            id="cancelCourseModalBtn"
+            class="px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-100 rounded-xl cursor-pointer"
+          >
+            Vazgeç
+          </button>
+          <button
+            type="submit"
+            class="px-5 py-2 text-sm font-semibold text-white bg-sky-600 hover:bg-sky-700 rounded-xl shadow-md cursor-pointer"
+          >
+            Kaydet
+          </button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+
+  <!-- ================= MODAL: KURSİYER YÖNETİMİ & KURS SONU EVRAKLARI (TAM SAYFA) ================= -->
+  <div id="detailModal" class="hidden fixed inset-0 z-50 bg-slate-100 flex flex-col w-full h-full overflow-hidden">
+    <div class="bg-white w-full h-full flex flex-col overflow-hidden">
+      
+      <!-- Başlık (Tam Sayfa Barı) -->
+      <div class="p-4 sm:p-5 border-b border-slate-200 bg-white flex items-center justify-between shadow-xs z-10 shrink-0">
+        <div class="flex items-center gap-3">
+          <button id="closeDetailModalBtn" class="flex items-center gap-1.5 px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition cursor-pointer" title="Kurs Listesine Dön">
+            <i data-lucide="arrow-left" class="w-4 h-4"></i>
+            <span>Kurs Listesine Dön</span>
+          </button>
+          <div class="h-6 w-px bg-slate-200 hidden sm:block"></div>
+          <div>
+            <div class="flex items-center gap-2">
+              <span id="detailStatusBadge" class="px-2 py-0.5 rounded text-xs font-semibold bg-emerald-100 text-emerald-700">
+                Devam Eden Kurs
+              </span>
+              <span id="detailCourseCode" class="text-xs text-slate-500 font-mono">BLG-2026-01</span>
+            </div>
+            <h3 id="detailCourseName" class="text-lg sm:text-2xl font-extrabold text-slate-800 mt-0.5">
+              Kurs Adı
+            </h3>
+            <p id="detailCourseMeta" class="text-xs text-slate-500 mt-0.5">
+              Kurum • 120 Saat • Eğitmen
+            </p>
+          </div>
+        </div>
+        <button id="closeDetailModalTopRightBtn" class="p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-xl cursor-pointer transition" title="Kapat">
+          <i data-lucide="x" class="w-6 h-6"></i>
+        </button>
+      </div>
+
+      <!-- Sekmeler -->
+      <div class="flex border-b border-slate-200 bg-slate-100/50 px-5 pt-2 overflow-x-auto">
+        <button
+          id="tabStudentsBtn"
+          class="flex items-center gap-2 px-4 py-2.5 text-xs sm:text-sm font-semibold border-b-2 border-sky-600 text-sky-700 bg-white rounded-t-lg transition cursor-pointer whitespace-nowrap"
+        >
+          <i data-lucide="users" class="w-4 h-4"></i>
+          <span>Kursiyer Listesi (<span id="detailStudentCount">0</span>)</span>
+        </button>
+
+        <button
+          id="tabAttendanceBtn"
+          class="flex items-center gap-2 px-4 py-2.5 text-xs sm:text-sm font-semibold border-b-2 border-transparent text-slate-600 hover:text-slate-900 transition cursor-pointer whitespace-nowrap"
+        >
+          <i data-lucide="calendar-check-2" class="w-4 h-4 text-emerald-600"></i>
+          <span>Devamsızlık</span>
+        </button>
+
+        <button
+          id="tabExamsBtn"
+          class="flex items-center gap-2 px-4 py-2.5 text-xs sm:text-sm font-semibold border-b-2 border-transparent text-slate-600 hover:text-slate-900 transition cursor-pointer whitespace-nowrap"
+        >
+          <i data-lucide="award" class="w-4 h-4 text-purple-600"></i>
+          <span>Modül Sınavları & Not Girişi</span>
+          <span id="detailModuleBadge" class="px-1.5 py-0.5 bg-purple-100 text-purple-800 text-[10px] font-bold rounded-full">
+            1 Modül
+          </span>
+        </button>
+
+        <button
+          id="tabSyllabusBtn"
+          class="flex items-center gap-2 px-4 py-2.5 text-xs sm:text-sm font-semibold border-b-2 border-transparent text-slate-600 hover:text-slate-900 transition cursor-pointer whitespace-nowrap"
+        >
+          <i data-lucide="calendar" class="w-4 h-4 text-sky-600"></i>
+          <span>Saatlik Konu Planı (<span id="detailSyllabusCount">0</span> Saat)</span>
+        </button>
+
+        <button
+          id="tabDocumentsBtn"
+          class="flex items-center gap-2 px-4 py-2.5 text-xs sm:text-sm font-semibold border-b-2 border-transparent text-slate-600 hover:text-slate-900 transition cursor-pointer whitespace-nowrap"
+        >
+          <i data-lucide="file-text" class="w-4 h-4 text-indigo-600"></i>
+          <span>Kurs Sonu Evrakları & Çıktılar</span>
+          <span class="px-1.5 py-0.5 bg-emerald-100 text-emerald-800 text-[10px] font-bold rounded-full">
+            Hazır
+          </span>
+        </button>
+      </div>
+
+      <!-- Sekme 1: Kursiyer Listesi -->
+      <div id="tabStudentsContent" class="p-5 overflow-y-auto flex-1 space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <h4 class="font-semibold text-slate-800 text-sm">Kayıtlı Kursiyerler</h4>
+            <p class="text-xs text-slate-500">Kursiyer ekleme alanında sadece temel kimlik ve iletişim bilgileri yer alır</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button
+              id="switchDirectToAttendanceBtn"
+              class="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 rounded-lg text-xs font-semibold shadow-2xs transition cursor-pointer"
+            >
+              <i data-lucide="calendar-check-2" class="w-4 h-4"></i>
+              <span>Devamsızlık</span>
+            </button>
+            <button
+              id="switchDirectToExamsBtn"
+              class="flex items-center gap-1.5 px-3 py-1.5 bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 rounded-lg text-xs font-semibold shadow-2xs transition cursor-pointer"
+            >
+              <i data-lucide="award" class="w-4 h-4"></i>
+              <span>Modül Sınavları Ekranı</span>
+            </button>
+            <button
+              id="toggleStudentFormBtn"
+              class="flex items-center gap-1.5 px-3.5 py-1.5 bg-sky-600 hover:bg-sky-700 text-white rounded-lg text-xs font-semibold shadow-xs transition cursor-pointer"
+            >
+              <i data-lucide="user-plus" class="w-4 h-4"></i>
+              <span>Yeni Kursiyer Ekle</span>
+            </button>
+            <button
+              id="toggleBulkStudentBtn"
+              class="flex items-center gap-1.5 px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold shadow-xs transition cursor-pointer"
+            >
+              <i data-lucide="users" class="w-4 h-4"></i>
+              <span>Toplu Kursiyer Ekle</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Kursiyer Ekleme / Düzenleme Formu: SADECE Adı, Soyadı, Telefon ve TC Bilgileri -->
+        <form id="studentAddForm" class="hidden p-4 bg-sky-50/70 border border-sky-200 rounded-xl space-y-3">
+          <input type="hidden" id="stdEditId" value="" />
+          <div class="font-semibold text-xs text-sky-900 flex items-center justify-between">
+            <span class="flex items-center gap-1.5">
+              <i data-lucide="user-check" class="w-4 h-4 text-sky-600"></i>
+              <strong id="studentFormTitle">Yeni Kursiyer Ekleme</strong> (Sadece Temel Bilgiler)
+            </span>
+            <button type="button" id="closeStudentFormBtn" class="text-slate-400 hover:text-slate-600 cursor-pointer">
+              <i data-lucide="x" class="w-4 h-4"></i>
+            </button>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+            <div>
+              <label class="block text-[11px] font-bold text-slate-700 mb-1">Kursiyer Adı *</label>
+              <input
+                type="text"
+                id="stdFirstName"
+                required
+                placeholder="Örn: Ahmet"
+                class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs focus:ring-2 focus:ring-sky-500 focus:outline-none"
+              />
+            </div>
+            <div>
+              <label class="block text-[11px] font-bold text-slate-700 mb-1">Kursiyer Soyadı *</label>
+              <input
+                type="text"
+                id="stdLastName"
+                required
+                placeholder="Örn: Yılmaz"
+                class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs focus:ring-2 focus:ring-sky-500 focus:outline-none"
+              />
+            </div>
+            <div>
+              <label class="block text-[11px] font-bold text-slate-700 mb-1">T.C. Kimlik No</label>
+              <input
+                type="text"
+                id="stdTcNo"
+                maxlength="11"
+                placeholder="İsteğe bağlı (11 haneli)"
+                class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs font-mono focus:ring-2 focus:ring-sky-500 focus:outline-none"
+              />
+            </div>
+            <div>
+              <label class="block text-[11px] font-bold text-slate-700 mb-1">Telefon No</label>
+              <input
+                type="text"
+                id="stdPhone"
+                placeholder="İsteğe bağlı (05xx...)"
+                class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs font-mono focus:ring-2 focus:ring-sky-500 focus:outline-none"
+              />
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between pt-1 border-t border-sky-100">
+            <span class="text-[11px] text-sky-800 italic">
+              ℹ️ Sadece Ad ve Soyad zorunludur. TC ve telefon bilgileri isteğe bağlıdır.
+            </span>
+            <div class="flex items-center gap-2">
+              <button
+                type="button"
+                id="cancelStudentAddBtn"
+                class="px-3 py-1.5 text-xs text-slate-600 hover:bg-slate-200 rounded-lg cursor-pointer"
+              >
+                İptal
+              </button>
+              <button
+                type="submit"
+                class="px-4 py-1.5 text-xs font-bold text-white bg-sky-600 hover:bg-sky-700 rounded-lg shadow-xs cursor-pointer flex items-center gap-1.5"
+              >
+                <i data-lucide="check" class="w-3.5 h-3.5"></i>
+                <span id="studentFormSubmitText">Kursiyeri Kaydet</span>
+              </button>
+            </div>
+          </div>
+        </form>
+
+        <!-- Toplu Kursiyer Ekleme Formu -->
+        <div id="bulkStudentForm" class="hidden p-4 bg-emerald-50/70 border border-emerald-200 rounded-xl space-y-3">
+          <div class="font-semibold text-xs text-emerald-900 flex items-center justify-between">
+            <span class="flex items-center gap-1.5">
+              <i data-lucide="users" class="w-4 h-4 text-emerald-600"></i>
+              <strong>Toplu Kursiyer Ekleme</strong> (Her Satıra Bir Kursiyer)
+            </span>
+            <button type="button" id="closeBulkStudentBtn" class="text-slate-400 hover:text-slate-600 cursor-pointer">
+              <i data-lucide="x" class="w-4 h-4"></i>
+            </button>
+          </div>
+
+          <div class="text-[11px] text-emerald-900 bg-white/90 p-3 rounded-lg border border-emerald-200 space-y-1">
+            <p class="font-semibold flex items-center gap-1">
+              <i data-lucide="sparkles" class="w-3.5 h-3.5 text-emerald-600"></i>
+              <span>Nasıl Kullanılır?</span>
+            </p>
+            <p class="text-slate-600 leading-relaxed">
+              • Excel, Word veya not defterinden kopyaladığınız listeyi aşağıdaki alana yapıştırın.<br>
+              • <strong>Her satıra bir kursiyer</strong> gelmelidir. Sadece <strong>Ad ve Soyad</strong> zorunludur.<br>
+              • T.C. Kimlik No (11 hane) ve Telefon (05xx...) aralara boşluk, sekme (tab) veya virgül koyularak yazılabilir; sistem otomatik algılar.
+            </p>
+          </div>
+
+          <div>
+            <label class="block text-[11px] font-bold text-slate-700 mb-1">Kursiyer Listesi:</label>
+            <textarea
+              id="bulkStudentTextarea"
+              rows="6"
+              placeholder="Örnek Formatlar:&#10;Ahmet Yılmaz&#10;Ayşe Demir	12345678901	05321112233&#10;Mehmet Ali Kaya, 05559876543&#10;Fatma Şahin 98765432101"
+              class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs font-mono focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+            ></textarea>
+          </div>
+
+          <!-- Canlı Önizleme Bölümü -->
+          <div id="bulkStudentPreviewContainer" class="hidden space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                <i data-lucide="list-checks" class="w-4 h-4 text-emerald-600"></i>
+                <span>Algılanan Kursiyerler (<span id="bulkParsedCount" class="text-emerald-700 font-bold">0</span> kişi)</span>
+              </span>
+              <span class="text-[10px] text-slate-500">Lütfen listeyi onaylamadan önce kontrol ediniz</span>
+            </div>
+            <div class="max-h-48 overflow-y-auto border border-emerald-100 rounded-lg bg-white shadow-2xs">
+              <table class="w-full text-left text-xs">
+                <thead class="bg-emerald-50 text-[11px] font-bold text-emerald-900 border-b border-emerald-100 sticky top-0">
+                  <tr>
+                    <th class="px-3 py-1.5 w-10">#</th>
+                    <th class="px-3 py-1.5">Adı</th>
+                    <th class="px-3 py-1.5">Soyadı</th>
+                    <th class="px-3 py-1.5 font-mono">T.C. Kimlik No</th>
+                    <th class="px-3 py-1.5 font-mono">Telefon</th>
+                  </tr>
+                </thead>
+                <tbody id="bulkStudentPreviewTbody" class="divide-y divide-slate-100">
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between pt-1 border-t border-emerald-100">
+            <span class="text-[11px] text-slate-500" id="bulkStatusText">
+              Metin kutusuna kursiyerleri yapıştırınız.
+            </span>
+            <div class="flex items-center gap-2">
+              <button
+                type="button"
+                id="cancelBulkStudentBtn"
+                class="px-3 py-1.5 text-xs text-slate-600 hover:bg-slate-200 rounded-lg cursor-pointer"
+              >
+                İptal
+              </button>
+              <button
+                type="button"
+                id="saveBulkStudentBtn"
+                class="px-4 py-1.5 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg shadow-xs cursor-pointer flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled
+              >
+                <i data-lucide="check" class="w-3.5 h-3.5"></i>
+                <span id="saveBulkBtnText">Toplu Kursiyerleri Kursa Ekle</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Kursiyer Eklendiğinde Gösterilen Hızlı Yönlendirme Bildirimi -->
+        <div id="studentAddedNotice" class="hidden p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-xs text-emerald-800 flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <i data-lucide="check-circle" class="w-4 h-4 text-emerald-600 shrink-0"></i>
+            <span>Kursiyer başarıyla kaydedildi! Şimdi devamsızlık veya modül sınavı girebilirsiniz:</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <button
+              id="noticeGoAttendanceBtn"
+              class="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-[11px] font-bold shadow-2xs cursor-pointer"
+            >
+              Devamsızlık
+            </button>
+            <button
+              id="noticeGoExamsBtn"
+              class="px-2.5 py-1 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-[11px] font-bold shadow-2xs cursor-pointer"
+            >
+              Modül Sınavı Girişi
+            </button>
+            <button
+              onclick="document.getElementById('studentAddedNotice').classList.add('hidden')"
+              class="text-emerald-500 hover:text-emerald-700 p-1"
+            >
+              <i data-lucide="x" class="w-3.5 h-3.5"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto border border-slate-200 rounded-xl shadow-2xs">
+          <table class="w-full text-left text-xs text-slate-600">
+            <thead class="bg-slate-50 text-slate-700 uppercase font-semibold border-b border-slate-200">
+              <tr>
+                <th class="px-4 py-3">#</th>
+                <th class="px-4 py-3">Adı Soyadı</th>
+                <th class="px-4 py-3">T.C. Kimlik No</th>
+                <th class="px-4 py-3">Telefon</th>
+                <th class="px-4 py-3">Devamsızlık</th>
+                <th class="px-4 py-3">Modül Sınavları & Not</th>
+                <th class="px-4 py-3">Kurs Sonu Kararı</th>
+                <th class="px-4 py-3 text-right">İşlemler</th>
+              </tr>
+            </thead>
+            <tbody id="studentTableBody" class="divide-y divide-slate-100"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Sekme 2: DEVAMSIZLIK EKRANI (DERS GÜNÜ BAZLI) -->
+      <div id="tabAttendanceContent" class="hidden p-4 sm:p-5 overflow-y-auto flex-1 space-y-3">
+        
+        <!-- Yasal Sınır ve Kurs Bilgilendirme Kartı (Kompakt) -->
+        <div id="attendanceInfoCard" class="p-3 bg-slate-50 dark:bg-[#10191b] border border-slate-200 dark:border-[#23353c] rounded-xl grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+          <div>
+            <span class="text-slate-500 dark:text-slate-400 font-medium block text-[10px]">Toplam Kurs Saati:</span>
+            <strong id="attTotalHours" class="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-100">0 Saat</strong>
+          </div>
+          <div>
+            <span class="text-slate-500 dark:text-slate-400 font-medium block text-[10px]">Günlük Kurs Saati:</span>
+            <strong id="attDailyHours" class="text-xs sm:text-sm font-bold text-[#335C67] dark:text-[#FFF3B0]">4 Sa/Gün</strong>
+          </div>
+          <div>
+            <span class="text-slate-500 dark:text-slate-400 font-medium block text-[10px]">MEB Yasal Sınırı (1/5):</span>
+            <strong id="attMaxAllowedHours" class="text-xs sm:text-sm font-bold text-[#9E2A2B]">0 Saat</strong>
+          </div>
+          <div>
+            <span class="text-slate-500 dark:text-slate-400 font-medium block text-[10px]">Sınırı Aşan (Devamsız):</span>
+            <strong id="attFailedCount" class="text-xs sm:text-sm font-bold text-[#9E2A2B]">0 Kursiyer</strong>
+          </div>
+        </div>
+
+        <!-- TARİH GEZİNME BARI: Sol Ok, Seçili Tarih (Kurs Günleri), Sağ Ok & Hızlı Sıfırlama -->
+        <div class="bg-white dark:bg-[#152125] p-2.5 sm:p-3 rounded-2xl border-2 border-[#335C67]/30 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-2.5">
+          <!-- Sol Ok (Önceki Kurs Günü) -->
+          <button
+            type="button"
+            id="attPrevDateBtn"
+            class="w-full sm:w-auto px-3.5 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-[#10191b] dark:hover:bg-[#1f3036] text-slate-800 dark:text-slate-100 font-bold rounded-xl text-xs transition cursor-pointer flex items-center justify-center gap-1.5 border border-slate-200 dark:border-[#23353c] disabled:opacity-40 disabled:cursor-not-allowed"
+            title="Önceki Ders Günü"
+          >
+            <i data-lucide="chevron-left" class="w-4 h-4 text-[#335C67] dark:text-[#FFF3B0]"></i>
+            <span>Önceki Ders</span>
+          </button>
+
+          <!-- Orta Bölüm: Seçili Tarih & Gün Rozeti -->
+          <div class="text-center space-y-0.5">
+            <div class="flex flex-wrap items-center justify-center gap-2">
+              <span class="p-1 rounded-lg bg-[#335C67]/10 text-[#335C67] dark:text-[#FFF3B0]">
+                <i data-lucide="calendar" class="w-4 h-4"></i>
+              </span>
+              <span id="attCurrentDateDisplay" class="text-sm sm:text-base font-black text-slate-800 dark:text-slate-100 tracking-tight">
+                -
+              </span>
+              <select id="attDateSelectDropdown" class="text-xs px-2 py-1 rounded-lg bg-slate-50 dark:bg-[#10191b] border border-slate-200 dark:border-[#23353c] text-slate-700 dark:text-slate-300 font-bold cursor-pointer" title="Ders günleri listesinden seç">
+                <!-- JS ile doldurulacak -->
+              </select>
+            </div>
+            <div class="flex items-center justify-center gap-2 text-[11px] text-slate-500 dark:text-slate-400">
+              <span id="attLessonDayBadge" class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-[#335C67]/10 text-[#335C67] dark:text-[#FFF3B0] border border-[#335C67]/20">
+                1. Ders Günü
+              </span>
+              <span>•</span>
+              <span id="attLessonDailyHoursNotice" class="font-medium text-slate-600 dark:text-slate-300">
+                Günlük Ders Saati: 4 Saat
+              </span>
+            </div>
+          </div>
+
+          <!-- Sağ Taraf: Sağ Ok & Hızlı Butonlar -->
+          <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
+            <button
+              id="markDayPresentBtn"
+              type="button"
+              class="px-2.5 py-1.5 bg-[#335C67]/10 hover:bg-[#335C67]/20 text-[#335C67] dark:text-[#FFF3B0] text-xs font-semibold rounded-xl border border-[#335C67]/30 cursor-pointer flex items-center gap-1 transition"
+              title="Bu ders günü için tüm kursiyerleri 'Geldi (0 Saat)' yap"
+            >
+              <i data-lucide="check-check" class="w-3.5 h-3.5"></i>
+              <span class="hidden md:inline">Bu Günü</span> <span>Geldi Yap</span>
+            </button>
+
+            <!-- Sağ Ok (Sonraki Kurs Günü) -->
+            <button
+              type="button"
+              id="attNextDateBtn"
+              class="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-[#10191b] dark:hover:bg-[#1f3036] text-slate-800 dark:text-slate-100 font-bold rounded-xl text-xs transition cursor-pointer flex items-center justify-center gap-1.5 border border-slate-200 dark:border-[#23353c] disabled:opacity-40 disabled:cursor-not-allowed"
+              title="Sonraki Ders Günü"
+            >
+              <span>Sonraki Ders</span>
+              <i data-lucide="chevron-right" class="w-4 h-4 text-[#335C67] dark:text-[#FFF3B0]"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Devamsızlık Tablosu (Kompakt, Zebra Çizgili & Hover Özellikli) -->
+        <div class="overflow-x-auto border border-slate-200 dark:border-[#23353c] rounded-2xl shadow-2xs">
+          <table class="w-full text-left text-xs text-slate-600 dark:text-slate-300">
+            <thead class="bg-slate-100/90 dark:bg-[#10191b] text-slate-700 dark:text-slate-300 uppercase font-bold text-[11px] border-b border-slate-200 dark:border-[#23353c]">
+              <tr>
+                <th class="px-2.5 py-2 w-10 text-center">#</th>
+                <th class="px-3 py-2">Kursiyer Adı Soyadı</th>
+                <th class="px-3 py-2 font-mono w-28">T.C. Kimlik No</th>
+                <th class="px-3 py-2 text-center w-56 bg-[#335C67]/10 dark:bg-[#335C67]/20 border-x border-[#335C67]/20">
+                  <div class="font-extrabold text-[#335C67] dark:text-[#FFF3B0] flex items-center justify-center gap-1">
+                    <i data-lucide="edit-3" class="w-3 h-3"></i>
+                    <span>Bu Günkü Devamsızlık (Saat)</span>
+                  </div>
+                  <div class="text-[9px] text-slate-500 dark:text-slate-400 font-normal lowercase">
+                    0 = geldi, 1 ila <span id="attHeaderDailyHours">4</span> sa = devamsız
+                  </div>
+                </th>
+                <th class="px-3 py-2 w-32 text-center">Toplam Devamsızlık</th>
+                <th class="px-3 py-2 w-36 text-center">MEB Durumu</th>
+              </tr>
+            </thead>
+            <tbody id="attendanceTableBody" class="divide-y divide-slate-100 dark:divide-[#23353c]/60">
+              <!-- JS ile doldurulacak -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Sekme 3: MODÜL SINAVLARI & NOT GİRİŞ EKRANI -->
+      <div id="tabExamsContent" class="hidden p-5 overflow-y-auto flex-1 space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <h4 class="font-bold text-slate-800 text-sm flex items-center gap-2">
+              <i data-lucide="award" class="w-4 h-4 text-purple-600"></i>
+              <span>Modül Sınavları & Not Giriş Ekranı</span>
+            </h4>
+            <p class="text-xs text-slate-500 mt-0.5">
+              Bu kurstaki her modülün sonundaki sınav notlarını (0 - 100) giriniz. Genel Başarı Notu modül sınavlarının ortalaması olarak otomatik hesaplanır.
+            </p>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-1 bg-purple-50 text-purple-700 border border-purple-200 rounded-lg text-xs font-bold">
+              Baraj: 50 Puan
+            </span>
+          </div>
+        </div>
+
+        <!-- Modül Sınavları Tablosu -->
+        <div class="overflow-x-auto border border-slate-200 rounded-xl shadow-2xs">
+          <table class="w-full text-left text-xs text-slate-600" id="examsMatrixTable">
+            <thead class="bg-slate-50 text-slate-700 uppercase font-semibold border-b border-slate-200" id="examsMatrixThead">
+              <!-- JS ile dinamik modül sütunları oluşturulacak -->
+            </thead>
+            <tbody id="examsMatrixTbody" class="divide-y divide-slate-100 bg-white">
+              <!-- JS ile kursiyer satırları doldurulacak -->
+            </tbody>
+          </table>
+        </div>
+
+        <div class="flex items-center justify-between pt-2">
+          <p class="text-[11px] text-slate-400">
+            * 50 ve üzeri not alan kursiyerler "Başarılı" kabul edilir ve resmi evraklara aktarılır.
+          </p>
+          <button
+            type="button"
+            id="saveAllExamsBtn"
+            class="px-5 py-2.5 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-bold shadow-md shadow-purple-600/25 flex items-center gap-2 cursor-pointer transition"
+          >
+            <i data-lucide="check" class="w-4 h-4"></i>
+            <span>Tüm Modül Sınav Notlarını Kaydet</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Sekme 4: Saatlik Konu Dağılım Planı -->
+      <div id="tabSyllabusContent" class="hidden p-5 overflow-y-auto flex-1 space-y-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <h4 class="font-semibold text-slate-800 text-sm">Resmi Ders Defteri Konu Planı</h4>
+            <p class="text-xs text-slate-500">Bu kurs için her ders saatinde işlenen ve deftere yazılacak konular</p>
+          </div>
+          <button
+            onclick="triggerPrintDocument('Ders Defteri ve Saatlik Konu Dağılım Çizelgesi')"
+            class="flex items-center gap-1.5 px-3 py-1.5 bg-slate-700 hover:bg-slate-800 text-white rounded-lg text-xs font-semibold shadow-xs cursor-pointer"
+          >
+            <i data-lucide="printer" class="w-4 h-4"></i>
+            <span>Konu Planını Yazdır / PDF</span>
+          </button>
+        </div>
+
+        <div id="detailOffDaysContainer"></div>
+
+        <div class="border border-slate-200 rounded-xl overflow-hidden">
+          <table class="w-full text-left text-xs text-slate-600">
+            <thead class="bg-slate-50 text-slate-700 uppercase font-semibold border-b border-slate-200">
+              <tr>
+                <th class="px-4 py-2.5 w-24">Ders Saati</th>
+                <th class="px-4 py-2.5">Anlatılan Konu / Faaliyet</th>
+              </tr>
+            </thead>
+            <tbody id="detailSyllabusTableBody" class="divide-y divide-slate-100"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Sekme 3: Evraklar & Şablonlar (İlk Belge: Kursiyer Karar Durumu) -->
+      <div id="tabDocumentsContent" class="hidden p-5 overflow-y-auto flex-1 space-y-4">
+        
+        <!-- Üst Başlık & Açıklama -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-200 dark:border-[#23353c]">
+          <div>
+            <h4 class="text-sm font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+              <i data-lucide="file-check-2" class="w-4 h-4 text-[#335C67] dark:text-[#FFF3B0]"></i>
+              <span>Kurs Sonu Resmi Evrakları</span>
+            </h4>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+              Kursun kayıtlı bilgileri, modül notları ve devamsızlık durumlarına göre resmi evraklar otomatik doldurulur.
+            </p>
+          </div>
+          <span class="px-2.5 py-1 text-[11px] font-bold bg-[#335C67]/10 text-[#335C67] dark:bg-[#335C67]/30 dark:text-[#FFF3B0] rounded-lg self-start sm:self-auto border border-[#335C67]/20">
+            2 Resmi Belge Aktif
+          </span>
+        </div>
+
+        <!-- 1. Belge: Kursiyer Karar Durumu Kartı -->
+        <div class="p-5 rounded-2xl border-2 border-[#335C67]/30 dark:border-[#335C67]/60 bg-white dark:bg-[#152125] shadow-xs space-y-4 hover:border-[#335C67] transition">
+          <div class="flex flex-col lg:flex-row lg:items-start justify-between gap-4">
+            <div class="flex items-start gap-3.5">
+              <div class="p-3.5 rounded-2xl bg-gradient-to-br from-[#335C67] via-[#284952] to-[#540B0E] text-white shadow-md shrink-0 border border-[#FFF3B0]/30">
+                <i data-lucide="file-text" class="w-6 h-6 text-[#FFF3B0]"></i>
+              </div>
+              <div class="space-y-1.5">
+                <div class="flex flex-wrap items-center gap-2">
+                  <h5 class="font-extrabold text-base text-slate-800 dark:text-slate-100">
+                    Kursiyer Karar Durumu
+                  </h5>
+                  <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-[#FFF3B0] text-[#540B0E] border border-[#E09F3E]/40">
+                    1. Belge
+                  </span>
+                  <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
+                    Otomatik Doldurulur
+                  </span>
+                </div>
+                <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed max-w-2xl">
+                  e-Yaygın ve otomasyona kayıtlı tüm kursiyerler alfabetik olarak sıralanır. Modül başarı ve devamsızlık durumlarına göre karar hanesi otomatik belirlenir (<strong>Sertifika/Katılım Belgesi</strong>, <strong>Transkript</strong> veya <strong>Devamsız</strong>). Kursiyer sayısı 25'i aşmadığında tüm tablo, özet ve resmi imzalar tek sayfaya sığacak şekilde resmi şablon çıktısı üretir.
+                </p>
+              </div>
+            </div>
+
+            <!-- Butonlar -->
+            <div class="flex flex-row lg:flex-col items-center gap-2 shrink-0 w-full lg:w-52">
+              <button
+                type="button"
+                id="previewKararDurumuBtn"
+                onclick="openKararDurumuPreview()"
+                class="flex-1 lg:w-full flex items-center justify-center gap-2 px-3.5 py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-[#10191b] dark:hover:bg-[#19272c] text-slate-800 dark:text-slate-100 rounded-xl text-xs font-bold transition cursor-pointer border border-slate-200 dark:border-[#2b3e45]"
+              >
+                <i data-lucide="eye" class="w-4 h-4 text-[#335C67] dark:text-[#FFF3B0]"></i>
+                <span>Belgeyi Önizle & İncele</span>
+              </button>
+
+              <button
+                type="button"
+                onclick="triggerPrintKararDurumu()"
+                class="flex-1 lg:w-full flex items-center justify-center gap-2 px-3.5 py-2.5 bg-[#335C67] hover:bg-[#274851] text-white rounded-xl text-xs font-bold shadow-sm transition cursor-pointer"
+              >
+                <i data-lucide="printer" class="w-4 h-4 text-[#FFF3B0]"></i>
+                <span>Yazdır / PDF Olarak Kaydet</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Canlı İstatistik ve Kurs Verisi Özeti -->
+          <div id="kararDurumuStatsBar" class="p-3 bg-slate-50 dark:bg-[#10191b] rounded-xl border border-slate-200 dark:border-[#23353c] text-xs">
+            <span class="text-slate-400">Belge verileri hesaplanıyor...</span>
+          </div>
+        </div>
+
+        <!-- 2. Belge: Yoklama ve Ders Defteri Kartı -->
+        <div class="p-5 rounded-2xl border-2 border-emerald-500/30 dark:border-emerald-500/60 bg-white dark:bg-[#152125] shadow-xs space-y-4 hover:border-emerald-600 transition">
+          <div class="flex flex-col lg:flex-row lg:items-start justify-between gap-4">
+            <div class="flex items-start gap-3.5">
+              <div class="p-3.5 rounded-2xl bg-gradient-to-br from-emerald-700 via-teal-800 to-[#335C67] text-white shadow-md shrink-0 border border-emerald-300/30">
+                <i data-lucide="book-open" class="w-6 h-6 text-[#FFF3B0]"></i>
+              </div>
+              <div class="space-y-1.5">
+                <div class="flex flex-wrap items-center gap-2">
+                  <h5 class="font-extrabold text-base text-slate-800 dark:text-slate-100">
+                    Yoklama ve Ders Defteri
+                  </h5>
+                  <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-[#FFF3B0] text-[#540B0E] border border-[#E09F3E]/40">
+                    2. Belge
+                  </span>
+                  <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
+                    Otomatik Doldurulur
+                  </span>
+                </div>
+                <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed max-w-2xl">
+                  Resmi MEB formatında kapak sayfası, 31 günlük detaylı sınıf yoklama listesi (gelenler <strong>.</strong>, gelmeyenlerin <strong>kaç ders saati gelmediği</strong>), kurs günlerine göre saat saat işlenen konuların ve öğretmen imzalarının yer aldığı günlük ders defteri sayfaları ile kapanış onay tutanağını eksiksiz doldurur.
+                </p>
+              </div>
+            </div>
+
+            <!-- Butonlar -->
+            <div class="flex flex-row lg:flex-col items-center gap-2 shrink-0 w-full lg:w-52">
+              <button
+                type="button"
+                id="previewDefterBtn"
+                onclick="openDefterPreview()"
+                class="flex-1 lg:w-full flex items-center justify-center gap-2 px-3.5 py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-[#10191b] dark:hover:bg-[#19272c] text-slate-800 dark:text-slate-100 rounded-xl text-xs font-bold transition cursor-pointer border border-slate-200 dark:border-[#2b3e45]"
+              >
+                <i data-lucide="eye" class="w-4 h-4 text-emerald-600 dark:text-emerald-400"></i>
+                <span>Defteri Önizle & İncele</span>
+              </button>
+
+              <button
+                type="button"
+                onclick="triggerPrintDefter()"
+                class="flex-1 lg:w-full flex items-center justify-center gap-2 px-3.5 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold shadow-sm transition cursor-pointer"
+              >
+                <i data-lucide="printer" class="w-4 h-4 text-[#FFF3B0]"></i>
+                <span>Yazdır / PDF Olarak Kaydet</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Canlı İstatistik ve Defter Bilgisi -->
+          <div id="defterStatsBar" class="p-3 bg-slate-50 dark:bg-[#10191b] rounded-xl border border-slate-200 dark:border-[#23353c] text-xs">
+            <span class="text-slate-400">Defter verileri hesaplanıyor...</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Alt Kısım -->
+      <div class="p-3.5 px-6 border-t border-slate-200 bg-slate-50 flex items-center justify-between shrink-0">
+        <span class="text-xs text-slate-400">Veriler tarayıcınızda ve sistemde saklanmaktadır.</span>
+        <button id="bottomCloseDetailBtn" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-xl text-xs font-semibold cursor-pointer flex items-center gap-1.5">
+          <i data-lucide="arrow-left" class="w-4 h-4"></i>
+          <span>Kurs Listesine Dön</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ================= KURSİYER KARAR DURUMU ÖNİZLEME MODALI ================= -->
+  <div id="kararDurumuModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-slate-900/70 backdrop-blur-sm">
+    <div class="bg-white dark:bg-[#152125] rounded-2xl w-full max-w-4xl max-h-[92vh] shadow-2xl border border-slate-200 dark:border-[#23353c] flex flex-col overflow-hidden">
+      
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between p-4 border-b border-slate-200 dark:border-[#23353c] bg-slate-50 dark:bg-[#10191b] shrink-0">
+        <div class="flex items-center gap-2.5">
+          <div class="p-2 bg-[#335C67] text-white rounded-xl shadow-xs">
+            <i data-lucide="file-check-2" class="w-5 h-5 text-[#FFF3B0]"></i>
+          </div>
+          <div>
+            <h3 class="text-sm sm:text-base font-bold text-slate-800 dark:text-slate-100">
+              Kursiyer Karar Durumu Belgesi Önizleme
+            </h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400">
+              Resmi A4 şablonuna göre kurs bilgileriyle otomatik doldurulmuştur (25 kursiyere kadar tek sayfa)
+            </p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button
+            type="button"
+            onclick="triggerPrintKararDurumu()"
+            class="flex items-center gap-1.5 px-3.5 py-1.5 bg-[#335C67] hover:bg-[#274851] text-white rounded-xl text-xs font-bold shadow-xs cursor-pointer"
+          >
+            <i data-lucide="printer" class="w-4 h-4 text-[#FFF3B0]"></i>
+            <span>Yazdır / PDF Olarak Kaydet</span>
+          </button>
+          <button
+            type="button"
+            id="closeKararDurumuModalBtn"
+            onclick="closeKararDurumuPreview()"
+            class="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-lg cursor-pointer"
+          >
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Modal Body (A4 Belge Görünümü) -->
+      <div class="p-4 sm:p-6 overflow-y-auto flex-1 bg-slate-200/70 dark:bg-[#0c1315]">
+        <div id="kararDurumuPreviewContainer" class="bg-white text-black p-8 sm:p-12 rounded-xl shadow-2xl max-w-3xl mx-auto border border-slate-300">
+          <!-- JS tarafından enjekte edilecek -->
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ================= YOKLAMA VE DERS DEFTERİ ÖNİZLEME MODALI ================= -->
+  <div id="defterModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-slate-900/70 backdrop-blur-sm">
+    <div class="bg-white dark:bg-[#152125] rounded-2xl w-full max-w-5xl max-h-[94vh] shadow-2xl border border-slate-200 dark:border-[#23353c] flex flex-col overflow-hidden">
+      
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between p-4 border-b border-slate-200 dark:border-[#23353c] bg-slate-50 dark:bg-[#10191b] shrink-0">
+        <div class="flex items-center gap-2.5">
+          <div class="p-2 bg-emerald-700 text-white rounded-xl shadow-xs">
+            <i data-lucide="book-open" class="w-5 h-5 text-[#FFF3B0]"></i>
+          </div>
+          <div>
+            <h3 class="text-sm sm:text-base font-bold text-slate-800 dark:text-slate-100">
+              Yoklama ve Ders Defteri Önizleme
+            </h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400">
+              Kapak, Sınıf Yoklama Çizelgesi, Günlük Ders Defteri Sayfaları ve Kapanış Tutanağı
+            </p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button
+            type="button"
+            onclick="triggerPrintDefter()"
+            class="flex items-center gap-1.5 px-3.5 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold shadow-xs cursor-pointer"
+          >
+            <i data-lucide="printer" class="w-4 h-4 text-[#FFF3B0]"></i>
+            <span>Yazdır / PDF Olarak Kaydet</span>
+          </button>
+          <button
+            type="button"
+            id="closeDefterModalBtn"
+            onclick="closeDefterPreview()"
+            class="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-lg cursor-pointer"
+          >
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Modal Body (A4 Defter Sayfaları) -->
+      <div class="p-4 sm:p-6 overflow-y-auto flex-1 bg-slate-200/70 dark:bg-[#0c1315]">
+        <div id="defterPreviewContainer" class="space-y-8 max-w-4xl mx-auto">
+          <!-- JS tarafından enjekte edilecek -->
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ================= YAZDIRMA ALANI (PRINT VIEW) ================= -->
+  <div id="printArea" class="hidden">
+    <div id="printAreaContent"></div>
+  </div>
+
+  <!-- ================= MODAL: KURSİYER GÜN GÜN DEVAMSIZLIK YÖNETİMİ ================= -->
+  <div id="singleAttendanceModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+    <div class="bg-white dark:bg-[#152125] rounded-3xl w-full max-w-xl max-h-[92vh] overflow-hidden shadow-2xl border border-slate-100 dark:border-[#23353c] flex flex-col">
+      
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between p-5 border-b border-slate-100 dark:border-[#23353c] bg-slate-50 dark:bg-[#10191b] rounded-t-3xl">
+        <div class="flex items-center gap-3">
+          <div class="p-2.5 bg-[#335C67]/10 dark:bg-[#335C67]/30 text-[#335C67] dark:text-[#FFF3B0] rounded-2xl">
+            <i data-lucide="calendar-check-2" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="text-base font-bold text-slate-800 dark:text-slate-100" id="singleAttModalTitle">
+              Gün Gün Devamsızlık Girişi & Takibi
+            </h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400" id="singleAttModalSub">
+              Tarih bazlı devamsızlık saatleri ve mazeret yönetimi
+            </p>
+          </div>
+        </div>
+        <button id="closeSingleAttModalBtn" class="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-xl cursor-pointer">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="p-5 overflow-y-auto space-y-4 flex-1">
+        <input type="hidden" id="singleAttStudentId" value="" />
+
+        <!-- Kursiyer & Kurs Kuralı Bilgi Kartı -->
+        <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-[#10191b] border border-slate-200 dark:border-[#23353c] text-xs space-y-2">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <span class="text-slate-400">Kursiyer:</span>
+              <strong id="singleAttStudentName" class="text-slate-800 dark:text-slate-100 font-bold ml-1">-</strong>
+              <span id="singleAttStudentTc" class="font-mono text-slate-500 dark:text-slate-400 ml-1">(-)</span>
+            </div>
+            <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#335C67]/10 text-[#335C67] dark:text-[#FFF3B0] font-bold text-[11px]">
+              <i data-lucide="clock" class="w-3.5 h-3.5"></i>
+              <span>Günlük Kurs Saati: <strong id="singleAttDailyHoursLimit">4</strong> Sa/Gün</span>
+            </div>
+          </div>
+          
+          <div class="flex items-center justify-between pt-2 border-t border-slate-200 dark:border-[#23353c] text-[11px]">
+            <span class="text-slate-500 dark:text-slate-400">MEB Yasal Devamsızlık Sınırı (1/5):</span>
+            <strong id="singleAttLimitText" class="text-[#9E2A2B] font-bold">- Saat</strong>
+          </div>
+        </div>
+
+        <!-- Yeni Devamsızlık Günü Ekleme Form Alanı -->
+        <div class="p-4 rounded-2xl border border-[#335C67]/30 bg-[#335C67]/5 dark:bg-[#121c1f] space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-[#335C67] dark:text-[#FFF3B0] uppercase tracking-wider flex items-center gap-1.5">
+              <i data-lucide="calendar-plus" class="w-4 h-4 text-[#E09F3E]"></i>
+              <span>Yeni Devamsızlık Günü Ekle</span>
+            </span>
+            <span class="text-[10px] text-slate-500 dark:text-slate-400">
+              En az 1, en fazla <strong id="singleAttMaxHoursHint">4</strong> saat
+            </span>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-12 gap-2.5">
+            <!-- Tarih -->
+            <div class="sm:col-span-5">
+              <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">Tarih *</label>
+              <input
+                type="date"
+                id="dailyAttDateInput"
+                required
+                class="w-full px-3 py-2 bg-white dark:bg-[#152125] border border-slate-200 dark:border-[#23353c] rounded-xl text-xs text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-[#335C67]"
+              />
+            </div>
+
+            <!-- Saat (1 ile dailyHours arası) -->
+            <div class="sm:col-span-3">
+              <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">
+                Saat (1 - <span id="dailyAttMaxLabel">4</span>) *
+              </label>
+              <input
+                type="number"
+                id="dailyAttHoursInput"
+                min="1"
+                max="4"
+                value="4"
+                required
+                class="w-full px-3 py-2 bg-white dark:bg-[#152125] border border-slate-200 dark:border-[#23353c] rounded-xl text-xs font-bold text-center text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-[#335C67]"
+              />
+            </div>
+
+            <!-- Mazeret / Not -->
+            <div class="sm:col-span-4">
+              <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">Mazeret / Not</label>
+              <input
+                type="text"
+                id="dailyAttNoteInput"
+                placeholder="Örn: Raporlu / İzinli"
+                class="w-full px-3 py-2 bg-white dark:bg-[#152125] border border-slate-200 dark:border-[#23353c] rounded-xl text-xs text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-[#335C67]"
+              />
+            </div>
+
+            <div class="sm:col-span-12 flex justify-end pt-1">
+              <button
+                type="button"
+                id="addDailyAttEntryBtn"
+                class="px-4 py-2 bg-[#335C67] hover:bg-[#274851] text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition cursor-pointer shadow-sm"
+              >
+                <i data-lucide="plus" class="w-4 h-4"></i>
+                <span>Günü Listeye Ekle</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Girilen Günler Tablosu / Listesi -->
+        <div class="space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+              <i data-lucide="list-checks" class="w-4 h-4 text-[#335C67]"></i>
+              <span>Girilen Devamsızlık Günleri</span>
+            </span>
+            <span id="singleAttTotalBadge" class="text-xs font-bold px-2 py-0.5 rounded bg-slate-100 dark:bg-[#10191b] text-slate-700 dark:text-slate-300">
+              Toplam: 0 Saat (0 Gün)
+            </span>
+          </div>
+
+          <div class="border border-slate-200 dark:border-[#23353c] rounded-2xl overflow-hidden shadow-2xs">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-slate-50 dark:bg-[#10191b] text-slate-600 dark:text-slate-400 uppercase font-semibold border-b border-slate-200 dark:border-[#23353c]">
+                <tr>
+                  <th class="px-3 py-2.5 w-10 text-center">#</th>
+                  <th class="px-3 py-2.5">Tarih</th>
+                  <th class="px-3 py-2.5 text-center w-28">Devamsızlık Saati</th>
+                  <th class="px-3 py-2.5">Mazeret / Not</th>
+                  <th class="px-3 py-2.5 text-center w-16">Sil</th>
+                </tr>
+              </thead>
+              <tbody id="singleAttDaysTableBody" class="divide-y divide-slate-100 dark:divide-[#23353c] bg-white dark:bg-[#152125]">
+                <!-- JS ile gün listesi doldurulacak -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Canlı Yasal Durum Özeti -->
+        <div id="singleAttStatusSummaryCard" class="p-3.5 rounded-2xl border transition-all">
+          <!-- JS ile doldurulacak -->
+        </div>
+
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="flex items-center justify-between p-4 border-t border-slate-100 dark:border-[#23353c] bg-slate-50 dark:bg-[#10191b] rounded-b-3xl">
+        <button
+          type="button"
+          id="closeSingleAttModalFooterBtn"
+          class="px-4 py-2 text-xs font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-[#152125] rounded-xl cursor-pointer"
+        >
+          Kapat
+        </button>
+        <button
+          type="button"
+          id="saveSingleAttModalBtn"
+          class="px-5 py-2 text-xs font-bold text-white bg-[#335C67] hover:bg-[#274851] rounded-xl shadow-md cursor-pointer flex items-center gap-1.5"
+        >
+          <i data-lucide="check" class="w-4 h-4"></i>
+          <span>Devamsızlıkları Kaydet</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ================= MODAL: TEKİL KURSİYER MODÜL SINAVLARI NOT GİRİŞİ ================= -->
+  <div id="singleExamModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+    <div class="bg-white rounded-2xl w-full max-w-lg shadow-2xl border border-slate-100 flex flex-col">
+      <div class="flex items-center justify-between p-5 border-b border-slate-100 bg-slate-50 rounded-t-2xl">
+        <div class="flex items-center gap-2.5">
+          <div class="p-2 bg-purple-100 text-purple-700 rounded-xl">
+            <i data-lucide="award" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="text-sm font-bold text-slate-800" id="singleExamModalTitle">Modül Sınav Notları Girişi</h3>
+            <p class="text-xs text-slate-500">Her modül için sınav notu (0-100)</p>
+          </div>
+        </div>
+        <button id="closeSingleExamModalBtn" class="p-2 text-slate-400 hover:text-slate-600 rounded-lg cursor-pointer">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <form id="singleExamForm" class="p-5 space-y-4">
+        <input type="hidden" id="singleExamStudentId" value="" />
+
+        <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs space-y-1">
+          <div class="flex justify-between">
+            <span class="text-slate-500">Kursiyer:</span>
+            <strong id="singleExamStudentName" class="text-slate-800">-</strong>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-slate-500">T.C. Kimlik No:</span>
+            <span id="singleExamStudentTc" class="font-mono text-slate-700">-</span>
+          </div>
+        </div>
+
+        <!-- Modül Sınavları Dinamik Input Alanları -->
+        <div class="space-y-3" id="singleExamModulesContainer">
+          <!-- JS ile modül sayısı kadar sınav alanı render edilir -->
+        </div>
+
+        <!-- Aritmetik Ortalama & Sonuç Özeti -->
+        <div class="p-3 bg-purple-50/80 border border-purple-200 rounded-xl flex items-center justify-between text-xs">
+          <div>
+            <span class="text-purple-700 font-semibold block">Genel Başarı Ortalaması:</span>
+            <strong id="singleExamAvgScore" class="text-base font-bold text-purple-950">-</strong>
+          </div>
+          <div>
+            <span class="text-purple-700 font-semibold block text-right">Kurs Sonu Durumu:</span>
+            <span id="singleExamResultBadge" class="inline-flex px-2.5 py-0.5 rounded text-xs font-bold bg-slate-200 text-slate-700">
+              -
+            </span>
+          </div>
+        </div>
+
+        <div class="flex justify-end gap-2 pt-2 border-t border-slate-100">
+          <button
+            type="button"
+            id="cancelSingleExamModalBtn"
+            class="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-xl cursor-pointer"
+          >
+            İptal
+          </button>
+          <button
+            type="submit"
+            class="px-5 py-2 text-xs font-bold text-white bg-purple-600 hover:bg-purple-700 rounded-xl shadow cursor-pointer flex items-center gap-1.5"
+          >
+            <i data-lucide="check" class="w-3.5 h-3.5"></i>
+            <span>Sınav Notlarını Kaydet</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Scriptler -->
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

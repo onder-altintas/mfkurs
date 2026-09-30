@@ -1,0 +1,13 @@
+{
+  "name": "kurs-sonu-evrak-yonetim-sistemi",
+  "version": "1.0.0",
+  "description": "Kurs sonu resmi evrak ve sertifika düzenleme web uygulaması",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": ["kurs", "meb", "evrak", "sertifika"],
+  "author": "",
+  "license": "ISC"
+}
