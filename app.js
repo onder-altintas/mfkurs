@@ -3888,6 +3888,51 @@ function renderDocumentsTab() {
       </div>
     `;
   }
+
+  const notCizelgesiStatsBar = document.getElementById('notCizelgesiStatsBar');
+  if (notCizelgesiStatsBar) {
+    const moduleCount = activeCourseForDetail.moduleCount ? Math.max(1, Number(activeCourseForDetail.moduleCount)) : 1;
+    let completedCount = 0;
+    let notCompletedCount = 0;
+    students.forEach(s => {
+      const isDevamsiz = (s.attendance === 'Devamsız') || (s.result === 'Devamsız');
+      let allPassed = !isDevamsiz;
+      if (allPassed) {
+        for (let m = 1; m <= moduleCount; m++) {
+          const sc = s.moduleScores ? s.moduleScores[m] : null;
+          if (sc === null || sc === undefined || sc === '' || isNaN(Number(sc)) || Number(sc) < 50) {
+            allPassed = false;
+            break;
+          }
+        }
+      }
+      if (allPassed) completedCount++;
+      else notCompletedCount++;
+    });
+
+    notCizelgesiStatsBar.innerHTML = `
+      <div class="flex flex-wrap items-center justify-between gap-3 w-full">
+        <div class="flex flex-wrap items-center gap-2">
+          <span class="font-bold text-slate-700 dark:text-slate-200">Çizelge Özeti:</span>
+          <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-white dark:bg-[#152125] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-[#2b3e45] rounded-lg font-bold">
+            <span>Toplam:</span> <strong class="text-indigo-600 dark:text-indigo-400">${students.length}</strong> Kursiyer
+          </span>
+          <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-white dark:bg-[#152125] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-[#2b3e45] rounded-lg font-bold">
+            <span>Modül Sayısı:</span> <strong>${moduleCount}</strong> Modül
+          </span>
+          <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 rounded-lg font-bold">
+            <span>Tamamladı:</span> <strong>${completedCount}</strong>
+          </span>
+          <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-rose-50 dark:bg-rose-950/40 text-rose-800 dark:text-rose-300 border border-rose-200 dark:border-rose-800 rounded-lg font-bold">
+            <span>Tamamlamadı / Devamsız:</span> <strong>${notCompletedCount}</strong>
+          </span>
+        </div>
+        <div class="text-[11px] text-slate-400">
+          Resmi Not Çizelgesi • 20 Modül Kapasiteli Yatay A4 Belgesi
+        </div>
+      </div>
+    `;
+  }
 }
 
 window.openKararDurumuPreview = function() {
@@ -3911,6 +3956,8 @@ window.triggerPrintKararDurumu = function() {
   const printArea = document.getElementById('printArea');
   const printAreaContent = document.getElementById('printAreaContent');
   if (!printArea || !printAreaContent) return;
+
+  document.getElementById('landscapePrintStyle')?.remove();
 
   printAreaContent.innerHTML = generateKararDurumuHtml(activeCourseForDetail);
   printArea.classList.remove('hidden');
@@ -4355,6 +4402,8 @@ window.triggerPrintDefter = function() {
   const printAreaContent = document.getElementById('printAreaContent');
   if (!printArea || !printAreaContent) return;
 
+  document.getElementById('landscapePrintStyle')?.remove();
+
   printAreaContent.innerHTML = generateDefterHtml(activeCourseForDetail);
   printArea.classList.remove('hidden');
   window.print();
@@ -4364,9 +4413,303 @@ window.triggerPrintDefter = function() {
 window.triggerPrintDocument = function(documentName) {
   if (documentName && (documentName.includes('Defter') || documentName.includes('Yoklama'))) {
     triggerPrintDefter();
+  } else if (documentName && (documentName.includes('Not') || documentName.includes('Çizelge') || documentName.includes('Modül'))) {
+    triggerPrintNotCizelgesi();
   } else {
     triggerPrintKararDurumu();
   }
+};
+
+// =================== RESMİ EVRAK 3: MODÜL DEĞERLENDİRME ÇİZELGESİ (NOT ÇİZELGESİ) ===================
+
+function generateNotCizelgesiHtml(course) {
+  if (!course) return '<p class="p-6 text-center text-slate-500">Kurs bilgisi bulunamadı.</p>';
+
+  const institution = course.institution || course.centerName || 'İBB MESLEK FABRİKASI ŞUBE MÜDÜRLÜĞÜ';
+  const courseName = course.name || course.title || 'Kurs';
+  const instructor = course.instructor || (currentUser?.fullName || 'Kurs Öğretmeni');
+  const courseNumber = course.code || course.id || '-';
+  const classroom = course.classroom || institution;
+  const moduleCount = course.moduleCount ? Math.max(1, Number(course.moduleCount)) : 1;
+  const startDate = formatShortDate(course.startDate);
+  const endDate = formatShortDate(course.endDate);
+
+  // Kursiyerleri alfabetik sırala (Türkçe alfabe duyarlı)
+  const sortedStudents = [...(course.students || [])].sort((a, b) => {
+    const nameA = (a.fullName || `${a.firstName || ''} ${a.lastName || ''}`).trim();
+    const nameB = (b.fullName || `${b.firstName || ''} ${b.lastName || ''}`).trim();
+    return nameA.localeCompare(nameB, 'tr', { sensitivity: 'base' });
+  });
+
+  const totalRows = Math.max(20, sortedStudents.length);
+  const maxModules = 20;
+
+  // Header 20 Modül Sütunları
+  let moduleHeadersHtml = '';
+  for (let m = 1; m <= maxModules; m++) {
+    moduleHeadersHtml += `
+      <th style="border: 1px solid black; width: 33px; height: 95px; padding: 2px 1px; font-size: 6.5pt; text-align: center; vertical-align: bottom; background: #fff;">
+        <div style="writing-mode: vertical-lr; transform: rotate(180deg); margin: 0 auto; white-space: nowrap; line-height: 1.15; font-family: Arial, sans-serif;">
+          <span style="font-weight: bold; font-size: 7pt;">${m}.Modül</span><br>
+          <span style="font-size: 5.5pt; color: #333;">Teorik veya Pratik Not</span>
+        </div>
+      </th>
+    `;
+  }
+
+  // Satırlar
+  let rowsHtml = '';
+  for (let i = 1; i <= totalRows; i++) {
+    if (i <= sortedStudents.length) {
+      const s = sortedStudents[i - 1];
+      const sFullName = (s.fullName || `${s.firstName || ''} ${s.lastName || ''}`).trim();
+      const isDevamsiz = (s.attendance === 'Devamsız') || (s.result === 'Devamsız');
+      const modScores = s.moduleScores || {};
+
+      let allPassed = !isDevamsiz;
+      let moduleCellsHtml = '';
+
+      for (let m = 1; m <= maxModules; m++) {
+        if (m <= moduleCount) {
+          if (isDevamsiz) {
+            allPassed = false;
+            moduleCellsHtml += `
+              <td style="border: 1px solid black; text-align: center; font-size: 8pt; font-weight: bold; color: #b91c1c; padding: 1px;">
+                D
+              </td>
+            `;
+          } else {
+            const sc = modScores[m];
+            if (sc !== null && sc !== undefined && sc !== '' && !isNaN(Number(sc))) {
+              const numSc = Number(sc);
+              if (numSc < 50) allPassed = false;
+              moduleCellsHtml += `
+                <td style="border: 1px solid black; text-align: center; font-size: 8pt; font-weight: 600; padding: 1px;">
+                  ${numSc}
+                </td>
+              `;
+            } else {
+              // Devam ettiği halde sınava girmediyse 'G'
+              allPassed = false;
+              moduleCellsHtml += `
+                <td style="border: 1px solid black; text-align: center; font-size: 7.5pt; font-weight: bold; color: #b45309; padding: 1px;">
+                  G
+                </td>
+              `;
+            }
+          }
+        } else {
+          // Boş kalacak olan modüllerin not hücreleri yatay olarak çizilir
+          moduleCellsHtml += `
+            <td style="border: 1px solid black; text-align: center; padding: 0; position: relative; height: 20px;">
+              <div style="width: 100%; border-bottom: 1.5px solid black; position: absolute; top: 50%; left: 0;"></div>
+            </td>
+          `;
+        }
+      }
+
+      const sonucText = isDevamsiz ? 'DEVAMSIZ' : (allPassed ? 'TAMAMLADI' : 'TAMAMLAMADI');
+      const sonucColor = allPassed ? '#15803d' : '#b91c1c';
+
+      rowsHtml += `
+        <tr style="height: 20px;">
+          <td style="border: 1px solid black; text-align: center; font-size: 8pt; font-weight: bold; padding: 1px;">${i}</td>
+          <td style="border: 1px solid black; padding: 1px 6px; font-size: 8pt; font-weight: 500; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px;">${escapeHtml(sFullName)}</td>
+          ${moduleCellsHtml}
+          <td style="border: 1px solid black; text-align: center; font-size: 7pt; font-weight: bold; color: ${sonucColor}; padding: 1px; white-space: nowrap;">
+            ${sonucText}
+          </td>
+        </tr>
+      `;
+    } else {
+      // Boş satırlar (en az 20 satıra tamamlamak için)
+      let emptyCellsHtml = '';
+      for (let m = 1; m <= maxModules; m++) {
+        if (m <= moduleCount) {
+          emptyCellsHtml += `<td style="border: 1px solid black; padding: 0;">&nbsp;</td>`;
+        } else {
+          emptyCellsHtml += `
+            <td style="border: 1px solid black; text-align: center; padding: 0; position: relative; height: 20px;">
+              <div style="width: 100%; border-bottom: 1.5px solid black; position: absolute; top: 50%; left: 0;"></div>
+            </td>
+          `;
+        }
+      }
+
+      rowsHtml += `
+        <tr style="height: 20px;">
+          <td style="border: 1px solid black; text-align: center; font-size: 8pt; font-weight: bold; padding: 1px;">${i}</td>
+          <td style="border: 1px solid black; padding: 1px 6px;">&nbsp;</td>
+          ${emptyCellsHtml}
+          <td style="border: 1px solid black; padding: 0;">&nbsp;</td>
+        </tr>
+      `;
+    }
+  }
+
+  return `
+    <div class="not-cizelgesi-document" style="font-family: Arial, Helvetica, sans-serif; color: #000; line-height: 1.25; width: 100%; max-width: 1060px; margin: 0 auto; background: #fff; padding: 20px 25px; box-sizing: border-box;">
+      
+      <!-- BAŞLIK -->
+      <div style="text-align: center; margin-bottom: 12px;">
+        <h2 style="font-size: 11pt; font-weight: bold; margin: 0; text-transform: uppercase; letter-spacing: 0.5px;">
+          ${escapeHtml(institution)}
+        </h2>
+        <h1 style="font-size: 12.5pt; font-weight: bold; margin: 3px 0 0 0; text-transform: uppercase; letter-spacing: 1px;">
+          MODÜL DEĞERLENDİRME ÇİZELGESİ
+        </h1>
+      </div>
+
+      <!-- KURS BİLGİLERİ (3 SÜTUN) -->
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; font-size: 8.5pt; margin-bottom: 10px; line-height: 1.6;">
+        
+        <!-- Sol Sütun -->
+        <table style="border-collapse: collapse; border: none; font-size: 8.5pt;">
+          <tr>
+            <td style="font-weight: bold; width: 110px;">Kurs Adı</td>
+            <td style="font-weight: bold; width: 15px;">:</td>
+            <td style="font-weight: 600;">${escapeHtml(courseName)}</td>
+          </tr>
+          <tr>
+            <td style="font-weight: bold;">Kurs No</td>
+            <td style="font-weight: bold;">:</td>
+            <td style="font-family: monospace;">${escapeHtml(courseNumber)}</td>
+          </tr>
+          <tr>
+            <td style="font-weight: bold;">Düzenlendiği Yer</td>
+            <td style="font-weight: bold;">:</td>
+            <td>${escapeHtml(classroom)}</td>
+          </tr>
+        </table>
+
+        <!-- Orta Sütun -->
+        <table style="border-collapse: collapse; border: none; font-size: 8.5pt;">
+          <tr>
+            <td style="font-weight: bold; width: 85px;">Modül Sayısı</td>
+            <td style="font-weight: bold; width: 15px;">:</td>
+            <td style="font-weight: bold; font-size: 9pt;">${moduleCount}</td>
+          </tr>
+        </table>
+
+        <!-- Sağ Sütun -->
+        <table style="border-collapse: collapse; border: none; font-size: 8.5pt;">
+          <tr>
+            <td style="font-weight: bold; width: 95px;">Başlama Tarihi</td>
+            <td style="font-weight: bold; width: 15px;">:</td>
+            <td>${startDate}</td>
+          </tr>
+          <tr>
+            <td style="font-weight: bold;">Bitiş Tarihi</td>
+            <td style="font-weight: bold;">:</td>
+            <td>${endDate}</td>
+          </tr>
+        </table>
+
+      </div>
+
+      <!-- NOT ÇİZELGESİ ANA TABLOSU -->
+      <table style="width: 100%; border-collapse: collapse; border: 1.5px solid black; font-size: 7.5pt;">
+        <thead>
+          <tr style="background: #fafafa;">
+            <th rowspan="2" style="border: 1px solid black; width: 28px; text-align: center; font-weight: bold; font-size: 7.5pt;">
+              Sıra<br>No
+            </th>
+            <th rowspan="2" style="border: 1px solid black; width: 180px; position: relative; padding: 0; min-width: 160px; background: #fff;">
+              <svg style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;" preserveAspectRatio="none" viewBox="0 0 100 100">
+                <line x1="0" y1="0" x2="100" y2="100" stroke="black" stroke-width="0.8" />
+              </svg>
+              <div style="position: absolute; top: 6px; right: 8px; font-size: 6.5pt; font-weight: bold; text-align: right; line-height: 1.15;">
+                Modül<br>Kodu / Adı
+              </div>
+              <div style="position: absolute; bottom: 6px; left: 8px; font-size: 6.5pt; font-weight: bold; text-align: left; line-height: 1.15;">
+                Kursiyerin Adı Soyadı
+              </div>
+            </th>
+            <th colspan="${maxModules}" style="border: 1px solid black; text-align: center; font-weight: bold; font-size: 8pt; padding: 4px; letter-spacing: 0.5px;">
+              MODÜL DEĞERLENDİRME NOTU
+            </th>
+            <th style="border: 1px solid black; width: 85px; text-align: center; font-weight: bold; font-size: 8pt; padding: 4px;">
+              SONUÇ
+            </th>
+          </tr>
+          <tr style="background: #fff;">
+            ${moduleHeadersHtml}
+            <th style="border: 1px solid black; width: 85px; padding: 2px; font-size: 6pt; text-align: center; font-weight: normal; line-height: 1.2;">
+              Tüm modülleri başardıysa<br>
+              <strong style="font-size: 6.5pt;">"TAMAMLADI"</strong>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rowsHtml}
+        </tbody>
+      </table>
+
+      <!-- ALT AÇIKLAMA NOTLARI VE İMZA -->
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-top: 10px; font-size: 7pt; line-height: 1.4;">
+        
+        <!-- Notlar -->
+        <div style="max-width: 72%;">
+          <div><strong>NOT :</strong></div>
+          <div><strong>1-</strong> Modüller, öğrenme faaliyetlerindeki teorik ve uygulamalı tüm içeriği kapsadığından teorik/pratik ayrımı gözetilmeksizin tek değerlendirme yapılır.</div>
+          <div><strong>2-</strong> Modül sonunda yapılacak değerlendirmenin (Yazılı, sözlü ve uygulama notlarından biri ya da birkaçının ortalaması) aritmetik ortalaması alınarak işlenecektir.</div>
+          <div><strong>3-</strong> Kursiyerlerin devam etmediği modüllere <strong>(D)</strong>, devam ettiği halde çeşitli nedenlerle sınava girmediyse <strong>(G)</strong> harfi işlenecektir.</div>
+          <div style="display: flex; align-items: center; gap: 4px;">
+            <span><strong>4-</strong> Boş kalacak olan modüllerin not hücreleri</span>
+            <span style="display: inline-block; width: 35px; border-bottom: 1.5px solid black; vertical-align: middle; margin: 0 4px;"></span>
+            <span>şeklinde yatay olarak çizilmelidir.</span>
+          </div>
+        </div>
+
+        <!-- Öğretmen İmza Alanı -->
+        <div style="text-align: center; min-width: 190px; margin-top: 4px;">
+          <div style="font-size: 7.5pt;">... / ... / 202...</div>
+          <div style="margin-top: 24px; font-weight: bold; font-size: 8.5pt;">${escapeHtml(instructor)}</div>
+          <div style="font-size: 7pt; color: #222;">Adı Soyadı - İmzası</div>
+        </div>
+
+      </div>
+
+    </div>
+  `;
+}
+
+window.openNotCizelgesiPreview = function() {
+  if (!activeCourseForDetail) return;
+  const container = document.getElementById('notCizelgesiPreviewContainer');
+  const modal = document.getElementById('notCizelgesiModal');
+  if (container) {
+    container.innerHTML = generateNotCizelgesiHtml(activeCourseForDetail);
+  }
+  modal?.classList.remove('hidden');
+  refreshLucide();
+};
+
+window.closeNotCizelgesiPreview = function() {
+  const modal = document.getElementById('notCizelgesiModal');
+  modal?.classList.add('hidden');
+};
+
+window.triggerPrintNotCizelgesi = function() {
+  if (!activeCourseForDetail) return;
+  const printArea = document.getElementById('printArea');
+  const printAreaContent = document.getElementById('printAreaContent');
+  if (!printArea || !printAreaContent) return;
+
+  // Yatay A4 baskı stili ekle
+  let styleTag = document.getElementById('landscapePrintStyle');
+  if (!styleTag) {
+    styleTag = document.createElement('style');
+    styleTag.id = 'landscapePrintStyle';
+    document.head.appendChild(styleTag);
+  }
+  styleTag.innerHTML = `@page { size: A4 landscape !important; margin: 6mm 8mm !important; }`;
+
+  printAreaContent.innerHTML = generateNotCizelgesiHtml(activeCourseForDetail);
+  printArea.classList.remove('hidden');
+  window.print();
+  printArea.classList.add('hidden');
+  styleTag?.remove();
 };
 
 // Yardımcı Fonksiyonlar
