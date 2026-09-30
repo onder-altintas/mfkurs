@@ -3968,18 +3968,6 @@ function renderDocumentsTab() {
   try {
     const sinavTutanagiStatsBar = document.getElementById('sinavTutanagiStatsBar');
     if (sinavTutanagiStatsBar) {
-      let eligibleCount = 0;
-      let devamsizCount = 0;
-
-      students.forEach(s => {
-        const absentHours = Number(s.absentHours || 0);
-        const isDevamsiz = (s.attendance === 'Devamsız') || 
-                           (s.result === 'Devamsız') ||
-                           (totalHours > 0 && absentHours > maxAllowed);
-        if (isDevamsiz) devamsizCount++;
-        else eligibleCount++;
-      });
-
       sinavTutanagiStatsBar.innerHTML = `
         <div class="flex flex-wrap items-center justify-between gap-3 w-full">
           <div class="flex flex-wrap items-center gap-2">
@@ -3988,10 +3976,10 @@ function renderDocumentsTab() {
               <span>Toplam:</span> <strong class="text-rose-700 dark:text-rose-400">${students.length}</strong> Kursiyer
             </span>
             <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 rounded-lg font-bold">
-              <span>Sınava Katılan / Katılabilecek:</span> <strong>${eligibleCount}</strong> Kişi
+              <span>Şablon:</span> <strong>Sadece Kurs ve Kursiyer İsimleri</strong>
             </span>
-            <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-rose-50 dark:bg-rose-950/40 text-rose-800 dark:text-rose-300 border border-rose-200 dark:border-rose-800 rounded-lg font-bold">
-              <span>Devamsız (Katılamaz):</span> <strong>${devamsizCount}</strong> Kişi
+            <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-blue-50 dark:bg-blue-950/40 text-blue-800 dark:text-blue-300 border border-blue-200 dark:border-blue-800 rounded-lg font-bold">
+              <span>İmza & Tarih:</span> <strong>Manuel (.... ibareli)</strong>
             </span>
           </div>
           <div class="text-[11px] text-slate-400">
@@ -4822,26 +4810,12 @@ function generateSinavTutanagiHtml(course) {
 
   const institution = course.institution || course.centerName || 'İBB MESLEK FABRİKASI ŞUBE MÜDÜRLÜĞÜ';
   const courseName = course.name || course.title || 'Kurs';
-  const instructor = course.instructor || (currentUser?.fullName || 'Kurs Öğretmeni');
-  const examDateStr = course.endDate ? formatShortDate(course.endDate) : '...../...../202..';
 
   // Kursiyerleri alfabetik sırala (Türkçe alfabe duyarlı)
   const sortedStudents = [...(course.students || [])].sort((a, b) => {
     const nameA = (a.fullName || `${a.firstName || ''} ${a.lastName || ''}`).trim();
     const nameB = (b.fullName || `${b.firstName || ''} ${b.lastName || ''}`).trim();
     return nameA.localeCompare(nameB, 'tr', { sensitivity: 'base' });
-  });
-
-  const totalHours = Number(course.totalHours) || 0;
-  const maxAllowed = Math.floor(totalHours / 5);
-
-  let eligibleCount = 0;
-  sortedStudents.forEach(s => {
-    const absentHours = Number(s.absentHours || 0);
-    const isDevamsiz = (s.attendance === 'Devamsız') || 
-                       (s.result === 'Devamsız') ||
-                       (totalHours > 0 && absentHours > maxAllowed);
-    if (!isDevamsiz) eligibleCount++;
   });
 
   const totalRows = Math.max(25, sortedStudents.length);
@@ -4851,10 +4825,6 @@ function generateSinavTutanagiHtml(course) {
     if (i <= sortedStudents.length) {
       const s = sortedStudents[i - 1];
       const sFullName = (s.fullName || `${s.firstName || ''} ${s.lastName || ''}`).trim();
-      const absentHours = Number(s.absentHours || 0);
-      const isDevamsiz = (s.attendance === 'Devamsız') || 
-                         (s.result === 'Devamsız') ||
-                         (totalHours > 0 && absentHours > maxAllowed);
 
       rowsHtml += `
         <tr style="height: 25px;">
@@ -4865,7 +4835,7 @@ function generateSinavTutanagiHtml(course) {
             ${escapeHtml(sFullName)}
           </td>
           <td style="border: 1px solid black; text-align: center; font-size: 7.5pt; padding: 2px;">
-            ${isDevamsiz ? '<span style="color: #b91c1c; font-weight: bold; font-size: 7pt;">DEVAMSIZ</span>' : '&nbsp;'}
+            &nbsp;
           </td>
         </tr>
       `;
@@ -4881,8 +4851,6 @@ function generateSinavTutanagiHtml(course) {
       `;
     }
   }
-
-  const participatedStr = eligibleCount > 0 ? `${eligibleCount}` : '......';
 
   return `
     <div class="sinav-tutanagi-document" style="font-family: Arial, Helvetica, sans-serif; color: #000; line-height: 1.3; width: 100%; max-width: 800px; margin: 0 auto; background: #fff; padding: 30px 40px; box-sizing: border-box;">
@@ -4920,7 +4888,7 @@ function generateSinavTutanagiHtml(course) {
           <!-- Tarafımca Onay Cümlesi -->
           <tr>
             <td colspan="3" style="border: 1.5px solid black; padding: 8px 12px; font-weight: bold; font-size: 8.5pt; text-align: left; background: #fff;">
-              Tarafımca ${examDateStr} Tarihinde gerçekleştirilen sınava ${participatedStr} kişi katılmıştır.
+              Tarafımca ....../....../202... Tarihinde gerçekleştirilen sınava ............ kişi katılmıştır.
             </td>
           </tr>
         </tbody>
@@ -4929,9 +4897,9 @@ function generateSinavTutanagiHtml(course) {
       <!-- ALT İMZA ALANI -->
       <div style="display: flex; justify-content: flex-end; margin-top: 25px; text-align: center;">
         <div style="min-width: 180px; font-size: 8.5pt; line-height: 1.5;">
-          <div>${examDateStr}</div>
-          <div style="margin-top: 32px; font-weight: bold; font-size: 9pt;">${escapeHtml(instructor)}</div>
-          <div style="font-size: 8pt; color: #222;">Ad Soyad - İmza</div>
+          <div>....../....../202...</div>
+          <div style="margin-top: 32px; font-weight: 500; font-size: 8.5pt; color: #333;">........................................</div>
+          <div style="margin-top: 4px; font-size: 8pt; color: #222; font-weight: 600;">Ad Soyad - İmza</div>
         </div>
       </div>
 
