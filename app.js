@@ -3991,6 +3991,36 @@ function renderDocumentsTab() {
   } catch (err) {
     console.error('Error rendering sinavTutanagiStatsBar:', err);
   }
+
+  // 5. İmza Listesi Özeti
+  try {
+    const imzaListesiStatsBar = document.getElementById('imzaListesiStatsBar');
+    if (imzaListesiStatsBar) {
+      const validDates = getValidCourseDates(activeCourseForDetail);
+      const datePages = Math.max(1, Math.ceil(validDates.length / 9));
+      imzaListesiStatsBar.innerHTML = `
+        <div class="flex flex-wrap items-center justify-between gap-3 w-full">
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="font-bold text-slate-700 dark:text-slate-200">İmza Listesi:</span>
+            <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-white dark:bg-[#152125] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-[#2b3e45] rounded-lg font-bold">
+              <span>Toplam:</span> <strong class="text-purple-700 dark:text-purple-400">${students.length}</strong> Kursiyer
+            </span>
+            <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-purple-50 dark:bg-purple-950/40 text-purple-800 dark:text-purple-300 border border-purple-200 dark:border-purple-800 rounded-lg font-bold">
+              <span>Ders Günleri:</span> <strong>${validDates.length}</strong> Gün
+            </span>
+            <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800 rounded-lg font-bold">
+              <span>Sayfa:</span> <strong>${datePages}</strong> Sayfa
+            </span>
+          </div>
+          <div class="text-[11px] text-slate-400">
+            9 Günlük Sütunlar • Yatay A4
+          </div>
+        </div>
+      `;
+    }
+  } catch (err) {
+    console.error('Error rendering imzaListesiStatsBar:', err);
+  }
 }
 
 window.openKararDurumuPreview = function() {
@@ -4475,6 +4505,8 @@ window.triggerPrintDocument = function(documentName) {
     triggerPrintNotCizelgesi();
   } else if (documentName && (documentName.includes('Sınav') || documentName.includes('Tutanak') || documentName.includes('Katılım'))) {
     triggerPrintSinavTutanagi();
+  } else if (documentName && (documentName.includes('İmza') || documentName.includes('imza'))) {
+    triggerPrintImzaListesi();
   } else {
     triggerPrintKararDurumu();
   }
@@ -4937,6 +4969,157 @@ window.triggerPrintSinavTutanagi = function() {
   printArea.classList.remove('hidden');
   window.print();
   printArea.classList.add('hidden');
+};
+
+// =================== RESMİ EVRAK 5: İMZA LİSTESİ (GÜNLÜK İMZA ÇİZELGESİ) ===================
+
+function generateImzaListesiHtml(course) {
+  if (!course) return '<p class="p-6 text-center text-slate-500">Kurs bilgisi bulunamadı.</p>';
+
+  const courseName = course.name || course.title || 'Kurs';
+  const docType = course.documentType || 'Katılım Belgesi';
+  const docTypeSuffix = docType === 'Sertifika' ? 'SERTİFİKALI' : 'KATILIM BELGELİ';
+  const fullTitle = `${courseName.toUpperCase()} KURSU (${docTypeSuffix})`;
+
+  // Kurs günleri
+  const validDates = getValidCourseDates(course);
+  const dateColumnsPerPage = 9;
+  const totalDatePages = Math.max(1, Math.ceil(validDates.length / dateColumnsPerPage));
+
+  // Kursiyerleri alfabetik sırala (Türkçe duyarlı)
+  const sortedStudents = [...(course.students || [])].sort((a, b) => {
+    const nameA = (a.fullName || `${a.firstName || ''} ${a.lastName || ''}`).trim();
+    const nameB = (b.fullName || `${b.firstName || ''} ${b.lastName || ''}`).trim();
+    return nameA.localeCompare(nameB, 'tr', { sensitivity: 'base' });
+  });
+
+  const totalRows = Math.max(20, sortedStudents.length);
+  const pagesHtml = [];
+
+  for (let pageIdx = 0; pageIdx < totalDatePages; pageIdx++) {
+    const pageDates = validDates.slice(pageIdx * dateColumnsPerPage, (pageIdx + 1) * dateColumnsPerPage);
+    
+    // 9 tarih sütunu başlıkları
+    let theadDatesHtml = '';
+    for (let c = 0; c < dateColumnsPerPage; c++) {
+      if (c < pageDates.length) {
+        const dStr = pageDates[c]; // YYYY-MM-DD
+        const parts = dStr.split('-');
+        const formattedDate = parts.length === 3 ? `${parts[2]}/${parts[1]}/${parts[0]}` : dStr;
+        theadDatesHtml += `<th style="border: 1px solid black; width: 8.5%; text-align: center; font-weight: bold; font-size: 8pt; padding: 4px 2px;">${formattedDate}</th>`;
+      } else {
+        const year = course.startDate ? (new Date(course.startDate).getFullYear() || 2026) : 2026;
+        theadDatesHtml += `<th style="border: 1px solid black; width: 8.5%; text-align: center; font-weight: bold; font-size: 8pt; padding: 4px 2px;">…/…/${year}</th>`;
+      }
+    }
+
+    // Satırlar
+    let tbodyRowsHtml = '';
+    for (let r = 1; r <= totalRows; r++) {
+      let adi = '';
+      let soyadi = '';
+      if (r <= sortedStudents.length) {
+        const s = sortedStudents[r - 1];
+        adi = (s.firstName || '').trim();
+        soyadi = (s.lastName || '').trim();
+        if (!adi && s.fullName) {
+          const parts = s.fullName.trim().split(/\s+/);
+          if (parts.length > 1) {
+            soyadi = parts.pop();
+            adi = parts.join(' ');
+          } else {
+            adi = s.fullName.trim();
+            soyadi = '';
+          }
+        }
+      }
+
+      let dateCellsHtml = '';
+      for (let c = 0; c < dateColumnsPerPage; c++) {
+        dateCellsHtml += `<td style="border: 1px solid black; padding: 2px;">&nbsp;</td>`;
+      }
+
+      tbodyRowsHtml += `
+        <tr style="height: 24px;">
+          <td style="border: 1px solid black; text-align: center; font-weight: bold; font-size: 8pt; padding: 2px;">${r}</td>
+          <td style="border: 1px solid black; padding: 2px 6px; font-size: 8pt; text-align: left; text-transform: uppercase;">${escapeHtml(adi)}</td>
+          <td style="border: 1px solid black; padding: 2px 6px; font-size: 8pt; text-align: left; text-transform: uppercase;">${escapeHtml(soyadi)}</td>
+          ${dateCellsHtml}
+        </tr>
+      `;
+    }
+
+    const pageBreakStyle = (pageIdx < totalDatePages - 1) ? 'page-break-after: always; margin-bottom: 30px;' : '';
+    const pageSubtitle = totalDatePages > 1 ? ` <span style="font-size: 8pt; font-weight: normal; margin-left: 8px;">(Sayfa ${pageIdx + 1} / ${totalDatePages})</span>` : '';
+
+    pagesHtml.push(`
+      <div class="imza-listesi-document" style="font-family: Arial, Helvetica, sans-serif; color: #000; width: 100%; max-width: 1020px; margin: 0 auto; background: #fff; padding: 20px 25px; box-sizing: border-box; ${pageBreakStyle}">
+        
+        <!-- BAŞLIK -->
+        <div style="text-align: center; margin-bottom: 14px;">
+          <h2 style="font-size: 11pt; font-weight: bold; margin: 0; text-transform: uppercase; letter-spacing: 0.5px;">
+            ${escapeHtml(fullTitle)}${pageSubtitle}
+          </h2>
+        </div>
+
+        <!-- TABLO -->
+        <table style="width: 100%; border-collapse: collapse; border: 1.5px solid black; font-size: 8pt;">
+          <thead>
+            <tr style="background: #fafafa; height: 26px;">
+              <th style="border: 1px solid black; width: 38px; text-align: center; font-weight: bold; font-size: 8pt; padding: 3px 2px;">No</th>
+              <th style="border: 1px solid black; width: 105px; text-align: center; font-weight: bold; font-size: 8pt; padding: 3px 6px;">ADI</th>
+              <th style="border: 1px solid black; width: 105px; text-align: center; font-weight: bold; font-size: 8pt; padding: 3px 6px;">SOYADI</th>
+              ${theadDatesHtml}
+            </tr>
+          </thead>
+          <tbody>
+            ${tbodyRowsHtml}
+          </tbody>
+        </table>
+
+      </div>
+    `);
+  }
+
+  return pagesHtml.join('');
+}
+
+window.openImzaListesiPreview = function() {
+  if (!activeCourseForDetail) return;
+  const container = document.getElementById('imzaListesiPreviewContainer');
+  const modal = document.getElementById('imzaListesiModal');
+  if (container) {
+    container.innerHTML = generateImzaListesiHtml(activeCourseForDetail);
+  }
+  modal?.classList.remove('hidden');
+  refreshLucide();
+};
+
+window.closeImzaListesiPreview = function() {
+  const modal = document.getElementById('imzaListesiModal');
+  modal?.classList.add('hidden');
+};
+
+window.triggerPrintImzaListesi = function() {
+  if (!activeCourseForDetail) return;
+  const printArea = document.getElementById('printArea');
+  const printAreaContent = document.getElementById('printAreaContent');
+  if (!printArea || !printAreaContent) return;
+
+  // Yatay A4 baskı stili ekle
+  let styleTag = document.getElementById('landscapePrintStyle');
+  if (!styleTag) {
+    styleTag = document.createElement('style');
+    styleTag.id = 'landscapePrintStyle';
+    document.head.appendChild(styleTag);
+  }
+  styleTag.innerHTML = `@page { size: A4 landscape !important; margin: 8mm 10mm !important; }`;
+
+  printAreaContent.innerHTML = generateImzaListesiHtml(activeCourseForDetail);
+  printArea.classList.remove('hidden');
+  window.print();
+  printArea.classList.add('hidden');
+  styleTag?.remove();
 };
 
 // Yardımcı Fonksiyonlar

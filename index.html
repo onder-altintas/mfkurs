@@ -2148,7 +2148,7 @@
             </p>
           </div>
           <span class="px-2.5 py-1 text-[11px] font-bold bg-[#335C67]/10 text-[#335C67] dark:bg-[#335C67]/30 dark:text-[#FFF3B0] rounded-lg self-start sm:self-auto border border-[#335C67]/20">
-            4 Resmi Belge Aktif
+            5 Resmi Belge Aktif
           </span>
         </div>
 
@@ -2352,6 +2352,57 @@
                 type="button"
                 onclick="triggerPrintSinavTutanagi()"
                 class="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-rose-700 hover:bg-rose-800 text-white rounded-xl text-xs font-bold shadow-xs transition cursor-pointer"
+              >
+                <i data-lucide="printer" class="w-4 h-4 text-[#FFF3B0]"></i>
+                <span>Yazdır / PDF</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- 5. Belge Kartı: İmza Listesi (Günlük İmza Çizelgesi) -->
+          <div class="flex flex-col justify-between p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-[#23353c] bg-white dark:bg-[#152125] shadow-xs hover:border-purple-600 dark:hover:border-purple-500 transition gap-3.5">
+            <div class="space-y-2.5">
+              <div class="flex items-start justify-between gap-3">
+                <div class="flex items-center gap-3">
+                  <div class="p-2.5 rounded-xl bg-gradient-to-br from-purple-700 via-indigo-800 to-[#335C67] text-white shadow-xs shrink-0">
+                    <i data-lucide="pen-tool" class="w-5 h-5 text-[#FFF3B0]"></i>
+                  </div>
+                  <div>
+                    <h5 class="font-extrabold text-sm sm:text-base text-slate-800 dark:text-slate-100">
+                      İmza Listesi
+                    </h5>
+                    <div class="flex items-center gap-1.5 mt-0.5">
+                      <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-[#FFF3B0] text-[#540B0E] border border-[#E09F3E]/40">5. Belge</span>
+                      <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-300">Yatay A4</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                Kursiyerlerin günlük ders katılım imzalarının alındığı resmi tarihli imza çizelgesidir.
+              </p>
+            </div>
+
+            <!-- Canlı İstatistik -->
+            <div id="imzaListesiStatsBar" class="p-2.5 bg-slate-50 dark:bg-[#10191b] rounded-xl border border-slate-200 dark:border-[#23353c] text-xs">
+              <span class="text-slate-400">İmza listesi verileri hesaplanıyor...</span>
+            </div>
+
+            <!-- Butonlar -->
+            <div class="flex items-center gap-2 pt-1 border-t border-slate-100 dark:border-[#23353c]">
+              <button
+                type="button"
+                id="previewImzaListesiBtn"
+                onclick="openImzaListesiPreview()"
+                class="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-[#10191b] dark:hover:bg-[#19272c] text-slate-800 dark:text-slate-100 rounded-xl text-xs font-bold transition cursor-pointer border border-slate-200 dark:border-[#2b3e45]"
+              >
+                <i data-lucide="eye" class="w-4 h-4 text-purple-600 dark:text-purple-400"></i>
+                <span>Önizle</span>
+              </button>
+              <button
+                type="button"
+                onclick="triggerPrintImzaListesi()"
+                class="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-purple-700 hover:bg-purple-800 text-white rounded-xl text-xs font-bold shadow-xs transition cursor-pointer"
               >
                 <i data-lucide="printer" class="w-4 h-4 text-[#FFF3B0]"></i>
                 <span>Yazdır / PDF</span>
@@ -2568,6 +2619,54 @@
       <!-- Modal Body (Dikey A4 Tutanak) -->
       <div class="p-4 sm:p-6 overflow-y-auto flex-1 bg-slate-200/70 dark:bg-[#0c1315]">
         <div id="sinavTutanagiPreviewContainer" class="space-y-6 max-w-3xl mx-auto shadow-md rounded-lg">
+          <!-- JS tarafından enjekte edilecek -->
+        </div>
+      </div>
+
+  <!-- ================= İMZA LİSTESİ (GÜNLÜK İMZA ÇİZELGESİ) ÖNİZLEME MODALI ================= -->
+  <div id="imzaListesiModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-slate-900/70 backdrop-blur-sm">
+    <div class="bg-white dark:bg-[#152125] rounded-2xl w-full max-w-5xl max-h-[94vh] shadow-2xl border border-slate-200 dark:border-[#23353c] flex flex-col overflow-hidden">
+      
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between p-4 border-b border-slate-200 dark:border-[#23353c] bg-slate-50 dark:bg-[#10191b] shrink-0">
+        <div class="flex items-center gap-2.5">
+          <div class="p-2 bg-purple-700 text-white rounded-xl shadow-xs">
+            <i data-lucide="pen-tool" class="w-5 h-5 text-[#FFF3B0]"></i>
+          </div>
+          <div>
+            <h3 class="text-sm sm:text-base font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+              <span>İmza Listesi (Günlük İmza Çizelgesi)</span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-300">Yatay A4</span>
+            </h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400">
+              Resmi Günlük Ders Katılım İmza Listesi • Yatay A4 Belgesi
+            </p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button
+            type="button"
+            onclick="triggerPrintImzaListesi()"
+            class="flex items-center gap-1.5 px-3.5 py-1.5 bg-purple-700 hover:bg-purple-800 text-white rounded-xl text-xs font-bold shadow-xs cursor-pointer"
+          >
+            <i data-lucide="printer" class="w-4 h-4 text-[#FFF3B0]"></i>
+            <span>Yazdır / PDF Olarak Kaydet</span>
+          </button>
+          <button
+            type="button"
+            id="closeImzaListesiModalBtn"
+            onclick="closeImzaListesiPreview()"
+            class="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-lg cursor-pointer"
+          >
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Modal Body (Yatay A4 İmza Listesi) -->
+      <div class="p-4 sm:p-6 overflow-y-auto flex-1 bg-slate-200/70 dark:bg-[#0c1315]">
+        <div id="imzaListesiPreviewContainer" class="space-y-6 max-w-5xl mx-auto overflow-x-auto shadow-md rounded-lg">
           <!-- JS tarafından enjekte edilecek -->
         </div>
       </div>
@@ -2826,7 +2925,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
   <!-- Firebase Bulut Servisi & Veri Deposu -->
-  <script src="firebase.js?v=20260930_1705"></script>
-  <script src="app.js?v=20260930_1705"></script>
+  <script src="firebase.js?v=20260930_1710"></script>
+  <script src="app.js?v=20260930_1710"></script>
 </body>
 </html>
