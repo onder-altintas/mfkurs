@@ -52,6 +52,7 @@ const DEFAULT_COURSE_TEMPLATES = [
     category: "Bilişim Teknolojileri",
     totalHours: 160,
     moduleCount: 3,
+    documentType: "Sertifika",
     description: "Temel bilgisayar donanımı, işletim sistemi, ofis programları (Word, Excel, PowerPoint) ve internet güvenliği.",
     syllabus: [
       { hour: 1, topic: "Bilgisayara Giriş: Temel donanım birimleri (Kasa, Monitör, Klavye, Fare)" },
@@ -79,6 +80,7 @@ const DEFAULT_COURSE_TEMPLATES = [
     category: "Kişisel Gelişim",
     totalHours: 64,
     moduleCount: 2,
+    documentType: "Katılım Belgesi",
     description: "Türkçenin doğru, anlaşılır ve etkili konuşulması, doğru nefes alma, tonlama ve beden dili eğitimi.",
     syllabus: [
       { hour: 1, topic: "İletişimin Temelleri ve Diksiyonun Önemi" },
@@ -102,6 +104,7 @@ const DEFAULT_COURSE_TEMPLATES = [
     category: "El Sanatları",
     totalHours: 140,
     moduleCount: 2,
+    documentType: "Sertifika",
     description: "Ahşap yüzey hazırlığı, zımparalama, astar boya, transfer, dekupaj, eskitme ve vernikleme teknikleri.",
     syllabus: [
       { hour: 1, topic: "Ahşap Süslemede Kullanılan Araç, Gereç ve Güvenlik Kuralları" },
@@ -143,6 +146,7 @@ const INITIAL_COURSES = [
     startDate: "2026-01-15",
     endDate: "2026-04-10",
     status: "active",
+    documentType: "Sertifika",
     classroom: "Lab 2 - Bilişim Atölyesi",
     description: "Temel bilgisayar kullanımı, Office programları ve internet teknolojileri eğitimi.",
     syllabus: DEFAULT_COURSE_TEMPLATES[0].syllabus,
@@ -173,6 +177,7 @@ const INITIAL_COURSES = [
     startDate: "2026-02-01",
     endDate: "2026-05-20",
     status: "active",
+    documentType: "Katılım Belgesi",
     classroom: "Lab 1",
     description: "Python programlama dili temelleri, veri yapıları ve algoritmalar.",
     syllabus: [],

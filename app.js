@@ -142,6 +142,7 @@ const tmplFormCode = document.getElementById('tmplFormCode');
 const tmplFormCategory = document.getElementById('tmplFormCategory');
 const tmplFormTotalHours = document.getElementById('tmplFormTotalHours');
 const tmplFormModuleCount = document.getElementById('tmplFormModuleCount');
+const tmplFormDocumentType = document.getElementById('tmplFormDocumentType');
 const tmplFormDescription = document.getElementById('tmplFormDescription');
 const addSyllabusRowBtn = document.getElementById('addSyllabusRowBtn');
 const syllabusTableBody = document.getElementById('syllabusTableBody');
@@ -166,6 +167,7 @@ const courseFormEndDate = document.getElementById('courseFormEndDate');
 const courseFormTotalHours = document.getElementById('courseFormTotalHours');
 const courseFormModuleCount = document.getElementById('courseFormModuleCount');
 const courseFormStatus = document.getElementById('courseFormStatus');
+const courseFormDocumentType = document.getElementById('courseFormDocumentType');
 const courseFormClassroom = document.getElementById('courseFormClassroom');
 const courseFormDescription = document.getElementById('courseFormDescription');
 const courseFormDailyHours = document.getElementById('courseFormDailyHours');
@@ -183,6 +185,8 @@ const detailModal = document.getElementById('detailModal');
 const closeDetailModalBtn = document.getElementById('closeDetailModalBtn');
 const bottomCloseDetailBtn = document.getElementById('bottomCloseDetailBtn');
 const detailStatusBadge = document.getElementById('detailStatusBadge');
+const detailDocumentTypeBadge = document.getElementById('detailDocumentTypeBadge');
+const detailDocumentTypeText = document.getElementById('detailDocumentTypeText');
 const detailCourseCode = document.getElementById('detailCourseCode');
 const detailCourseName = document.getElementById('detailCourseName');
 const detailCourseMeta = document.getElementById('detailCourseMeta');
@@ -742,6 +746,9 @@ function setupEventListeners() {
         if (courseFormModuleCount) {
           courseFormModuleCount.value = tmpl.moduleCount || 1;
         }
+        if (courseFormDocumentType && tmpl.documentType) {
+          courseFormDocumentType.value = tmpl.documentType;
+        }
         if (!courseFormDescription.value.trim()) {
           courseFormDescription.value = tmpl.description || '';
         }
@@ -1237,9 +1244,13 @@ function renderAdminTemplates() {
             <i data-lucide="book-open" class="w-6 h-6"></i>
           </div>
           <div>
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-2 flex-wrap">
               <h4 class="font-bold text-slate-800 text-base">${escapeHtml(tmpl.name)}</h4>
               <span class="text-xs font-mono bg-slate-100 px-2 py-0.5 rounded text-slate-600">${escapeHtml(tmpl.code || '-')}</span>
+              <span class="text-xs font-bold bg-[#E09F3E]/20 text-[#540B0E] border border-[#E09F3E]/40 px-2 py-0.5 rounded-md flex items-center gap-1">
+                <i data-lucide="award" class="w-3 h-3 text-[#E09F3E]"></i>
+                <span>${escapeHtml(tmpl.documentType || 'Sertifika')}</span>
+              </span>
               <span class="text-xs font-bold bg-purple-50 text-purple-700 border border-purple-200 px-2 py-0.5 rounded-md flex items-center gap-1">
                 <i data-lucide="layers" class="w-3 h-3 text-purple-600"></i>
                 <span>${tmpl.moduleCount || 1} Modül</span>
@@ -1293,6 +1304,7 @@ function openCourseTmplModal(tmplToEdit = null) {
     tmplFormCategory.value = tmplToEdit.category || 'Bilişim Teknolojileri';
     tmplFormTotalHours.value = tmplToEdit.totalHours || 120;
     if (tmplFormModuleCount) tmplFormModuleCount.value = tmplToEdit.moduleCount || 1;
+    if (tmplFormDocumentType) tmplFormDocumentType.value = tmplToEdit.documentType || 'Sertifika';
     tmplFormDescription.value = tmplToEdit.description || '';
 
     (tmplToEdit.syllabus || []).forEach(s => addSyllabusRow(s.hour, s.topic));
@@ -1302,6 +1314,7 @@ function openCourseTmplModal(tmplToEdit = null) {
     tmplFormId.value = '';
     tmplFormTotalHours.value = 120;
     if (tmplFormModuleCount) tmplFormModuleCount.value = 1;
+    if (tmplFormDocumentType) tmplFormDocumentType.value = 'Sertifika';
     // Varsayılan ilk 5 saati ekle
     for (let i = 1; i <= 5; i++) {
       addSyllabusRow(i, '');
@@ -1385,6 +1398,7 @@ function handleSaveCourseTemplate(e) {
 
   syllabus.sort((a, b) => a.hour - b.hour);
   const moduleCount = tmplFormModuleCount ? Math.max(1, Number(tmplFormModuleCount.value) || 1) : 1;
+  const documentType = tmplFormDocumentType ? tmplFormDocumentType.value : 'Sertifika';
 
   if (id) {
     currentTemplates = currentTemplates.map(t => t.id === id ? {
@@ -1394,6 +1408,7 @@ function handleSaveCourseTemplate(e) {
       category: tmplFormCategory.value,
       totalHours: Number(tmplFormTotalHours.value) || 0,
       moduleCount,
+      documentType,
       description: tmplFormDescription.value.trim(),
       syllabus
     } : t);
@@ -1405,6 +1420,7 @@ function handleSaveCourseTemplate(e) {
       category: tmplFormCategory.value,
       totalHours: Number(tmplFormTotalHours.value) || 0,
       moduleCount,
+      documentType,
       description: tmplFormDescription.value.trim(),
       syllabus
     };
@@ -1518,9 +1534,15 @@ function renderCourseList() {
     card.innerHTML = `
       <div class="p-5 space-y-3 flex-1">
         <div class="flex items-start justify-between gap-2">
-          <span class="px-2.5 py-1 rounded-lg text-[11px] font-bold ${statusBadgeClass}">
-            ${statusText}
-          </span>
+          <div class="flex items-center gap-1.5 flex-wrap">
+            <span class="px-2.5 py-1 rounded-lg text-[11px] font-bold ${statusBadgeClass}">
+              ${statusText}
+            </span>
+            <span class="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-[#E09F3E]/20 text-[#540B0E] dark:text-[#FFF3B0] border border-[#E09F3E]/40 flex items-center gap-1">
+              <i data-lucide="award" class="w-3 h-3 text-[#E09F3E]"></i>
+              <span>${escapeHtml(course.documentType || 'Sertifika')}</span>
+            </span>
+          </div>
           <span class="text-[11px] font-mono text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-[#10191b] px-2 py-0.5 rounded border border-slate-100 dark:border-[#23353c]">
             ${course.code || 'KODSUZ'}
           </span>
@@ -1709,6 +1731,9 @@ function openCourseModal(courseToEdit = null) {
       courseFormModuleCount.value = courseToEdit.moduleCount || (matchedTmpl ? (matchedTmpl.moduleCount || 1) : 1);
     }
     courseFormStatus.value = courseToEdit.status || 'active';
+    if (courseFormDocumentType) {
+      courseFormDocumentType.value = courseToEdit.documentType || (matchedTmpl ? (matchedTmpl.documentType || 'Sertifika') : 'Sertifika');
+    }
     courseFormClassroom.value = courseToEdit.classroom || '';
     courseFormDescription.value = courseToEdit.description || '';
 
@@ -1733,6 +1758,7 @@ function openCourseModal(courseToEdit = null) {
     courseFormTotalHours.value = 120;
     if (courseFormModuleCount) courseFormModuleCount.value = 1;
     courseFormStatus.value = 'active';
+    if (courseFormDocumentType) courseFormDocumentType.value = 'Sertifika';
     if (currentCenters.length > 0) {
       courseFormInstitutionSelect.value = currentCenters[0].name;
     }
@@ -1787,6 +1813,7 @@ function handleSaveCourse(e) {
   const totalHours = Number(courseFormTotalHours.value) || (tmpl ? tmpl.totalHours : 120);
   const moduleCount = courseFormModuleCount ? Math.max(1, Number(courseFormModuleCount.value) || 1) : (tmpl ? (tmpl.moduleCount || 1) : 1);
   const status = courseFormStatus.value;
+  const documentType = courseFormDocumentType ? courseFormDocumentType.value : 'Sertifika';
   const classroom = courseFormClassroom.value.trim();
   const description = courseFormDescription.value.trim();
 
@@ -1813,6 +1840,7 @@ function handleSaveCourse(e) {
           totalHours,
           moduleCount,
           status,
+          documentType,
           classroom,
           description,
           days: selectedDays,
@@ -1841,6 +1869,7 @@ function handleSaveCourse(e) {
       totalHours,
       moduleCount,
       status,
+      documentType,
       classroom,
       description,
       days: selectedDays,
@@ -1899,6 +1928,10 @@ window.openCourseDetail = function(courseId) {
 
   if (detailModuleBadge) {
     detailModuleBadge.innerText = `${activeCourseForDetail.moduleCount || 1} Modül Sınavı`;
+  }
+
+  if (detailDocumentTypeText) {
+    detailDocumentTypeText.innerText = activeCourseForDetail.documentType || 'Sertifika';
   }
 
   if (studentAddedNotice) {
@@ -3495,6 +3528,7 @@ function getStudentKararDurumu(student, course) {
   const totalHours = Number(course?.totalHours) || 0;
   const maxAllowed = Math.floor(totalHours / 5);
   const absentHours = Number(student.absentHours || 0);
+  const docType = (course && course.documentType) ? course.documentType : 'Sertifika';
 
   // Devamsızlık kontrolü: Devamsız ise veya yasal 1/5 devamsızlık sınırını aştıysa doğrudan "Devamsız"
   const isDevamsiz = (student.attendance === 'Devamsız') || 
@@ -3527,7 +3561,7 @@ function getStudentKararDurumu(student, course) {
   // Eğer modül notları girilmişse:
   if (hasAnyModuleScore) {
     if (allModulesPresentAndPassed) {
-      return 'Sertifika/Katılım Belgesi';
+      return docType;
     } else {
       return 'Transkript';
     }
@@ -3536,15 +3570,15 @@ function getStudentKararDurumu(student, course) {
   // Modül notu girilmemiş ama genel sınav notu girilmişse:
   if (student.examScore !== null && student.examScore !== undefined && !isNaN(Number(student.examScore))) {
     if (Number(student.examScore) >= 50) {
-      return 'Sertifika/Katılım Belgesi';
+      return docType;
     } else {
       return 'Transkript';
     }
   }
 
   // Eğer sonuç doğrudan başarılı belirtilmişse:
-  if (student.result && (student.result.includes('Başarılı') || student.result.includes('Belge') || student.result.includes('Sertifika'))) {
-    return 'Sertifika/Katılım Belgesi';
+  if (student.result && (student.result.includes('Başarılı') || student.result.includes('Belge') || student.result.includes('Sertifika') || student.result.includes('Katılım'))) {
+    return docType;
   }
 
   return 'Transkript';
@@ -3552,6 +3586,8 @@ function getStudentKararDurumu(student, course) {
 
 function generateKararDurumuHtml(course) {
   if (!course) return '<p class="p-6 text-center text-slate-500">Kurs bilgisi bulunamadı.</p>';
+
+  const docType = (course && course.documentType) ? course.documentType : 'Sertifika';
 
   // Yıl bilgisi
   let courseYear = 2026;
@@ -3589,7 +3625,7 @@ function generateKararDurumuHtml(course) {
     if (i <= students.length) {
       const s = students[i - 1];
       const dec = getStudentKararDurumu(s, course);
-      if (dec === 'Sertifika/Katılım Belgesi') successCount++;
+      if (dec === docType) successCount++;
       else if (dec === 'Transkript') transcriptCount++;
       else if (dec === 'Devamsız') failedCount++;
 
@@ -3674,10 +3710,10 @@ function generateKararDurumuHtml(course) {
         </tbody>
       </table>
 
-      <!-- Tablo Altı Özet Metin (Gereksiz Notlar Kaldırıldı) -->
+      <!-- Tablo Altı Özet Metin -->
       <div style="margin-top: 8px; font-size: 8.5pt; line-height: 1.35;">
         <p style="margin: 0; text-align: justify;">
-          <strong>${escapeHtml(courseName)}</strong> Kursuna (<strong>${totalCount}</strong>) kursiyer kayıt olmuş, bu kursta (<strong>${successCount}</strong>) Kursiyer başarılı, (<strong>${transcriptCount}</strong>) Kursiyer transkript, (<strong>${failedCount}</strong>) Kursiyer başarısız olmuştur.
+          <strong>${escapeHtml(courseName)}</strong> Kursuna (<strong>${totalCount}</strong>) kursiyer kayıt olmuş, bu kursta (<strong>${successCount}</strong>) Kursiyer <strong>${escapeHtml(docType)}</strong>, (<strong>${transcriptCount}</strong>) Kursiyer transkript, (<strong>${failedCount}</strong>) Kursiyer başarısız olmuştur.
         </p>
       </div>
 
@@ -3706,6 +3742,7 @@ function renderDocumentsTab() {
   const statsBar = document.getElementById('kararDurumuStatsBar');
   const defterStatsBar = document.getElementById('defterStatsBar');
 
+  const docType = (activeCourseForDetail && activeCourseForDetail.documentType) ? activeCourseForDetail.documentType : 'Sertifika';
   const students = activeCourseForDetail.students || [];
   let successCount = 0;
   let transcriptCount = 0;
@@ -3713,7 +3750,7 @@ function renderDocumentsTab() {
 
   students.forEach(s => {
     const dec = getStudentKararDurumu(s, activeCourseForDetail);
-    if (dec === 'Sertifika/Katılım Belgesi') successCount++;
+    if (dec === docType) successCount++;
     else if (dec === 'Transkript') transcriptCount++;
     else if (dec === 'Devamsız') failedCount++;
   });
@@ -3727,7 +3764,7 @@ function renderDocumentsTab() {
             <span>Toplam:</span> <strong class="text-[#335C67] dark:text-[#FFF3B0]">${students.length}</strong> Kursiyer
           </span>
           <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 rounded-lg font-bold">
-            <span>Sertifika / Katılım:</span> <strong>${successCount}</strong>
+            <span>${escapeHtml(docType)}:</span> <strong>${successCount}</strong>
           </span>
           <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800 rounded-lg font-bold">
             <span>Transkript:</span> <strong>${transcriptCount}</strong>
