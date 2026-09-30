@@ -213,6 +213,29 @@ const INITIAL_COURSES = [
   }
 ];
 
+// Firebase Yapılandırması ve Başlatma
+const firebaseConfig = {
+  apiKey: "AIzaSyCG2g25Ummwqg7RJE6KSiV-oG5pmvj3rHE",
+  authDomain: "mfkurs-41f08.firebaseapp.com",
+  projectId: "mfkurs-41f08",
+  storageBucket: "mfkurs-41f08.firebasestorage.app",
+  messagingSenderId: "909088640661",
+  appId: "1:909088640661:web:a54d2ceff3ad06b6e5559c",
+  measurementId: "G-2Z3ZK3SSZD"
+};
+
+let db = null;
+try {
+  if (typeof firebase !== 'undefined') {
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
+    db = firebase.firestore();
+  }
+} catch (e) {
+  console.warn("Firebase başlatma uyarısı:", e);
+}
+
 const STORAGE_KEYS = {
   COURSES: 'kurs_sonu_courses_v7',
   CENTERS: 'kurs_sonu_centers_v4',
@@ -222,6 +245,93 @@ const STORAGE_KEYS = {
 };
 
 const DataStore = {
+  _knownCourseIds: new Set(),
+  _cloudInitialized: false,
+
+  initCloudListeners() {
+    if (!db || this._cloudInitialized) return;
+    this._cloudInitialized = true;
+    console.log("Firebase Bulut Dinleyicileri Başlatılıyor...");
+
+    // 1. Kursları Buluttan Dinle
+    db.collection('courses').onSnapshot((snapshot) => {
+      if (snapshot.empty) {
+        console.log("Bulut veritabanında henüz kurs yok. Başlangıç kursları yükleniyor...");
+        const batch = db.batch();
+        INITIAL_COURSES.forEach(c => {
+          batch.set(db.collection('courses').doc(c.id), c);
+        });
+        batch.commit().catch(e => console.error("Kurs seed hatası:", e));
+        return;
+      }
+      const courses = [];
+      const idSet = new Set();
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        courses.push(data);
+        idSet.add(data.id || doc.id);
+      });
+      this._knownCourseIds = idSet;
+      localStorage.setItem(STORAGE_KEYS.COURSES, JSON.stringify(courses));
+      if (typeof window.onCloudSync === 'function') {
+        window.onCloudSync('courses', courses);
+      }
+    }, (err) => {
+      console.error("Firestore kurs dinleme hatası:", err);
+    });
+
+    // 2. Kullanıcıları Buluttan Dinle
+    db.collection('users').onSnapshot((snapshot) => {
+      if (snapshot.empty) {
+        console.log("Bulut veritabanında kullanıcı yok. Varsayılan kullanıcılar yükleniyor...");
+        const batch = db.batch();
+        DEFAULT_USERS.forEach(u => {
+          batch.set(db.collection('users').doc(u.id), u);
+        });
+        batch.commit().catch(e => console.error("Kullanıcı seed hatası:", e));
+        return;
+      }
+      const users = [];
+      snapshot.forEach(doc => users.push(doc.data()));
+      localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(users));
+      if (typeof window.onCloudSync === 'function') {
+        window.onCloudSync('users', users);
+      }
+    }, (err) => {
+      console.error("Firestore kullanıcı dinleme hatası:", err);
+    });
+
+    // 3. Merkezleri Buluttan Dinle
+    db.collection('settings').doc('centers').onSnapshot((doc) => {
+      if (!doc.exists) {
+        db.collection('settings').doc('centers').set({ list: DEFAULT_CENTERS }).catch(e => console.error(e));
+        return;
+      }
+      const list = doc.data()?.list || DEFAULT_CENTERS;
+      localStorage.setItem(STORAGE_KEYS.CENTERS, JSON.stringify(list));
+      if (typeof window.onCloudSync === 'function') {
+        window.onCloudSync('centers', list);
+      }
+    }, (err) => {
+      console.error("Firestore merkez dinleme hatası:", err);
+    });
+
+    // 4. Şablonları Buluttan Dinle
+    db.collection('settings').doc('templates').onSnapshot((doc) => {
+      if (!doc.exists) {
+        db.collection('settings').doc('templates').set({ list: DEFAULT_COURSE_TEMPLATES }).catch(e => console.error(e));
+        return;
+      }
+      const list = doc.data()?.list || DEFAULT_COURSE_TEMPLATES;
+      localStorage.setItem(STORAGE_KEYS.TEMPLATES, JSON.stringify(list));
+      if (typeof window.onCloudSync === 'function') {
+        window.onCloudSync('templates', list);
+      }
+    }, (err) => {
+      console.error("Firestore şablon dinleme hatası:", err);
+    });
+  },
+
   getUsers() {
     try {
       const raw = localStorage.getItem(STORAGE_KEYS.USERS);
@@ -239,8 +349,17 @@ const DataStore = {
   saveUsers(users) {
     try {
       localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(users));
+      if (db) {
+        const batch = db.batch();
+        users.forEach(u => {
+          if (u && u.id) {
+            batch.set(db.collection('users').doc(u.id), u);
+          }
+        });
+        batch.commit().catch(e => console.error("Firestore kullanıcı kayıt hatası:", e));
+      }
     } catch (e) {
-      console.error("LocalStorage kullanıcı kaydetme hatası:", e);
+      console.error("Kullanıcı kaydetme hatası:", e);
     }
   },
 
@@ -248,7 +367,6 @@ const DataStore = {
     try {
       let raw = localStorage.getItem(STORAGE_KEYS.COURSES);
       if (!raw) {
-        // Eski versiyon kontrolü
         raw = localStorage.getItem('kurs_sonu_courses_v5') || localStorage.getItem('kurs_sonu_courses_v6');
         if (!raw) {
           localStorage.setItem(STORAGE_KEYS.COURSES, JSON.stringify(INITIAL_COURSES));
@@ -301,8 +419,25 @@ const DataStore = {
   saveCourses(courses) {
     try {
       localStorage.setItem(STORAGE_KEYS.COURSES, JSON.stringify(courses));
+      if (db) {
+        const currentIds = new Set();
+        courses.forEach(c => {
+          if (c && c.id) {
+            currentIds.add(c.id);
+            db.collection('courses').doc(c.id).set(c).catch(e => console.error("Firestore kurs yazma:", e));
+          }
+        });
+        if (this._knownCourseIds && this._knownCourseIds.size > 0) {
+          this._knownCourseIds.forEach(oldId => {
+            if (!currentIds.has(oldId)) {
+              db.collection('courses').doc(oldId).delete().catch(e => console.error("Firestore kurs silme:", e));
+            }
+          });
+        }
+        this._knownCourseIds = currentIds;
+      }
     } catch (e) {
-      console.error("LocalStorage kurs kayıt hatası:", e);
+      console.error("Kurs kayıt hatası:", e);
     }
   },
 
@@ -323,8 +458,11 @@ const DataStore = {
   saveCenters(centers) {
     try {
       localStorage.setItem(STORAGE_KEYS.CENTERS, JSON.stringify(centers));
+      if (db) {
+        db.collection('settings').doc('centers').set({ list: centers }).catch(e => console.error("Firestore merkez kayıt:", e));
+      }
     } catch (e) {
-      console.error("LocalStorage merkez kayıt hatası:", e);
+      console.error("Merkez kayıt hatası:", e);
     }
   },
 
@@ -352,8 +490,11 @@ const DataStore = {
   saveCourseTemplates(templates) {
     try {
       localStorage.setItem(STORAGE_KEYS.TEMPLATES, JSON.stringify(templates));
+      if (db) {
+        db.collection('settings').doc('templates').set({ list: templates }).catch(e => console.error("Firestore şablon kayıt:", e));
+      }
     } catch (e) {
-      console.error("LocalStorage şablon kayıt hatası:", e);
+      console.error("Şablon kayıt hatası:", e);
     }
   },
 
@@ -378,3 +519,4 @@ const DataStore = {
     }
   }
 };
+

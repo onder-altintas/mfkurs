@@ -364,6 +364,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
   currentUser = sessionUser || DataStore.getActiveUser();
   loadData();
+  
+  // Bulut Veritabanı Canlı Dinleyicilerini Başlat
+  if (typeof DataStore.initCloudListeners === 'function') {
+    DataStore.initCloudListeners();
+  }
 
   if (currentUser) {
     showDashboard();
@@ -373,6 +378,47 @@ document.addEventListener('DOMContentLoaded', () => {
 
   setupEventListeners();
 });
+
+// Firebase Gerçek Zamanlı Bulut Senkronizasyon Olayı
+window.onCloudSync = function(type, data) {
+  console.log(`[CloudSync] ${type} buluttan güncellendi:`, data ? (data.length || 'nesne') : 0);
+  
+  if (type === 'courses') {
+    currentCourses = data;
+    if (activeCourseForDetail) {
+      const refreshed = currentCourses.find(c => c.id === activeCourseForDetail.id);
+      if (refreshed) {
+        activeCourseForDetail = refreshed;
+        if (typeof renderStudentsTable === 'function' && courseDetailView && !courseDetailView.classList.contains('hidden')) {
+          renderStudentsTable();
+          if (typeof updateDetailHeaderStats === 'function') updateDetailHeaderStats();
+        }
+      }
+    }
+    if (currentUser) {
+      renderTeacherDashboard();
+      if (typeof renderAdminPanel === 'function') renderAdminPanel();
+    }
+  } else if (type === 'users') {
+    currentUsers = data;
+    if (currentUser) {
+      const me = currentUsers.find(u => u.id === currentUser.id);
+      if (me) {
+        currentUser = me;
+        sessionStorage.setItem('kurs_sonu_session_user', JSON.stringify(currentUser));
+        if (typeof userFullName !== 'undefined' && userFullName) userFullName.innerText = currentUser.fullName;
+        if (typeof userTitle !== 'undefined' && userTitle) userTitle.innerText = currentUser.title;
+      }
+      if (typeof renderUsersTable === 'function') renderUsersTable();
+    }
+  } else if (type === 'centers') {
+    currentCenters = data;
+    if (typeof renderCentersTable === 'function') renderCentersTable();
+  } else if (type === 'templates') {
+    currentTemplates = data;
+    if (typeof renderTemplatesTable === 'function') renderTemplatesTable();
+  }
+};
 
 function loadData() {
   currentCourses = DataStore.getCourses();

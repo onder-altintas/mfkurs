@@ -435,6 +435,13 @@
         <!-- Sağ Taraf: Tema Değiştirici, Kullanıcı Profili ve Çıkış -->
         <div class="flex items-center gap-2.5 sm:gap-3.5">
           
+          <!-- Bulut Senkronizasyon Durumu -->
+          <div id="cloudSyncBadge" class="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800" title="Firebase Bulut Veritabanı Aktif">
+            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            <i data-lucide="cloud" class="w-3.5 h-3.5"></i>
+            <span class="hidden md:inline">Bulut Aktif</span>
+          </div>
+
           <!-- Hızlı Tema Değiştirici -->
           <button
             type="button"
@@ -2573,6 +2580,10 @@
       </form>
     </div>
   </div>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
   <!-- Scriptler -->
   <script src="data.js"></script>
