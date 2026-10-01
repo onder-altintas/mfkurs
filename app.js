@@ -4629,7 +4629,7 @@ function safePrint(htmlContent, isLandscape = false) {
       styleTag.id = 'landscapePrintStyle';
       document.head.appendChild(styleTag);
     }
-    styleTag.innerHTML = `@page { size: A4 landscape !important; margin: 6mm 8mm !important; }`;
+    styleTag.innerHTML = `@page { size: A4 landscape !important; margin: 5mm 6mm !important; }`;
   } else {
     styleTag?.remove();
   }
@@ -4652,7 +4652,7 @@ function safePrint(htmlContent, isLandscape = false) {
   document.body.appendChild(printFrame);
 
   const pageCss = isLandscape
-    ? `@page { size: A4 landscape !important; margin: 6mm 8mm !important; }`
+    ? `@page { size: A4 landscape !important; margin: 5mm 6mm !important; }`
     : `@page { size: A4 portrait !important; margin: 8mm 10mm !important; }`;
 
   const frameDoc = printFrame.contentWindow.document;
@@ -4692,6 +4692,12 @@ function safePrint(htmlContent, isLandscape = false) {
           .defter-page:last-child {
             page-break-after: auto !important;
             break-after: auto !important;
+          }
+          .not-cizelgesi-document, .karar-durumu-document, .sinav-tutanagi-document {
+            page-break-inside: avoid !important;
+            break-inside: avoid !important;
+            padding: 0 !important;
+            margin: 0 auto !important;
           }
         </style>
       </head>
@@ -5205,14 +5211,40 @@ function generateNotCizelgesiHtml(course) {
   const totalRows = Math.max(20, sortedStudents.length);
   const maxModules = 20;
 
+  // Sayfaya tek parça halinde tam sığması için dinamik satır yüksekliği ve yazı boyutu
+  let rowHeight = '18px';
+  let rowFontSize = '7.5pt';
+  let modHeaderHeight = '42px';
+  let modHeaderFontSize = '6.5pt';
+  let nameMaxWidth = '175px';
+
+  if (totalRows > 28) {
+    rowHeight = '14px';
+    rowFontSize = '6.5pt';
+    modHeaderHeight = '35px';
+    modHeaderFontSize = '5.5pt';
+    nameMaxWidth = '155px';
+  } else if (totalRows > 24) {
+    rowHeight = '15.5px';
+    rowFontSize = '7pt';
+    modHeaderHeight = '38px';
+    modHeaderFontSize = '6pt';
+    nameMaxWidth = '165px';
+  } else if (totalRows > 20) {
+    rowHeight = '16.5px';
+    rowFontSize = '7pt';
+    modHeaderHeight = '40px';
+    modHeaderFontSize = '6.5pt';
+    nameMaxWidth = '170px';
+  }
+
   // Header 20 Modül Sütunları
   let moduleHeadersHtml = '';
   for (let m = 1; m <= maxModules; m++) {
     moduleHeadersHtml += `
-      <th style="border: 1px solid black; width: 33px; height: 95px; padding: 2px 1px; font-size: 6.5pt; text-align: center; vertical-align: bottom; background: #fff;">
-        <div style="writing-mode: vertical-lr; transform: rotate(180deg); margin: 0 auto; white-space: nowrap; line-height: 1.15; font-family: Arial, sans-serif;">
-          <span style="font-weight: bold; font-size: 7pt;">${m}.Modül</span><br>
-          <span style="font-size: 5.5pt; color: #333;">Teorik veya Pratik Not</span>
+      <th style="border: 1px solid black; width: 31px; height: ${modHeaderHeight}; padding: 1px; font-size: ${modHeaderFontSize}; text-align: center; vertical-align: middle; background: #fff;">
+        <div style="writing-mode: vertical-lr; transform: rotate(180deg); margin: 0 auto; white-space: nowrap; line-height: 1; font-weight: bold; font-family: Arial, sans-serif;">
+          ${m}. Modül
         </div>
       </th>
     `;
@@ -5239,7 +5271,7 @@ function generateNotCizelgesiHtml(course) {
           if (isDevamsiz) {
             failedCount++;
             moduleCellsHtml += `
-              <td style="border: 1px solid black; text-align: center; font-size: 8pt; font-weight: bold; color: #b91c1c; padding: 1px;">
+              <td style="border: 1px solid black; text-align: center; font-size: ${rowFontSize}; font-weight: bold; color: #b91c1c; padding: 1px;">
                 D
               </td>
             `;
@@ -5253,7 +5285,7 @@ function generateNotCizelgesiHtml(course) {
                 failedCount++;
               }
               moduleCellsHtml += `
-                <td style="border: 1px solid black; text-align: center; font-size: 8pt; font-weight: 600; padding: 1px;">
+                <td style="border: 1px solid black; text-align: center; font-size: ${rowFontSize}; font-weight: 600; padding: 1px;">
                   ${numSc}
                 </td>
               `;
@@ -5261,7 +5293,7 @@ function generateNotCizelgesiHtml(course) {
               // Devam ettiği halde sınava girmediyse 'G'
               failedCount++;
               moduleCellsHtml += `
-                <td style="border: 1px solid black; text-align: center; font-size: 7.5pt; font-weight: bold; color: #b45309; padding: 1px;">
+                <td style="border: 1px solid black; text-align: center; font-size: ${rowFontSize}; font-weight: bold; color: #b45309; padding: 1px;">
                   G
                 </td>
               `;
@@ -5270,7 +5302,7 @@ function generateNotCizelgesiHtml(course) {
         } else {
           // Boş kalacak olan modüllerin not hücreleri yatay olarak çizilir
           moduleCellsHtml += `
-            <td style="border: 1px solid black; text-align: center; padding: 0; position: relative; height: 20px;">
+            <td style="border: 1px solid black; text-align: center; padding: 0; position: relative; height: ${rowHeight};">
               <div style="width: 100%; border-bottom: 1.5px solid black; position: absolute; top: 50%; left: 0;"></div>
             </td>
           `;
@@ -5300,11 +5332,11 @@ function generateNotCizelgesiHtml(course) {
       }
 
       rowsHtml += `
-        <tr style="height: 20px;">
-          <td style="border: 1px solid black; text-align: center; font-size: 8pt; font-weight: bold; padding: 1px;">${i}</td>
-          <td style="border: 1px solid black; padding: 1px 6px; font-size: 8pt; font-weight: 500; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px;">${escapeHtml(sFullName)}</td>
+        <tr style="height: ${rowHeight};">
+          <td style="border: 1px solid black; text-align: center; font-size: ${rowFontSize}; font-weight: bold; padding: 1px;">${i}</td>
+          <td style="border: 1px solid black; padding: 1px 6px; font-size: ${rowFontSize}; font-weight: 500; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: ${nameMaxWidth};">${escapeHtml(sFullName)}</td>
           ${moduleCellsHtml}
-          <td style="border: 1px solid black; text-align: center; font-size: 7.5pt; font-weight: bold; color: ${sonucColor}; padding: 1px; white-space: nowrap;">
+          <td style="border: 1px solid black; text-align: center; font-size: ${rowFontSize}; font-weight: bold; color: ${sonucColor}; padding: 1px; white-space: nowrap;">
             ${sonucText}
           </td>
         </tr>
@@ -5317,7 +5349,7 @@ function generateNotCizelgesiHtml(course) {
           emptyCellsHtml += `<td style="border: 1px solid black; padding: 0;">&nbsp;</td>`;
         } else {
           emptyCellsHtml += `
-            <td style="border: 1px solid black; text-align: center; padding: 0; position: relative; height: 20px;">
+            <td style="border: 1px solid black; text-align: center; padding: 0; position: relative; height: ${rowHeight};">
               <div style="width: 100%; border-bottom: 1.5px solid black; position: absolute; top: 50%; left: 0;"></div>
             </td>
           `;
@@ -5325,8 +5357,8 @@ function generateNotCizelgesiHtml(course) {
       }
 
       rowsHtml += `
-        <tr style="height: 20px;">
-          <td style="border: 1px solid black; text-align: center; font-size: 8pt; font-weight: bold; padding: 1px;">${i}</td>
+        <tr style="height: ${rowHeight};">
+          <td style="border: 1px solid black; text-align: center; font-size: ${rowFontSize}; font-weight: bold; padding: 1px;">${i}</td>
           <td style="border: 1px solid black; padding: 1px 6px;">&nbsp;</td>
           ${emptyCellsHtml}
           <td style="border: 1px solid black; padding: 0;">&nbsp;</td>
@@ -5336,26 +5368,26 @@ function generateNotCizelgesiHtml(course) {
   }
 
   return `
-    <div class="not-cizelgesi-document" style="font-family: Arial, Helvetica, sans-serif; color: #000; line-height: 1.25; width: 100%; max-width: 1060px; margin: 0 auto; background: #fff; padding: 20px 25px; box-sizing: border-box;">
+    <div class="not-cizelgesi-document" style="font-family: Arial, Helvetica, sans-serif; color: #000; line-height: 1.2; width: 100%; max-width: 1040px; margin: 0 auto; background: #fff; padding: 4px 8px; box-sizing: border-box; page-break-inside: avoid; break-inside: avoid;">
       
       <!-- BAŞLIK -->
-      <div style="text-align: center; margin-bottom: 12px;">
-        <h2 style="font-size: 11pt; font-weight: bold; margin: 0; text-transform: uppercase; letter-spacing: 0.5px;">
+      <div style="text-align: center; margin-bottom: 6px;">
+        <h2 style="font-size: 10pt; font-weight: bold; margin: 0; text-transform: uppercase; letter-spacing: 0.5px;">
           ${escapeHtml(institution)}
         </h2>
-        <h1 style="font-size: 12.5pt; font-weight: bold; margin: 3px 0 0 0; text-transform: uppercase; letter-spacing: 1px;">
+        <h1 style="font-size: 11pt; font-weight: bold; margin: 2px 0 0 0; text-transform: uppercase; letter-spacing: 0.5px;">
           MODÜL DEĞERLENDİRME ÇİZELGESİ
         </h1>
       </div>
 
       <!-- KURS BİLGİLERİ (3 SÜTUN) -->
-      <div style="display: flex; justify-content: space-between; align-items: flex-start; font-size: 8.5pt; margin-bottom: 10px; line-height: 1.6;">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; font-size: 8pt; margin-bottom: 6px; line-height: 1.35;">
         
         <!-- Sol Sütun -->
-        <table style="border-collapse: collapse; border: none; font-size: 8.5pt;">
+        <table style="border-collapse: collapse; border: none; font-size: 8pt;">
           <tr>
-            <td style="font-weight: bold; width: 110px;">Kurs Adı</td>
-            <td style="font-weight: bold; width: 15px;">:</td>
+            <td style="font-weight: bold; width: 100px;">Kurs Adı</td>
+            <td style="font-weight: bold; width: 12px;">:</td>
             <td style="font-weight: 600;">${escapeHtml(courseName)}</td>
           </tr>
           <tr>
@@ -5371,19 +5403,19 @@ function generateNotCizelgesiHtml(course) {
         </table>
 
         <!-- Orta Sütun -->
-        <table style="border-collapse: collapse; border: none; font-size: 8.5pt;">
+        <table style="border-collapse: collapse; border: none; font-size: 8pt;">
           <tr>
-            <td style="font-weight: bold; width: 85px;">Modül Sayısı</td>
-            <td style="font-weight: bold; width: 15px;">:</td>
-            <td style="font-weight: bold; font-size: 9pt;">${moduleCount}</td>
+            <td style="font-weight: bold; width: 80px;">Modül Sayısı</td>
+            <td style="font-weight: bold; width: 12px;">:</td>
+            <td style="font-weight: bold; font-size: 8.5pt;">${moduleCount}</td>
           </tr>
         </table>
 
         <!-- Sağ Sütun -->
-        <table style="border-collapse: collapse; border: none; font-size: 8.5pt;">
+        <table style="border-collapse: collapse; border: none; font-size: 8pt;">
           <tr>
-            <td style="font-weight: bold; width: 95px;">Başlama Tarihi</td>
-            <td style="font-weight: bold; width: 15px;">:</td>
+            <td style="font-weight: bold; width: 90px;">Başlama Tarihi</td>
+            <td style="font-weight: bold; width: 12px;">:</td>
             <td>${startDate}</td>
           </tr>
           <tr>
@@ -5396,35 +5428,35 @@ function generateNotCizelgesiHtml(course) {
       </div>
 
       <!-- NOT ÇİZELGESİ ANA TABLOSU -->
-      <table style="width: 100%; border-collapse: collapse; border: 1.5px solid black; font-size: 7.5pt;">
+      <table style="width: 100%; border-collapse: collapse; border: 1.5px solid black; font-size: 7pt; page-break-inside: avoid; break-inside: avoid;">
         <thead>
-          <tr style="background: #fafafa;">
-            <th rowspan="2" style="border: 1px solid black; width: 28px; text-align: center; font-weight: bold; font-size: 7.5pt;">
+          <tr style="background: #fafafa; height: 20px;">
+            <th rowspan="2" style="border: 1px solid black; width: 26px; text-align: center; font-weight: bold; font-size: 7pt; padding: 1px;">
               Sıra<br>No
             </th>
-            <th rowspan="2" style="border: 1px solid black; width: 180px; position: relative; padding: 0; min-width: 160px; background: #fff;">
+            <th rowspan="2" style="border: 1px solid black; width: 175px; min-width: 155px; position: relative; padding: 0; background: #fff;">
               <svg style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;" preserveAspectRatio="none" viewBox="0 0 100 100">
                 <line x1="0" y1="0" x2="100" y2="100" stroke="black" stroke-width="0.8" />
               </svg>
-              <div style="position: absolute; top: 6px; right: 8px; font-size: 6.5pt; font-weight: bold; text-align: right; line-height: 1.15;">
+              <div style="position: absolute; top: 3px; right: 6px; font-size: 6pt; font-weight: bold; text-align: right; line-height: 1.1;">
                 Modül<br>Kodu / Adı
               </div>
-              <div style="position: absolute; bottom: 6px; left: 8px; font-size: 6.5pt; font-weight: bold; text-align: left; line-height: 1.15;">
+              <div style="position: absolute; bottom: 3px; left: 6px; font-size: 6pt; font-weight: bold; text-align: left; line-height: 1.1;">
                 Kursiyerin Adı Soyadı
               </div>
             </th>
-            <th colspan="${maxModules}" style="border: 1px solid black; text-align: center; font-weight: bold; font-size: 8pt; padding: 4px; letter-spacing: 0.5px;">
-              MODÜL DEĞERLENDİRME NOTU
+            <th colspan="${maxModules}" style="border: 1px solid black; text-align: center; font-weight: bold; font-size: 7.5pt; padding: 2px 4px; letter-spacing: 0.3px;">
+              MODÜL DEĞERLENDİRME NOTLARI (Teorik / Pratik)
             </th>
-            <th style="border: 1px solid black; width: 85px; text-align: center; font-weight: bold; font-size: 8pt; padding: 4px;">
+            <th style="border: 1px solid black; width: 75px; text-align: center; font-weight: bold; font-size: 7.5pt; padding: 2px;">
               SONUÇ
             </th>
           </tr>
           <tr style="background: #fff;">
             ${moduleHeadersHtml}
-            <th style="border: 1px solid black; width: 85px; padding: 2px; font-size: 5.5pt; text-align: center; font-weight: normal; line-height: 1.25;">
-              Tüm modüller başarılı ise<br>
-              <strong style="font-size: 6.5pt;">"${escapeHtml(docType)}"</strong><br>
+            <th style="border: 1px solid black; width: 75px; padding: 1px; font-size: 5.5pt; text-align: center; font-weight: normal; line-height: 1.15;">
+              Tüm modüller geçerse<br>
+              <strong style="font-size: 6pt;">"${escapeHtml(docType)}"</strong><br>
               <span style="color: #444; font-size: 5pt;">Transkript / Başarısız / Devamsız</span>
             </th>
           </tr>
@@ -5435,26 +5467,26 @@ function generateNotCizelgesiHtml(course) {
       </table>
 
       <!-- ALT AÇIKLAMA NOTLARI VE İMZA -->
-      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-top: 10px; font-size: 7pt; line-height: 1.4;">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-top: 6px; font-size: 6.5pt; line-height: 1.3; page-break-inside: avoid; break-inside: avoid;">
         
         <!-- Notlar -->
-        <div style="max-width: 72%;">
+        <div style="max-width: 74%;">
           <div><strong>NOT :</strong></div>
           <div><strong>1-</strong> Modüller, öğrenme faaliyetlerindeki teorik ve uygulamalı tüm içeriği kapsadığından teorik/pratik ayrımı gözetilmeksizin tek değerlendirme yapılır.</div>
           <div><strong>2-</strong> Modül sonunda yapılacak değerlendirmenin (Yazılı, sözlü ve uygulama notlarından biri ya da birkaçının ortalaması) aritmetik ortalaması alınarak işlenecektir.</div>
           <div><strong>3-</strong> Kursiyerlerin devam etmediği modüllere <strong>(D)</strong>, devam ettiği halde çeşitli nedenlerle sınava girmediyse <strong>(G)</strong> harfi işlenecektir.</div>
           <div style="display: flex; align-items: center; gap: 4px;">
             <span><strong>4-</strong> Boş kalacak olan modüllerin not hücreleri</span>
-            <span style="display: inline-block; width: 35px; border-bottom: 1.5px solid black; vertical-align: middle; margin: 0 4px;"></span>
+            <span style="display: inline-block; width: 30px; border-bottom: 1.5px solid black; vertical-align: middle; margin: 0 3px;"></span>
             <span>şeklinde yatay olarak çizilmelidir.</span>
           </div>
         </div>
 
         <!-- Öğretmen İmza Alanı -->
-        <div style="text-align: center; min-width: 190px; margin-top: 4px;">
-          <div style="font-size: 7.5pt;">... / ... / 202...</div>
-          <div style="margin-top: 24px; font-weight: bold; font-size: 8.5pt;">${escapeHtml(instructor)}</div>
-          <div style="font-size: 7pt; color: #222;">Adı Soyadı - İmzası</div>
+        <div style="text-align: center; min-width: 170px; margin-top: 2px;">
+          <div style="font-size: 7pt;">... / ... / 202...</div>
+          <div style="margin-top: 14px; font-weight: bold; font-size: 8pt; color: #111;">${escapeHtml(instructor)}</div>
+          <div style="font-size: 6.5pt; color: #333;">Adı Soyadı - İmzası</div>
         </div>
 
       </div>
