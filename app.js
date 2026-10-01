@@ -4632,8 +4632,155 @@ window.closeKararDurumuPreview = function() {
   modal?.classList.add('hidden');
 };
 
-// Güvenli ve Kararlı Yazdırma Motoru (Baskı önizlemesinin boş çıkmasını %100 önler)
-function safePrint(htmlContent, isLandscape = false) {
+// Yardımcı: Kurs Numarasını (Kodunu) Güvenli Alma
+function getCourseNumber(course) {
+  if (!course) return '';
+  const num = (course.code || course.id || '').trim();
+  return num.replace(/[\\/:*?"<>|]/g, '-');
+}
+
+// Yardımcı: Belge İsmi ve Kurs No Birleştirme (örn: "Kursiyer Karar Durumu - BLG-2026-01")
+function getDocumentSaveTitle(docName, course) {
+  const c = course || activeCourseForDetail;
+  const num = getCourseNumber(c);
+  return num ? `${docName} - ${num}` : docName;
+}
+
+// Bağımsız İndirilebilir HTML Belge Şablonu Oluşturucu
+function generateStandaloneDocumentHtml(title, htmlContent, isLandscape = false) {
+  const pageCss = isLandscape
+    ? `@page { size: A4 landscape !important; margin: 4mm 5mm !important; }`
+    : `@page { size: A4 portrait !important; margin: 8mm 10mm !important; }`;
+
+  return `<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <title>${escapeHtml(title)}</title>
+  <style>
+    ${pageCss}
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+    html, body {
+      margin: 0 !important;
+      padding: 0 !important;
+      background: #ffffff !important;
+      color: #000000 !important;
+      font-family: Arial, Helvetica, sans-serif !important;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+    table {
+      border-collapse: collapse !important;
+    }
+    .print-page-break {
+      page-break-before: always !important;
+      break-before: page !important;
+    }
+    .defter-page {
+      page-break-after: always !important;
+      break-after: page !important;
+      box-sizing: border-box !important;
+    }
+    .defter-page:last-child {
+      page-break-after: auto !important;
+      break-after: auto !important;
+    }
+    .not-cizelgesi-document, .karar-durumu-document, .sinav-tutanagi-document {
+      page-break-inside: avoid !important;
+      break-inside: avoid !important;
+      page-break-after: avoid !important;
+      break-after: avoid !important;
+      padding: 0 !important;
+      margin: 0 auto !important;
+    }
+    @media print {
+      .no-print {
+        display: none !important;
+      }
+    }
+    @media screen {
+      body {
+        background-color: #f1f5f9 !important;
+        padding: 24px 12px !important;
+      }
+      .standalone-container {
+        background-color: #ffffff;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+        margin: 0 auto;
+        border-radius: 8px;
+        padding: 16px;
+        max-width: ${isLandscape ? '1100px' : '850px'};
+      }
+      .no-print-bar {
+        position: sticky;
+        top: 10px;
+        max-width: ${isLandscape ? '1100px' : '850px'};
+        margin: 0 auto 16px auto;
+        background: #1e293b;
+        color: #ffffff;
+        padding: 12px 20px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        font-size: 13px;
+        z-index: 10000;
+      }
+      .no-print-bar button {
+        background: #0284c7;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .no-print-bar button:hover {
+        background: #0369a1;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="no-print-bar no-print">
+    <div><strong>${escapeHtml(title)}</strong> &bull; Resmi A4 Şablonu</div>
+    <button onclick="window.print()">
+      Yazdır / PDF Olarak Kaydet
+    </button>
+  </div>
+  <div class="standalone-container">
+    ${htmlContent}
+  </div>
+</body>
+</html>`;
+}
+
+// Metin / HTML Dosyası İndirme Yardımcısı
+function downloadTextFile(filename, text, mimeType = 'text/html;charset=utf-8') {
+  const blob = new Blob([text], { type: mimeType });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => {
+    try {
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch(e) {}
+  }, 300);
+}
+
+// Güvenli ve Kararlı Yazdırma Motoru (Baskı önizlemesinin boş çıkmasını %100 önler ve PDF ismini tam ayarlar)
+function safePrint(htmlContent, isLandscape = false, documentTitle = 'Resmi Evrak Baskısı') {
   if (!htmlContent) {
     alert('Yazdırılacak evrak içeriği bulunamadı.');
     return;
@@ -4658,6 +4805,17 @@ function safePrint(htmlContent, isLandscape = false) {
   } else {
     styleTag?.remove();
   }
+
+  // Tarayıcı PDF dosya adı için sayfa başlığını ayarla
+  const originalTitle = document.title;
+  if (documentTitle) {
+    document.title = documentTitle;
+  }
+  const restoreTitle = () => {
+    try {
+      document.title = originalTitle;
+    } catch(e) {}
+  };
 
   // 2. İzole Gizli Iframe (Tarayıcı önizleme penceresinde boş sayfa çıkmasını tamamen engeller)
   let printFrame = document.getElementById('securePrintIframe');
@@ -4687,7 +4845,7 @@ function safePrint(htmlContent, isLandscape = false) {
     <html lang="tr">
       <head>
         <meta charset="utf-8">
-        <title>Resmi Evrak Baskısı</title>
+        <title>${escapeHtml(documentTitle || 'Resmi Evrak Baskısı')}</title>
         <style>
           ${pageCss}
           *, *::before, *::after {
@@ -4735,6 +4893,12 @@ function safePrint(htmlContent, isLandscape = false) {
   `);
   frameDoc.close();
 
+  try {
+    printFrame.contentWindow.addEventListener('afterprint', restoreTitle, { once: true });
+  } catch(e) {}
+  window.addEventListener('afterprint', restoreTitle, { once: true });
+  setTimeout(restoreTitle, 6000);
+
   // Render tamamlandıktan sonra baskı penceresini aç
   setTimeout(() => {
     try {
@@ -4749,7 +4913,181 @@ function safePrint(htmlContent, isLandscape = false) {
 
 window.triggerPrintKararDurumu = function() {
   if (!activeCourseForDetail) return;
-  safePrint(generateKararDurumuHtml(activeCourseForDetail), false);
+  const title = getDocumentSaveTitle('Kursiyer Karar Durumu', activeCourseForDetail);
+  safePrint(generateKararDurumuHtml(activeCourseForDetail), false, title);
+};
+
+// =================== KURS SONU EVRAKLARINI TOPLU KAYDETME YÖNETİMİ ===================
+
+window.openSaveAllDocumentsModal = function() {
+  if (!activeCourseForDetail) {
+    alert('Lütfen önce bir kurs seçiniz.');
+    return;
+  }
+  const course = activeCourseForDetail;
+  const courseNumber = getCourseNumber(course) || 'KODSUZ';
+  const courseName = course.name || course.title || 'Kurs';
+
+  const badge = document.getElementById('saveAllCourseCodeBadge');
+  if (badge) badge.textContent = `Kurs No: ${courseNumber}`;
+
+  const sub = document.getElementById('saveAllCourseSubTitle');
+  if (sub) sub.innerHTML = `<strong>${escapeHtml(courseName)}</strong> &bull; Tüm resmi evraklar kendi belge isimleri ve kurs no (${escapeHtml(courseNumber)}) ile kaydedilir.`;
+
+  const container = document.getElementById('saveAllDocumentsList');
+  if (container) {
+    const docs = [
+      { id: 'karar', name: 'Kursiyer Karar Durumu', desc: '1. Belge &bull; Dikey A4 &bull; Resmi Başarı ve Karar Tutanağı', icon: 'file-text', color: 'text-[#335C67] dark:text-[#FFF3B0]', printFn: 'triggerPrintKararDurumu()' },
+      { id: 'defter', name: 'Yoklama ve Ders Defteri', desc: '2. Belge &bull; Dikey A4 &bull; Kapak, Yoklama ve Günlük Ders Sayfaları', icon: 'book-open', color: 'text-emerald-600 dark:text-emerald-400', printFn: 'triggerPrintDefter()' },
+      { id: 'not', name: 'Modül Değerlendirme Çizelgesi', desc: '3. Belge &bull; Yatay A4 &bull; Modül Sınav Notları ve Başarı Durumu', icon: 'graduation-cap', color: 'text-indigo-600 dark:text-indigo-400', printFn: 'triggerPrintNotCizelgesi()' },
+      { id: 'sinav', name: 'Sınav Tutanağı', desc: '4. Belge &bull; Dikey A4 &bull; Kursiyer Sınav Katılım İmzaları', icon: 'clipboard-check', color: 'text-rose-600 dark:text-rose-400', printFn: 'triggerPrintSinavTutanagi()' },
+      { id: 'imza', name: 'İmza Listesi', desc: '5. Belge &bull; Yatay A4 &bull; Günlük Ders Katılım İmza Çizelgesi', icon: 'pen-tool', color: 'text-purple-600 dark:text-purple-400', printFn: 'triggerPrintImzaListesi()' }
+    ];
+
+    container.innerHTML = docs.map(d => {
+      const fileName = `${d.name} - ${courseNumber}`;
+      return `
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between p-3 bg-white dark:bg-[#152125] border border-slate-200 dark:border-[#23353c] rounded-xl hover:border-[#335C67] dark:hover:border-[#FFF3B0]/60 transition gap-2 shadow-2xs">
+          <div class="flex items-center gap-3">
+            <div class="p-2 rounded-lg bg-slate-100 dark:bg-[#10191b] ${d.color} shrink-0">
+              <i data-lucide="${d.icon}" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <div class="font-bold text-xs sm:text-sm text-slate-800 dark:text-slate-100 flex items-center gap-1.5 flex-wrap">
+                <span>${escapeHtml(fileName)}</span>
+                <span class="text-[10px] px-1.5 py-0.2 bg-slate-100 dark:bg-[#10191b] text-slate-500 rounded font-mono">.pdf / .html</span>
+              </div>
+              <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">${d.desc}</div>
+            </div>
+          </div>
+          <div class="flex items-center gap-2 self-end sm:self-auto shrink-0">
+            <button
+              type="button"
+              onclick="${d.printFn}"
+              class="flex items-center gap-1 px-3 py-1.5 bg-[#335C67] hover:bg-[#284952] text-white rounded-lg text-xs font-semibold shadow-2xs cursor-pointer transition"
+              title="PDF Olarak Kaydet / Yazdır"
+            >
+              <i data-lucide="printer" class="w-3.5 h-3.5 text-[#FFF3B0]"></i>
+              <span>PDF Kaydet</span>
+            </button>
+            <button
+              type="button"
+              onclick="downloadSingleDocument('${escapeHtml(d.name)}')"
+              class="flex items-center gap-1 px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-[#10191b] dark:hover:bg-[#19272c] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-[#2b3e45] rounded-lg text-xs font-semibold cursor-pointer transition"
+              title="HTML Belgesi Olarak İndir"
+            >
+              <i data-lucide="download" class="w-3.5 h-3.5"></i>
+              <span>İndir</span>
+            </button>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  const modal = document.getElementById('saveAllDocumentsModal');
+  modal?.classList.remove('hidden');
+  refreshLucide();
+};
+
+window.closeSaveAllDocumentsModal = function() {
+  const modal = document.getElementById('saveAllDocumentsModal');
+  modal?.classList.add('hidden');
+};
+
+window.downloadSingleDocument = function(docName) {
+  if (!activeCourseForDetail) return;
+  const course = activeCourseForDetail;
+  const courseNumber = getCourseNumber(course) || 'KODSUZ';
+  let html = '';
+  let isLandscape = false;
+
+  if (docName.includes('Karar')) {
+    html = generateKararDurumuHtml(course);
+    isLandscape = false;
+  } else if (docName.includes('Defter') || docName.includes('Yoklama')) {
+    html = generateDefterHtml(course);
+    isLandscape = false;
+  } else if (docName.includes('Modül') || docName.includes('Çizelge') || docName.includes('Not')) {
+    html = generateNotCizelgesiHtml(course);
+    isLandscape = true;
+  } else if (docName.includes('Sınav') || docName.includes('Tutanak')) {
+    html = generateSinavTutanagiHtml(course);
+    isLandscape = false;
+  } else if (docName.includes('İmza') || docName.includes('imza')) {
+    html = generateImzaListesiHtml(course);
+    isLandscape = true;
+  } else {
+    html = generateKararDurumuHtml(course);
+    isLandscape = false;
+  }
+
+  const fileTitle = `${docName} - ${courseNumber}`;
+  const fullHtml = generateStandaloneDocumentHtml(fileTitle, html, isLandscape);
+  downloadTextFile(`${fileTitle}.html`, fullHtml, 'text/html;charset=utf-8');
+  showAutoSaveToast(`"${fileTitle}" başarıyla indirildi`);
+};
+
+window.downloadAllCourseDocuments = function() {
+  if (!activeCourseForDetail) return;
+  const course = activeCourseForDetail;
+  const courseNumber = getCourseNumber(course) || 'KODSUZ';
+
+  const docs = [
+    { name: 'Kursiyer Karar Durumu', html: generateKararDurumuHtml(course), isLandscape: false },
+    { name: 'Yoklama ve Ders Defteri', html: generateDefterHtml(course), isLandscape: false },
+    { name: 'Modül Değerlendirme Çizelgesi', html: generateNotCizelgesiHtml(course), isLandscape: true },
+    { name: 'Sınav Tutanağı', html: generateSinavTutanagiHtml(course), isLandscape: false },
+    { name: 'İmza Listesi', html: generateImzaListesiHtml(course), isLandscape: true }
+  ];
+
+  docs.forEach((d, index) => {
+    setTimeout(() => {
+      const fileTitle = `${d.name} - ${courseNumber}`;
+      const fullHtml = generateStandaloneDocumentHtml(fileTitle, d.html, d.isLandscape);
+      downloadTextFile(`${fileTitle}.html`, fullHtml, 'text/html;charset=utf-8');
+    }, index * 200);
+  });
+
+  showAutoSaveToast(`5 resmi evrak "${courseNumber}" numarasıyla indiriliyor`);
+};
+
+window.printMergedAllDocuments = function() {
+  if (!activeCourseForDetail) return;
+  const course = activeCourseForDetail;
+  const courseNumber = getCourseNumber(course) || 'KODSUZ';
+
+  const docTitle = `Tüm Kurs Sonu Evrakları - ${courseNumber}`;
+  const mergedHtml = `
+    <div class="merged-all-documents">
+      <!-- 1. Kursiyer Karar Durumu -->
+      <div class="merged-doc-section" style="page-break-after: always; break-after: page;">
+        ${generateKararDurumuHtml(course)}
+      </div>
+
+      <!-- 2. Yoklama ve Ders Defteri -->
+      <div class="merged-doc-section" style="page-break-after: always; break-after: page;">
+        ${generateDefterHtml(course)}
+      </div>
+
+      <!-- 3. Modül Değerlendirme Çizelgesi -->
+      <div class="merged-doc-section" style="page-break-after: always; break-after: page;">
+        ${generateNotCizelgesiHtml(course)}
+      </div>
+
+      <!-- 4. Sınav Tutanağı -->
+      <div class="merged-doc-section" style="page-break-after: always; break-after: page;">
+        ${generateSinavTutanagiHtml(course)}
+      </div>
+
+      <!-- 5. İmza Listesi -->
+      <div class="merged-doc-section">
+        ${generateImzaListesiHtml(course)}
+      </div>
+    </div>
+  `;
+
+  safePrint(mergedHtml, false, docTitle);
 };
 
 // =================== RESMİ EVRAK 2: YOKLAMA VE DERS DEFTERİ ===================
@@ -5194,7 +5532,8 @@ window.closeDefterPreview = function() {
 
 window.triggerPrintDefter = function() {
   if (!activeCourseForDetail) return;
-  safePrint(generateDefterHtml(activeCourseForDetail), false);
+  const title = getDocumentSaveTitle('Yoklama ve Ders Defteri', activeCourseForDetail);
+  safePrint(generateDefterHtml(activeCourseForDetail), false, title);
 };
 
 window.triggerPrintDocument = function(documentName) {
@@ -5206,6 +5545,8 @@ window.triggerPrintDocument = function(documentName) {
     triggerPrintSinavTutanagi();
   } else if (documentName && (documentName.includes('İmza') || documentName.includes('imza'))) {
     triggerPrintImzaListesi();
+  } else if (documentName && (documentName.includes('Plan') || documentName.includes('Konu'))) {
+    triggerPrintDefter();
   } else {
     triggerPrintKararDurumu();
   }
@@ -5490,7 +5831,8 @@ window.closeNotCizelgesiPreview = function() {
 
 window.triggerPrintNotCizelgesi = function() {
   if (!activeCourseForDetail) return;
-  safePrint(generateNotCizelgesiHtml(activeCourseForDetail), true);
+  const title = getDocumentSaveTitle('Modül Değerlendirme Çizelgesi', activeCourseForDetail);
+  safePrint(generateNotCizelgesiHtml(activeCourseForDetail), true, title);
 };
 
 // =================== RESMİ EVRAK 4: SINAV TUTANAĞI (SINAV KATILIM LİSTESİ) ===================
@@ -5616,7 +5958,8 @@ window.closeSinavTutanagiPreview = function() {
 
 window.triggerPrintSinavTutanagi = function() {
   if (!activeCourseForDetail) return;
-  safePrint(generateSinavTutanagiHtml(activeCourseForDetail), false);
+  const title = getDocumentSaveTitle('Sınav Tutanağı', activeCourseForDetail);
+  safePrint(generateSinavTutanagiHtml(activeCourseForDetail), false, title);
 };
 
 // =================== RESMİ EVRAK 5: İMZA LİSTESİ (GÜNLÜK İMZA ÇİZELGESİ) ===================
@@ -5750,7 +6093,8 @@ window.closeImzaListesiPreview = function() {
 
 window.triggerPrintImzaListesi = function() {
   if (!activeCourseForDetail) return;
-  safePrint(generateImzaListesiHtml(activeCourseForDetail), true);
+  const title = getDocumentSaveTitle('İmza Listesi', activeCourseForDetail);
+  safePrint(generateImzaListesiHtml(activeCourseForDetail), true, title);
 };
 
 // Yardımcı Fonksiyonlar
