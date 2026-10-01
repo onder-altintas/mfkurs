@@ -2079,71 +2079,58 @@
           </div>
         </div>
 
-        <!-- TARİH GEZİNME BARI: Sol Ok, Seçili Tarih (Kurs Günleri), Sağ Ok & Hızlı Sıfırlama -->
-        <div class="bg-white dark:bg-[#152125] p-2.5 sm:p-3 rounded-2xl border-2 border-[#335C67]/30 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-2.5">
-          <!-- Sol Ok (Önceki Kurs Günü) -->
+        <!-- TARİH GEZİNME BARI: Sol Ok (Önceki Gün), Seçili Tarih (Ders Günleri), Sağ Ok (Sonraki Gün) -->
+        <div class="bg-white dark:bg-[#152125] p-3 sm:p-4 rounded-2xl border-2 border-[#335C67]/30 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-3">
+          <!-- Sol Ok (Önceki Gün Butonu - Büyük & Belirgin) -->
           <button
             type="button"
             id="attPrevDateBtn"
-            class="w-full sm:w-auto px-3.5 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-[#10191b] dark:hover:bg-[#1f3036] text-slate-800 dark:text-slate-100 font-bold rounded-xl text-xs transition cursor-pointer flex items-center justify-center gap-1.5 border border-slate-200 dark:border-[#23353c] disabled:opacity-40 disabled:cursor-not-allowed"
-            title="Önceki Ders Günü"
+            class="w-full sm:w-auto px-5 py-3 sm:py-3.5 bg-gradient-to-r from-[#284952] to-[#335C67] hover:from-[#1f383f] hover:to-[#284952] text-white font-extrabold rounded-2xl text-xs sm:text-sm shadow-md shadow-[#335C67]/25 transition-all duration-200 cursor-pointer flex items-center justify-center gap-2 border border-[#335C67]/40 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-25 disabled:pointer-events-none disabled:transform-none select-none"
+            title="Önceki Ders Gününe Git"
           >
-            <i data-lucide="chevron-left" class="w-4 h-4 text-[#335C67] dark:text-[#FFF3B0]"></i>
-            <span>Önceki Ders</span>
+            <i data-lucide="chevron-left" class="w-5 h-5 text-amber-300"></i>
+            <span>Önceki Gün</span>
           </button>
 
           <!-- Orta Bölüm: Seçili Tarih & Gün Rozeti -->
-          <div class="text-center space-y-0.5">
-            <div class="flex flex-wrap items-center justify-center gap-2">
-              <span class="p-1 rounded-lg bg-[#335C67]/10 text-[#335C67] dark:text-[#FFF3B0]">
-                <i data-lucide="calendar" class="w-4 h-4"></i>
+          <div class="text-center space-y-1.5 py-1 px-2">
+            <div class="flex flex-wrap items-center justify-center gap-2 sm:gap-3">
+              <span class="p-1.5 rounded-xl bg-[#335C67]/10 dark:bg-[#335C67]/25 text-[#335C67] dark:text-[#FFF3B0]">
+                <i data-lucide="calendar" class="w-5 h-5"></i>
               </span>
-              <span id="attCurrentDateDisplay" class="text-sm sm:text-base font-black text-slate-800 dark:text-slate-100 tracking-tight">
+              <span id="attCurrentDateDisplay" class="text-base sm:text-lg font-black text-slate-900 dark:text-slate-100 tracking-tight">
                 -
               </span>
-              <select id="attDateSelectDropdown" class="text-xs px-2 py-1 rounded-lg bg-slate-50 dark:bg-[#10191b] border border-slate-200 dark:border-[#23353c] text-slate-700 dark:text-slate-300 font-bold cursor-pointer" title="Ders günleri listesinden seç">
+              <select id="attDateSelectDropdown" class="text-xs sm:text-sm px-2.5 py-1.5 rounded-xl bg-slate-50 dark:bg-[#10191b] border-2 border-slate-200 dark:border-[#23353c] text-slate-800 dark:text-slate-200 font-bold cursor-pointer hover:border-[#335C67] transition" title="Tüm ders günleri listesinden seç">
                 <!-- JS ile doldurulacak -->
               </select>
             </div>
-            <div class="flex items-center justify-center gap-2 text-[11px] text-slate-500 dark:text-slate-400">
-              <span id="attLessonDayBadge" class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-[#335C67]/10 text-[#335C67] dark:text-[#FFF3B0] border border-[#335C67]/20">
+            <div class="flex flex-wrap items-center justify-center gap-2 text-xs text-slate-500 dark:text-slate-400">
+              <span id="attLessonDayBadge" class="px-2.5 py-0.5 rounded-full text-xs font-black bg-[#335C67]/10 text-[#335C67] dark:text-[#FFF3B0] border border-[#335C67]/25">
                 1. Ders Günü
               </span>
               <span>•</span>
-              <span id="attLessonDailyHoursNotice" class="font-medium text-slate-600 dark:text-slate-300">
+              <span id="attLessonDailyHoursNotice" class="font-semibold text-slate-700 dark:text-slate-300">
                 Günlük Ders Saati: 4 Saat
               </span>
               <span>•</span>
-              <span class="inline-flex items-center gap-1 text-[10px] text-emerald-700 dark:text-emerald-300 font-bold bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-800 shadow-2xs" title="Tüm devamsızlık girişleri anında buluta ve hafızaya otomatik olarak kaydedilir">
-                <i data-lucide="zap" class="w-3 h-3 text-emerald-600 dark:text-emerald-400"></i>
+              <span class="inline-flex items-center gap-1.5 text-xs text-emerald-700 dark:text-emerald-300 font-bold bg-emerald-50 dark:bg-emerald-950/60 px-2.5 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-800 shadow-2xs" title="Tüm devamsızlık girişleri anında buluta ve hafızaya otomatik olarak kaydedilir">
+                <i data-lucide="zap" class="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400"></i>
                 <span>Otomatik Kaydedilir</span>
               </span>
             </div>
           </div>
 
-          <!-- Sağ Taraf: Sağ Ok & Hızlı Butonlar -->
-          <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
-            <button
-              id="markDayPresentBtn"
-              type="button"
-              class="px-2.5 py-1.5 bg-[#335C67]/10 hover:bg-[#335C67]/20 text-[#335C67] dark:text-[#FFF3B0] text-xs font-semibold rounded-xl border border-[#335C67]/30 cursor-pointer flex items-center gap-1 transition"
-              title="Bu ders günü için tüm kursiyerleri 'Geldi (0 Saat)' yap"
-            >
-              <i data-lucide="check-check" class="w-3.5 h-3.5"></i>
-              <span class="hidden md:inline">Bu Günü</span> <span>Geldi Yap</span>
-            </button>
-
-            <!-- Sağ Ok (Sonraki Kurs Günü) -->
-            <button
-              type="button"
-              id="attNextDateBtn"
-              class="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-[#10191b] dark:hover:bg-[#1f3036] text-slate-800 dark:text-slate-100 font-bold rounded-xl text-xs transition cursor-pointer flex items-center justify-center gap-1.5 border border-slate-200 dark:border-[#23353c] disabled:opacity-40 disabled:cursor-not-allowed"
-              title="Sonraki Ders Günü"
-            >
-              <span>Sonraki Ders</span>
-              <i data-lucide="chevron-right" class="w-4 h-4 text-[#335C67] dark:text-[#FFF3B0]"></i>
-            </button>
-          </div>
+          <!-- Sağ Ok (Sonraki Gün Butonu - Büyük & Belirgin) -->
+          <button
+            type="button"
+            id="attNextDateBtn"
+            class="w-full sm:w-auto px-5 py-3 sm:py-3.5 bg-gradient-to-r from-[#335C67] to-[#284952] hover:from-[#284952] hover:to-[#1f383f] text-white font-extrabold rounded-2xl text-xs sm:text-sm shadow-md shadow-[#335C67]/25 transition-all duration-200 cursor-pointer flex items-center justify-center gap-2 border border-[#335C67]/40 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-25 disabled:pointer-events-none disabled:transform-none select-none"
+            title="Sonraki Ders Gününe Git"
+          >
+            <span>Sonraki Gün</span>
+            <i data-lucide="chevron-right" class="w-5 h-5 text-amber-300"></i>
+          </button>
         </div>
 
         <!-- Devamsızlık Tablosu (Kompakt, Zebra Çizgili & Hover Özellikli) -->
@@ -3044,7 +3031,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
   <!-- Firebase Bulut Servisi & Veri Deposu -->
-  <script src="firebase.js?v=20261001_1223"></script>
-  <script src="app.js?v=20261001_1223"></script>
+  <script src="firebase.js?v=20261001_1256"></script>
+  <script src="app.js?v=20261001_1256"></script>
 </body>
 </html>

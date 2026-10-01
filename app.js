@@ -238,7 +238,6 @@ const attMaxAllowedHours = document.getElementById('attMaxAllowedHours');
 const attDailyHours = document.getElementById('attDailyHours');
 const attFailedCount = document.getElementById('attFailedCount');
 const attendanceTableBody = document.getElementById('attendanceTableBody');
-const markDayPresentBtn = document.getElementById('markDayPresentBtn');
 
 // Tarih Gezinme Elementleri (Sol / Sağ Ok ve Gün Listesi)
 const attPrevDateBtn = document.getElementById('attPrevDateBtn');
@@ -823,9 +822,6 @@ function setupEventListeners() {
   }
   if (attDateSelectDropdown) {
     attDateSelectDropdown.addEventListener('change', handleAttDateSelectChange);
-  }
-  if (markDayPresentBtn) {
-    markDayPresentBtn.addEventListener('click', handleMarkDayPresent);
   }
   if (saveAllExamsBtn) {
     saveAllExamsBtn.addEventListener('click', handleSaveAllExams);
