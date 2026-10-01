@@ -2416,7 +2416,31 @@ function handleAddStudent(e) {
   const stdEditId = document.getElementById('stdEditId');
   if (stdEditId) stdEditId.value = '';
   studentAddForm.reset();
-  studentAddForm.classList.add('hidden');
+
+  if (editId) {
+    // Düzenleme bittiğinde formu kapat
+    studentAddForm.classList.add('hidden');
+    const studentFormTitle = document.getElementById('studentFormTitle');
+    const studentFormSubmitText = document.getElementById('studentFormSubmitText');
+    if (studentFormTitle) studentFormTitle.innerText = 'Yeni Kursiyer Ekleme';
+    if (studentFormSubmitText) studentFormSubmitText.innerText = 'Kursiyeri Kaydet';
+  } else {
+    // Yeni ekleme yapıldığında: Form açık kalsın ve bir sonraki kursiyer için ad alanına odaklansın
+    studentAddForm.classList.remove('hidden');
+    const stdFirstName = document.getElementById('stdFirstName');
+    stdFirstName?.focus();
+
+    // Hızlı onay bildirimi (Kullanıcı eklemenin gerçekleştiğini görsün)
+    const studentFormSubmitText = document.getElementById('studentFormSubmitText');
+    if (studentFormSubmitText) {
+      const origText = studentFormSubmitText.innerText;
+      studentFormSubmitText.innerText = '✓ Eklendi! Sıradaki...';
+      setTimeout(() => {
+        studentFormSubmitText.innerText = origText;
+      }, 1400);
+    }
+  }
+
   renderStudentTable();
   renderTeacherDashboard();
 
