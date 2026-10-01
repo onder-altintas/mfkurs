@@ -2965,6 +2965,9 @@ function renderAttendanceTab() {
   }
 
   const selectedDate = currentCourseLessonDates[currentAttendanceDateIndex] || currentCourseLessonDates[0];
+  const remainingDatesFromCurrent = (currentAttendanceDateIndex >= 0 && currentAttendanceDateIndex < currentCourseLessonDates.length)
+    ? currentCourseLessonDates.slice(currentAttendanceDateIndex)
+    : [];
 
   // Tarih Bilgilerini Göster (Türkçe formatta)
   if (attCurrentDateDisplay && selectedDate) {
@@ -3042,6 +3045,35 @@ function renderAttendanceTab() {
 
     const isExceeded = (totalAbsent > maxAllowed) || (s.attendance === 'Devamsız');
 
+    const isFutureAllAbsent = remainingDatesFromCurrent.length > 0 && remainingDatesFromCurrent.every(d => {
+      const rec = (s.dailyAbsences || []).find(a => a.date === d);
+      return rec && Number(rec.hours) === dailyHours;
+    });
+
+    const dropBtnHtml = isFutureAllAbsent
+      ? `
+        <button
+          type="button"
+          onclick="markStudentAbsentFromDateOnwards('${s.id}')"
+          class="px-2 py-0.5 text-[10px] font-bold rounded bg-rose-100 hover:bg-rose-200 dark:bg-rose-950/70 dark:hover:bg-rose-900/80 text-rose-800 dark:text-rose-200 border border-rose-300 dark:border-rose-700 transition cursor-pointer flex items-center gap-1 shadow-2xs whitespace-nowrap ml-1"
+          title="Kursiyer bu tarihten itibaren kalan ${remainingDatesFromCurrent.length} ders gününde devamsızdır. Temizlemek için tıklayınız."
+        >
+          <i data-lucide="check-check" class="w-3 h-3 text-rose-600 dark:text-rose-400"></i>
+          <span>Sonrası Devamsız (${remainingDatesFromCurrent.length}G)</span>
+        </button>
+      `
+      : `
+        <button
+          type="button"
+          onclick="markStudentAbsentFromDateOnwards('${s.id}')"
+          class="px-2 py-0.5 text-[10px] font-bold rounded bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/50 dark:hover:bg-amber-900/70 text-[#9E2A2B] dark:text-amber-200 border border-amber-300 dark:border-amber-700 transition cursor-pointer flex items-center gap-1 shadow-2xs whitespace-nowrap ml-1"
+          title="Kursu bırakan kursiyerler için: Bu tarihten kurs bitimine kadar olan ${remainingDatesFromCurrent.length} ders gününü tek tıkla devamsız yaz"
+        >
+          <i data-lucide="fast-forward" class="w-3 h-3 text-[#9E2A2B] dark:text-amber-400"></i>
+          <span>Sonrasını Devamsız Gir</span>
+        </button>
+      `;
+
     const isEven = (idx % 2 === 0);
     const rowBgClass = isEven 
       ? 'bg-white dark:bg-[#152125]' 
@@ -3062,7 +3094,7 @@ function renderAttendanceTab() {
       
       <!-- KUTUCUK: Seçili Tarihteki Devamsızlık Saati Girişi (İnce & Kompakt) -->
       <td class="px-3 py-1 text-center bg-[#335C67]/5 dark:bg-[#335C67]/10 border-x border-[#335C67]/20">
-        <div class="flex items-center justify-center gap-1">
+        <div class="flex items-center justify-center gap-1 flex-wrap">
           <input
             type="number"
             min="0"
@@ -3071,7 +3103,7 @@ function renderAttendanceTab() {
             placeholder="0"
             data-std-id="${s.id}"
             value="${hoursOnDate > 0 ? hoursOnDate : ''}"
-            class="att-day-hour-input w-16 h-7 px-1.5 py-0.5 rounded-lg border-2 text-center text-xs font-black transition-all ${
+            class="att-day-hour-input w-14 h-7 px-1.5 py-0.5 rounded-lg border-2 text-center text-xs font-black transition-all ${
               hoursOnDate > 0
                 ? 'bg-rose-50 text-rose-800 border-[#9E2A2B] dark:bg-rose-950/40 dark:text-rose-200 dark:border-rose-600'
                 : 'bg-white dark:bg-[#152125] text-slate-800 dark:text-slate-100 border-slate-300 dark:border-[#23353c]'
@@ -3097,6 +3129,8 @@ function renderAttendanceTab() {
           >
             0 Sa
           </button>
+
+          ${dropBtnHtml}
         </div>
       </td>
 
@@ -3170,6 +3204,26 @@ function handleAttDateSelectChange(e) {
   }
 }
 
+// Otomatik Kaydedildi Görsel Bildirimi (Toast)
+function showAutoSaveToast(message = 'Değişiklik anında kaydedildi') {
+  let toast = document.getElementById('autoSaveToast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'autoSaveToast';
+    toast.className = 'fixed bottom-5 right-5 z-50 flex items-center gap-2 px-3.5 py-2 bg-emerald-600/95 dark:bg-emerald-700/95 text-white text-xs font-bold rounded-xl shadow-lg shadow-emerald-950/40 transition-all duration-300 opacity-0 pointer-events-none transform translate-y-2';
+    document.body.appendChild(toast);
+  }
+  toast.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-emerald-100" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg><span>${escapeHtml(message)}</span>`;
+  toast.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-2');
+  toast.classList.add('opacity-100', 'translate-y-0');
+
+  clearTimeout(window.__autoSaveToastTimeout);
+  window.__autoSaveToastTimeout = setTimeout(() => {
+    toast.classList.remove('opacity-100', 'translate-y-0');
+    toast.classList.add('opacity-0', 'pointer-events-none', 'translate-y-2');
+  }, 1600);
+}
+
 // Kursiyerin seçili tarihteki devamsızlık saatini güncelleme fonksiyonu
 window.setStudentDateAbsenceHours = function(studentId, hours, shouldRefresh = true) {
   if (!activeCourseForDetail) return;
@@ -3233,7 +3287,97 @@ window.setStudentDateAbsenceHours = function(studentId, hours, shouldRefresh = t
     renderAttendanceTab();
     renderStudentTable();
     renderTeacherDashboard();
+    showAutoSaveToast('Devamsızlık anında kaydedildi');
   }
+};
+
+// Kursu Bırakan Kursiyer İçin Seçili Tarihten Kurs Bitimine Kadar Devamsız İşleme
+window.markStudentAbsentFromDateOnwards = function(studentId) {
+  if (!activeCourseForDetail) return;
+  const std = activeCourseForDetail.students?.find(s => s.id === studentId);
+  if (!std) return;
+
+  if (currentAttendanceDateIndex < 0 || currentAttendanceDateIndex >= currentCourseLessonDates.length) {
+    alert('Lütfen geçerli bir ders tarihi seçiniz.');
+    return;
+  }
+
+  const currentDate = currentCourseLessonDates[currentAttendanceDateIndex];
+  const remainingDates = currentCourseLessonDates.slice(currentAttendanceDateIndex);
+  const dailyHours = Number(activeCourseForDetail.dailyHours) || 4;
+
+  const formattedDate = formatShortDate(currentDate);
+  const endDate = formatShortDate(currentCourseLessonDates[currentCourseLessonDates.length - 1]);
+
+  std.dailyAbsences = std.dailyAbsences || [];
+
+  // Kursiyer bu tarihten sonrasındaki tüm günlerde zaten devamsız mı?
+  const allAlreadyAbsent = remainingDates.every(d => {
+    const rec = std.dailyAbsences.find(a => a.date === d);
+    return rec && Number(rec.hours) === dailyHours;
+  });
+
+  if (allAlreadyAbsent) {
+    const clearConfirm = `ℹ️ ${std.fullName} için ${formattedDate} tarihinden kurs bitimine (${endDate}) kadar olan ${remainingDates.length} ders günü zaten devamsız olarak kayıtlı.\n\nBu tarihten sonrasındaki tüm devamsızlıkları TEMİZLEMEK (kursiyeri geldi / 0 saat yapmak) istiyor musunuz?`;
+    if (!confirm(clearConfirm)) return;
+
+    std.dailyAbsences = std.dailyAbsences.filter(d => !remainingDates.includes(d.date));
+  } else {
+    const confirmMsg = `⚠️ DİKKAT: Kursu Bırakan Kursiyer Devamsızlık Girişi\n\n` +
+      `Kursiyer: ${std.fullName}\n` +
+      `Ayrılış / Başlangıç Tarihi: ${formattedDate}\n` +
+      `Kurs Bitiş Tarihi: ${endDate}\n` +
+      `Kapsanan Ders Günü: ${remainingDates.length} Gün (Günde ${dailyHours} saat)\n\n` +
+      `Kursiyer bu tarihten sonra kursu bıraktığı için, ${formattedDate} tarihinden kurs sonuna kadar olan ${remainingDates.length} ders gününün tamamına tam gün (${dailyHours} saat) devamsızlık işlenecektir.\n\n` +
+      `Onaylıyor musunuz?`;
+
+    if (!confirm(confirmMsg)) return;
+
+    remainingDates.forEach(dateStr => {
+      const existing = std.dailyAbsences.find(d => d.date === dateStr);
+      if (existing) {
+        existing.hours = dailyHours;
+        existing.note = 'Kursu bıraktı / Devamsız';
+      } else {
+        std.dailyAbsences.push({
+          id: `att_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+          date: dateStr,
+          hours: dailyHours,
+          note: 'Kursu bıraktı / Devamsız'
+        });
+      }
+    });
+  }
+
+  // Tarihlere göre sırala
+  std.dailyAbsences.sort((a, b) => a.date.localeCompare(b.date));
+
+  // Toplam saat ve MEB 1/5 kuralı
+  const totalAbsent = std.dailyAbsences.reduce((sum, d) => sum + Number(d.hours), 0);
+  std.absentHours = totalAbsent;
+
+  const totalHours = activeCourseForDetail.totalHours || 0;
+  const maxAllowed = Math.floor(totalHours / 5);
+
+  if (totalAbsent > maxAllowed) {
+    std.attendance = 'Devamsız';
+    std.result = 'Devamsız';
+  } else {
+    std.attendance = totalAbsent > 0 ? 'Devamlı' : 'Devamlı';
+    if (std.result === 'Devamsız') {
+      std.result = (std.examScore !== null && std.examScore >= 50) ? 'Başarılı' : (std.examScore !== null ? 'Başarısız' : 'Devam Ediyor');
+    }
+  }
+
+  // Kaydet
+  currentCourses = currentCourses.map(c => c.id === activeCourseForDetail.id ? activeCourseForDetail : c);
+  DataStore.saveCourses(currentCourses);
+
+  renderAttendanceTab();
+  renderStudentTable();
+  renderTeacherDashboard();
+
+  showAutoSaveToast(allAlreadyAbsent ? 'Kalan günlerin devamsızlığı temizlendi' : `${remainingDates.length} ders gününe devamsızlık işlendi`);
 };
 
 // Seçili Ders Günü İçin Tüm Kursiyerleri "Geldi (0 Saat)" Yap
@@ -3265,6 +3409,7 @@ function handleMarkDayPresent() {
   renderAttendanceTab();
   renderStudentTable();
   renderTeacherDashboard();
+  showAutoSaveToast('Tüm kursiyerler "Geldi" yapıldı');
 }
 
 // =================== MODÜL SINAVLARI & NOT GİRİŞ EKRANI ===================
