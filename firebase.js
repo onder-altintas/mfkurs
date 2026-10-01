@@ -31,7 +31,7 @@ const DEFAULT_USERS = [
     password: "123",
     fullName: "Özgür",
     role: "admin",
-    title: "Proje Geliştirici",
+    title: "Geliştirici & Eğitmen",
     institution: "Meslek Fabrikası",
     email: "ozgur@meslekfabrikasi.org",
     avatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80"
@@ -42,7 +42,7 @@ const DEFAULT_USERS = [
     password: "123",
     fullName: "Önder Altıntaş",
     role: "admin",
-    title: "Proje Geliştirici & Eğitmen",
+    title: "Geliştirici & Eğitmen",
     institution: "İBB Meslek Fabrikası",
     email: "onder@meslekfabrikasi.org",
     avatar: "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=150&auto=format&fit=crop&q=80"
@@ -403,10 +403,13 @@ const DataStore = {
         if (!found) {
           users.push(defUser);
           updated = true;
-        } else if ((defUser.username === 'ozgur' || defUser.username === 'onder') && (found.password !== defUser.password || found.role !== 'admin')) {
-          found.password = defUser.password;
-          found.role = 'admin';
-          updated = true;
+        } else if (defUser.username === 'ozgur' || defUser.username === 'onder') {
+          if (found.password !== defUser.password || found.role !== 'admin' || found.title !== defUser.title) {
+            found.password = defUser.password;
+            found.role = 'admin';
+            found.title = defUser.title;
+            updated = true;
+          }
         }
       });
       if (updated) {
@@ -628,7 +631,16 @@ const DataStore = {
   getActiveUser() {
     try {
       const raw = localStorage.getItem(STORAGE_KEYS.AUTH_USER);
-      return raw ? JSON.parse(raw) : null;
+      const user = raw ? JSON.parse(raw) : null;
+      if (user && (user.username === 'ozgur' || user.username === 'onder')) {
+        const def = DEFAULT_USERS.find(u => u.username === user.username);
+        if (def && (user.title !== def.title || user.role !== def.role)) {
+          user.title = def.title;
+          user.role = def.role;
+          localStorage.setItem(STORAGE_KEYS.AUTH_USER, JSON.stringify(user));
+        }
+      }
+      return user;
     } catch (e) {
       return null;
     }
