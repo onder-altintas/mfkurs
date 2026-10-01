@@ -86,6 +86,7 @@ const openNewCourseModalBtn = document.getElementById('openNewCourseModalBtn');
 const emptyStateAddBtn = document.getElementById('emptyStateAddBtn');
 
 let currentUsers = [];
+const centersGrid = document.getElementById('centersGrid');
 const templatesGrid = document.getElementById('templatesGrid');
 
 const openAddCenterModalBtn = document.getElementById('openAddCenterModalBtn');
@@ -327,25 +328,6 @@ function updateThemeUI(theme) {
   if (loginThemeIcon) {
     loginThemeIcon.setAttribute('data-lucide', isDark ? 'moon' : 'sun');
     loginThemeIcon.className = isDark ? 'w-4 h-4 text-[#FFF3B0]' : 'w-4 h-4 text-[#FFF3B0]';
-  }
-
-  // Ana Ekran Tema Seçim Kartları / Butonları
-  if (themeBtnLight && themeBtnDark) {
-    if (!isDark) {
-      themeBtnLight.className = 'theme-select-card px-4 py-2 rounded-xl text-xs font-extrabold flex items-center gap-2 transition cursor-pointer bg-white text-[#335C67] shadow-sm border border-[#335C67]/40 ring-2 ring-[#335C67]/20';
-      themeBtnDark.className = 'theme-select-card px-4 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 transition cursor-pointer text-slate-500 hover:text-slate-800 border border-transparent';
-      if (activeThemeBadge) {
-        activeThemeBadge.innerText = 'Açık Tema Aktif';
-        activeThemeBadge.className = 'px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-[#FFF3B0] text-[#540B0E] border border-[#E09F3E]/40';
-      }
-    } else {
-      themeBtnLight.className = 'theme-select-card px-4 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 transition cursor-pointer text-slate-400 hover:text-slate-200 border border-transparent';
-      themeBtnDark.className = 'theme-select-card px-4 py-2 rounded-xl text-xs font-extrabold flex items-center gap-2 transition cursor-pointer bg-[#152125] text-[#FFF3B0] shadow-sm border border-[#335C67] ring-2 ring-[#335C67]/30';
-      if (activeThemeBadge) {
-        activeThemeBadge.innerText = 'Koyu Tema Aktif';
-        activeThemeBadge.className = 'px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-[#540B0E] text-[#FFF3B0] border border-[#335C67]';
-      }
-    }
   }
 
   refreshLucide();
