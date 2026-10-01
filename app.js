@@ -5314,10 +5314,10 @@ function generateNotCizelgesiHtml(course) {
             }
           }
         } else {
-          // Boş kalacak olan modüllerin not hücreleri yatay olarak çizilir
+          // Boş kalacak olan modüllerin not hücrelerinde ortada '-' işareti yer alır
           moduleCellsHtml += `
-            <td style="border: 1px solid black; text-align: center; padding: 0; position: relative; height: ${rowHeight};">
-              <div style="width: 100%; border-bottom: 1px solid black; position: absolute; top: 50%; left: 0;"></div>
+            <td style="border: 1px solid black; text-align: center; vertical-align: middle; font-size: ${rowFontSize}; font-weight: bold; color: #334155; padding: 0 1px; height: ${rowHeight}; line-height: 1;">
+              -
             </td>
           `;
         }
@@ -5341,7 +5341,7 @@ function generateNotCizelgesiHtml(course) {
       }
 
       rowsHtml += `
-        <tr style="height: ${rowHeight};">
+        <tr style="height: ${rowHeight};" class="not-cizelgesi-row">
           <td style="border: 1px solid black; text-align: center; font-size: ${rowFontSize}; font-weight: bold; padding: 0 1px;">${i}</td>
           <td style="border: 1px solid black; padding: 0 4px; font-size: ${rowFontSize}; font-weight: 500; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: ${nameMaxWidth};">${escapeHtml(sFullName)}</td>
           ${moduleCellsHtml}
@@ -5358,15 +5358,15 @@ function generateNotCizelgesiHtml(course) {
           emptyCellsHtml += `<td style="border: 1px solid black; padding: 0; height: ${rowHeight};">&nbsp;</td>`;
         } else {
           emptyCellsHtml += `
-            <td style="border: 1px solid black; text-align: center; padding: 0; position: relative; height: ${rowHeight};">
-              <div style="width: 100%; border-bottom: 1px solid black; position: absolute; top: 50%; left: 0;"></div>
+            <td style="border: 1px solid black; text-align: center; vertical-align: middle; font-size: ${rowFontSize}; font-weight: bold; color: #94a3b8; padding: 0 1px; height: ${rowHeight}; line-height: 1;">
+              -
             </td>
           `;
         }
       }
 
       rowsHtml += `
-        <tr style="height: ${rowHeight};">
+        <tr style="height: ${rowHeight};" class="not-cizelgesi-row">
           <td style="border: 1px solid black; text-align: center; font-size: ${rowFontSize}; font-weight: bold; padding: 0 1px;">${i}</td>
           <td style="border: 1px solid black; padding: 0 4px; height: ${rowHeight};">&nbsp;</td>
           ${emptyCellsHtml}
@@ -5452,11 +5452,7 @@ function generateNotCizelgesiHtml(course) {
           <div>1- Modüller, teorik ve uygulamalı içeriği kapsadığından tek değerlendirme yapılır.</div>
           <div>2- Modül sonu değerlendirmelerinin (yazılı, sözlü, uygulama) aritmetik ortalaması işlenir.</div>
           <div>3- Kursiyerlerin devam etmediği modüllere (D), sınava girmediyse (G) harfi işlenir.</div>
-          <div style="display: flex; align-items: center; gap: 3px;">
-            <span>4- Boş kalacak olan modüllerin not hücreleri</span>
-            <span style="display: inline-block; width: 25px; border-bottom: 1px solid black; vertical-align: middle;"></span>
-            <span>şeklinde yatay olarak kapatılır.</span>
-          </div>
+          <div>4- Boş kalacak olan modüllerin not hücreleri (-) işareti konularak kapatılır.</div>
         </div>
 
         <!-- Öğretmen İmza Alanı -->

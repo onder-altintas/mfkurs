@@ -131,6 +131,29 @@
       background-color: #172428 !important;
     }
 
+    /* Resmi Evrak (Modül Değerlendirme Çizelgesi vb.) Önizleme Satır Hover Stili */
+    /* Beyaz A4 resmi evraklarda siyah hover yerine yumuşak, gözü yormayan sarı/amber vurgusu */
+    .not-cizelgesi-document tbody tr:hover > td,
+    #notCizelgesiPreviewContainer tbody tr:hover > td,
+    .not-cizelgesi-row:hover > td,
+    html.dark .not-cizelgesi-document tbody tr:hover > td,
+    html.dark #notCizelgesiPreviewContainer tbody tr:hover > td,
+    html.dark .not-cizelgesi-row:hover > td {
+      background-color: #fef3c7 !important; /* Yumuşak pastel sarı/amber vurgusu (siyah yerine) */
+      transition: background-color 100ms ease-in-out;
+    }
+
+    /* Diğer resmi evrak önizlemelerinde de (Karar Durumu, Sınav Tutanağı vb.) siyah hover oluşmasını önle */
+    .karar-durumu-document tbody tr:hover > td,
+    .sinav-tutanagi-document tbody tr:hover > td,
+    #imzaListesiPreviewContainer tbody tr:hover > td,
+    html.dark .karar-durumu-document tbody tr:hover > td,
+    html.dark .sinav-tutanagi-document tbody tr:hover > td,
+    html.dark #imzaListesiPreviewContainer tbody tr:hover > td {
+      background-color: #fef3c7 !important;
+      transition: background-color 100ms ease-in-out;
+    }
+
     /* Modül Sınavları & Not Giriş Ekranı Satır Hover ve Odaklanma (Focus-Within) */
     #examsMatrixTable tbody tr:hover > td,
     #examsMatrixTable tbody tr:focus-within > td {
@@ -3225,7 +3248,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
   <!-- Firebase Bulut Servisi & Veri Deposu -->
-  <script src="firebase.js?v=20261001_1635"></script>
-  <script src="app.js?v=20261001_1635"></script>
+  <script src="firebase.js?v=20261001_1640"></script>
+  <script src="app.js?v=20261001_1640"></script>
 </body>
 </html>
