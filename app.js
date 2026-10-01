@@ -5235,30 +5235,34 @@ function generateNotCizelgesiHtml(course) {
     return nameA.localeCompare(nameB, 'tr', { sensitivity: 'base' });
   });
 
-  // Sayfaya tek parça halinde tam sığacak satır sayısı (Varsayılan 18 satır, öğrenci fazlaysa öğrenci sayısı kadar)
-  const totalRows = Math.max(18, sortedStudents.length);
+  // Sayfaya tek parça halinde tam sığacak satır sayısı (Varsayılan 25 satır, öğrenci fazlaysa öğrenci sayısı kadar)
+  const totalRows = Math.max(25, sortedStudents.length);
   const maxModules = 20;
 
-  // Sayfaya tek parça halinde tam sığması için ultra-kompakt satır yüksekliği ve yazı boyutu
-  let rowHeight = '14.5px';
-  let rowFontSize = '6.5pt';
-  let nameMaxWidth = '165px';
+  // Sayfaya tek parça halinde tam sığması için optimize edilmiş satır yüksekliği ve yazı boyutu
+  let rowHeight = '19px';
+  let rowFontSize = '7.5pt';
+  let nameMaxWidth = '175px';
 
-  if (totalRows > 28) {
-    rowHeight = '11.5px';
+  if (totalRows > 32) {
+    rowHeight = '12px';
     rowFontSize = '5.5pt';
     nameMaxWidth = '145px';
-  } else if (totalRows > 22) {
-    rowHeight = '13px';
+  } else if (totalRows > 28) {
+    rowHeight = '14.5px';
     rowFontSize = '6pt';
     nameMaxWidth = '155px';
+  } else if (totalRows > 25) {
+    rowHeight = '16.5px';
+    rowFontSize = '6.8pt';
+    nameMaxWidth = '165px';
   }
 
   // Header 20 Modül Sütunları (Yatay ve son derece kompakt: sadece modül numaraları 1, 2, 3...)
   let moduleHeadersHtml = '';
   for (let m = 1; m <= maxModules; m++) {
     moduleHeadersHtml += `
-      <th style="border: 1px solid black; width: 28px; height: 16px; padding: 1px 0; font-size: 6.5pt; text-align: center; font-weight: bold; background: #fff;">
+      <th style="border: 1px solid black; width: 28px; height: 18px; padding: 1px 0; font-size: 7pt; text-align: center; font-weight: bold; background: #fff;">
         ${m}
       </th>
     `;
@@ -5285,7 +5289,7 @@ function generateNotCizelgesiHtml(course) {
           if (isDevamsiz) {
             failedCount++;
             moduleCellsHtml += `
-              <td style="border: 1px solid black; text-align: center; font-size: ${rowFontSize}; font-weight: bold; color: #b91c1c; padding: 0 1px; height: ${rowHeight};">
+              <td style="border: 1px solid black; text-align: center; vertical-align: middle; font-size: ${rowFontSize}; font-weight: bold; color: #b91c1c; padding: 0 1px; height: ${rowHeight};">
                 D
               </td>
             `;
@@ -5299,7 +5303,7 @@ function generateNotCizelgesiHtml(course) {
                 failedCount++;
               }
               moduleCellsHtml += `
-                <td style="border: 1px solid black; text-align: center; font-size: ${rowFontSize}; font-weight: 600; padding: 0 1px; height: ${rowHeight};">
+                <td style="border: 1px solid black; text-align: center; vertical-align: middle; font-size: ${rowFontSize}; font-weight: 600; padding: 0 1px; height: ${rowHeight};">
                   ${numSc}
                 </td>
               `;
@@ -5307,7 +5311,7 @@ function generateNotCizelgesiHtml(course) {
               // Devam ettiği halde sınava girmediyse 'G'
               failedCount++;
               moduleCellsHtml += `
-                <td style="border: 1px solid black; text-align: center; font-size: ${rowFontSize}; font-weight: bold; color: #b45309; padding: 0 1px; height: ${rowHeight};">
+                <td style="border: 1px solid black; text-align: center; vertical-align: middle; font-size: ${rowFontSize}; font-weight: bold; color: #b45309; padding: 0 1px; height: ${rowHeight};">
                   G
                 </td>
               `;
@@ -5342,10 +5346,10 @@ function generateNotCizelgesiHtml(course) {
 
       rowsHtml += `
         <tr style="height: ${rowHeight};" class="not-cizelgesi-row">
-          <td style="border: 1px solid black; text-align: center; font-size: ${rowFontSize}; font-weight: bold; padding: 0 1px;">${i}</td>
-          <td style="border: 1px solid black; padding: 0 4px; font-size: ${rowFontSize}; font-weight: 500; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: ${nameMaxWidth};">${escapeHtml(sFullName)}</td>
+          <td style="border: 1px solid black; text-align: center; vertical-align: middle; font-size: ${rowFontSize}; font-weight: bold; padding: 1px 1px;">${i}</td>
+          <td style="border: 1px solid black; vertical-align: middle; padding: 1px 6px; font-size: ${rowFontSize}; font-weight: 500; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: ${nameMaxWidth};">${escapeHtml(sFullName)}</td>
           ${moduleCellsHtml}
-          <td style="border: 1px solid black; text-align: center; font-size: ${rowFontSize}; font-weight: bold; color: ${sonucColor}; padding: 0 2px; white-space: nowrap;">
+          <td style="border: 1px solid black; text-align: center; vertical-align: middle; font-size: ${rowFontSize}; font-weight: bold; color: ${sonucColor}; padding: 1px 2px; white-space: nowrap;">
             ${sonucText}
           </td>
         </tr>
@@ -5355,7 +5359,7 @@ function generateNotCizelgesiHtml(course) {
       let emptyCellsHtml = '';
       for (let m = 1; m <= maxModules; m++) {
         if (m <= moduleCount) {
-          emptyCellsHtml += `<td style="border: 1px solid black; padding: 0; height: ${rowHeight};">&nbsp;</td>`;
+          emptyCellsHtml += `<td style="border: 1px solid black; vertical-align: middle; padding: 0; height: ${rowHeight};">&nbsp;</td>`;
         } else {
           emptyCellsHtml += `
             <td style="border: 1px solid black; text-align: center; vertical-align: middle; font-size: ${rowFontSize}; font-weight: bold; color: #94a3b8; padding: 0 1px; height: ${rowHeight}; line-height: 1;">
@@ -5367,17 +5371,17 @@ function generateNotCizelgesiHtml(course) {
 
       rowsHtml += `
         <tr style="height: ${rowHeight};" class="not-cizelgesi-row">
-          <td style="border: 1px solid black; text-align: center; font-size: ${rowFontSize}; font-weight: bold; padding: 0 1px;">${i}</td>
-          <td style="border: 1px solid black; padding: 0 4px; height: ${rowHeight};">&nbsp;</td>
+          <td style="border: 1px solid black; text-align: center; vertical-align: middle; font-size: ${rowFontSize}; font-weight: bold; padding: 1px 1px;">${i}</td>
+          <td style="border: 1px solid black; vertical-align: middle; padding: 1px 6px; height: ${rowHeight};">&nbsp;</td>
           ${emptyCellsHtml}
-          <td style="border: 1px solid black; padding: 0; height: ${rowHeight};">&nbsp;</td>
+          <td style="border: 1px solid black; vertical-align: middle; padding: 1px 2px; height: ${rowHeight};">&nbsp;</td>
         </tr>
       `;
     }
   }
 
   return `
-    <div class="not-cizelgesi-document" style="font-family: Arial, Helvetica, sans-serif; color: #000; line-height: 1.15; width: 100%; max-width: 1020px; margin: 0 auto; background: #fff; padding: 4px 6px; box-sizing: border-box; page-break-inside: avoid; break-inside: avoid; page-break-after: avoid; break-after: avoid;">
+    <div class="not-cizelgesi-document" style="font-family: Arial, Helvetica, sans-serif; color: #000; line-height: 1.15; width: 100%; max-width: 1040px; margin: 0 auto; background: #fff; padding: 4px 6px; box-sizing: border-box; page-break-inside: avoid; break-inside: avoid; page-break-after: avoid; break-after: avoid;">
       
       <!-- BAŞLIK -->
       <div style="text-align: center; margin-bottom: 3px;">
@@ -5418,23 +5422,23 @@ function generateNotCizelgesiHtml(course) {
       </div>
 
       <!-- NOT ÇİZELGESİ ANA TABLOSU -->
-      <table style="width: 100%; border-collapse: collapse; border: 1.5px solid black; font-size: 6.5pt; page-break-inside: avoid; break-inside: avoid;">
+      <table style="width: 100%; border-collapse: collapse; border: 1.5px solid black; font-size: 7pt; page-break-inside: avoid; break-inside: avoid;">
         <thead>
-          <tr style="background: #fafafa; height: 16px;">
-            <th rowspan="2" style="border: 1px solid black; width: 24px; text-align: center; font-weight: bold; font-size: 6.5pt; padding: 1px;">
+          <tr style="background: #fafafa; height: 18px;">
+            <th rowspan="2" style="border: 1px solid black; width: 26px; text-align: center; font-weight: bold; font-size: 7pt; padding: 1px;">
               No
             </th>
-            <th rowspan="2" style="border: 1px solid black; width: 165px; min-width: 140px; text-align: center; font-weight: bold; font-size: 7pt; padding: 1px 4px; background: #fafafa;">
+            <th rowspan="2" style="border: 1px solid black; width: 170px; min-width: 140px; text-align: center; font-weight: bold; font-size: 7.5pt; padding: 1px 4px; background: #fafafa;">
               Kursiyerin Adı Soyadı
             </th>
-            <th colspan="${maxModules}" style="border: 1px solid black; text-align: center; font-weight: bold; font-size: 7pt; padding: 1px 2px; letter-spacing: 0.3px; background: #fafafa;">
+            <th colspan="${maxModules}" style="border: 1px solid black; text-align: center; font-weight: bold; font-size: 7.5pt; padding: 1px 2px; letter-spacing: 0.3px; background: #fafafa;">
               MODÜL DEĞERLENDİRME NOTLARI (Teorik / Pratik)
             </th>
-            <th rowspan="2" style="border: 1px solid black; width: 70px; text-align: center; font-weight: bold; font-size: 6.5pt; padding: 1px 2px; background: #fafafa;">
+            <th rowspan="2" style="border: 1px solid black; width: 72px; text-align: center; font-weight: bold; font-size: 7pt; padding: 1px 2px; background: #fafafa;">
               SONUÇ
             </th>
           </tr>
-          <tr style="background: #fff; height: 16px;">
+          <tr style="background: #fff; height: 17px;">
             ${moduleHeadersHtml}
           </tr>
         </thead>
@@ -5444,7 +5448,7 @@ function generateNotCizelgesiHtml(course) {
       </table>
 
       <!-- ALT AÇIKLAMA NOTLARI VE İMZA -->
-      <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 4px; font-size: 6pt; line-height: 1.25; page-break-inside: avoid; break-inside: avoid;">
+      <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 4px; font-size: 6pt; line-height: 1.2; page-break-inside: avoid; break-inside: avoid;">
         
         <!-- Notlar -->
         <div style="max-width: 72%;">
@@ -5458,7 +5462,7 @@ function generateNotCizelgesiHtml(course) {
         <!-- Öğretmen İmza Alanı -->
         <div style="text-align: center; min-width: 160px; margin-bottom: 1px;">
           <div style="font-size: 6.5pt;">... / ... / 202...</div>
-          <div style="margin-top: 8px; font-weight: bold; font-size: 7.5pt; color: #111;">${escapeHtml(instructor)}</div>
+          <div style="margin-top: 6px; font-weight: bold; font-size: 7.5pt; color: #111;">${escapeHtml(instructor)}</div>
           <div style="font-size: 6pt; color: #333;">Kurs Öğretmeni / İmza</div>
         </div>
 
