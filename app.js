@@ -407,6 +407,73 @@ function loadData() {
   currentCenters = DataStore.getCenters();
   currentTemplates = DataStore.getCourseTemplates();
   currentUsers = DataStore.getUsers();
+  syncCoursesWithCurrentInstructor();
+}
+
+// Kursun güncel eğitmen adını dinamik olarak çözümleyen yardımcı fonksiyon
+function getCourseInstructorName(course) {
+  if (!course) return (currentUser?.fullName || 'Kurs Eğitmeni').trim();
+
+  // 1. Kurs aktif kullanıcıya aitse veya kullanıcı admin değilse, güncel profil adını kullan
+  if (currentUser) {
+    if (course.userId === currentUser.id || currentUser.role !== 'admin') {
+      return (currentUser.fullName || course.instructor || 'Kurs Eğitmeni').trim();
+    }
+  }
+
+  // 2. Kursun sahibinin kullanıcı kaydındaki güncel adını bul
+  if (course.userId && Array.isArray(currentUsers)) {
+    const owner = currentUsers.find(u => u.id === course.userId);
+    if (owner && owner.fullName) {
+      return owner.fullName.trim();
+    }
+  }
+
+  // 3. Kurs üzerinde kayıtlı eğitmen adı veya aktif kullanıcı
+  return (course.instructor || currentUser?.fullName || 'Kurs Eğitmeni').trim();
+}
+
+// Kursun kurum adını dinamik olarak çözümleyen yardımcı fonksiyon
+function getCourseInstitutionName(course) {
+  if (!course) return (currentUser?.institution || 'Halk Eğitimi Merkezi').trim();
+  if (course.institution) return course.institution.trim();
+  if (course.centerName) return course.centerName.trim();
+  if (currentUser && (course.userId === currentUser.id || currentUser.role !== 'admin')) {
+    if (currentUser.institution) return currentUser.institution.trim();
+  }
+  return 'Halk Eğitimi Merkezi';
+}
+
+// Eğitmenin güncel profil adını ve kurumunu tüm kurslarıyla senkronize eden fonksiyon
+function syncCoursesWithCurrentInstructor() {
+  if (!currentUser) return;
+  let updated = false;
+
+  currentCourses = currentCourses.map(c => {
+    // Kullanıcıya ait olan veya admin olmayan eğitmenin açtığı kurslar
+    if (c.userId === currentUser.id || (!c.userId && currentUser.role !== 'admin')) {
+      if (currentUser.fullName && c.instructor !== currentUser.fullName) {
+        c.instructor = currentUser.fullName;
+        updated = true;
+      }
+      if (currentUser.institution && (!c.institution || c.institution === 'Kadıköy Halk Eğitimi Merkezi')) {
+        c.institution = currentUser.institution;
+        updated = true;
+      }
+    }
+    return c;
+  });
+
+  if (updated) {
+    DataStore.saveCourses(currentCourses);
+  }
+
+  if (activeCourseForDetail && (activeCourseForDetail.userId === currentUser.id || (!activeCourseForDetail.userId && currentUser.role !== 'admin'))) {
+    if (currentUser.fullName) activeCourseForDetail.instructor = currentUser.fullName;
+    if (currentUser.institution && (!activeCourseForDetail.institution || activeCourseForDetail.institution === 'Kadıköy Halk Eğitimi Merkezi')) {
+      activeCourseForDetail.institution = currentUser.institution;
+    }
+  }
 }
 
 function refreshLucide() {
@@ -560,6 +627,9 @@ function handleSaveProfile(e) {
   DataStore.saveUsers(currentUsers);
   DataStore.setActiveUser(currentUser);
 
+  // Kurslardaki eğitmen adı ve kurum bilgilerini senkronize et
+  syncCoursesWithCurrentInstructor();
+
   // Arayüzü güncelle
   if (userAvatar) {
     userAvatar.src = currentUser.avatar || 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&auto=format&fit=crop&q=80';
@@ -569,9 +639,30 @@ function handleSaveProfile(e) {
   if (welcomeUserName) welcomeUserName.innerText = currentUser.fullName;
   if (userInstitution) userInstitution.innerText = currentUser.institution || '';
 
+  // Kurs detay başlığı açıksa güncelle
+  if (activeCourseForDetail && detailCourseMeta) {
+    const instName = getCourseInstitutionName(activeCourseForDetail);
+    const instrName = getCourseInstructorName(activeCourseForDetail);
+    const daysText = (activeCourseForDetail.days && activeCourseForDetail.days.length > 0)
+      ? ` • Günler: ${activeCourseForDetail.days.join(', ')}`
+      : '';
+    const timeText = (activeCourseForDetail.startTime && activeCourseForDetail.endTime)
+      ? ` (${activeCourseForDetail.startTime} - ${activeCourseForDetail.endTime}, ${activeCourseForDetail.dailyHours || 4} Saat/Gün)`
+      : (activeCourseForDetail.dailyHours ? ` (${activeCourseForDetail.dailyHours} Saat/Gün)` : '');
+    detailCourseMeta.innerText = `${instName} • ${activeCourseForDetail.totalHours} Saat • Eğitmen: ${instrName}${activeCourseForDetail.supervisor ? ' • Sorumlu: ' + activeCourseForDetail.supervisor : ''}${daysText}${timeText}`;
+  }
+
   // Eğer admin ekranı açıksa oradaki kullanıcı listesini de tazele
   if (typeof renderAdminUsers === 'function') {
     renderAdminUsers();
+  }
+  // Eğitmen ana sayfası açıksa kurs kartlarını yeniden çiz
+  if (typeof renderTeacherDashboard === 'function') {
+    renderTeacherDashboard();
+  }
+  // Belgeler sekmesi açıksa yeniden çiz
+  if (typeof renderDocumentsTab === 'function' && activeCourseForDetail) {
+    renderDocumentsTab();
   }
 
   closeProfileModal();
@@ -1788,7 +1879,7 @@ function openCourseModal(courseToEdit = null) {
 
     courseFormInstitutionSelect.value = courseToEdit.institution || currentCenters[0]?.name || '';
     courseFormSupervisor.value = courseToEdit.supervisor || '';
-    courseFormInstructor.value = courseToEdit.instructor || currentUser.fullName;
+    courseFormInstructor.value = getCourseInstructorName(courseToEdit);
     courseFormCode.value = courseToEdit.code || '';
     courseFormCategory.value = courseToEdit.category || 'Bilişim Teknolojileri';
     courseFormStartDate.value = courseToEdit.startDate || '';
@@ -2052,7 +2143,9 @@ window.openCourseDetail = function(courseId) {
 
   detailCourseName.innerText = activeCourseForDetail.name;
   detailCourseCode.innerText = activeCourseForDetail.code || 'KODSUZ';
-  detailCourseMeta.innerText = `${activeCourseForDetail.institution} • ${activeCourseForDetail.totalHours} Saat • Eğitmen: ${activeCourseForDetail.instructor}${activeCourseForDetail.supervisor ? ' • Sorumlu: ' + activeCourseForDetail.supervisor : ''}${daysText}${timeText}`;
+  const currentInst = getCourseInstitutionName(activeCourseForDetail);
+  const currentInstr = getCourseInstructorName(activeCourseForDetail);
+  detailCourseMeta.innerText = `${currentInst} • ${activeCourseForDetail.totalHours} Saat • Eğitmen: ${currentInstr}${activeCourseForDetail.supervisor ? ' • Sorumlu: ' + activeCourseForDetail.supervisor : ''}${daysText}${timeText}`;
 
   const isActive = activeCourseForDetail.status === 'active';
   detailStatusBadge.className = `px-2 py-0.5 rounded text-xs font-semibold ${
@@ -4150,9 +4243,9 @@ function generateKararDurumuHtml(course) {
     if (!isNaN(d.getTime())) courseYear = d.getFullYear();
   }
 
-  const institution = course.institution || course.centerName || 'Halk Eğitimi Merkezi';
+  const institution = getCourseInstitutionName(course);
   const courseName = course.name || course.title || 'Kurs';
-  const instructor = course.instructor || (currentUser?.fullName || 'Kurs Eğitmeni');
+  const instructor = getCourseInstructorName(course);
   const supervisor = course.supervisor || '';
   const startDateFormatted = formatShortDate(course.startDate);
   const endDateFormatted = formatShortDate(course.endDate);
@@ -4646,9 +4739,9 @@ function formatDayMonth(dateStr) {
 function generateDefterHtml(course) {
   if (!course) return '<p class="p-6 text-center text-slate-500">Kurs bilgisi bulunamadı.</p>';
 
-  const institution = course.institution || course.centerName || 'Halk Eğitimi Merkezi Müdürlüğü';
+  const institution = getCourseInstitutionName(course) || 'Halk Eğitimi Merkezi Müdürlüğü';
   const courseName = course.name || course.title || 'Kurs';
-  const instructor = course.instructor || (currentUser?.fullName || 'Kurs Öğretmeni');
+  const instructor = getCourseInstructorName(course);
   const startDate = formatShortDate(course.startDate);
   const endDate = formatShortDate(course.endDate);
   const courseNumber = course.code || course.id || '-';
@@ -5090,9 +5183,9 @@ window.triggerPrintDocument = function(documentName) {
 function generateNotCizelgesiHtml(course) {
   if (!course) return '<p class="p-6 text-center text-slate-500">Kurs bilgisi bulunamadı.</p>';
 
-  const institution = course.institution || course.centerName || 'İBB MESLEK FABRİKASI ŞUBE MÜDÜRLÜĞÜ';
+  const institution = getCourseInstitutionName(course);
   const courseName = course.name || course.title || 'Kurs';
-  const instructor = course.instructor || (currentUser?.fullName || 'Kurs Öğretmeni');
+  const instructor = getCourseInstructorName(course);
   const courseNumber = course.code || course.id || '-';
   const classroom = course.classroom || institution;
   const moduleCount = course.moduleCount ? Math.max(1, Number(course.moduleCount)) : 1;
@@ -5396,9 +5489,9 @@ window.triggerPrintNotCizelgesi = function() {
 function generateSinavTutanagiHtml(course) {
   if (!course) return '<p class="p-6 text-center text-slate-500">Kurs bilgisi bulunamadı.</p>';
 
-  const institution = course.institution || course.centerName || 'İBB MESLEK FABRİKASI ŞUBE MÜDÜRLÜĞÜ';
+  const institution = getCourseInstitutionName(course);
   const courseName = course.name || course.title || 'Kurs';
-  const instructor = course.instructor || (currentUser?.fullName || 'Kurs Eğitmeni');
+  const instructor = getCourseInstructorName(course);
 
   // Kursiyerleri alfabetik sırala (Türkçe alfabe duyarlı)
   const sortedStudents = [...(course.students || [])].sort((a, b) => {
