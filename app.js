@@ -2013,6 +2013,10 @@ window.openCourseDetail = function(courseId) {
   activeCourseForDetail = currentCourses.find(c => c.id === courseId);
   if (!activeCourseForDetail) return;
 
+  if (activeCourseForDetail.students) {
+    sortStudentsAlphabetically(activeCourseForDetail.students);
+  }
+
   // Aktif kurs günleri ve tatiller dışındaki eski/hayalet devamsızlık kayıtlarını temizle
   const activeDays = (activeCourseForDetail.days && activeCourseForDetail.days.length > 0)
     ? activeCourseForDetail.days
@@ -2133,9 +2137,25 @@ function switchDetailTab(tab) {
   refreshLucide();
 }
 
+// Kursiyerleri Türkçe alfabesine göre (A-Z) sıralayan yardımcı fonksiyon
+function sortStudentsAlphabetically(students) {
+  if (!Array.isArray(students)) return [];
+  return students.sort((a, b) => {
+    const nameA = (a.fullName || `${a.firstName || ''} ${a.lastName || ''}`).trim();
+    const nameB = (b.fullName || `${b.firstName || ''} ${b.lastName || ''}`).trim();
+    const cmp = nameA.localeCompare(nameB, 'tr-TR');
+    if (cmp !== 0) return cmp;
+    const tcA = a.tcNo || '';
+    const tcB = b.tcNo || '';
+    if (tcA && tcB) return tcA.localeCompare(tcB);
+    return (a.id || '').localeCompare(b.id || '');
+  });
+}
+
 function renderStudentTable() {
   if (!activeCourseForDetail) return;
-  const students = activeCourseForDetail.students || [];
+  activeCourseForDetail.students = sortStudentsAlphabetically(activeCourseForDetail.students || []);
+  const students = activeCourseForDetail.students;
   detailStudentCount.innerText = students.length;
   studentTableBody.innerHTML = '';
 
@@ -2419,6 +2439,9 @@ function handleAddStudent(e) {
     }
   }
 
+  // Kursiyerleri alfabetik sırala (A-Z)
+  sortStudentsAlphabetically(activeCourseForDetail.students);
+
   currentCourses = currentCourses.map(c => c.id === activeCourseForDetail.id ? activeCourseForDetail : c);
   DataStore.saveCourses(currentCourses);
 
@@ -2678,6 +2701,9 @@ function handleSaveBulkStudents() {
     activeCourseForDetail.students.push(newStudent);
   });
 
+  // Kursiyerleri alfabetik sırala (A-Z)
+  sortStudentsAlphabetically(activeCourseForDetail.students);
+
   currentCourses = currentCourses.map(c => c.id === activeCourseForDetail.id ? activeCourseForDetail : c);
   DataStore.saveCourses(currentCourses);
 
@@ -2908,7 +2934,8 @@ let currentAttendanceDateIndex = -1;
 
 function renderAttendanceTab() {
   if (!activeCourseForDetail) return;
-  const students = activeCourseForDetail.students || [];
+  activeCourseForDetail.students = sortStudentsAlphabetically(activeCourseForDetail.students || []);
+  const students = activeCourseForDetail.students;
   const totalHours = activeCourseForDetail.totalHours || 0;
   const dailyHours = Number(activeCourseForDetail.dailyHours) || 4;
   const maxAllowed = Math.floor(totalHours / 5);
@@ -3244,7 +3271,8 @@ function handleMarkDayPresent() {
 
 function renderExamsTab() {
   if (!activeCourseForDetail) return;
-  const students = activeCourseForDetail.students || [];
+  activeCourseForDetail.students = sortStudentsAlphabetically(activeCourseForDetail.students || []);
+  const students = activeCourseForDetail.students;
   const moduleCount = activeCourseForDetail.moduleCount ? Math.max(1, Number(activeCourseForDetail.moduleCount)) : 1;
 
   // Başlıklar
@@ -4117,9 +4145,10 @@ function generateKararDurumuHtml(course) {
 
 function renderDocumentsTab() {
   if (!activeCourseForDetail) return;
+  activeCourseForDetail.students = sortStudentsAlphabetically(activeCourseForDetail.students || []);
 
   const docType = (activeCourseForDetail && activeCourseForDetail.documentType) ? activeCourseForDetail.documentType : 'Sertifika';
-  const students = Array.isArray(activeCourseForDetail.students) ? activeCourseForDetail.students : [];
+  const students = activeCourseForDetail.students;
   const totalHours = Number(activeCourseForDetail.totalHours) || 0;
   const maxAllowed = Math.floor(totalHours / 5);
 
@@ -5466,6 +5495,10 @@ function exportStudentsToExcel() {
     return;
   }
 
+  if (activeCourseForDetail.students) {
+    sortStudentsAlphabetically(activeCourseForDetail.students);
+  }
+
   const students = activeCourseForDetail.students || [];
   const moduleCount = activeCourseForDetail.moduleCount ? Math.max(1, Number(activeCourseForDetail.moduleCount)) : 1;
   const courseName = activeCourseForDetail.name || 'Kurs';
@@ -5596,6 +5629,8 @@ function handleImportStudentsFromExcel(e) {
         }
       });
 
+      // Kursiyerleri alfabetik sırala (A-Z)
+      sortStudentsAlphabetically(currentList);
       activeCourseForDetail.students = currentList;
       currentCourses = currentCourses.map(c => c.id === activeCourseForDetail.id ? activeCourseForDetail : c);
       DataStore.saveCourses(currentCourses);
