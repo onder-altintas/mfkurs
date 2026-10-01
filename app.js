@@ -2210,6 +2210,13 @@ function closeDetailModal() {
   activeCourseForDetail = null;
   studentAddForm.classList.add('hidden');
   if (studentAddedNotice) studentAddedNotice.classList.add('hidden');
+
+  // Herhangi bir artık baskı/önizleme içeriğini temizle
+  const printArea = document.getElementById('printArea');
+  const printAreaContent = document.getElementById('printAreaContent');
+  if (printAreaContent) printAreaContent.innerHTML = '';
+  if (printArea) printArea.classList.add('hidden');
+  document.getElementById('securePrintIframe')?.remove();
 }
 
 function switchDetailTab(tab) {
@@ -4627,9 +4634,25 @@ window.openKararDurumuPreview = function() {
   refreshLucide();
 };
 
+// Baskı alanını ve geçici içerikleri temizleyen yardımcı
+function cleanupPrintArea() {
+  try {
+    const printArea = document.getElementById('printArea');
+    const printAreaContent = document.getElementById('printAreaContent');
+    if (printAreaContent) printAreaContent.innerHTML = '';
+    if (printArea) {
+      printArea.classList.add('hidden');
+      printArea.style.display = 'none';
+    }
+    const frame = document.getElementById('securePrintIframe');
+    if (frame) frame.remove();
+  } catch(e) {}
+}
+
 window.closeKararDurumuPreview = function() {
   const modal = document.getElementById('kararDurumuModal');
   modal?.classList.add('hidden');
+  cleanupPrintArea();
 };
 
 // Yardımcı: Kurs Numarasını (Kodunu) Güvenli Alma
@@ -4786,13 +4809,8 @@ function safePrint(htmlContent, isLandscape = false, documentTitle = 'Resmi Evra
     return;
   }
 
-  // 1. Ana sayfadaki printArea'yı da yedek olarak doldur
-  const printArea = document.getElementById('printArea');
-  const printAreaContent = document.getElementById('printAreaContent');
-  if (printArea && printAreaContent) {
-    printAreaContent.innerHTML = htmlContent;
-    printArea.classList.remove('hidden');
-  }
+  // Baskı alanı temizleyicisi
+  cleanupPrintArea();
 
   let styleTag = document.getElementById('landscapePrintStyle');
   if (isLandscape) {
@@ -4893,11 +4911,16 @@ function safePrint(htmlContent, isLandscape = false, documentTitle = 'Resmi Evra
   `);
   frameDoc.close();
 
+  const cleanupPrint = () => {
+    restoreTitle();
+    cleanupPrintArea();
+  };
+
   try {
-    printFrame.contentWindow.addEventListener('afterprint', restoreTitle, { once: true });
+    printFrame.contentWindow.addEventListener('afterprint', cleanupPrint, { once: true });
   } catch(e) {}
-  window.addEventListener('afterprint', restoreTitle, { once: true });
-  setTimeout(restoreTitle, 6000);
+  window.addEventListener('afterprint', cleanupPrint, { once: true });
+  setTimeout(cleanupPrint, 6000);
 
   // Render tamamlandıktan sonra baskı penceresini aç
   setTimeout(() => {
@@ -4906,7 +4929,11 @@ function safePrint(htmlContent, isLandscape = false, documentTitle = 'Resmi Evra
       printFrame.contentWindow.print();
     } catch (err) {
       console.warn('Iframe print tetiklenemedi, varsayılan window.print çağrılıyor:', err);
+      const printArea = document.getElementById('printArea');
+      const printAreaContent = document.getElementById('printAreaContent');
+      if (printAreaContent) printAreaContent.innerHTML = htmlContent;
       window.print();
+      setTimeout(cleanupPrintArea, 500);
     }
   }, 250);
 }
@@ -4993,6 +5020,7 @@ window.openSaveAllDocumentsModal = function() {
 window.closeSaveAllDocumentsModal = function() {
   const modal = document.getElementById('saveAllDocumentsModal');
   modal?.classList.add('hidden');
+  cleanupPrintArea();
 };
 
 window.downloadSingleDocument = function(docName) {
@@ -5528,6 +5556,7 @@ window.openDefterPreview = function() {
 window.closeDefterPreview = function() {
   const modal = document.getElementById('defterModal');
   modal?.classList.add('hidden');
+  cleanupPrintArea();
 };
 
 window.triggerPrintDefter = function() {
@@ -5827,6 +5856,7 @@ window.openNotCizelgesiPreview = function() {
 window.closeNotCizelgesiPreview = function() {
   const modal = document.getElementById('notCizelgesiModal');
   modal?.classList.add('hidden');
+  cleanupPrintArea();
 };
 
 window.triggerPrintNotCizelgesi = function() {
@@ -5954,6 +5984,7 @@ window.openSinavTutanagiPreview = function() {
 window.closeSinavTutanagiPreview = function() {
   const modal = document.getElementById('sinavTutanagiModal');
   modal?.classList.add('hidden');
+  cleanupPrintArea();
 };
 
 window.triggerPrintSinavTutanagi = function() {
@@ -6089,6 +6120,7 @@ window.openImzaListesiPreview = function() {
 window.closeImzaListesiPreview = function() {
   const modal = document.getElementById('imzaListesiModal');
   modal?.classList.add('hidden');
+  cleanupPrintArea();
 };
 
 window.triggerPrintImzaListesi = function() {

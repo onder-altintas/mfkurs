@@ -197,6 +197,14 @@
       transition: background-color 150ms ease-in-out;
     }
 
+    /* PrintArea Ekranda Kesinlikle Gizli Olmalıdır */
+    #printArea {
+      display: none !important;
+      visibility: hidden !important;
+      height: 0 !important;
+      overflow: hidden !important;
+    }
+
     /* Print Stilleri (Evrak Yazdırma ve PDF Çıktısı) */
     @media print {
       @page {
