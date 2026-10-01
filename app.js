@@ -3046,7 +3046,7 @@ function renderAttendanceTab() {
     const rowBgClass = isEven 
       ? 'bg-white dark:bg-[#152125]' 
       : 'bg-slate-50/80 dark:bg-[#10191b]';
-    const rowHoverClass = 'hover:bg-[#E09F3E]/15 dark:hover:bg-[#E09F3E]/25 transition-colors duration-150';
+    const rowHoverClass = 'hover:bg-[#E09F3E]/15 dark:hover:bg-[#E09F3E]/25 focus-within:bg-[#E09F3E]/25 dark:focus-within:bg-[#E09F3E]/30 transition-colors duration-150';
 
     const tr = document.createElement('tr');
     tr.className = `${rowBgClass} ${rowHoverClass} border-b border-slate-100 dark:border-[#23353c]/60`;
@@ -3312,8 +3312,14 @@ function renderExamsTab() {
   }
 
   students.forEach((s, idx) => {
+    const isEven = (idx % 2 === 0);
+    const rowBgClass = isEven 
+      ? 'bg-white dark:bg-[#152125]' 
+      : 'bg-slate-50/70 dark:bg-[#10191b]';
+    const rowHoverClass = 'hover:bg-purple-100/50 dark:hover:bg-purple-950/40 focus-within:bg-purple-100/80 dark:focus-within:bg-purple-900/40 transition-colors duration-150';
+
     const tr = document.createElement('tr');
-    tr.className = 'hover:bg-slate-50 transition';
+    tr.className = `${rowBgClass} ${rowHoverClass} border-b border-slate-100 dark:border-[#23353c]/60`;
     tr.setAttribute('data-std-id', s.id);
 
     const modScores = s.moduleScores || {};
@@ -3323,7 +3329,7 @@ function renderExamsTab() {
       const score = modScores[m];
       const val = (score !== null && score !== undefined && score !== '') ? score : '';
       moduleInputsHtml += `
-        <td class="px-2 py-2.5 text-center border-x border-slate-100">
+        <td class="px-2 py-2 text-center border-x border-slate-100 dark:border-[#23353c]/40">
           <input
             type="number"
             min="0"
@@ -3332,7 +3338,7 @@ function renderExamsTab() {
             value="${val}"
             data-std-id="${s.id}"
             data-module="${m}"
-            class="exam-cell-score text-center w-20 px-2 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-bold text-purple-950 focus:ring-2 focus:ring-purple-500 focus:outline-none"
+            class="exam-cell-score text-center w-20 px-2 py-1.5 bg-white dark:bg-[#10191b] border border-slate-200 dark:border-[#23353c] rounded-lg text-xs font-bold text-purple-950 dark:text-purple-200 focus:ring-2 focus:ring-purple-500 focus:outline-none transition shadow-2xs"
           />
         </td>
       `;
@@ -3349,15 +3355,15 @@ function renderExamsTab() {
     }
 
     tr.innerHTML = `
-      <td class="px-3 py-3 text-slate-400 font-medium">${idx + 1}</td>
-      <td class="px-4 py-3 font-semibold text-slate-800">
+      <td class="px-3 py-3 text-slate-400 font-medium text-center text-xs">${idx + 1}</td>
+      <td class="px-4 py-3 font-semibold text-slate-800 dark:text-slate-100">
         <div>${escapeHtml(s.fullName)}</div>
         <div class="text-[10px] text-slate-400 font-mono">${escapeHtml(s.phone || '-')}</div>
       </td>
-      <td class="px-3 py-3 font-mono text-slate-600">${escapeHtml(s.tcNo || '-')}</td>
+      <td class="px-3 py-3 font-mono text-slate-600 dark:text-slate-400 text-xs">${escapeHtml(s.tcNo || '-')}</td>
       ${moduleInputsHtml}
       <td class="px-3 py-3 text-center">
-        <span class="exam-row-avg text-sm font-extrabold text-purple-900" data-std-id="${s.id}">
+        <span class="exam-row-avg text-sm font-extrabold text-purple-900 dark:text-purple-300" data-std-id="${s.id}">
           ${avgDisplay}
         </span>
       </td>
@@ -3370,8 +3376,9 @@ function renderExamsTab() {
     examsMatrixTbody.appendChild(tr);
   });
 
-  // Not değiştiğinde canlı ortalama ve durum hesaplama
+  // Not değiştiğinde canlı ortalama ve durum hesaplama & mouse tekerleğiyle yanlışlıkla not değişmesini önleme
   examsMatrixTbody.querySelectorAll('.exam-cell-score').forEach(input => {
+    input.addEventListener('wheel', (e) => e.preventDefault(), { passive: false });
     input.addEventListener('input', (e) => {
       const stdId = e.target.dataset.stdId;
       recalculateStudentExamRowLive(stdId);

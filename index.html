@@ -131,6 +131,49 @@
       background-color: #172428 !important;
     }
 
+    /* Modül Sınavları & Not Giriş Ekranı Satır Hover ve Odaklanma (Focus-Within) */
+    #examsMatrixTable tbody tr:hover > td,
+    #examsMatrixTable tbody tr:focus-within > td {
+      background-color: #f3e8ff !important; /* purple-100 */
+      transition: background-color 150ms ease-in-out;
+    }
+    html.dark #examsMatrixTable tbody tr:hover > td,
+    html.dark #examsMatrixTable tbody tr:focus-within > td {
+      background-color: #261b3d !important; /* koyu tema mor vurgusu */
+      transition: background-color 150ms ease-in-out;
+    }
+    #examsMatrixTable tbody tr:focus-within {
+      box-shadow: inset 4px 0 0 #9333ea; /* Aktif not girilen satırın solunda belirgin mor bar */
+    }
+    html.dark #examsMatrixTable tbody tr:focus-within {
+      box-shadow: inset 4px 0 0 #c084fc;
+    }
+
+    /* Devamsızlık Tablosu Satır Hover ve Odaklanma */
+    #attendanceTableBody tr:hover > td,
+    #attendanceTableBody tr:focus-within > td {
+      background-color: rgba(224, 159, 62, 0.18) !important; /* amber highlight */
+      transition: background-color 150ms ease-in-out;
+    }
+    html.dark #attendanceTableBody tr:hover > td,
+    html.dark #attendanceTableBody tr:focus-within > td {
+      background-color: rgba(224, 159, 62, 0.28) !important;
+      transition: background-color 150ms ease-in-out;
+    }
+    #attendanceTableBody tr:focus-within {
+      box-shadow: inset 4px 0 0 #E09F3E;
+    }
+
+    /* Kursiyer Listesi Satır Hover */
+    #studentTableBody tr:hover > td {
+      background-color: #f1f5f9 !important; /* slate-100 */
+      transition: background-color 150ms ease-in-out;
+    }
+    html.dark #studentTableBody tr:hover > td {
+      background-color: #172428 !important;
+      transition: background-color 150ms ease-in-out;
+    }
+
     /* Print Stilleri */
     @media print {
       @page {
@@ -2996,7 +3039,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
   <!-- Firebase Bulut Servisi & Veri Deposu -->
-  <script src="firebase.js?v=20261001_1041"></script>
-  <script src="app.js?v=20261001_1041"></script>
+  <script src="firebase.js?v=20261001_1045"></script>
+  <script src="app.js?v=20261001_1045"></script>
 </body>
 </html>
