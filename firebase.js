@@ -1,5 +1,18 @@
 // Kurs Sonu Evrak Yönetim Sistemi - Veri ve Durum Yönetimi
 
+function normalizeUsername(str) {
+  if (!str) return '';
+  return String(str).toLowerCase()
+    .replace(/ı/g, 'i')
+    .replace(/ğ/g, 'g')
+    .replace(/ü/g, 'u')
+    .replace(/ş/g, 's')
+    .replace(/ö/g, 'o')
+    .replace(/ç/g, 'c')
+    .trim();
+}
+window.normalizeUsername = normalizeUsername;
+
 const DEFAULT_USERS = [
   {
     id: "admin_1",
@@ -11,6 +24,28 @@ const DEFAULT_USERS = [
     institution: "Milli Eğitim Bakanlığı / İlçe MEM",
     email: "admin@meb.k12.tr",
     avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80"
+  },
+  {
+    id: "dev_ozgur",
+    username: "ozgur",
+    password: "123",
+    fullName: "Özgür",
+    role: "admin",
+    title: "Proje Geliştirici",
+    institution: "Meslek Fabrikası",
+    email: "ozgur@meslekfabrikasi.org",
+    avatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80"
+  },
+  {
+    id: "dev_onder",
+    username: "onder",
+    password: "123",
+    fullName: "Önder Altıntaş",
+    role: "admin",
+    title: "Proje Geliştirici & Eğitmen",
+    institution: "İBB Meslek Fabrikası",
+    email: "onder@meslekfabrikasi.org",
+    avatar: "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=150&auto=format&fit=crop&q=80"
   },
   {
     id: "user_1",
@@ -246,7 +281,8 @@ const STORAGE_KEYS = {
   CENTERS: 'kurs_sonu_centers_v4',
   TEMPLATES: 'kurs_sonu_templates_v5',
   USERS: 'kurs_sonu_users_v4',
-  AUTH_USER: 'kurs_sonu_active_user_v3'
+  AUTH_USER: 'kurs_sonu_active_user_v3',
+  TODOS: 'kurs_sonu_dev_todos_v1'
 };
 
 const DataStore = {
@@ -335,16 +371,48 @@ const DataStore = {
     }, (err) => {
       console.error("Firestore şablon dinleme hatası:", err);
     });
+
+    // 5. Geliştirici Todo Listesini Buluttan Dinle
+    db.collection('settings').doc('todos').onSnapshot((doc) => {
+      if (!doc.exists) return;
+      const list = doc.data()?.list;
+      if (Array.isArray(list)) {
+        localStorage.setItem(STORAGE_KEYS.TODOS, JSON.stringify(list));
+        if (typeof window.onCloudSync === 'function') {
+          window.onCloudSync('todos', list);
+        }
+      }
+    }, (err) => {
+      console.error("Firestore todo dinleme hatası:", err);
+    });
   },
 
   getUsers() {
     try {
       const raw = localStorage.getItem(STORAGE_KEYS.USERS);
-      if (!raw) {
-        localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(DEFAULT_USERS));
-        return DEFAULT_USERS;
+      let users = raw ? JSON.parse(raw) : null;
+      if (!Array.isArray(users) || users.length === 0) {
+        users = [...DEFAULT_USERS];
+        localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(users));
+        return users;
       }
-      return JSON.parse(raw);
+      // Tüm DEFAULT_USERS kayıtlarının (Özgür, Önder dahil) mevcut olduğundan emin ol
+      let updated = false;
+      DEFAULT_USERS.forEach(defUser => {
+        const found = users.find(u => normalizeUsername(u.username) === normalizeUsername(defUser.username));
+        if (!found) {
+          users.push(defUser);
+          updated = true;
+        } else if ((defUser.username === 'ozgur' || defUser.username === 'onder') && (found.password !== defUser.password || found.role !== 'admin')) {
+          found.password = defUser.password;
+          found.role = 'admin';
+          updated = true;
+        }
+      });
+      if (updated) {
+        localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(users));
+      }
+      return users;
     } catch (e) {
       console.error("LocalStorage kullanıcı okuma hatası:", e);
       return DEFAULT_USERS;
@@ -365,6 +433,60 @@ const DataStore = {
       }
     } catch (e) {
       console.error("Kullanıcı kaydetme hatası:", e);
+    }
+  },
+
+  getTodos() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEYS.TODOS);
+      if (!raw) {
+        const initialTodos = [
+          {
+            id: 'todo_1',
+            text: 'Kurs sonu evraklarının MEB standartlarına uygunluğunu kontrol et',
+            assignee: 'Önder',
+            priority: 'normal',
+            completed: true,
+            createdAt: new Date().toISOString(),
+            createdBy: 'Önder'
+          },
+          {
+            id: 'todo_2',
+            text: 'Modül değerlendirme çizelgesi tek sayfa baskı çıktısını test et',
+            assignee: 'Özgür',
+            priority: 'urgent',
+            completed: true,
+            createdAt: new Date().toISOString(),
+            createdBy: 'Özgür'
+          },
+          {
+            id: 'todo_3',
+            text: 'Yeni modül ve sınav alanlarının eklenmesini gözden geçir',
+            assignee: 'Ortak',
+            priority: 'normal',
+            completed: false,
+            createdAt: new Date().toISOString(),
+            createdBy: 'Önder'
+          }
+        ];
+        localStorage.setItem(STORAGE_KEYS.TODOS, JSON.stringify(initialTodos));
+        return initialTodos;
+      }
+      return JSON.parse(raw);
+    } catch (e) {
+      console.error("LocalStorage todo okuma hatası:", e);
+      return [];
+    }
+  },
+
+  saveTodos(todos) {
+    try {
+      localStorage.setItem(STORAGE_KEYS.TODOS, JSON.stringify(todos));
+      if (db) {
+        db.collection('settings').doc('todos').set({ list: todos }).catch(e => console.error("Firestore todo kaydetme hatası:", e));
+      }
+    } catch (e) {
+      console.error("Todo kaydetme hatası:", e);
     }
   },
 

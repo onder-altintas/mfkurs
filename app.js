@@ -399,6 +399,8 @@ window.onCloudSync = function(type, data) {
   } else if (type === 'templates') {
     currentTemplates = data;
     if (typeof renderTemplatesTable === 'function') renderTemplatesTable();
+  } else if (type === 'todos') {
+    if (typeof renderDevTodos === 'function') renderDevTodos();
   }
 };
 
@@ -491,6 +493,7 @@ function updateCurrentDate() {
 function showLogin() {
   loginScreen.classList.remove('hidden');
   dashboardScreen.classList.add('hidden');
+  if (typeof hideDevTodoList === 'function') hideDevTodoList();
   refreshLucide();
 }
 
@@ -520,6 +523,7 @@ function showDashboard() {
 
   renderTeacherDashboard();
   renderAdminPanel();
+  if (typeof checkDevTodoList === 'function') checkDevTodoList();
   refreshLucide();
 }
 
@@ -680,7 +684,10 @@ function setupEventListeners() {
     const pass = loginPasswordInput.value.trim();
 
     const users = DataStore.getUsers();
-    const found = users.find((u) => u.username.toLowerCase() === uName && u.password === pass);
+    const found = users.find((u) => 
+      (u.username.toLowerCase() === uName || (typeof normalizeUsername === 'function' && normalizeUsername(u.username) === normalizeUsername(uName))) && 
+      u.password === pass
+    );
 
     if (found) {
       currentUser = found;
@@ -717,6 +724,24 @@ function setupEventListeners() {
     loginPasswordInput.value = admin.password;
     loginForm.dispatchEvent(new Event('submit'));
   });
+
+  const quickLoginOzgur = document.getElementById('quickLoginOzgur');
+  if (quickLoginOzgur) {
+    quickLoginOzgur.addEventListener('click', () => {
+      loginUsernameInput.value = 'ozgur';
+      loginPasswordInput.value = '123';
+      loginForm.dispatchEvent(new Event('submit'));
+    });
+  }
+
+  const quickLoginOnder = document.getElementById('quickLoginOnder');
+  if (quickLoginOnder) {
+    quickLoginOnder.addEventListener('click', () => {
+      loginUsernameInput.value = 'onder';
+      loginPasswordInput.value = '123';
+      loginForm.dispatchEvent(new Event('submit'));
+    });
+  }
 
   quickLoginUser1.addEventListener('click', () => {
     const user = DataStore.getUsers().find(u => u.username === 'egitmen1');
@@ -5999,3 +6024,357 @@ function handleImportSystemBackupJson(e) {
   };
   reader.readAsText(file);
 }
+
+// =========================================================================
+// ============= PROJE GELİŞTİRİCİ TODO LIST (ÖZGÜR & ÖNDER) ==============
+// =========================================================================
+
+function isDevUser(user) {
+  if (!user || !user.username) return false;
+  const u = typeof normalizeUsername === 'function' ? normalizeUsername(user.username) : user.username.toLowerCase().trim();
+  return u === 'ozgur' || u === 'onder';
+}
+
+let currentDevTodoFilter = 'all'; // 'all' | 'active' | 'completed'
+let editingDevTodoId = null;
+let devTodoInitialized = false;
+
+function checkDevTodoList() {
+  const wrapper = document.getElementById('devTodoFloatingWrapper');
+  if (!wrapper) return;
+
+  if (isDevUser(currentUser)) {
+    wrapper.classList.remove('hidden');
+    if (!devTodoInitialized) {
+      initDevTodoList();
+    }
+    renderDevTodos();
+  } else {
+    hideDevTodoList();
+  }
+}
+
+function hideDevTodoList() {
+  const wrapper = document.getElementById('devTodoFloatingWrapper');
+  if (wrapper) wrapper.classList.add('hidden');
+  closeDevTodoDrawer();
+}
+
+function openDevTodoDrawer() {
+  const drawer = document.getElementById('devTodoDrawer');
+  const panel = document.getElementById('devTodoPanel');
+  const backdrop = document.getElementById('devTodoBackdrop');
+  if (!drawer || !panel) return;
+
+  drawer.classList.remove('hidden');
+  setTimeout(() => {
+    backdrop?.classList.remove('opacity-0');
+    backdrop?.classList.add('opacity-100');
+    panel.classList.remove('translate-x-full');
+    panel.classList.add('translate-x-0');
+  }, 10);
+  renderDevTodos();
+  refreshLucide();
+}
+
+function closeDevTodoDrawer() {
+  const drawer = document.getElementById('devTodoDrawer');
+  const panel = document.getElementById('devTodoPanel');
+  const backdrop = document.getElementById('devTodoBackdrop');
+  if (!drawer || !panel) return;
+
+  backdrop?.classList.remove('opacity-100');
+  backdrop?.classList.add('opacity-0');
+  panel.classList.remove('translate-x-0');
+  panel.classList.add('translate-x-full');
+  setTimeout(() => {
+    drawer.classList.add('hidden');
+  }, 300);
+}
+
+function initDevTodoList() {
+  if (devTodoInitialized) return;
+  devTodoInitialized = true;
+
+  const openBtn = document.getElementById('devTodoOpenBtn');
+  const closeBtn = document.getElementById('devTodoCloseBtn');
+  const backdrop = document.getElementById('devTodoBackdrop');
+  const form = document.getElementById('devTodoForm');
+  const clearCompletedBtn = document.getElementById('devTodoClearCompletedBtn');
+
+  if (openBtn) {
+    openBtn.addEventListener('click', openDevTodoDrawer);
+  }
+  if (closeBtn) {
+    closeBtn.addEventListener('click', closeDevTodoDrawer);
+  }
+  if (backdrop) {
+    backdrop.addEventListener('click', closeDevTodoDrawer);
+  }
+
+  // Form submit (Yeni Görev Ekleme)
+  if (form) {
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const input = document.getElementById('devTodoInput');
+      const assigneeSelect = document.getElementById('devTodoAssignee');
+      const prioritySelect = document.getElementById('devTodoPriority');
+      if (!input) return;
+
+      const text = input.value.trim();
+      if (!text) return;
+
+      const assignee = assigneeSelect ? assigneeSelect.value : 'Ortak';
+      const priority = prioritySelect ? prioritySelect.value : 'normal';
+
+      const todos = DataStore.getTodos();
+      const newTodo = {
+        id: 'todo_' + Date.now(),
+        text: text,
+        assignee: assignee,
+        priority: priority,
+        completed: false,
+        createdAt: new Date().toISOString(),
+        createdBy: currentUser?.fullName || (isDevUser(currentUser) && currentUser.username.includes('ozgur') ? 'Özgür' : 'Önder')
+      };
+
+      todos.unshift(newTodo);
+      DataStore.saveTodos(todos);
+      input.value = '';
+      renderDevTodos();
+    });
+  }
+
+  // Filtre butonları
+  document.querySelectorAll('.dev-todo-filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      currentDevTodoFilter = btn.getAttribute('data-filter') || 'all';
+      document.querySelectorAll('.dev-todo-filter-btn').forEach(b => {
+        b.className = 'dev-todo-filter-btn px-2.5 py-1 rounded-md font-medium text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-100 cursor-pointer';
+      });
+      btn.className = 'dev-todo-filter-btn px-2.5 py-1 rounded-md font-bold bg-white dark:bg-[#152125] text-slate-800 dark:text-slate-100 shadow-xs cursor-pointer';
+      renderDevTodos();
+    });
+  });
+
+  // Bitenleri temizle
+  if (clearCompletedBtn) {
+    clearCompletedBtn.addEventListener('click', () => {
+      const todos = DataStore.getTodos();
+      const remaining = todos.filter(t => !t.completed);
+      if (todos.length === remaining.length) {
+        alert('Tamamlanmış görev bulunmuyor.');
+        return;
+      }
+      if (confirm('Tamamlanan tüm görevler silinsin mi?')) {
+        DataStore.saveTodos(remaining);
+        renderDevTodos();
+      }
+    });
+  }
+}
+
+function renderDevTodos() {
+  const container = document.getElementById('devTodoListContainer');
+  const badge = document.getElementById('devTodoBadge');
+  const dot = document.getElementById('devTodoUncompletedDot');
+  const statsText = document.getElementById('devTodoStatsText');
+  const activeUserTag = document.getElementById('devTodoActiveUserTag');
+
+  if (!container) return;
+
+  const todos = DataStore.getTodos();
+  const total = todos.length;
+  const completed = todos.filter(t => t.completed).length;
+  const active = total - completed;
+
+  if (badge) badge.innerText = active;
+  if (dot) {
+    if (active > 0) dot.classList.remove('hidden');
+    else dot.classList.add('hidden');
+  }
+  if (statsText) statsText.innerText = `${total} görevden ${completed}'i tamamlandı`;
+  if (activeUserTag && currentUser) {
+    activeUserTag.innerText = currentUser.fullName || currentUser.username;
+  }
+
+  // Filtreleme
+  let filtered = [...todos];
+  if (currentDevTodoFilter === 'active') {
+    filtered = filtered.filter(t => !t.completed);
+  } else if (currentDevTodoFilter === 'completed') {
+    filtered = filtered.filter(t => t.completed);
+  }
+
+  if (filtered.length === 0) {
+    container.innerHTML = `
+      <div class="py-12 text-center text-slate-400">
+        <i data-lucide="inbox" class="w-8 h-8 mx-auto mb-2 opacity-50"></i>
+        <p class="text-xs font-medium">Bu filtrede gösterilecek görev yok.</p>
+      </div>
+    `;
+    refreshLucide();
+    return;
+  }
+
+  container.innerHTML = filtered.map(t => {
+    // Sorumlu rozeti
+    let assigneeBadge = '';
+    if (t.assignee === 'Özgür') {
+      assigneeBadge = `<span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-sky-100 text-sky-700 dark:bg-sky-950/60 dark:text-sky-300 border border-sky-300/40">👤 Özgür</span>`;
+    } else if (t.assignee === 'Önder') {
+      assigneeBadge = `<span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-orange-100 text-orange-700 dark:bg-orange-950/60 dark:text-orange-300 border border-orange-300/40">👤 Önder</span>`;
+    } else {
+      assigneeBadge = `<span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-purple-100 text-purple-700 dark:bg-purple-950/60 dark:text-purple-300 border border-purple-300/40">👥 Ortak</span>`;
+    }
+
+    // Öncelik rozeti
+    let priorityBadge = '';
+    if (t.priority === 'urgent') {
+      priorityBadge = `<span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-300/40">🔥 Acil</span>`;
+    }
+
+    // Düzenleme modunda mı?
+    if (editingDevTodoId === t.id) {
+      return `
+        <div class="p-3 bg-white dark:bg-[#152125] rounded-xl border-2 border-[#335C67] shadow-md space-y-2">
+          <input
+            type="text"
+            id="editTodoInput_${t.id}"
+            value="${escapeHtml(t.text)}"
+            class="w-full px-2.5 py-1.5 text-xs bg-slate-50 dark:bg-[#10191b] border border-slate-300 dark:border-[#2b3e45] rounded-lg text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-[#335C67]"
+          />
+          <div class="flex items-center justify-between gap-2">
+            <div class="flex items-center gap-1.5">
+              <select id="editTodoAssignee_${t.id}" class="px-2 py-1 text-[11px] rounded border border-slate-200 dark:border-[#2b3e45] bg-slate-50 dark:bg-[#10191b] text-slate-700 dark:text-slate-200">
+                <option value="Özgür" ${t.assignee === 'Özgür' ? 'selected' : ''}>Özgür</option>
+                <option value="Önder" ${t.assignee === 'Önder' ? 'selected' : ''}>Önder</option>
+                <option value="Ortak" ${t.assignee === 'Ortak' ? 'selected' : ''}>Ortak</option>
+              </select>
+              <select id="editTodoPriority_${t.id}" class="px-2 py-1 text-[11px] rounded border border-slate-200 dark:border-[#2b3e45] bg-slate-50 dark:bg-[#10191b] text-slate-700 dark:text-slate-200">
+                <option value="normal" ${t.priority === 'normal' ? 'selected' : ''}>Normal</option>
+                <option value="urgent" ${t.priority === 'urgent' ? 'selected' : ''}>Acil 🔥</option>
+                <option value="low" ${t.priority === 'low' ? 'selected' : ''}>Düşük</option>
+              </select>
+            </div>
+            <div class="flex items-center gap-1">
+              <button type="button" onclick="saveEditDevTodo('${t.id}')" class="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-[11px] font-bold cursor-pointer transition">Kaydet</button>
+              <button type="button" onclick="cancelEditDevTodo()" class="px-2.5 py-1 bg-slate-200 dark:bg-[#2b3e45] text-slate-700 dark:text-slate-200 rounded-lg text-[11px] cursor-pointer transition">İptal</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // Tarih formatı
+    let dateStr = '';
+    if (t.createdAt) {
+      try {
+        const d = new Date(t.createdAt);
+        dateStr = d.toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' });
+      } catch(e) {}
+    }
+
+    return `
+      <div class="group p-3 rounded-xl border ${t.completed ? 'bg-slate-100/70 dark:bg-[#121c1f]/70 border-slate-200 dark:border-[#223338] opacity-70' : 'bg-white dark:bg-[#152125] border-slate-200 dark:border-[#2b3e45] shadow-xs hover:border-[#335C67]/50'} transition flex items-start gap-2.5">
+        <input
+          type="checkbox"
+          onchange="toggleDevTodo('${t.id}')"
+          ${t.completed ? 'checked' : ''}
+          class="mt-1 w-4 h-4 rounded text-[#335C67] focus:ring-[#335C67] cursor-pointer"
+        />
+        <div class="flex-1 min-w-0">
+          <div class="text-xs sm:text-sm font-medium ${t.completed ? 'line-through text-slate-400 dark:text-slate-500' : 'text-slate-800 dark:text-slate-100'} break-words">
+            ${escapeHtml(t.text)}
+          </div>
+          <div class="flex flex-wrap items-center gap-1.5 mt-2">
+            ${assigneeBadge}
+            ${priorityBadge}
+            <span class="text-[10px] text-slate-400">
+              ${escapeHtml(t.createdBy || 'Dev')} • ${dateStr}
+            </span>
+          </div>
+        </div>
+        <div class="flex items-center gap-1 opacity-60 group-hover:opacity-100 shrink-0 transition">
+          <button
+            type="button"
+            onclick="startEditDevTodo('${t.id}')"
+            class="p-1 hover:bg-slate-100 dark:hover:bg-[#223338] rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 cursor-pointer transition"
+            title="Düzenle"
+          >
+            <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
+          </button>
+          <button
+            type="button"
+            onclick="deleteDevTodo('${t.id}')"
+            class="p-1 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-lg text-slate-400 hover:text-rose-600 cursor-pointer transition"
+            title="Sil"
+          >
+            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+          </button>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  refreshLucide();
+}
+
+window.toggleDevTodo = function(id) {
+  const todos = DataStore.getTodos();
+  const todo = todos.find(t => t.id === id);
+  if (todo) {
+    todo.completed = !todo.completed;
+    DataStore.saveTodos(todos);
+    renderDevTodos();
+  }
+};
+
+window.deleteDevTodo = function(id) {
+  if (!confirm('Bu görevi silmek istediğinize emin misiniz?')) return;
+  let todos = DataStore.getTodos();
+  todos = todos.filter(t => t.id !== id);
+  DataStore.saveTodos(todos);
+  renderDevTodos();
+};
+
+window.startEditDevTodo = function(id) {
+  editingDevTodoId = id;
+  renderDevTodos();
+  setTimeout(() => {
+    const input = document.getElementById(`editTodoInput_${id}`);
+    if (input) {
+      input.focus();
+      input.select();
+    }
+  }, 50);
+};
+
+window.cancelEditDevTodo = function() {
+  editingDevTodoId = null;
+  renderDevTodos();
+};
+
+window.saveEditDevTodo = function(id) {
+  const input = document.getElementById(`editTodoInput_${id}`);
+  const assigneeSelect = document.getElementById(`editTodoAssignee_${id}`);
+  const prioritySelect = document.getElementById(`editTodoPriority_${id}`);
+  if (!input) return;
+
+  const newText = input.value.trim();
+  if (!newText) {
+    alert('Görev metni boş olamaz!');
+    return;
+  }
+
+  const todos = DataStore.getTodos();
+  const todo = todos.find(t => t.id === id);
+  if (todo) {
+    todo.text = newText;
+    if (assigneeSelect) todo.assignee = assigneeSelect.value;
+    if (prioritySelect) todo.priority = prioritySelect.value;
+    DataStore.saveTodos(todos);
+    editingDevTodoId = null;
+    renderDevTodos();
+  }
+};
