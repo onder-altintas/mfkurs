@@ -4514,11 +4514,20 @@ window.closeKararDurumuPreview = function() {
   modal?.classList.add('hidden');
 };
 
-// Güvenli ve Zamanlamalı Yazdırma Motoru (Baskı önizlemesinin boş çıkmasını önler)
+// Güvenli ve Kararlı Yazdırma Motoru (Baskı önizlemesinin boş çıkmasını %100 önler)
 function safePrint(htmlContent, isLandscape = false) {
+  if (!htmlContent) {
+    alert('Yazdırılacak evrak içeriği bulunamadı.');
+    return;
+  }
+
+  // 1. Ana sayfadaki printArea'yı da yedek olarak doldur
   const printArea = document.getElementById('printArea');
   const printAreaContent = document.getElementById('printAreaContent');
-  if (!printArea || !printAreaContent) return;
+  if (printArea && printAreaContent) {
+    printAreaContent.innerHTML = htmlContent;
+    printArea.classList.remove('hidden');
+  }
 
   let styleTag = document.getElementById('landscapePrintStyle');
   if (isLandscape) {
@@ -4532,27 +4541,84 @@ function safePrint(htmlContent, isLandscape = false) {
     styleTag?.remove();
   }
 
-  printAreaContent.innerHTML = htmlContent;
-  printArea.classList.remove('hidden');
+  // 2. İzole Gizli Iframe (Tarayıcı önizleme penceresinde boş sayfa çıkmasını tamamen engeller)
+  let printFrame = document.getElementById('securePrintIframe');
+  if (printFrame) {
+    try { printFrame.remove(); } catch(e) {}
+  }
 
-  let cleaned = false;
-  const cleanup = () => {
-    if (cleaned) return;
-    cleaned = true;
-    printArea.classList.add('hidden');
-    printAreaContent.innerHTML = '';
-    if (isLandscape) {
-      document.getElementById('landscapePrintStyle')?.remove();
-    }
-    window.removeEventListener('afterprint', cleanup);
-  };
+  printFrame = document.createElement('iframe');
+  printFrame.id = 'securePrintIframe';
+  printFrame.style.position = 'fixed';
+  printFrame.style.right = '0';
+  printFrame.style.bottom = '0';
+  printFrame.style.width = '0';
+  printFrame.style.height = '0';
+  printFrame.style.border = '0';
+  printFrame.style.visibility = 'hidden';
+  document.body.appendChild(printFrame);
 
-  window.addEventListener('afterprint', cleanup);
+  const pageCss = isLandscape
+    ? `@page { size: A4 landscape !important; margin: 6mm 8mm !important; }`
+    : `@page { size: A4 portrait !important; margin: 8mm 10mm !important; }`;
 
+  const frameDoc = printFrame.contentWindow.document;
+  frameDoc.open();
+  frameDoc.write(`
+    <!DOCTYPE html>
+    <html lang="tr">
+      <head>
+        <meta charset="utf-8">
+        <title>Resmi Evrak Baskısı</title>
+        <style>
+          ${pageCss}
+          *, *::before, *::after {
+            box-sizing: border-box;
+          }
+          html, body {
+            margin: 0 !important;
+            padding: 0 !important;
+            background: #ffffff !important;
+            color: #000000 !important;
+            font-family: Arial, Helvetica, sans-serif !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+          }
+          table {
+            border-collapse: collapse !important;
+          }
+          .print-page-break {
+            page-break-before: always !important;
+            break-before: page !important;
+          }
+          .defter-page {
+            page-break-after: always !important;
+            break-after: page !important;
+            box-sizing: border-box !important;
+          }
+          .defter-page:last-child {
+            page-break-after: auto !important;
+            break-after: auto !important;
+          }
+        </style>
+      </head>
+      <body>
+        ${htmlContent}
+      </body>
+    </html>
+  `);
+  frameDoc.close();
+
+  // Render tamamlandıktan sonra baskı penceresini aç
   setTimeout(() => {
-    window.print();
-    setTimeout(cleanup, 2000);
-  }, 120);
+    try {
+      printFrame.contentWindow.focus();
+      printFrame.contentWindow.print();
+    } catch (err) {
+      console.warn('Iframe print tetiklenemedi, varsayılan window.print çağrılıyor:', err);
+      window.print();
+    }
+  }, 250);
 }
 
 window.triggerPrintKararDurumu = function() {

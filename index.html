@@ -174,32 +174,36 @@
       transition: background-color 150ms ease-in-out;
     }
 
-    /* Print Stilleri */
+    /* Print Stilleri (Evrak Yazdırma ve PDF Çıktısı) */
     @media print {
       @page {
         size: A4 portrait;
-        margin: 12mm 12mm 12mm 12mm;
+        margin: 8mm 10mm;
       }
-      body {
-        background: #fff !important;
-        color: #000 !important;
-      }
-      body * {
-        visibility: hidden;
-      }
-      #printArea, #printArea * {
-        visibility: visible;
-      }
-      #printArea {
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100%;
+      html, body {
+        background: #ffffff !important;
+        color: #000000 !important;
         margin: 0 !important;
         padding: 0 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      /* Yazdırma anında ana sayfadaki tüm öğeleri gizle, sadece baskı alanını göster */
+      body > *:not(#printArea):not(#securePrintIframe) {
+        display: none !important;
+      }
+      #printArea {
         display: block !important;
-        background: #fff !important;
-        color: #000 !important;
+        visibility: visible !important;
+        position: static !important;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #ffffff !important;
+        color: #000000 !important;
+      }
+      #printArea * {
+        visibility: visible !important;
       }
       .print-page-break {
         page-break-before: always !important;
@@ -208,7 +212,7 @@
       .defter-page {
         page-break-after: always !important;
         break-after: page !important;
-        box-sizing: border-box;
+        box-sizing: border-box !important;
       }
       .defter-page:last-child {
         page-break-after: auto !important;
@@ -2728,6 +2732,8 @@
           <!-- JS tarafından enjekte edilecek -->
         </div>
       </div>
+    </div>
+  </div>
 
   <!-- ================= İMZA LİSTESİ (GÜNLÜK İMZA ÇİZELGESİ) ÖNİZLEME MODALI ================= -->
   <div id="imzaListesiModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-slate-900/70 backdrop-blur-sm">
@@ -3031,7 +3037,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
   <!-- Firebase Bulut Servisi & Veri Deposu -->
-  <script src="firebase.js?v=20261001_1256"></script>
-  <script src="app.js?v=20261001_1256"></script>
+  <script src="firebase.js?v=20261001_1305"></script>
+  <script src="app.js?v=20261001_1305"></script>
 </body>
 </html>
