@@ -6604,10 +6604,23 @@ function renderDevTodos() {
       assigneeBadge = `<span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-purple-100 text-purple-700 dark:bg-purple-950/60 dark:text-purple-300 border border-purple-300/40">👥 Ortak</span>`;
     }
 
-    // Öncelik rozeti
+    // Öncelik rozeti ve sol kenar renk vurgusu
+    const prio = (t.priority || 'normal').toLowerCase();
     let priorityBadge = '';
-    if (t.priority === 'urgent') {
-      priorityBadge = `<span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-300/40">🔥 Acil</span>`;
+    let priorityBorder = 'border-l-[3.5px] border-l-sky-500';
+
+    if (prio === 'urgent' || prio === 'acil') {
+      priorityBadge = `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-rose-100 text-rose-700 dark:bg-rose-950/70 dark:text-rose-300 border border-rose-300/60 shadow-2xs">🔥 Acil</span>`;
+      priorityBorder = 'border-l-[3.5px] border-l-rose-500';
+    } else if (prio === 'high' || prio === 'yuksek' || prio === 'yüksek') {
+      priorityBadge = `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-amber-100 text-amber-800 dark:bg-amber-950/70 dark:text-amber-300 border border-amber-300/60 shadow-2xs">⚡ Yüksek</span>`;
+      priorityBorder = 'border-l-[3.5px] border-l-amber-500';
+    } else if (prio === 'low' || prio === 'dusuk' || prio === 'düşük') {
+      priorityBadge = `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300 border border-slate-300/60 shadow-2xs">☕ Düşük</span>`;
+      priorityBorder = 'border-l-[3.5px] border-l-slate-400';
+    } else {
+      priorityBadge = `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-sky-100 text-sky-700 dark:bg-sky-950/70 dark:text-sky-300 border border-sky-300/60 shadow-2xs">📌 Normal</span>`;
+      priorityBorder = 'border-l-[3.5px] border-l-sky-500';
     }
 
     // Düzenleme modunda mı?
@@ -6628,9 +6641,10 @@ function renderDevTodos() {
                 <option value="Ortak" ${t.assignee === 'Ortak' ? 'selected' : ''}>Ortak</option>
               </select>
               <select id="editTodoPriority_${t.id}" class="px-2 py-1 text-[11px] rounded border border-slate-200 dark:border-[#2b3e45] bg-slate-50 dark:bg-[#10191b] text-slate-700 dark:text-slate-200">
-                <option value="normal" ${t.priority === 'normal' ? 'selected' : ''}>Normal</option>
-                <option value="urgent" ${t.priority === 'urgent' ? 'selected' : ''}>Acil 🔥</option>
-                <option value="low" ${t.priority === 'low' ? 'selected' : ''}>Düşük</option>
+                <option value="urgent" ${prio === 'urgent' ? 'selected' : ''}>🔥 Acil</option>
+                <option value="high" ${prio === 'high' ? 'selected' : ''}>⚡ Yüksek</option>
+                <option value="normal" ${prio === 'normal' || !t.priority ? 'selected' : ''}>📌 Normal</option>
+                <option value="low" ${prio === 'low' ? 'selected' : ''}>☕ Düşük</option>
               </select>
             </div>
             <div class="flex items-center gap-1">
@@ -6652,7 +6666,7 @@ function renderDevTodos() {
     }
 
     return `
-      <div class="group p-3 rounded-xl border ${t.completed ? 'bg-slate-100/70 dark:bg-[#121c1f]/70 border-slate-200 dark:border-[#223338] opacity-70' : 'bg-white dark:bg-[#152125] border-slate-200 dark:border-[#2b3e45] shadow-xs hover:border-[#335C67]/50'} transition flex items-start gap-2.5">
+      <div class="group p-3 rounded-xl border ${priorityBorder} ${t.completed ? 'bg-slate-100/70 dark:bg-[#121c1f]/70 border-slate-200 dark:border-[#223338] opacity-70' : 'bg-white dark:bg-[#152125] border-slate-200 dark:border-[#2b3e45] shadow-xs hover:border-[#335C67]/50'} transition flex items-start gap-2.5">
         <input
           type="checkbox"
           onchange="toggleDevTodo('${t.id}')"
