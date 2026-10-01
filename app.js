@@ -33,16 +33,14 @@ const navbarThemeText = document.getElementById('navbarThemeText');
 const loginThemeToggle = document.getElementById('loginThemeToggle');
 const loginThemeIcon = document.getElementById('loginThemeIcon');
 const loginThemeText = document.getElementById('loginThemeText');
-const themeBtnLight = document.getElementById('themeBtnLight');
-const themeBtnDark = document.getElementById('themeBtnDark');
-const activeThemeBadge = document.getElementById('activeThemeBadge');
-
 // Navigasyon & Roller
 const roleBadge = document.getElementById('roleBadge');
 const navViewSwitcher = document.getElementById('navViewSwitcher');
 const mobileNavSwitcher = document.getElementById('mobileNavSwitcher');
 const navTeacherViewBtn = document.getElementById('navTeacherViewBtn');
 const navAdminViewBtn = document.getElementById('navAdminViewBtn');
+const mobileTeacherBtn = document.getElementById('mobileTeacherBtn');
+const mobileAdminBtn = document.getElementById('mobileAdminBtn');
 const teacherSection = document.getElementById('teacherSection');
 const adminSection = document.getElementById('adminSection');
 
@@ -240,7 +238,6 @@ const attDailyHours = document.getElementById('attDailyHours');
 const attFailedCount = document.getElementById('attFailedCount');
 const attendanceTableBody = document.getElementById('attendanceTableBody');
 const markDayPresentBtn = document.getElementById('markDayPresentBtn');
-const markAllPresentBtn = document.getElementById('markAllPresentBtn');
 
 // Tarih Gezinme Elementleri (Sol / Sağ Ok ve Gün Listesi)
 const attPrevDateBtn = document.getElementById('attPrevDateBtn');
@@ -490,12 +487,24 @@ function switchView(view) {
     adminSection.classList.remove('hidden');
     navAdminViewBtn.className = 'px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-white dark:bg-[#152125] text-[#540B0E] dark:text-[#FFF3B0] shadow-xs cursor-pointer flex items-center gap-1.5 transition border border-[#540B0E]/20';
     navTeacherViewBtn.className = 'px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 cursor-pointer flex items-center gap-1.5 transition';
+    if (mobileAdminBtn) {
+      mobileAdminBtn.className = 'px-3.5 py-1.5 bg-white dark:bg-[#152125] text-xs font-bold text-[#540B0E] dark:text-[#FFF3B0] rounded-lg shadow-xs border border-slate-200 dark:border-[#23353c] cursor-pointer';
+    }
+    if (mobileTeacherBtn) {
+      mobileTeacherBtn.className = 'px-3.5 py-1.5 text-xs font-bold text-slate-600 dark:text-slate-400 hover:text-slate-900 rounded-lg cursor-pointer';
+    }
     renderAdminPanel();
   } else {
     adminSection.classList.add('hidden');
     teacherSection.classList.remove('hidden');
     navTeacherViewBtn.className = 'px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-white dark:bg-[#152125] text-[#335C67] dark:text-[#FFF3B0] shadow-xs cursor-pointer flex items-center gap-1.5 transition border border-[#335C67]/20';
     navAdminViewBtn.className = 'px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 cursor-pointer flex items-center gap-1.5 transition';
+    if (mobileTeacherBtn) {
+      mobileTeacherBtn.className = 'px-3.5 py-1.5 bg-white dark:bg-[#152125] text-xs font-bold text-[#335C67] dark:text-[#FFF3B0] rounded-lg shadow-xs border border-slate-200 dark:border-[#23353c] cursor-pointer';
+    }
+    if (mobileAdminBtn) {
+      mobileAdminBtn.className = 'px-3.5 py-1.5 text-xs font-bold text-slate-600 dark:text-slate-400 hover:text-slate-900 rounded-lg cursor-pointer';
+    }
     renderTeacherDashboard();
   }
   refreshLucide();
@@ -677,12 +686,12 @@ function setupEventListeners() {
   // Tema Değiştirme Dinleyicileri
   navbarThemeToggle?.addEventListener('click', toggleTheme);
   loginThemeToggle?.addEventListener('click', toggleTheme);
-  themeBtnLight?.addEventListener('click', () => applyTheme('light'));
-  themeBtnDark?.addEventListener('click', () => applyTheme('dark'));
 
   // View Switcher (Admin / Teacher)
-  navTeacherViewBtn.addEventListener('click', () => switchView('teacher'));
-  navAdminViewBtn.addEventListener('click', () => switchView('admin'));
+  navTeacherViewBtn?.addEventListener('click', () => switchView('teacher'));
+  navAdminViewBtn?.addEventListener('click', () => switchView('admin'));
+  mobileTeacherBtn?.addEventListener('click', () => switchView('teacher'));
+  mobileAdminBtn?.addEventListener('click', () => switchView('admin'));
 
   // Admin Alt Sekmeleri
   adminTabCentersBtn.addEventListener('click', () => switchAdminTab('centers'));
@@ -836,9 +845,6 @@ function setupEventListeners() {
   if (markDayPresentBtn) {
     markDayPresentBtn.addEventListener('click', handleMarkDayPresent);
   }
-  if (markAllPresentBtn) {
-    markAllPresentBtn.addEventListener('click', handleMarkAllPresent);
-  }
   if (saveAllExamsBtn) {
     saveAllExamsBtn.addEventListener('click', handleSaveAllExams);
   }
@@ -853,6 +859,32 @@ function setupEventListeners() {
   closeSingleExamModalBtn?.addEventListener('click', closeSingleExamModal);
   cancelSingleExamModalBtn?.addEventListener('click', closeSingleExamModal);
   singleExamForm?.addEventListener('submit', handleSaveSingleExam);
+
+  // Kurs Bitiş Tarihi Otomatik Hesaplama Dinleyicileri
+  courseFormStartDate?.addEventListener('change', autoCalculateCourseEndDate);
+  courseFormTotalHours?.addEventListener('input', autoCalculateCourseEndDate);
+  courseFormDailyHours?.addEventListener('input', autoCalculateCourseEndDate);
+  document.querySelectorAll('.course-day-checkbox').forEach(cb => {
+    cb.addEventListener('change', autoCalculateCourseEndDate);
+  });
+
+  // Excel İçe / Dışa Aktarma Dinleyicileri
+  const exportStudentsExcelBtn = document.getElementById('exportStudentsExcelBtn');
+  const importStudentsExcelBtn = document.getElementById('importStudentsExcelBtn');
+  const importStudentsExcelInput = document.getElementById('importStudentsExcelInput');
+
+  exportStudentsExcelBtn?.addEventListener('click', exportStudentsToExcel);
+  importStudentsExcelBtn?.addEventListener('click', () => importStudentsExcelInput?.click());
+  importStudentsExcelInput?.addEventListener('change', handleImportStudentsFromExcel);
+
+  // JSON Yedekleme / Geri Yükleme Dinleyicileri
+  const exportBackupJsonBtn = document.getElementById('exportBackupJsonBtn');
+  const importBackupJsonBtn = document.getElementById('importBackupJsonBtn');
+  const importBackupJsonInput = document.getElementById('importBackupJsonInput');
+
+  exportBackupJsonBtn?.addEventListener('click', exportSystemBackupJson);
+  importBackupJsonBtn?.addEventListener('click', () => importBackupJsonInput?.click());
+  importBackupJsonInput?.addEventListener('change', handleImportSystemBackupJson);
 }
 
 // =================== ADMIN YÖNETİM PANELİ İŞLEMLERİ ===================
@@ -2318,6 +2350,22 @@ function renderDetailSyllabus() {
   refreshLucide();
 }
 
+// Resmi 11 Haneli T.C. Kimlik Numarası Algoritması Doğrulaması
+function isValidTcKimlikNo(tc) {
+  if (!tc) return true; // Boş bırakılabilir
+  const s = String(tc).trim();
+  if (!/^[1-9]\d{10}$/.test(s)) return false;
+  const d = s.split('').map(Number);
+  const oddSum = d[0] + d[2] + d[4] + d[6] + d[8];
+  const evenSum = d[1] + d[3] + d[5] + d[7];
+  const tenth = ((oddSum * 7) - evenSum) % 10;
+  const tenthNormalized = (tenth < 0) ? tenth + 10 : tenth;
+  if (tenthNormalized !== d[9]) return false;
+  const first10Sum = d.slice(0, 10).reduce((a, b) => a + b, 0);
+  if (first10Sum % 10 !== d[10]) return false;
+  return true;
+}
+
 // Kursiyer Ekleme / Güncelleme Formu: Sadece Adı, Soyadı, Telefon ve TC Bilgileri
 function handleAddStudent(e) {
   e.preventDefault();
@@ -2332,6 +2380,12 @@ function handleAddStudent(e) {
   if (!firstName || !lastName) {
     alert('Lütfen Kursiyer Adı ve Soyadı alanlarını doldurunuz.');
     return;
+  }
+
+  if (tcNo && !isValidTcKimlikNo(tcNo)) {
+    if (!confirm('Girdiğiniz T.C. Kimlik Numarası algoritma kontrolünden geçemedi (hatalı olabilir). Yine de devam etmek istiyor musunuz?')) {
+      return;
+    }
   }
 
   const fullName = `${firstName} ${lastName}`.trim();
@@ -3158,31 +3212,6 @@ function handleMarkDayPresent() {
   renderTeacherDashboard();
 }
 
-// Tüm Kursiyer Devamsızlıklarını Sıfırla (Bütün Tarihler)
-function handleMarkAllPresent() {
-  if (!activeCourseForDetail) return;
-  if (!confirm('Tüm kursiyerlerin tüm günlerdeki devamsızlık kayıtları sıfırlanacak ve hepsi "Devamlı" olarak işaretlenecektir. Onaylıyor musunuz?')) {
-    return;
-  }
-
-  activeCourseForDetail.students.forEach(std => {
-    std.dailyAbsences = [];
-    std.absentHours = 0;
-    std.attendance = 'Devamlı';
-    std.attendanceNote = '';
-    if (std.result === 'Devamsız') {
-      std.result = (std.examScore !== null && std.examScore >= 50) ? 'Başarılı' : (std.examScore !== null ? 'Başarısız' : 'Devam Ediyor');
-    }
-  });
-
-  currentCourses = currentCourses.map(c => c.id === activeCourseForDetail.id ? activeCourseForDetail : c);
-  DataStore.saveCourses(currentCourses);
-
-  renderAttendanceTab();
-  renderStudentTable();
-  renderTeacherDashboard();
-}
-
 // =================== MODÜL SINAVLARI & NOT GİRİŞ EKRANI ===================
 
 function renderExamsTab() {
@@ -3312,6 +3341,8 @@ function recalculateStudentExamRowLive(stdId) {
   const statusSpan = examsMatrixTbody.querySelector(`.exam-row-status[data-std-id="${stdId}"]`);
   const std = activeCourseForDetail.students.find(s => s.id === stdId);
 
+  const moduleCount = activeCourseForDetail?.moduleCount ? Math.max(1, Number(activeCourseForDetail.moduleCount)) : 1;
+
   if (count === 0) {
     if (avgSpan) avgSpan.innerText = '-';
     if (statusSpan) {
@@ -3328,10 +3359,16 @@ function recalculateStudentExamRowLive(stdId) {
         statusSpan.innerText = 'Devamsız';
       }
     } else {
-      const isSuccess = avg >= 50;
+      // MEB Kuralı: Tüm modüller girilmeli ve her biri >= 50 olmalıdır
+      let allPassed = (count === moduleCount);
+      inputs.forEach(inp => {
+        const val = inp.value.trim();
+        if (val === '' || Number(val) < 50) allPassed = false;
+      });
+
       if (statusSpan) {
-        statusSpan.className = `exam-row-status inline-flex px-2 py-0.5 rounded text-[11px] font-bold ${isSuccess ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}`;
-        statusSpan.innerText = isSuccess ? 'Başarılı' : 'Başarısız';
+        statusSpan.className = `exam-row-status inline-flex px-2 py-0.5 rounded text-[11px] font-bold ${allPassed ? 'bg-emerald-100 text-emerald-800' : (count === moduleCount ? 'bg-rose-100 text-rose-800' : 'bg-amber-100 text-amber-800')}`;
+        statusSpan.innerText = allPassed ? 'Başarılı' : (count === moduleCount ? 'Başarısız' : 'Devam Ediyor');
       }
     }
   }
@@ -3367,7 +3404,15 @@ function handleSaveAllExams() {
       if (std.attendance === 'Devamsız') {
         std.result = 'Devamsız';
       } else {
-        std.result = std.examScore >= 50 ? 'Başarılı' : 'Başarısız';
+        // MEB Modüler Sistem Standardı: Her bir modülden en az 50 alınmalıdır
+        let allPassed = (count === moduleCount);
+        for (let m = 1; m <= moduleCount; m++) {
+          if (modScores[m] === null || modScores[m] === undefined || modScores[m] < 50) {
+            allPassed = false;
+            break;
+          }
+        }
+        std.result = allPassed ? 'Başarılı' : (count === moduleCount ? 'Başarısız' : 'Devam Ediyor');
       }
     } else {
       std.examScore = null;
@@ -3774,12 +3819,22 @@ function handleSaveSingleExam(e) {
 
   std.moduleScores = modScores;
 
+  const moduleCount = activeCourseForDetail.moduleCount ? Math.max(1, Number(activeCourseForDetail.moduleCount)) : 1;
+
   if (count > 0) {
     std.examScore = Math.round((sum / count) * 10) / 10;
     if (std.attendance === 'Devamsız') {
       std.result = 'Devamsız';
     } else {
-      std.result = std.examScore >= 50 ? 'Başarılı' : 'Başarısız';
+      // MEB Modüler Sistem Standardı: Tüm modüller >= 50 olmalıdır
+      let allPassed = (count === moduleCount);
+      for (let m = 1; m <= moduleCount; m++) {
+        if (modScores[m] === null || modScores[m] === undefined || modScores[m] < 50) {
+          allPassed = false;
+          break;
+        }
+      }
+      std.result = allPassed ? 'Başarılı' : (count === moduleCount ? 'Başarısız' : 'Devam Ediyor');
     }
   } else {
     std.examScore = null;
@@ -4254,18 +4309,50 @@ window.closeKararDurumuPreview = function() {
   modal?.classList.add('hidden');
 };
 
-window.triggerPrintKararDurumu = function() {
-  if (!activeCourseForDetail) return;
+// Güvenli ve Zamanlamalı Yazdırma Motoru (Baskı önizlemesinin boş çıkmasını önler)
+function safePrint(htmlContent, isLandscape = false) {
   const printArea = document.getElementById('printArea');
   const printAreaContent = document.getElementById('printAreaContent');
   if (!printArea || !printAreaContent) return;
 
-  document.getElementById('landscapePrintStyle')?.remove();
+  let styleTag = document.getElementById('landscapePrintStyle');
+  if (isLandscape) {
+    if (!styleTag) {
+      styleTag = document.createElement('style');
+      styleTag.id = 'landscapePrintStyle';
+      document.head.appendChild(styleTag);
+    }
+    styleTag.innerHTML = `@page { size: A4 landscape !important; margin: 6mm 8mm !important; }`;
+  } else {
+    styleTag?.remove();
+  }
 
-  printAreaContent.innerHTML = generateKararDurumuHtml(activeCourseForDetail);
+  printAreaContent.innerHTML = htmlContent;
   printArea.classList.remove('hidden');
-  window.print();
-  printArea.classList.add('hidden');
+
+  let cleaned = false;
+  const cleanup = () => {
+    if (cleaned) return;
+    cleaned = true;
+    printArea.classList.add('hidden');
+    printAreaContent.innerHTML = '';
+    if (isLandscape) {
+      document.getElementById('landscapePrintStyle')?.remove();
+    }
+    window.removeEventListener('afterprint', cleanup);
+  };
+
+  window.addEventListener('afterprint', cleanup);
+
+  setTimeout(() => {
+    window.print();
+    setTimeout(cleanup, 2000);
+  }, 120);
+}
+
+window.triggerPrintKararDurumu = function() {
+  if (!activeCourseForDetail) return;
+  safePrint(generateKararDurumuHtml(activeCourseForDetail), false);
 };
 
 // =================== RESMİ EVRAK 2: YOKLAMA VE DERS DEFTERİ ===================
@@ -4312,98 +4399,163 @@ function generateDefterHtml(course) {
     return nameA.localeCompare(nameB, 'tr', { sensitivity: 'base' });
   });
 
-  // 31 günlük yoklama sütunları için ilk 31 ders gününü al
+  // 31 günlük yoklama sütunları mantığı (31 günden uzun kurslarda çoklu sayfa yoklama basılır)
   const maxDayCols = 31;
-  const attendanceDates = validDates.slice(0, maxDayCols);
+  const totalAttPages = Math.max(1, Math.ceil(validDates.length / maxDayCols));
+  let allAttendancePagesHtml = '';
 
-  // Yoklama Tablosu Sütun Başlıkları (1..31)
-  let attHeadersNumbersHtml = '';
-  let attHeadersDatesHtml = '';
+  for (let attPageIdx = 0; attPageIdx < totalAttPages; attPageIdx++) {
+    const attendanceDates = validDates.slice(attPageIdx * maxDayCols, (attPageIdx + 1) * maxDayCols);
+    const pageSubtitle = totalAttPages > 1 ? ` (${attPageIdx + 1}. BÖLÜM / ${totalAttPages})` : '';
 
-  for (let c = 1; c <= maxDayCols; c++) {
-    attHeadersNumbersHtml += `<th style="border: 1px solid black; padding: 2px 1px; width: 18px; font-size: 7.5pt; text-align: center; font-weight: bold;">${c}</th>`;
-    const dateFormatted = c <= attendanceDates.length ? formatDayMonth(attendanceDates[c - 1]) : '.../.../20..';
-    attHeadersDatesHtml += `<th style="border: 1px solid black; padding: 2px 1px; font-size: 5.5pt; text-align: center; font-weight: normal; writing-mode: vertical-lr; transform: rotate(180deg); height: 56px; white-space: nowrap;">${dateFormatted}</th>`;
-  }
+    // Yoklama Tablosu Sütun Başlıkları (1..31)
+    let attHeadersNumbersHtml = '';
+    let attHeadersDatesHtml = '';
 
-  // Yoklama Tablosu Kursiyer Satırları (En az 40 satır - resmi şablon standardı)
-  const maxAttRows = Math.max(40, sortedStudents.length);
-  let attRowsHtml = '';
+    for (let c = 1; c <= maxDayCols; c++) {
+      const globalDayNum = (attPageIdx * maxDayCols) + c;
+      attHeadersNumbersHtml += `<th style="border: 1px solid black; padding: 2px 1px; width: 18px; font-size: 7.5pt; text-align: center; font-weight: bold;">${globalDayNum}</th>`;
+      const dateFormatted = c <= attendanceDates.length ? formatDayMonth(attendanceDates[c - 1]) : '.../.../20..';
+      attHeadersDatesHtml += `<th style="border: 1px solid black; padding: 2px 1px; font-size: 5.5pt; text-align: center; font-weight: normal; writing-mode: vertical-lr; transform: rotate(180deg); height: 56px; white-space: nowrap;">${dateFormatted}</th>`;
+    }
 
-  // Günlük gelen/gelmeyen toplamları sayacı
-  const dayAttendedCount = new Array(maxDayCols).fill(0);
-  const dayAbsentCount = new Array(maxDayCols).fill(0);
+    // Yoklama Tablosu Kursiyer Satırları (En az 40 satır - resmi şablon standardı)
+    const maxAttRows = Math.max(40, sortedStudents.length);
+    let attRowsHtml = '';
 
-  for (let r = 1; r <= maxAttRows; r++) {
-    if (r <= sortedStudents.length) {
-      const s = sortedStudents[r - 1];
-      const sFullName = (s.fullName || `${s.firstName || ''} ${s.lastName || ''}`).trim();
-      const absences = s.dailyAbsences || [];
+    // Günlük gelen/gelmeyen toplamları sayacı
+    const dayAttendedCount = new Array(maxDayCols).fill(0);
+    const dayAbsentCount = new Array(maxDayCols).fill(0);
 
-      let totalAbsentHours = absences.reduce((sum, d) => sum + Number(d.hours || 0), 0);
-      let totalAttendedHours = Math.max(0, totalHours - totalAbsentHours);
+    for (let r = 1; r <= maxAttRows; r++) {
+      if (r <= sortedStudents.length) {
+        const s = sortedStudents[r - 1];
+        const sFullName = (s.fullName || `${s.firstName || ''} ${s.lastName || ''}`).trim();
+        const absences = s.dailyAbsences || [];
 
-      let dayCells = '';
-      for (let c = 1; c <= maxDayCols; c++) {
-        if (c <= attendanceDates.length) {
-          const dStr = attendanceDates[c - 1];
-          const absRecord = absences.find(d => d.date === dStr);
-          const absHours = absRecord ? Number(absRecord.hours || 0) : 0;
+        let totalAbsentHours = absences.reduce((sum, d) => sum + Number(d.hours || 0), 0);
+        let totalAttendedHours = Math.max(0, totalHours - totalAbsentHours);
 
-          if (absHours > 0) {
-            dayCells += `<td style="border: 1px solid black; text-align: center; font-size: 8pt; font-weight: bold; color: #b91c1c; padding: 1px;">${absHours}</td>`;
-            dayAbsentCount[c - 1]++;
+        let dayCells = '';
+        for (let c = 1; c <= maxDayCols; c++) {
+          if (c <= attendanceDates.length) {
+            const dStr = attendanceDates[c - 1];
+            const absRecord = absences.find(d => d.date === dStr);
+            const absHours = absRecord ? Number(absRecord.hours || 0) : 0;
+
+            if (absHours > 0) {
+              dayCells += `<td style="border: 1px solid black; text-align: center; font-size: 8pt; font-weight: bold; color: #b91c1c; padding: 1px;">${absHours}</td>`;
+              dayAbsentCount[c - 1]++;
+            } else {
+              dayCells += `<td style="border: 1px solid black; text-align: center; font-size: 11pt; font-weight: bold; line-height: 1; padding: 0;">•</td>`;
+              dayAttendedCount[c - 1]++;
+            }
           } else {
-            // Gelen: nokta (.) konulacak (resmi açıklama gereği)
-            dayCells += `<td style="border: 1px solid black; text-align: center; font-size: 11pt; font-weight: bold; line-height: 1; padding: 0;">•</td>`;
-            dayAttendedCount[c - 1]++;
+            dayCells += `<td style="border: 1px solid black; padding: 0;">&nbsp;</td>`;
           }
-        } else {
-          dayCells += `<td style="border: 1px solid black; padding: 0;">&nbsp;</td>`;
         }
+
+        attRowsHtml += `
+          <tr style="height: 18px;">
+            <td style="border: 1px solid black; text-align: center; font-size: 7.5pt; font-weight: bold; padding: 1px;">${r}</td>
+            <td style="border: 1px solid black; padding: 1px 4px; font-size: 7.5pt; text-align: left; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 140px;">${escapeHtml(sFullName)}</td>
+            ${dayCells}
+            <td style="border: 1px solid black; text-align: center; font-size: 7.5pt; font-weight: bold; padding: 1px;">${totalAttendedHours}</td>
+            <td style="border: 1px solid black; text-align: center; font-size: 7.5pt; font-weight: bold; padding: 1px; color: ${totalAbsentHours > 0 ? '#b91c1c' : '#000'};">${totalAbsentHours}</td>
+          </tr>
+        `;
+      } else {
+        let emptyCells = '';
+        for (let c = 1; c <= maxDayCols; c++) {
+          emptyCells += `<td style="border: 1px solid black; padding: 0;">&nbsp;</td>`;
+        }
+        attRowsHtml += `
+          <tr style="height: 18px;">
+            <td style="border: 1px solid black; text-align: center; font-size: 7.5pt; font-weight: bold; padding: 1px;">${r}</td>
+            <td style="border: 1px solid black; padding: 1px 4px; font-size: 7.5pt;">&nbsp;</td>
+            ${emptyCells}
+            <td style="border: 1px solid black; padding: 0;">&nbsp;</td>
+            <td style="border: 1px solid black; padding: 0;">&nbsp;</td>
+          </tr>
+        `;
       }
+    }
 
-      attRowsHtml += `
-        <tr style="height: 18px;">
-          <td style="border: 1px solid black; text-align: center; font-size: 7.5pt; font-weight: bold; padding: 1px;">${r}</td>
-          <td style="border: 1px solid black; padding: 1px 4px; font-size: 7.5pt; text-align: left; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 140px;">${escapeHtml(sFullName)}</td>
-          ${dayCells}
-          <td style="border: 1px solid black; text-align: center; font-size: 7.5pt; font-weight: bold; padding: 1px;">${totalAttendedHours}</td>
-          <td style="border: 1px solid black; text-align: center; font-size: 7.5pt; font-weight: bold; padding: 1px; color: ${totalAbsentHours > 0 ? '#b91c1c' : '#000'};">${totalAbsentHours}</td>
-        </tr>
-      `;
-    } else {
-      let emptyCells = '';
-      for (let c = 1; c <= maxDayCols; c++) {
-        emptyCells += `<td style="border: 1px solid black; padding: 0;">&nbsp;</td>`;
+    // Alt toplam satırları
+    let gelenCells = '';
+    let gelmeyenCells = '';
+    let toplamCells = '';
+
+    for (let c = 1; c <= maxDayCols; c++) {
+      if (c <= attendanceDates.length) {
+        gelenCells += `<td style="border: 1px solid black; text-align: center; font-size: 7pt; font-weight: bold; padding: 1px;">${dayAttendedCount[c - 1]}</td>`;
+        gelmeyenCells += `<td style="border: 1px solid black; text-align: center; font-size: 7pt; font-weight: bold; padding: 1px;">${dayAbsentCount[c - 1]}</td>`;
+        toplamCells += `<td style="border: 1px solid black; text-align: center; font-size: 7pt; font-weight: bold; padding: 1px;">${sortedStudents.length}</td>`;
+      } else {
+        gelenCells += `<td style="border: 1px solid black; padding: 0;">&nbsp;</td>`;
+        gelmeyenCells += `<td style="border: 1px solid black; padding: 0;">&nbsp;</td>`;
+        toplamCells += `<td style="border: 1px solid black; padding: 0;">&nbsp;</td>`;
       }
-      attRowsHtml += `
-        <tr style="height: 18px;">
-          <td style="border: 1px solid black; text-align: center; font-size: 7.5pt; font-weight: bold; padding: 1px;">${r}</td>
-          <td style="border: 1px solid black; padding: 1px 4px; font-size: 7.5pt;">&nbsp;</td>
-          ${emptyCells}
-          <td style="border: 1px solid black; padding: 0;">&nbsp;</td>
-          <td style="border: 1px solid black; padding: 0;">&nbsp;</td>
-        </tr>
-      `;
     }
-  }
 
-  // Alt toplam satırları (GELEN, GELMEYEN, TOPLAM)
-  let gelenCells = '';
-  let gelmeyenCells = '';
-  let toplamCells = '';
+    allAttendancePagesHtml += `
+      <div class="defter-page" style="min-height: 980px; padding: 25px 20px; box-sizing: border-box; background: #fff; display: flex; flex-direction: column; justify-content: space-between;">
+        <div>
+          <div style="text-align: center; margin-bottom: 10px;">
+            <div style="font-weight: bold; font-size: 10.5pt; text-transform: uppercase;">${escapeHtml(institution)}</div>
+            <div style="font-weight: bold; font-size: 11pt; text-transform: uppercase; margin-top: 2px;">
+              ${escapeHtml(courseName)} KURSU SINIF YOKLAMA LİSTESİ${pageSubtitle}
+            </div>
+          </div>
+          <div style="display: flex; justify-content: space-between; font-size: 8.5pt; font-weight: bold; margin-bottom: 6px;">
+            <div>KURS ONAY NO: ${escapeHtml(courseNumber)}</div>
+            <div>Dönem / Günler: ${startDate} - ${endDate} (${escapeHtml(courseDays)})</div>
+          </div>
 
-  for (let c = 1; c <= maxDayCols; c++) {
-    if (c <= attendanceDates.length) {
-      gelenCells += `<td style="border: 1px solid black; text-align: center; font-size: 7pt; font-weight: bold; padding: 1px;">${dayAttendedCount[c - 1]}</td>`;
-      gelmeyenCells += `<td style="border: 1px solid black; text-align: center; font-size: 7pt; font-weight: bold; padding: 1px;">${dayAbsentCount[c - 1]}</td>`;
-      toplamCells += `<td style="border: 1px solid black; text-align: center; font-size: 7pt; font-weight: bold; padding: 1px;">${sortedStudents.length}</td>`;
-    } else {
-      gelenCells += `<td style="border: 1px solid black; padding: 0;">&nbsp;</td>`;
-      gelmeyenCells += `<td style="border: 1px solid black; padding: 0;">&nbsp;</td>`;
-      toplamCells += `<td style="border: 1px solid black; padding: 0;">&nbsp;</td>`;
-    }
+          <table style="width: 100%; border-collapse: collapse; border: 1.5px solid black; font-size: 7pt;">
+            <thead>
+              <tr style="background: #fafafa;">
+                <th rowspan="2" style="border: 1px solid black; width: 22px; text-align: center; font-weight: bold;">Sıra</th>
+                <th rowspan="2" style="border: 1px solid black; width: 140px; text-align: center; font-weight: bold;">KURSİYERİN<br>Adı ve Soyadı</th>
+                ${attHeadersNumbersHtml}
+                <th rowspan="2" style="border: 1px solid black; width: 36px; text-align: center; font-size: 6.5pt; font-weight: bold;">Geldiği<br>Saat</th>
+                <th rowspan="2" style="border: 1px solid black; width: 38px; text-align: center; font-size: 6.5pt; font-weight: bold;">Gelmediği<br>Saat</th>
+              </tr>
+              <tr style="background: #fff;">
+                ${attHeadersDatesHtml}
+              </tr>
+            </thead>
+            <tbody>
+              ${attRowsHtml}
+              <tr style="background: #fafafa; font-weight: bold;">
+                <td colspan="2" style="border: 1px solid black; padding: 1px 4px; font-size: 7.5pt; text-align: right;">GELEN</td>
+                ${gelenCells}
+                <td colspan="2" style="border: 1px solid black;">&nbsp;</td>
+              </tr>
+              <tr style="background: #fafafa; font-weight: bold;">
+                <td colspan="2" style="border: 1px solid black; padding: 1px 4px; font-size: 7.5pt; text-align: right; color: #b91c1c;">GELMEYEN</td>
+                ${gelmeyenCells}
+                <td colspan="2" style="border: 1px solid black;">&nbsp;</td>
+              </tr>
+              <tr style="background: #f0f0f0; font-weight: bold;">
+                <td colspan="2" style="border: 1px solid black; padding: 1px 4px; font-size: 7.5pt; text-align: right;">TOPLAM</td>
+                ${toplamCells}
+                <td colspan="2" style="border: 1px solid black;">&nbsp;</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div style="display: flex; justify-content: space-between; align-items: center; font-size: 8pt; margin-top: 8px;">
+            <div style="font-weight: bold;">
+              SINIF MEVCUDU: Kız: ...... Erkek: ...... Toplam: ${sortedStudents.length}
+            </div>
+            <div style="font-style: italic; color: #333;">
+              Açıklama: Gelen: <strong>•</strong> (Nokta) &nbsp;|&nbsp; Gelmeyen: <strong>Kaç ders gelmediği saat olarak yazılır</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
   }
 
   // Günlük Ders Defteri Sayfaları
@@ -4423,7 +4575,7 @@ function generateDefterHtml(course) {
   }
 
   const totalDefterPages = dayChunks.length;
-  const overallDefterBookPages = totalDefterPages + 3; // 1 Kapak + 1 Yoklama + N Defter + 1 Kapanış
+  const overallDefterBookPages = 1 + totalAttPages + totalDefterPages + 1; // 1 Kapak + N Yoklama + N Defter + 1 Kapanış
 
   function buildDaySlotHtml(dStr, globalDayIndex, isHalfSlot, isTopSlot) {
     if (dStr) {
@@ -4602,64 +4754,8 @@ function generateDefterHtml(course) {
         </div>
       </div>
 
-      <!-- SAYFA 2: KURS SINIF YOKLAMA LİSTESİ -->
-      <div class="defter-page" style="min-height: 980px; padding: 25px 20px; box-sizing: border-box; background: #fff; display: flex; flex-direction: column; justify-content: space-between;">
-        <div>
-          <div style="text-align: center; margin-bottom: 10px;">
-            <div style="font-weight: bold; font-size: 10.5pt; text-transform: uppercase;">${escapeHtml(institution)}</div>
-            <div style="font-weight: bold; font-size: 11pt; text-transform: uppercase; margin-top: 2px;">
-              ${escapeHtml(courseName)} KURSU SINIF YOKLAMA LİSTESİ
-            </div>
-          </div>
-          <div style="display: flex; justify-content: space-between; font-size: 8.5pt; font-weight: bold; margin-bottom: 6px;">
-            <div>KURS ONAY NO: ${escapeHtml(courseNumber)}</div>
-            <div>Dönem / Günler: ${startDate} - ${endDate} (${escapeHtml(courseDays)})</div>
-          </div>
-
-          <!-- 31 Günlük Yoklama Tablosu -->
-          <table style="width: 100%; border-collapse: collapse; border: 1.5px solid black; font-size: 7pt;">
-            <thead>
-              <tr style="background: #fafafa;">
-                <th rowspan="2" style="border: 1px solid black; width: 22px; text-align: center; font-weight: bold;">Sıra</th>
-                <th rowspan="2" style="border: 1px solid black; width: 140px; text-align: center; font-weight: bold;">KURSİYERİN<br>Adı ve Soyadı</th>
-                ${attHeadersNumbersHtml}
-                <th rowspan="2" style="border: 1px solid black; width: 36px; text-align: center; font-size: 6.5pt; font-weight: bold;">Geldiği<br>Saat</th>
-                <th rowspan="2" style="border: 1px solid black; width: 38px; text-align: center; font-size: 6.5pt; font-weight: bold;">Gelmediği<br>Saat</th>
-              </tr>
-              <tr style="background: #fff;">
-                ${attHeadersDatesHtml}
-              </tr>
-            </thead>
-            <tbody>
-              ${attRowsHtml}
-              <tr style="background: #fafafa; font-weight: bold;">
-                <td colspan="2" style="border: 1px solid black; padding: 1px 4px; font-size: 7.5pt; text-align: right;">GELEN</td>
-                ${gelenCells}
-                <td colspan="2" style="border: 1px solid black;">&nbsp;</td>
-              </tr>
-              <tr style="background: #fafafa; font-weight: bold;">
-                <td colspan="2" style="border: 1px solid black; padding: 1px 4px; font-size: 7.5pt; text-align: right; color: #b91c1c;">GELMEYEN</td>
-                ${gelmeyenCells}
-                <td colspan="2" style="border: 1px solid black;">&nbsp;</td>
-              </tr>
-              <tr style="background: #f0f0f0; font-weight: bold;">
-                <td colspan="2" style="border: 1px solid black; padding: 1px 4px; font-size: 7.5pt; text-align: right;">TOPLAM</td>
-                ${toplamCells}
-                <td colspan="2" style="border: 1px solid black;">&nbsp;</td>
-              </tr>
-            </tbody>
-          </table>
-
-          <div style="display: flex; justify-content: space-between; align-items: center; font-size: 8pt; margin-top: 8px;">
-            <div style="font-weight: bold;">
-              SINIF MEVCUDU: Kız: ...... Erkek: ...... Toplam: ${sortedStudents.length}
-            </div>
-            <div style="font-style: italic; color: #333;">
-              Açıklama: Gelen: <strong>•</strong> (Nokta) &nbsp;|&nbsp; Gelmeyen: <strong>Kaç ders gelmediği saat olarak yazılır</strong>
-            </div>
-          </div>
-        </div>
-      </div>
+      <!-- KURS SINIF YOKLAMA LİSTESİ (Çoklu sayfa destekli) -->
+      ${allAttendancePagesHtml}
 
       <!-- SAYFA 3+: GÜNLÜK DERS DEFTERİ SAYFALARI -->
       ${defterPagesHtml}
@@ -4701,16 +4797,7 @@ window.closeDefterPreview = function() {
 
 window.triggerPrintDefter = function() {
   if (!activeCourseForDetail) return;
-  const printArea = document.getElementById('printArea');
-  const printAreaContent = document.getElementById('printAreaContent');
-  if (!printArea || !printAreaContent) return;
-
-  document.getElementById('landscapePrintStyle')?.remove();
-
-  printAreaContent.innerHTML = generateDefterHtml(activeCourseForDetail);
-  printArea.classList.remove('hidden');
-  window.print();
-  printArea.classList.add('hidden');
+  safePrint(generateDefterHtml(activeCourseForDetail), false);
 };
 
 window.triggerPrintDocument = function(documentName) {
@@ -5030,24 +5117,7 @@ window.closeNotCizelgesiPreview = function() {
 
 window.triggerPrintNotCizelgesi = function() {
   if (!activeCourseForDetail) return;
-  const printArea = document.getElementById('printArea');
-  const printAreaContent = document.getElementById('printAreaContent');
-  if (!printArea || !printAreaContent) return;
-
-  // Yatay A4 baskı stili ekle
-  let styleTag = document.getElementById('landscapePrintStyle');
-  if (!styleTag) {
-    styleTag = document.createElement('style');
-    styleTag.id = 'landscapePrintStyle';
-    document.head.appendChild(styleTag);
-  }
-  styleTag.innerHTML = `@page { size: A4 landscape !important; margin: 6mm 8mm !important; }`;
-
-  printAreaContent.innerHTML = generateNotCizelgesiHtml(activeCourseForDetail);
-  printArea.classList.remove('hidden');
-  window.print();
-  printArea.classList.add('hidden');
-  styleTag?.remove();
+  safePrint(generateNotCizelgesiHtml(activeCourseForDetail), true);
 };
 
 // =================== RESMİ EVRAK 4: SINAV TUTANAĞI (SINAV KATILIM LİSTESİ) ===================
@@ -5173,17 +5243,7 @@ window.closeSinavTutanagiPreview = function() {
 
 window.triggerPrintSinavTutanagi = function() {
   if (!activeCourseForDetail) return;
-  const printArea = document.getElementById('printArea');
-  const printAreaContent = document.getElementById('printAreaContent');
-  if (!printArea || !printAreaContent) return;
-
-  // Dikey A4 olduğundan landscapePrintStyle kaldırılır
-  document.getElementById('landscapePrintStyle')?.remove();
-
-  printAreaContent.innerHTML = generateSinavTutanagiHtml(activeCourseForDetail);
-  printArea.classList.remove('hidden');
-  window.print();
-  printArea.classList.add('hidden');
+  safePrint(generateSinavTutanagiHtml(activeCourseForDetail), false);
 };
 
 // =================== RESMİ EVRAK 5: İMZA LİSTESİ (GÜNLÜK İMZA ÇİZELGESİ) ===================
@@ -5317,24 +5377,7 @@ window.closeImzaListesiPreview = function() {
 
 window.triggerPrintImzaListesi = function() {
   if (!activeCourseForDetail) return;
-  const printArea = document.getElementById('printArea');
-  const printAreaContent = document.getElementById('printAreaContent');
-  if (!printArea || !printAreaContent) return;
-
-  // Yatay A4 baskı stili ekle
-  let styleTag = document.getElementById('landscapePrintStyle');
-  if (!styleTag) {
-    styleTag = document.createElement('style');
-    styleTag.id = 'landscapePrintStyle';
-    document.head.appendChild(styleTag);
-  }
-  styleTag.innerHTML = `@page { size: A4 landscape !important; margin: 8mm 10mm !important; }`;
-
-  printAreaContent.innerHTML = generateImzaListesiHtml(activeCourseForDetail);
-  printArea.classList.remove('hidden');
-  window.print();
-  printArea.classList.add('hidden');
-  styleTag?.remove();
+  safePrint(generateImzaListesiHtml(activeCourseForDetail), true);
 };
 
 // Yardımcı Fonksiyonlar
@@ -5356,4 +5399,249 @@ function escapeHtml(string) {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#039;');
+}
+
+// =================== OTOMATİK KURS BİTİŞ TARİHİ HESAPLAMA ===================
+
+function autoCalculateCourseEndDate() {
+  const startVal = courseFormStartDate?.value;
+  if (!startVal) return;
+  const dailyHours = Number(courseFormDailyHours?.value) || 4;
+  const totalHours = Number(courseFormTotalHours?.value) || 120;
+
+  const selectedDays = [];
+  document.querySelectorAll('.course-day-checkbox').forEach(cb => {
+    if (cb.checked) selectedDays.push(cb.value);
+  });
+  if (selectedDays.length === 0) return;
+
+  const mockCourse = {
+    startDate: startVal,
+    totalHours,
+    dailyHours,
+    days: selectedDays,
+    offDays: currentOffDays || []
+  };
+
+  const dates = getValidCourseDates(mockCourse);
+  if (dates && dates.length > 0 && courseFormEndDate) {
+    courseFormEndDate.value = dates[dates.length - 1];
+  }
+}
+
+// =================== EXCEL İÇE / DIŞA AKTARMA (XLSX) ===================
+
+function exportStudentsToExcel() {
+  if (!activeCourseForDetail) return;
+  if (typeof XLSX === 'undefined') {
+    alert('Excel kütüphanesi henüz yüklenemedi. Lütfen internet bağlantınızı kontrol ediniz.');
+    return;
+  }
+
+  const students = activeCourseForDetail.students || [];
+  const moduleCount = activeCourseForDetail.moduleCount ? Math.max(1, Number(activeCourseForDetail.moduleCount)) : 1;
+  const courseName = activeCourseForDetail.name || 'Kurs';
+
+  const data = students.map((s, idx) => {
+    const row = {
+      'Sıra': idx + 1,
+      'Adı': s.firstName || '',
+      'Soyadı': s.lastName || '',
+      'Adı Soyadı': s.fullName || `${s.firstName || ''} ${s.lastName || ''}`.trim(),
+      'T.C. Kimlik No': s.tcNo || '',
+      'Telefon': s.phone || '',
+      'Devamsızlık Saati': Number(s.absentHours || 0),
+      'Devam Durumu': s.attendance || 'Devamlı'
+    };
+
+    const modScores = s.moduleScores || {};
+    for (let m = 1; m <= moduleCount; m++) {
+      row[`Modül ${m}`] = (modScores[m] !== null && modScores[m] !== undefined) ? modScores[m] : '';
+    }
+
+    row['Genel Not Ortalaması'] = (s.examScore !== null && s.examScore !== undefined) ? s.examScore : '';
+    row['Sonuç'] = s.result || 'Devam Ediyor';
+    return row;
+  });
+
+  const ws = XLSX.utils.json_to_sheet(data);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Kursiyerler');
+
+  const fileName = `${courseName.replace(/[^a-zA-Z0-9çğıöşüÇĞİÖŞÜ_-]/g, '_')}_Kursiyer_Listesi.xlsx`;
+  XLSX.writeFile(wb, fileName);
+}
+
+function handleImportStudentsFromExcel(e) {
+  const file = e.target.files?.[0];
+  if (!file || !activeCourseForDetail) return;
+
+  if (typeof XLSX === 'undefined') {
+    alert('Excel kütüphanesi henüz yüklenemedi.');
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = function(evt) {
+    try {
+      const data = new Uint8Array(evt.target.result);
+      const workbook = XLSX.read(data, { type: 'array' });
+      const firstSheetName = workbook.SheetNames[0];
+      const worksheet = workbook.Sheets[firstSheetName];
+      const rows = XLSX.utils.sheet_to_json(worksheet, { defval: '' });
+
+      if (!rows || rows.length === 0) {
+        alert('Excel dosyasında veri bulunamadı.');
+        return;
+      }
+
+      let addedCount = 0;
+      let updatedCount = 0;
+      const currentList = activeCourseForDetail.students || [];
+      const moduleCount = activeCourseForDetail.moduleCount ? Math.max(1, Number(activeCourseForDetail.moduleCount)) : 1;
+
+      rows.forEach(row => {
+        const tcKey = Object.keys(row).find(k => k.toLowerCase().includes('tc') || k.toLowerCase().includes('kimlik'));
+        const nameKey = Object.keys(row).find(k => k.toLowerCase() === 'adı' || k.toLowerCase() === 'adi' || k.toLowerCase().includes('ad soyad') || k.toLowerCase() === 'isim');
+        const surnameKey = Object.keys(row).find(k => k.toLowerCase() === 'soyadı' || k.toLowerCase() === 'soyadi' || k.toLowerCase() === 'soyisim');
+        const phoneKey = Object.keys(row).find(k => k.toLowerCase().includes('tel') || k.toLowerCase().includes('cep'));
+
+        let tcNo = tcKey ? String(row[tcKey]).replace(/\D/g, '') : '';
+        let phone = phoneKey ? String(row[phoneKey]).trim() : '';
+        let fullName = '';
+        let firstName = '';
+        let lastName = '';
+
+        if (nameKey && surnameKey) {
+          firstName = String(row[nameKey]).trim();
+          lastName = String(row[surnameKey]).trim();
+          fullName = `${firstName} ${lastName}`.trim();
+        } else if (nameKey) {
+          fullName = String(row[nameKey]).trim();
+          const parts = fullName.split(/\s+/);
+          if (parts.length > 1) {
+            lastName = parts.pop();
+            firstName = parts.join(' ');
+          } else {
+            firstName = fullName;
+          }
+        }
+
+        if (!fullName && !firstName && !tcNo) return;
+
+        const modScores = {};
+        for (let m = 1; m <= moduleCount; m++) {
+          const modKey = Object.keys(row).find(k => k.toLowerCase().includes(`modül ${m}`) || k.toLowerCase().includes(`modul ${m}`) || k.toLowerCase() === `m${m}`);
+          if (modKey && row[modKey] !== '') {
+            modScores[m] = Number(row[modKey]);
+          } else {
+            modScores[m] = null;
+          }
+        }
+
+        const existing = currentList.find(s => (tcNo && s.tcNo === tcNo) || (s.fullName.toLowerCase() === fullName.toLowerCase()));
+        if (existing) {
+          if (tcNo) existing.tcNo = tcNo;
+          if (phone) existing.phone = phone;
+          if (Object.keys(modScores).some(k => modScores[k] !== null)) {
+            existing.moduleScores = { ...existing.moduleScores, ...modScores };
+          }
+          updatedCount++;
+        } else {
+          const newStudent = {
+            id: `std_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+            firstName,
+            lastName,
+            fullName: fullName || `${firstName} ${lastName}`.trim(),
+            tcNo,
+            phone,
+            absentHours: 0,
+            attendance: 'Devamlı',
+            attendanceNote: '',
+            dailyAbsences: [],
+            moduleScores: modScores,
+            examScore: null,
+            result: 'Devam Ediyor'
+          };
+          currentList.push(newStudent);
+          addedCount++;
+        }
+      });
+
+      activeCourseForDetail.students = currentList;
+      currentCourses = currentCourses.map(c => c.id === activeCourseForDetail.id ? activeCourseForDetail : c);
+      DataStore.saveCourses(currentCourses);
+
+      renderStudentTable();
+      renderTeacherDashboard();
+      alert(`Excel aktarımı tamamlandı!\n• ${addedCount} yeni kursiyer eklendi.\n• ${updatedCount} kursiyer güncellendi.`);
+    } catch (err) {
+      console.error('Excel okuma hatası:', err);
+      alert('Excel dosyası işlenirken hata oluştu: ' + err.message);
+    } finally {
+      e.target.value = '';
+    }
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+// =================== JSON SİSTEM YEDEKLEME & GERİ YÜKLEME ===================
+
+function exportSystemBackupJson() {
+  const backupData = {
+    version: '1.0',
+    exportDate: new Date().toISOString(),
+    courses: DataStore.getCourses(),
+    centers: DataStore.getCenters(),
+    templates: DataStore.getCourseTemplates(),
+    users: DataStore.getUsers()
+  };
+
+  const jsonStr = JSON.stringify(backupData, null, 2);
+  const blob = new Blob([jsonStr], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const dStr = new Date().toISOString().split('T')[0];
+  a.href = url;
+  a.download = `kurs_sonu_sistem_yedegi_${dStr}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function handleImportSystemBackupJson(e) {
+  const file = e.target.files?.[0];
+  if (!file) return;
+
+  if (!confirm('Dikkat! Yedek dosyasını yüklediğinizde mevcut veriler güncellenecektir. Onaylıyor musunuz?')) {
+    e.target.value = '';
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = function(evt) {
+    try {
+      const data = JSON.parse(evt.target.result);
+      if (!data || (!data.courses && !data.users)) {
+        alert('Geçersiz yedek dosyası formatı!');
+        return;
+      }
+
+      if (Array.isArray(data.courses)) DataStore.saveCourses(data.courses);
+      if (Array.isArray(data.centers)) DataStore.saveCenters(data.centers);
+      if (Array.isArray(data.templates)) DataStore.saveCourseTemplates(data.templates);
+      if (Array.isArray(data.users)) DataStore.saveUsers(data.users);
+
+      loadData();
+      renderTeacherDashboard();
+      if (typeof renderAdminPanel === 'function') renderAdminPanel();
+      alert('Sistem yedeği başarıyla geri yüklendi!');
+    } catch (err) {
+      alert('Yedek dosyası okunurken hata oluştu: ' + err.message);
+    } finally {
+      e.target.value = '';
+    }
+  };
+  reader.readAsText(file);
 }
