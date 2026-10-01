@@ -2383,6 +2383,11 @@ function handleAddStudent(e) {
       existing.phone = phone;
     }
   } else {
+    // Aynı isim kontrolü (İsim benzerliği uyarısı)
+    const isDuplicateName = (activeCourseForDetail.students || []).some(s => 
+      (s.fullName || `${s.firstName || ''} ${s.lastName || ''}`).trim().toLocaleLowerCase('tr-TR') === fullName.trim().toLocaleLowerCase('tr-TR')
+    );
+
     // Yeni Kursiyer Ekleme
     const moduleCount = activeCourseForDetail.moduleCount ? Math.max(1, Number(activeCourseForDetail.moduleCount)) : 1;
     const initialModuleScores = {};
@@ -2408,6 +2413,10 @@ function handleAddStudent(e) {
 
     activeCourseForDetail.students = activeCourseForDetail.students || [];
     activeCourseForDetail.students.push(newStudent);
+
+    if (isDuplicateName) {
+      alert(`⚠️ Dikkat: "${fullName}" adında bir kursiyer bu sınıfta zaten kayıtlı bulunuyor.\n\nİsim benzerliği olabileceği için yeni kayıt başarıyla eklendi.`);
+    }
   }
 
   currentCourses = currentCourses.map(c => c.id === activeCourseForDetail.id ? activeCourseForDetail : c);
@@ -2635,7 +2644,16 @@ function handleSaveBulkStudents() {
 
   activeCourseForDetail.students = activeCourseForDetail.students || [];
 
+  const duplicateNames = [];
   parsed.forEach(s => {
+    const sFullName = (s.fullName || `${s.firstName || ''} ${s.lastName || ''}`).trim();
+    const isDup = activeCourseForDetail.students.some(existing => 
+      (existing.fullName || `${existing.firstName || ''} ${existing.lastName || ''}`).trim().toLocaleLowerCase('tr-TR') === sFullName.toLocaleLowerCase('tr-TR')
+    );
+    if (isDup && !duplicateNames.includes(sFullName)) {
+      duplicateNames.push(sFullName);
+    }
+
     const initialModuleScores = {};
     for (let m = 1; m <= moduleCount; m++) {
       initialModuleScores[m] = null;
@@ -2683,7 +2701,11 @@ function handleSaveBulkStudents() {
     studentAddedNotice.classList.remove('hidden');
   }
 
-  alert(`${parsed.length} kursiyer başarıyla kursa eklendi!`);
+  if (duplicateNames.length > 0) {
+    alert(`⚠️ Dikkat: Aşağıdaki kursiyer isimleri sınıfta zaten kayıtlı bulunuyor:\n\n• ${duplicateNames.join('\n• ')}\n\nİsim benzerliği olabileceği için kayıtlar başarıyla eklendi.`);
+  } else {
+    alert(`${parsed.length} kursiyer başarıyla kursa eklendi!`);
+  }
 }
 
 // =================== TÜRKİYE RESMİ TATİLLERİ (ULUSAL & DİNİ BAYRAMLAR) ===================
