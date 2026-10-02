@@ -1191,44 +1191,19 @@
 
         <!-- ================= MODÜL MODÜL MÜFREDAT TANIMLAMA BÖLÜMÜ ================= -->
         <div class="pt-4 border-t border-slate-100 space-y-3.5">
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
-            <div>
-              <h4 class="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
-                <i data-lucide="layers" class="w-4 h-4 text-sky-600"></i>
-                <span>Modül Modül Kurs Yapısı ve Sınav Planlaması</span>
-              </h4>
-              <p class="text-[11px] text-slate-500 mt-0.5">
-                Her modülün saatini belirleyin. Planda modül sonundaki <strong>2 saat otomatik olarak Modül Sınavı</strong> olarak ayrılır (Örn: 20 saatlik modülde 18 saat ders konusu + 2 saat sınav).
-              </p>
-            </div>
+          <div class="flex items-center justify-between gap-2.5">
+            <h4 class="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
+              <i data-lucide="layers" class="w-4 h-4 text-sky-600"></i>
+              <span>Modül Modül Kurs Yapısı ve Sınav Planlaması</span>
+            </h4>
             <button
               type="button"
               id="addModuleBtn"
-              class="self-start sm:self-auto px-3 py-1.5 bg-sky-600 hover:bg-sky-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-sm transition cursor-pointer whitespace-nowrap"
+              class="px-3 py-1.5 bg-sky-600 hover:bg-sky-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-sm transition cursor-pointer whitespace-nowrap"
             >
               <i data-lucide="plus-circle" class="w-4 h-4"></i>
               <span>+ Yeni Modül Ekle</span>
             </button>
-          </div>
-
-          <!-- Canlı İstatistik ve Süre Dağılım Özeti -->
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 bg-slate-50/90 border border-slate-200/80 rounded-2xl p-3 shadow-2xs">
-            <div class="text-center p-1.5 bg-white rounded-xl border border-slate-100">
-              <span class="block text-[10px] text-slate-400 font-semibold uppercase">Modül Sayısı</span>
-              <span id="tmplLiveModuleCount" class="text-sm font-extrabold text-sky-700">1 Modül</span>
-            </div>
-            <div class="text-center p-1.5 bg-white rounded-xl border border-slate-100">
-              <span class="block text-[10px] text-slate-400 font-semibold uppercase">Ders İçeriği</span>
-              <span id="tmplLiveLessonHours" class="text-sm font-extrabold text-slate-700">18 Saat</span>
-            </div>
-            <div class="text-center p-1.5 bg-white rounded-xl border border-slate-100">
-              <span class="block text-[10px] text-slate-400 font-semibold uppercase">Modül Sınavları</span>
-              <span id="tmplLiveExamHours" class="text-sm font-extrabold text-purple-600">2 Saat</span>
-            </div>
-            <div class="text-center p-1.5 bg-white rounded-xl border border-slate-100">
-              <span class="block text-[10px] text-slate-400 font-semibold uppercase">Toplam Süre</span>
-              <span id="tmplLiveTotalHours" class="text-sm font-extrabold text-emerald-600">20 Saat</span>
-            </div>
           </div>
 
           <!-- Modül Kartları Listesi -->
@@ -3547,7 +3522,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
   <!-- Firebase Bulut Servisi & Veri Deposu -->
-  <script src="firebase.js?v=20261002_1040"></script>
-  <script src="app.js?v=20261002_1040"></script>
+  <script src="firebase.js?v=20261002_1045"></script>
+  <script src="app.js?v=20261002_1045"></script>
 </body>
 </html>

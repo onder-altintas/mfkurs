@@ -1530,10 +1530,7 @@ function renderTmplModules() {
           </span>
           <span class="font-bold text-xs text-slate-800 dark:text-slate-100">${mNum}. Modül</span>
         </div>
-        <div class="flex items-center gap-2">
-          <span class="mod-pill text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-purple-50 text-purple-700 dark:bg-purple-950/60 dark:text-purple-300 border border-purple-200/60">
-            ${lessonHours}s Ders + 2s Sınav = ${totalHours}s
-          </span>
+        <div>
           ${canDelete ? `
             <button type="button" class="remove-mod-btn text-rose-500 hover:text-rose-700 p-1 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/40 cursor-pointer transition" title="Bu Modülü Sil">
               <i data-lucide="trash-2" class="w-4 h-4"></i>
@@ -1573,7 +1570,7 @@ function renderTmplModules() {
       <div>
         <div class="flex items-center justify-between mb-1">
           <label class="block text-[11px] font-semibold text-slate-700 dark:text-slate-300">
-            Ders İçeriği Konuları (<span class="mod-lesson-hours-label">${lessonHours}</span> Saat)
+            Ders İçeriği Konuları
           </label>
           <span class="mod-counter-label text-[10px] text-slate-400">
             ${linesCount} / ${lessonHours} saat konu girildi
@@ -1582,12 +1579,12 @@ function renderTmplModules() {
         <textarea
           rows="4"
           class="mod-topics-input w-full px-3 py-2 bg-slate-50 dark:bg-[#152125] border border-slate-200 dark:border-[#23353c] rounded-xl text-xs font-sans text-slate-700 dark:text-slate-200 focus:ring-2 focus:ring-sky-500"
-          placeholder="Her satıra 1 saatlik ders konusu yazınız (Örn:&#10;1. Saat: Word Arayüzü ve Metin Girişi&#10;2. Saat: Paragraf ve Yazı Tipi Biçimlendirme...)"
+          placeholder="Her satıra 1 saatlik ders konusu yazınız..."
         >${escapeHtml(topicsText)}</textarea>
         <div class="flex items-center justify-between text-[10.5px] text-purple-700 dark:text-purple-300 bg-purple-50/70 dark:bg-purple-950/30 px-2.5 py-1.5 rounded-lg mt-1 border border-purple-100 dark:border-purple-900/30">
           <span class="flex items-center gap-1.5 font-medium">
             <i data-lucide="award" class="w-3.5 h-3.5 text-purple-600 shrink-0"></i>
-            <span>Planda modülün son 2 saati (${totalHours - 1} ve ${totalHours}. Saat) otomatik olarak <strong>2 Saatlik Modül Değerlendirme Sınavı</strong> olarak ayrılacaktır.</span>
+            <span class="mod-exam-notice">Planda modülün son 2 saati (${totalHours - 1} ve ${totalHours}. Saat) otomatik olarak <strong>2 Saatlik Modül Değerlendirme Sınavı</strong> olarak ayrılacaktır.</span>
           </span>
         </div>
       </div>
@@ -1598,8 +1595,7 @@ function renderTmplModules() {
     const hoursInput = card.querySelector('.mod-hours-input');
     const topicsInput = card.querySelector('.mod-topics-input');
     const removeBtn = card.querySelector('.remove-mod-btn');
-    const pill = card.querySelector('.mod-pill');
-    const lessonHoursLabel = card.querySelector('.mod-lesson-hours-label');
+    const examNotice = card.querySelector('.mod-exam-notice');
     const counterLabel = card.querySelector('.mod-counter-label');
 
     nameInput?.addEventListener('input', (e) => {
@@ -1611,8 +1607,9 @@ function renderTmplModules() {
       mod.totalHours = val;
       const lh = val - 2;
       mod.lessonHours = lh;
-      if (pill) pill.innerText = `${lh}s Ders + 2s Sınav = ${val}s`;
-      if (lessonHoursLabel) lessonHoursLabel.innerText = lh;
+      if (examNotice) {
+        examNotice.innerHTML = `Planda modülün son 2 saati (${val - 1} ve ${val}. Saat) otomatik olarak <strong>2 Saatlik Modül Değerlendirme Sınavı</strong> olarak ayrılacaktır.`;
+      }
       const cnt = (topicsInput?.value || '').split('\n').filter(l => l.trim().length > 0).length;
       if (counterLabel) counterLabel.innerText = `${cnt} / ${lh} saat konu girildi`;
       updateTmplLiveSummary();
