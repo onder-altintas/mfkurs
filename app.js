@@ -835,14 +835,23 @@ function setupEventListeners() {
     addOffDayBtn.addEventListener('click', handleAddOffDay);
   }
 
-  // Kurs Adı / Şablon Seçildiğinde Otomatik Doldurma
+  // Kurs Adı / Şablon Seçildiğinde Otomatik Doldurma & Benzersiz Kurs Numarası Üretme
   if (courseFormTemplateSelect) {
     courseFormTemplateSelect.addEventListener('change', (e) => {
       const tmplId = e.target.value;
       if (!tmplId) return;
       const tmpl = currentTemplates.find(t => t.id === tmplId);
       if (tmpl) {
-        courseFormCode.value = tmpl.code || '';
+        const currentEditId = courseFormId ? courseFormId.value : null;
+        // Eğer düzenleme modundaysa ve mevcut kurs zaten bu şablona aitse mevcut kodunu koru
+        const editingCourse = currentEditId ? currentCourses.find(c => c.id === currentEditId) : null;
+        if (editingCourse && (editingCourse.templateId === tmplId || editingCourse.name === tmpl.name) && editingCourse.code) {
+          courseFormCode.value = editingCourse.code;
+        } else {
+          // Yeni kurs veya şablon değiştiğinde: sistem otomatik benzersiz ve artan kurs numarası üretir
+          courseFormCode.value = generateNextCourseCode(tmpl, currentEditId);
+        }
+
         courseFormCategory.value = tmpl.category || 'Bilişim Teknolojileri';
         courseFormTotalHours.value = tmpl.totalHours || 120;
         if (courseFormModuleCount) {
@@ -1545,6 +1554,28 @@ function applyBulkSyllabus() {
 function handleSaveCourseTemplate(e) {
   e.preventDefault();
   const id = tmplFormId.value;
+  const name = tmplFormName.value.trim();
+  const code = tmplFormCode.value.trim().toUpperCase();
+
+  if (!name) {
+    alert('Lütfen kurs adını giriniz.');
+    tmplFormName.focus();
+    return;
+  }
+
+  if (!code) {
+    alert('Lütfen kurs için benzersiz bir kurs kodu giriniz. (Örn: BLG-160 veya DKS)');
+    tmplFormCode.focus();
+    return;
+  }
+
+  // Başka bir kurs şablonuyla aynı kod olamaz (benzersizlik kontrolü)
+  const duplicateTmpl = currentTemplates.find(t => t.id !== id && (t.code || '').trim().toUpperCase() === code);
+  if (duplicateTmpl) {
+    alert(`"${code}" kurs kodu zaten "${duplicateTmpl.name}" kursunda kullanılmaktadır!\nLütfen başka bir kursla aynı olmayan, benzersiz bir kurs kodu giriniz.`);
+    tmplFormCode.focus();
+    return;
+  }
 
   // Saatlik konuları topla
   const rows = syllabusTableBody.querySelectorAll('.syllabus-row');
@@ -1564,8 +1595,8 @@ function handleSaveCourseTemplate(e) {
   if (id) {
     currentTemplates = currentTemplates.map(t => t.id === id ? {
       ...t,
-      name: tmplFormName.value.trim(),
-      code: tmplFormCode.value.trim(),
+      name,
+      code,
       category: tmplFormCategory.value,
       totalHours: Number(tmplFormTotalHours.value) || 0,
       moduleCount,
@@ -1576,8 +1607,8 @@ function handleSaveCourseTemplate(e) {
   } else {
     const newTmpl = {
       id: `tmpl_${Date.now()}`,
-      name: tmplFormName.value.trim(),
-      code: tmplFormCode.value.trim() || `KRS-${new Date().getFullYear()}`,
+      name,
+      code,
       category: tmplFormCategory.value,
       totalHours: Number(tmplFormTotalHours.value) || 0,
       moduleCount,
@@ -1901,6 +1932,65 @@ window.autoLoadHolidaysIntoForm = function() {
   alert(`Kurs günlerine denk gelen ${addedCount} adet Türkiye resmi tatili listeye eklendi.`);
 };
 
+/**
+ * Seçilen kurs şablonuna göre artan, benzersiz bir kurs numarası / kodu üretir.
+ * Kurs tanımlanırken girilen kodu temel alır ve mevcut kurslara göre artan rakamlar ekler.
+ * Örn: Şablon kodu "BLG-160" ise -> "BLG-160-01", "BLG-160-02" ...
+ * Şablon kodu "DKS" ise -> "DKS-01", "DKS-02" ...
+ */
+function generateNextCourseCode(tmpl, excludeCourseId = null) {
+  if (!tmpl) return '';
+
+  // 1. Temel Kodu / Ön Eki belirle
+  let prefix = (tmpl.code || '').trim().toUpperCase();
+  if (!prefix) {
+    prefix = (tmpl.name || 'KRS')
+      .split(' ')
+      .map(w => w[0])
+      .join('')
+      .toUpperCase()
+      .replace(/[^A-Z0-9ĞÜŞİÖÇ]/g, '')
+      .slice(0, 8) || 'KRS';
+  }
+
+  // 2. Bu şablona ait veya kodu bu prefix ile başlayan mevcut kursları bul
+  const relevantCourses = (currentCourses || []).filter(c => {
+    if (!c) return false;
+    if (excludeCourseId && c.id === excludeCourseId) return false;
+    if (c.templateId && c.templateId === tmpl.id) return true;
+    if (c.name && tmpl.name && c.name.trim().toLowerCase() === tmpl.name.trim().toLowerCase()) return true;
+    if (c.code && c.code.trim().toUpperCase().startsWith(prefix)) return true;
+    return false;
+  });
+
+  // 3. Mevcut kodlardaki en yüksek son sıra numarasını bul
+  let maxSeq = 0;
+  relevantCourses.forEach(c => {
+    if (!c.code) return;
+    const codeStr = c.code.trim().toUpperCase();
+    const match = codeStr.match(/[-_/\s](\d+)$/) || codeStr.match(/(\d+)$/);
+    if (match) {
+      const num = parseInt(match[1], 10);
+      if (!isNaN(num) && num > maxSeq) {
+        maxSeq = num;
+      }
+    }
+  });
+
+  // 4. Sıradaki numarayı belirle (en az 1)
+  let nextNum = Math.max(maxSeq + 1, 1);
+  let candidate = `${prefix}-${String(nextNum).padStart(2, '0')}`;
+
+  // 5. Kesin benzersizlik kontrolü (tüm kurslar içinde tekil olana kadar artır)
+  while ((currentCourses || []).some(c => (!excludeCourseId || c.id !== excludeCourseId) && c.code && c.code.trim().toUpperCase() === candidate.toUpperCase())) {
+    nextNum++;
+    candidate = `${prefix}-${String(nextNum).padStart(2, '0')}`;
+  }
+
+  return candidate;
+}
+window.generateNextCourseCode = generateNextCourseCode;
+
 function openCourseModal(courseToEdit = null) {
   courseModal.classList.remove('hidden');
 
@@ -2024,7 +2114,18 @@ function handleSaveCourse(e) {
 
   const supervisor = courseFormSupervisor.value.trim();
   const instructor = courseFormInstructor.value.trim() || currentUser.fullName;
-  const code = courseFormCode.value.trim() || (tmpl ? tmpl.code : `KRS-${new Date().getFullYear()}`);
+  let code = courseFormCode.value.trim().toUpperCase();
+  if (!code) {
+    code = tmpl ? generateNextCourseCode(tmpl, id) : `KRS-${new Date().getFullYear()}-01`;
+  }
+
+  // Kurs kodunun tekil ve benzersiz olduğunu doğrula
+  const duplicateCourse = currentCourses.find(c => c.id !== id && c.code && c.code.trim().toUpperCase() === code);
+  if (duplicateCourse) {
+    alert(`"${code}" kurs numarası/kodu zaten "${duplicateCourse.name}" (${duplicateCourse.institution || ''}) kursunda kayıtlı!\nLütfen her kurs için benzersiz bir kurs numarası kullanınız.`);
+    courseFormCode.focus();
+    return;
+  }
   const category = courseFormCategory.value;
   const startDate = courseFormStartDate.value;
   const endDate = courseFormEndDate.value;
