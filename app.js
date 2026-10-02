@@ -920,6 +920,7 @@ function setupEventListeners() {
         if (!courseFormDescription.value.trim()) {
           courseFormDescription.value = tmpl.description || '';
         }
+        autoCalculateCourseEndDate();
       }
     });
   }
@@ -1028,9 +1029,11 @@ function setupEventListeners() {
   singleExamForm?.addEventListener('submit', handleSaveSingleExam);
 
   // Kurs Bitiş Tarihi Otomatik Hesaplama Dinleyicileri
+  courseFormStartDate?.addEventListener('input', autoCalculateCourseEndDate);
   courseFormStartDate?.addEventListener('change', autoCalculateCourseEndDate);
   courseFormTotalHours?.addEventListener('input', autoCalculateCourseEndDate);
   courseFormDailyHours?.addEventListener('input', autoCalculateCourseEndDate);
+  courseFormDailyHours?.addEventListener('change', autoCalculateCourseEndDate);
   document.querySelectorAll('.course-day-checkbox').forEach(cb => {
     cb.addEventListener('change', autoCalculateCourseEndDate);
   });
@@ -2347,6 +2350,9 @@ function renderOffDays() {
     offDaysListContainer.appendChild(chip);
   });
   refreshLucide();
+  if (typeof autoCalculateCourseEndDate === 'function') {
+    autoCalculateCourseEndDate();
+  }
 }
 
 window.removeOffDay = function(index) {
@@ -2628,6 +2634,9 @@ function openCourseModal(courseToEdit = null) {
     currentOffDays = [];
     renderOffDays();
   }
+
+  // Bitiş tarihini otomatik hesapla
+  autoCalculateCourseEndDate();
 
   refreshLucide();
 }
@@ -6917,8 +6926,20 @@ function escapeHtml(string) {
 function autoCalculateCourseEndDate() {
   const startVal = courseFormStartDate?.value;
   if (!startVal) return;
-  const dailyHours = Number(courseFormDailyHours?.value) || 4;
-  const totalHours = Number(courseFormTotalHours?.value) || 120;
+  const dailyHours = Math.max(1, Number(courseFormDailyHours?.value) || 4);
+
+  // Toplam ders saatini belirle: Seçili şablondan veya formdaki değerden
+  let totalHours = 0;
+  if (courseFormTemplateSelect && courseFormTemplateSelect.value) {
+    const tmpl = currentTemplates.find(t => t.id === courseFormTemplateSelect.value);
+    if (tmpl && tmpl.totalHours) {
+      totalHours = Number(tmpl.totalHours);
+    }
+  }
+  if (!totalHours && courseFormTotalHours) {
+    totalHours = Number(courseFormTotalHours.value) || 0;
+  }
+  if (!totalHours) totalHours = 120;
 
   const selectedDays = [];
   document.querySelectorAll('.course-day-checkbox').forEach(cb => {
@@ -6931,7 +6952,7 @@ function autoCalculateCourseEndDate() {
     totalHours,
     dailyHours,
     days: selectedDays,
-    offDays: currentOffDays || []
+    offDays: Array.isArray(currentOffDays) ? currentOffDays : []
   };
 
   const dates = getValidCourseDates(mockCourse);
@@ -6939,6 +6960,7 @@ function autoCalculateCourseEndDate() {
     courseFormEndDate.value = dates[dates.length - 1];
   }
 }
+window.autoCalculateCourseEndDate = autoCalculateCourseEndDate;
 
 // =================== EXCEL İÇE / DIŞA AKTARMA (XLSX) ===================
 
