@@ -896,9 +896,6 @@ function setupEventListeners() {
         if (courseFormModuleCount) {
           courseFormModuleCount.value = tmpl.moduleCount || 1;
         }
-        if (courseFormDocumentType && tmpl.documentType) {
-          courseFormDocumentType.value = tmpl.documentType;
-        }
         if (!courseFormDescription.value.trim()) {
           courseFormDescription.value = tmpl.description || '';
         }
@@ -1456,9 +1453,9 @@ function renderAdminTemplates() {
             <div class="flex items-center gap-2 flex-wrap">
               <h4 class="font-bold text-slate-800 text-base">${escapeHtml(tmpl.name)}</h4>
               <span class="text-xs font-mono bg-slate-100 px-2 py-0.5 rounded text-slate-600">${escapeHtml(tmpl.code || '-')}</span>
-              <span class="text-xs font-bold bg-[#E09F3E]/20 text-[#540B0E] border border-[#E09F3E]/40 px-2 py-0.5 rounded-md flex items-center gap-1">
-                <i data-lucide="award" class="w-3 h-3 text-[#E09F3E]"></i>
-                <span>${escapeHtml(tmpl.documentType || 'Sertifika')}</span>
+              <span class="text-xs font-bold bg-teal-50 text-teal-800 border border-teal-200 px-2 py-0.5 rounded-md flex items-center gap-1">
+                <i data-lucide="tag" class="w-3 h-3 text-teal-600"></i>
+                <span>${escapeHtml(tmpl.category || 'Genel')}</span>
               </span>
               <span class="text-xs font-bold bg-purple-50 text-purple-700 border border-purple-200 px-2 py-0.5 rounded-md flex items-center gap-1">
                 <i data-lucide="layers" class="w-3 h-3 text-purple-600"></i>
@@ -1690,7 +1687,6 @@ function openCourseTmplModal(tmplToEdit = null) {
     tmplFormName.value = tmplToEdit.name;
     tmplFormCode.value = tmplToEdit.code || '';
     tmplFormCategory.value = tmplToEdit.category || 'Bilişim Teknolojileri';
-    if (tmplFormDocumentType) tmplFormDocumentType.value = tmplToEdit.documentType || 'Sertifika';
     tmplFormDescription.value = tmplToEdit.description || '';
 
     if (Array.isArray(tmplToEdit.modules) && tmplToEdit.modules.length > 0) {
@@ -1724,7 +1720,6 @@ function openCourseTmplModal(tmplToEdit = null) {
     courseTmplForm.reset();
     tmplFormId.value = '';
     if (tmplFormCategory) tmplFormCategory.value = getUserArea(currentUser) || 'Bilişim Teknolojileri';
-    if (tmplFormDocumentType) tmplFormDocumentType.value = 'Sertifika';
 
     editingTmplModules = [
       {
@@ -1846,7 +1841,6 @@ function handleSaveCourseTemplate(e) {
   }
 
   const category = tmplFormCategory.value;
-  const documentType = tmplFormDocumentType ? tmplFormDocumentType.value : 'Sertifika';
   const description = tmplFormDescription.value.trim();
   const totalHours = fullSyllabus.length;
   const moduleCount = savedModules.length;
@@ -1860,7 +1854,6 @@ function handleSaveCourseTemplate(e) {
       area: category,
       totalHours,
       moduleCount,
-      documentType,
       description,
       modules: savedModules,
       syllabus: fullSyllabus
@@ -1874,7 +1867,6 @@ function handleSaveCourseTemplate(e) {
       area: category,
       totalHours,
       moduleCount,
-      documentType,
       description,
       modules: savedModules,
       syllabus: fullSyllabus
@@ -2345,7 +2337,7 @@ function openCourseModal(courseToEdit = null) {
     }
     courseFormStatus.value = courseToEdit.status || 'active';
     if (courseFormDocumentType) {
-      courseFormDocumentType.value = courseToEdit.documentType || (matchedTmpl ? (matchedTmpl.documentType || 'Sertifika') : 'Sertifika');
+      courseFormDocumentType.value = courseToEdit.documentType || 'Sertifika';
     }
     courseFormClassroom.value = courseToEdit.classroom || '';
     courseFormDescription.value = courseToEdit.description || '';

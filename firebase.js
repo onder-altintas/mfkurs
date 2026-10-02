@@ -92,7 +92,6 @@ const DEFAULT_COURSE_TEMPLATES = [
     category: "Bilişim Teknolojileri",
     totalHours: 160,
     moduleCount: 4,
-    documentType: "Sertifika",
     description: "Temel bilgisayar donanımı, işletim sistemi, ofis programları (Word, Excel, PowerPoint) ve internet güvenliği.",
     modules: [
       {
@@ -171,7 +170,6 @@ const DEFAULT_COURSE_TEMPLATES = [
     category: "Kişisel Gelişim",
     totalHours: 64,
     moduleCount: 2,
-    documentType: "Katılım Belgesi",
     description: "Türkçenin doğru, anlaşılır ve etkili konuşulması, doğru nefes alma, tonlama ve beden dili eğitimi.",
     modules: [
       {
@@ -215,7 +213,6 @@ const DEFAULT_COURSE_TEMPLATES = [
     category: "El Sanatları",
     totalHours: 140,
     moduleCount: 2,
-    documentType: "Sertifika",
     description: "Ahşap yüzey hazırlığı, zımparalama, astar boya, transfer, dekupaj, eskitme ve vernikleme teknikleri.",
     modules: [
       {
