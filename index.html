@@ -521,105 +521,106 @@
     
     <!-- Navbar -->
     <header class="bg-white dark:bg-[#152125] border-b border-slate-200 dark:border-[#23353c] sticky top-0 z-30 shadow-xs transition-colors">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-3">
         
-        <div class="flex items-center gap-3">
-          <div class="p-2 bg-gradient-to-tr from-[#335C67] to-[#540B0E] rounded-xl text-white shadow-md shadow-[#335C67]/20 border border-[#FFF3B0]/30">
-            <i data-lucide="file-check-2" class="w-6 h-6 text-[#FFF3B0]"></i>
-          </div>
-          <div>
-            <div class="font-bold text-slate-800 dark:text-slate-100 text-base sm:text-lg leading-tight flex items-center gap-2">
-              <span>Kurs Sonu Evrakları</span>
-              <span id="roleBadge" class="px-2 py-0.5 text-[10px] uppercase font-bold tracking-wider rounded bg-[#FFF3B0] text-[#540B0E] border border-[#E09F3E]/40">
-                Öğretici Paneli
+        <!-- Sol: Logo & Başlık & Mod Geçişi -->
+        <div class="flex items-center gap-3 sm:gap-5 min-w-0">
+          <div class="flex items-center gap-2.5 shrink-0">
+            <div class="p-2 bg-gradient-to-tr from-[#335C67] to-[#540B0E] rounded-xl text-white shadow-xs border border-[#FFF3B0]/30 shrink-0">
+              <i data-lucide="file-check-2" class="w-5 h-5 text-[#FFF3B0]"></i>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="font-bold text-slate-800 dark:text-slate-100 text-sm sm:text-base tracking-tight truncate">
+                Kurs Sonu Evrakları
+              </span>
+              <span id="roleBadge" class="px-2 py-0.5 text-[9px] uppercase font-bold tracking-wider rounded-md bg-[#FFF3B0] text-[#540B0E] border border-[#E09F3E]/40 shrink-0">
+                Öğretici
               </span>
             </div>
-            <div class="text-[11px] text-slate-500 dark:text-slate-400">
-              Evrak, Müfredat ve Merkez Yönetimi
-            </div>
+          </div>
+
+          <!-- Üst Gezinme Menüsü (SADECE Admin için Paneller Arası Geçiş) -->
+          <div id="navViewSwitcher" class="items-center bg-slate-100 dark:bg-[#10191b] p-1 rounded-xl gap-1 border border-slate-200/60 dark:border-[#23353c] shrink-0" style="display: none !important;">
+            <button
+              id="navTeacherViewBtn"
+              class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-white dark:bg-[#152125] text-slate-800 dark:text-slate-100 shadow-xs cursor-pointer flex items-center gap-1.5 transition"
+            >
+              <i data-lucide="book-open" class="w-3.5 h-3.5 text-[#335C67]"></i>
+              <span class="hidden md:inline">Kurslarım & Evraklar</span>
+              <span class="md:hidden">Kurslarım</span>
+            </button>
+            <button
+              id="navAdminViewBtn"
+              class="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 cursor-pointer flex items-center gap-1.5 transition"
+            >
+              <i data-lucide="settings" class="w-3.5 h-3.5 text-[#540B0E]"></i>
+              <span class="hidden md:inline">Admin Yönetim Paneli</span>
+              <span class="md:hidden">Admin</span>
+            </button>
           </div>
         </div>
 
-        <!-- Üst Gezinme Menüsü (SADECE Admin için Paneller Arası Geçiş) -->
-        <div id="navViewSwitcher" class="items-center bg-slate-100 dark:bg-[#10191b] p-1 rounded-xl" style="display: none !important;">
-          <button
-            id="navTeacherViewBtn"
-            class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-white dark:bg-[#152125] text-slate-800 dark:text-slate-100 shadow-xs cursor-pointer flex items-center gap-1.5 transition"
-          >
-            <i data-lucide="book-open" class="w-4 h-4 text-[#335C67]"></i>
-            <span>Kurslarım & Evraklar</span>
-          </button>
-          <button
-            id="navAdminViewBtn"
-            class="px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 cursor-pointer flex items-center gap-1.5 transition"
-          >
-            <i data-lucide="settings" class="w-4 h-4 text-[#540B0E]"></i>
-            <span>Admin Yönetim Paneli</span>
-          </button>
-        </div>
-
-        <!-- Sağ Taraf: Tema Değiştirici, Kullanıcı Profili ve Çıkış -->
-        <div class="flex items-center gap-2.5 sm:gap-3.5">
+        <!-- Sağ Taraf: Sadeleştirilmiş & Derli Toplu Eylemler -->
+        <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
           
           <!-- Bulut Senkronizasyon Durumu -->
-          <div id="cloudSyncBadge" class="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800" title="Firebase Bulut Veritabanı Aktif">
+          <div id="cloudSyncBadge" class="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-semibold text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60" title="Firebase Bulut Veritabanı Aktif">
             <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
             <i data-lucide="cloud" class="w-3.5 h-3.5"></i>
-            <span class="hidden md:inline">Bulut Aktif</span>
+            <span class="hidden lg:inline text-[11px]">Bulut Aktif</span>
           </div>
 
-          <!-- Hızlı Tema Değiştirici -->
+          <!-- Geliştirici Todo Butonu (Sade, İkon + Sayaç Rozeti) -->
+          <button
+            type="button"
+            id="navbarDevTodoBtn"
+            onclick="openDevTodoModal()"
+            title="Geliştirici Todo & Yapılacaklar Listesi"
+            class="hidden relative p-2 text-slate-600 dark:text-slate-300 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-950/40 rounded-xl transition cursor-pointer"
+          >
+            <i data-lucide="check-square" class="w-4 h-4 text-amber-600"></i>
+            <span id="navbarDevTodoCount" class="absolute -top-0.5 -right-0.5 px-1.5 py-0.2 bg-amber-600 text-white rounded-full text-[9px] font-extrabold shadow-2xs leading-tight">0</span>
+          </button>
+
+          <!-- Tema Değiştirici (Sade İkon Buton) -->
           <button
             type="button"
             id="navbarThemeToggle"
             title="Açık / Koyu Tema Değiştir"
-            class="px-3 py-1.5 rounded-xl border border-slate-200 dark:border-[#2b3e45] bg-slate-50 dark:bg-[#10191b] hover:bg-slate-100 dark:hover:bg-[#19272c] text-slate-700 dark:text-slate-200 transition flex items-center gap-1.5 text-xs font-semibold cursor-pointer shadow-2xs"
+            class="p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-[#19272c] transition cursor-pointer"
           >
             <i id="navbarThemeIcon" data-lucide="sun" class="w-4 h-4 text-[#E09F3E]"></i>
-            <span id="navbarThemeText" class="hidden sm:inline">Açık</span>
+            <span id="navbarThemeText" class="sr-only">Açık</span>
           </button>
 
-          <!-- Geliştirici Todo Listesi Hızlı Erişim Butonu -->
-          <button
-            type="button"
-            id="navbarDevTodoBtn"
-            onclick="openDevTodoDrawer()"
-            title="Geliştirici Todo & Yapılacaklar Listesi"
-            class="hidden px-2.5 py-1.5 rounded-xl border border-amber-300 dark:border-amber-700/60 bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-950/40 dark:to-orange-950/40 hover:from-amber-100 hover:to-orange-100 text-amber-800 dark:text-amber-200 transition flex items-center gap-1.5 text-xs font-bold cursor-pointer shadow-2xs"
-          >
-            <i data-lucide="check-square" class="w-4 h-4 text-amber-600"></i>
-            <span class="hidden md:inline">Geliştirici Todo</span>
-            <span class="md:hidden">Todo</span>
-            <span id="navbarDevTodoCount" class="px-1.5 py-0.5 bg-amber-600 text-white rounded-full text-[10px] font-extrabold leading-none">0</span>
-          </button>
-
-          <!-- Sistem Yedeği İndir / Yükle -->
-          <div class="flex items-center gap-1">
+          <!-- Yedekleme & Geri Yükleme Araçları (Kompakt Gruplanmış) -->
+          <div class="flex items-center bg-slate-100 dark:bg-[#10191b] p-0.5 rounded-xl border border-slate-200 dark:border-[#2b3e45]">
             <button
               type="button"
               id="exportBackupJsonBtn"
-              title="Tüm Sistem Verilerini JSON Olarak Bilgisayara İndir"
-              class="px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-[#2b3e45] bg-slate-50 dark:bg-[#10191b] hover:bg-slate-100 dark:hover:bg-[#19272c] text-slate-700 dark:text-slate-200 transition flex items-center gap-1 text-xs font-semibold cursor-pointer shadow-2xs"
+              title="Sistem Yedeğini İndir (JSON)"
+              class="p-1.5 text-slate-600 dark:text-slate-300 hover:text-sky-600 hover:bg-white dark:hover:bg-[#152125] rounded-lg transition cursor-pointer"
             >
-              <i data-lucide="download" class="w-3.5 h-3.5 text-sky-600"></i>
-              <span class="hidden lg:inline">Yedekle</span>
+              <i data-lucide="download" class="w-3.5 h-3.5"></i>
             </button>
             <button
               type="button"
               id="importBackupJsonBtn"
-              title="JSON Yedek Dosyası Seçip Geri Yükle"
-              class="px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-[#2b3e45] bg-slate-50 dark:bg-[#10191b] hover:bg-slate-100 dark:hover:bg-[#19272c] text-slate-700 dark:text-slate-200 transition flex items-center gap-1 text-xs font-semibold cursor-pointer shadow-2xs"
+              title="Yedek Dosyası Geri Yükle"
+              class="p-1.5 text-slate-600 dark:text-slate-300 hover:text-amber-600 hover:bg-white dark:hover:bg-[#152125] rounded-lg transition cursor-pointer"
             >
-              <i data-lucide="upload-cloud" class="w-3.5 h-3.5 text-amber-600"></i>
-              <span class="hidden lg:inline">Yükle</span>
+              <i data-lucide="upload-cloud" class="w-3.5 h-3.5"></i>
             </button>
             <input type="file" id="importBackupJsonInput" accept=".json" class="hidden" />
           </div>
 
+          <div class="h-5 w-px bg-slate-200 dark:bg-[#23353c] mx-0.5"></div>
+
+          <!-- Kullanıcı Profil Butonu -->
           <button
             type="button"
             id="userProfileBtn"
-            class="flex items-center gap-2.5 pl-3 border-l border-slate-200 dark:border-[#23353c] p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-[#19272c] transition cursor-pointer group text-left"
+            class="flex items-center gap-2 p-1 pl-1.5 pr-2.5 rounded-xl hover:bg-slate-100 dark:hover:bg-[#19272c] transition cursor-pointer group text-left"
             title="Profil Bilgilerini Düzenle"
           >
             <div class="relative">
@@ -627,31 +628,29 @@
                 id="userAvatar"
                 src=""
                 alt="Avatar"
-                class="w-9 h-9 rounded-full object-cover ring-2 ring-[#335C67]/40 group-hover:ring-[#335C67] transition"
+                class="w-7 h-7 rounded-full object-cover ring-1 ring-slate-300 dark:ring-[#335C67] group-hover:ring-[#335C67] transition"
               />
-              <span class="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-500 border-2 border-white dark:border-[#152125] rounded-full"></span>
+              <span class="absolute -bottom-0.5 -right-0.5 w-2 h-2 bg-emerald-500 border border-white dark:border-[#152125] rounded-full"></span>
             </div>
-            <div class="hidden md:block text-left">
-              <div class="flex items-center gap-1.5">
-                <span id="userFullName" class="text-xs font-bold text-slate-800 dark:text-slate-100 leading-none group-hover:text-[#335C67] dark:group-hover:text-[#FFF3B0] transition">
-                  -
-                </span>
-                <i data-lucide="edit-3" class="w-3 h-3 text-slate-400 group-hover:text-[#335C67] dark:group-hover:text-[#FFF3B0] transition"></i>
+            <div class="hidden sm:block text-left leading-tight">
+              <div id="userFullName" class="text-xs font-semibold text-slate-800 dark:text-slate-100 group-hover:text-[#335C67] dark:group-hover:text-[#FFF3B0] transition truncate max-w-[120px]">
+                -
               </div>
-              <div id="userTitle" class="text-[11px] text-slate-500 dark:text-slate-400 mt-1 leading-none">
+              <div id="userTitle" class="text-[10px] text-slate-400 dark:text-slate-500 truncate max-w-[120px]">
                 -
               </div>
             </div>
           </button>
 
+          <!-- Çıkış Butonu -->
           <button
             id="logoutBtn"
             title="Güvenli Çıkış Yap"
-            class="p-2 text-slate-500 dark:text-slate-400 hover:text-[#9E2A2B] hover:bg-[#9E2A2B]/10 rounded-xl transition border border-transparent hover:border-[#9E2A2B]/20 flex items-center gap-1.5 text-xs font-semibold cursor-pointer"
+            class="p-2 text-slate-400 hover:text-[#9E2A2B] hover:bg-[#9E2A2B]/10 rounded-xl transition cursor-pointer"
           >
             <i data-lucide="log-out" class="w-4 h-4"></i>
-            <span class="hidden sm:inline">Çıkış</span>
           </button>
+
         </div>
 
       </div>
@@ -3355,8 +3354,8 @@
     <button
       type="button"
       id="devTodoOpenBtn"
-      onclick="openDevTodoDrawer()"
-      class="fixed right-5 bottom-5 z-50 px-4 py-2.5 bg-gradient-to-r from-amber-600 via-orange-600 to-rose-600 hover:from-amber-700 hover:to-rose-700 text-white rounded-full shadow-2xl flex items-center gap-2.5 font-bold text-xs sm:text-sm border-2 border-white/30 backdrop-blur-md cursor-pointer transition-all transform hover:scale-105 group"
+      onclick="openDevTodoModal()"
+      class="fixed right-5 bottom-5 z-40 px-4 py-2.5 bg-gradient-to-r from-amber-600 via-orange-600 to-rose-600 hover:from-amber-700 hover:to-rose-700 text-white rounded-full shadow-2xl flex items-center gap-2.5 font-bold text-xs sm:text-sm border-2 border-white/30 backdrop-blur-md cursor-pointer transition-all transform hover:scale-105 group"
       title="Geliştirici Todo & Yapılacaklar Listesi"
     >
       <div class="relative">
@@ -3368,130 +3367,139 @@
     </button>
   </div>
 
-  <!-- Sağdan Kayan Todo Panel / Çekmece (Drawer) -->
-  <div id="devTodoDrawer" class="hidden fixed inset-0 z-[100] overflow-hidden pointer-events-auto" style="display: none;">
-    <!-- Karartma Arkaplan (Tıklanınca kapatır) -->
-    <div id="devTodoBackdrop" class="absolute inset-0 bg-slate-900/60 backdrop-blur-xs transition-opacity duration-300 opacity-0 cursor-pointer" onclick="closeDevTodoDrawer()"></div>
-
-    <div class="absolute inset-y-0 right-0 max-w-full flex pl-6 sm:pl-10 pointer-events-auto">
-      <div id="devTodoPanel" class="w-screen max-w-md bg-white dark:bg-[#152125] shadow-2xl border-l border-slate-200 dark:border-[#2b3e45] flex flex-col transition-transform duration-300 ease-in-out relative z-10" style="transform: translateX(100%);">
-        
-        <!-- Header -->
-        <div class="p-4 sm:p-5 bg-gradient-to-r from-slate-900 via-[#1f353c] to-[#335C67] text-white flex items-center justify-between shrink-0 shadow-sm">
-          <div class="flex items-center gap-3">
-            <div class="p-2 bg-white/10 rounded-xl border border-white/20">
-              <i data-lucide="list-todo" class="w-5 h-5 text-[#FFF3B0]"></i>
-            </div>
-            <div>
-              <div class="flex items-center gap-2">
-                <h3 class="text-sm sm:text-base font-bold text-white tracking-wide">
-                  Geliştirici Todo List
-                </h3>
-                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#FFF3B0] text-[#540B0E]">
-                  Özgür & Önder
-                </span>
-              </div>
-              <p class="text-[11px] text-slate-300">
-                Ortak geliştirme ve görev takip paneli
-              </p>
-            </div>
+  <!-- Modern & Güvenilir Todo Modal -->
+  <div
+    id="devTodoModal"
+    class="hidden fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-sm"
+    onclick="if(event.target === this) closeDevTodoModal()"
+  >
+    <div
+      id="devTodoPanel"
+      class="bg-white dark:bg-[#152125] rounded-2xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden shadow-2xl border border-slate-200 dark:border-[#2b3e45] relative"
+    >
+      <!-- Header -->
+      <div class="p-4 sm:p-5 bg-gradient-to-r from-slate-900 via-[#1f353c] to-[#335C67] text-white flex items-center justify-between shrink-0 shadow-sm">
+        <div class="flex items-center gap-3">
+          <div class="p-2.5 bg-white/10 rounded-xl border border-white/20 shrink-0">
+            <i data-lucide="list-todo" class="w-5 h-5 text-[#FFF3B0]"></i>
           </div>
-          <button
-            type="button"
-            id="devTodoCloseBtn"
-            onclick="closeDevTodoDrawer()"
-            class="p-2 text-white/70 hover:text-white hover:bg-white/10 rounded-xl transition cursor-pointer"
-            title="Kapat"
-          >
-            <i data-lucide="x" class="w-5 h-5"></i>
-          </button>
-        </div>
-
-        <!-- Aktif Kullanıcı Bildirimi & Filtreler -->
-        <div class="px-4 py-3 bg-slate-50 dark:bg-[#10191b] border-b border-slate-200 dark:border-[#2b3e45] flex items-center justify-between gap-2 shrink-0">
-          <div class="flex items-center gap-1.5 text-xs font-semibold text-slate-600 dark:text-slate-300">
-            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-            <span>Giriş Yapan:</span>
-            <span id="devTodoActiveUserTag" class="text-[#335C67] dark:text-[#FFF3B0] font-bold">Önder</span>
-          </div>
-
-          <!-- Filtre Sekmeleri -->
-          <div class="flex items-center gap-1 bg-slate-200 dark:bg-[#1f2d31] p-0.5 rounded-lg text-[11px]">
-            <button type="button" class="dev-todo-filter-btn px-2.5 py-1 rounded-md font-bold bg-white dark:bg-[#152125] text-slate-800 dark:text-slate-100 shadow-xs cursor-pointer" data-filter="all">Tümü</button>
-            <button type="button" class="dev-todo-filter-btn px-2.5 py-1 rounded-md font-medium text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-100 cursor-pointer" data-filter="active">Bekleyen</button>
-            <button type="button" class="dev-todo-filter-btn px-2.5 py-1 rounded-md font-medium text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-100 cursor-pointer" data-filter="completed">Biten</button>
+          <div>
+            <div class="flex items-center gap-2">
+              <h3 class="text-sm sm:text-base font-bold text-white tracking-wide">
+                Geliştirici Todo List
+              </h3>
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#FFF3B0] text-[#540B0E]">
+                Özgür & Önder
+              </span>
+            </div>
+            <p class="text-[11px] text-slate-300">
+              Ortak geliştirme ve görev takip paneli
+            </p>
           </div>
         </div>
+        <button
+          type="button"
+          id="devTodoCloseBtn"
+          onclick="closeDevTodoModal()"
+          class="p-2 text-white/70 hover:text-white hover:bg-white/10 rounded-xl transition cursor-pointer"
+          title="Kapat"
+        >
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
 
-        <!-- Yeni Görev Ekleme Formu -->
-        <form id="devTodoForm" class="p-4 border-b border-slate-200 dark:border-[#2b3e45] bg-white dark:bg-[#152125] shrink-0 space-y-2.5">
-          <div class="relative">
+      <!-- Aktif Kullanıcı Bildirimi & Filtreler -->
+      <div class="px-4 py-2.5 bg-slate-50 dark:bg-[#10191b] border-b border-slate-200 dark:border-[#2b3e45] flex items-center justify-between gap-2 shrink-0">
+        <div class="flex items-center gap-1.5 text-xs font-semibold text-slate-600 dark:text-slate-300">
+          <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+          <span>Giriş Yapan:</span>
+          <span id="devTodoActiveUserTag" class="text-[#335C67] dark:text-[#FFF3B0] font-bold">Önder</span>
+        </div>
+
+        <!-- Filtre Sekmeleri -->
+        <div class="flex items-center gap-1 bg-slate-200 dark:bg-[#1f2d31] p-0.5 rounded-lg text-[11px]">
+          <button type="button" class="dev-todo-filter-btn px-2.5 py-1 rounded-md font-bold bg-white dark:bg-[#152125] text-slate-800 dark:text-slate-100 shadow-xs cursor-pointer" data-filter="all">Tümü</button>
+          <button type="button" class="dev-todo-filter-btn px-2.5 py-1 rounded-md font-medium text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-100 cursor-pointer" data-filter="active">Bekleyen</button>
+          <button type="button" class="dev-todo-filter-btn px-2.5 py-1 rounded-md font-medium text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-100 cursor-pointer" data-filter="completed">Biten</button>
+        </div>
+      </div>
+
+      <!-- Yeni Görev Ekleme Formu -->
+      <form id="devTodoForm" class="p-4 border-b border-slate-200 dark:border-[#2b3e45] bg-white dark:bg-[#152125] shrink-0 space-y-2.5">
+        <div class="flex flex-col sm:flex-row gap-2">
+          <div class="relative flex-1">
             <input
               type="text"
               id="devTodoInput"
               placeholder="Yeni yapılacak görev yazın... (Enter)"
               required
-              class="w-full pl-3.5 pr-20 py-2.5 bg-slate-50 dark:bg-[#10191b] border border-slate-200 dark:border-[#2b3e45] rounded-xl text-xs sm:text-sm text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#335C67] transition"
+              class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-[#10191b] border border-slate-200 dark:border-[#2b3e45] rounded-xl text-xs sm:text-sm text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#335C67] transition"
             />
-            <button
-              type="submit"
-              class="absolute right-1.5 top-1.5 bottom-1.5 px-3 bg-[#335C67] hover:bg-[#26444d] text-white rounded-lg text-xs font-bold transition flex items-center gap-1 cursor-pointer"
-            >
-              <i data-lucide="plus" class="w-3.5 h-3.5"></i>
-              <span>Ekle</span>
-            </button>
           </div>
 
           <div class="flex items-center gap-2">
             <!-- Sorumlu Kişi -->
-            <div class="flex-1">
-              <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">Sorumlu Kişi</label>
+            <div class="w-28 sm:w-32">
               <select
                 id="devTodoAssignee"
-                class="w-full px-2 py-1.5 bg-slate-50 dark:bg-[#10191b] border border-slate-200 dark:border-[#2b3e45] rounded-lg text-xs text-slate-700 dark:text-slate-200 focus:outline-none"
+                class="w-full px-2.5 py-2.5 bg-slate-50 dark:bg-[#10191b] border border-slate-200 dark:border-[#2b3e45] rounded-xl text-xs text-slate-700 dark:text-slate-200 focus:outline-none"
               >
+                <option value="Ortak" selected>Ortak</option>
                 <option value="Özgür">Özgür</option>
                 <option value="Önder">Önder</option>
-                <option value="Ortak" selected>Ortak (İkimiz)</option>
               </select>
             </div>
 
             <!-- Öncelik -->
-            <div class="w-32">
-              <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">Öncelik</label>
+            <div class="w-28 sm:w-32">
               <select
                 id="devTodoPriority"
-                class="w-full px-2 py-1.5 bg-slate-50 dark:bg-[#10191b] border border-slate-200 dark:border-[#2b3e45] rounded-lg text-xs text-slate-700 dark:text-slate-200 focus:outline-none"
+                class="w-full px-2.5 py-2.5 bg-slate-50 dark:bg-[#10191b] border border-slate-200 dark:border-[#2b3e45] rounded-xl text-xs text-slate-700 dark:text-slate-200 focus:outline-none"
               >
+                <option value="normal" selected>📌 Normal</option>
                 <option value="urgent">🔥 Acil</option>
                 <option value="high">⚡ Yüksek</option>
-                <option value="normal" selected>📌 Normal</option>
                 <option value="low">☕ Düşük</option>
               </select>
             </div>
-          </div>
-        </form>
 
-        <!-- Görev Listesi -->
-        <div id="devTodoListContainer" class="flex-1 overflow-y-auto p-4 space-y-2.5 bg-slate-50/50 dark:bg-[#10191b]/50">
-          <!-- JS tarafından enjekte edilecek -->
-        </div>
-
-        <!-- Alt Bilgi & Hızlı İşlemler -->
-        <div class="p-3 bg-white dark:bg-[#152125] border-t border-slate-200 dark:border-[#2b3e45] flex items-center justify-between text-xs text-slate-500 shrink-0">
-          <span id="devTodoStatsText">0 görevden 0'ı tamamlandı</span>
-          <div class="flex items-center gap-2">
             <button
-              type="button"
-              id="devTodoClearCompletedBtn"
-              class="text-rose-600 hover:text-rose-700 hover:underline font-medium text-[11px] cursor-pointer"
+              type="submit"
+              class="px-4 py-2.5 bg-[#335C67] hover:bg-[#26444d] text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer shrink-0 shadow-sm"
             >
-              Bitenleri Temizle
+              <i data-lucide="plus" class="w-4 h-4"></i>
+              <span>Ekle</span>
             </button>
           </div>
         </div>
+      </form>
 
+      <!-- Görev Listesi -->
+      <div id="devTodoListContainer" class="flex-1 overflow-y-auto p-4 space-y-2.5 bg-slate-50/50 dark:bg-[#10191b]/50 max-h-[50vh]">
+        <!-- JS tarafından enjekte edilecek -->
       </div>
+
+      <!-- Alt Bilgi & Hızlı İşlemler -->
+      <div class="p-3 bg-white dark:bg-[#152125] border-t border-slate-200 dark:border-[#2b3e45] flex items-center justify-between text-xs text-slate-500 shrink-0">
+        <span id="devTodoStatsText">0 görevden 0'ı tamamlandı</span>
+        <div class="flex items-center gap-3">
+          <button
+            type="button"
+            id="devTodoClearCompletedBtn"
+            class="text-rose-600 hover:text-rose-700 hover:underline font-semibold text-xs cursor-pointer"
+          >
+            Bitenleri Temizle
+          </button>
+          <button
+            type="button"
+            onclick="closeDevTodoModal()"
+            class="px-3 py-1 bg-slate-100 hover:bg-slate-200 dark:bg-[#10191b] dark:hover:bg-[#19272c] text-slate-700 dark:text-slate-300 rounded-lg text-xs font-medium cursor-pointer transition"
+          >
+            Kapat
+          </button>
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -3500,7 +3508,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
   <!-- Firebase Bulut Servisi & Veri Deposu -->
-  <script src="firebase.js?v=20261002_0925"></script>
-  <script src="app.js?v=20261002_0925"></script>
+  <script src="firebase.js?v=20261002_0935"></script>
+  <script src="app.js?v=20261002_0935"></script>
 </body>
 </html>

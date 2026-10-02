@@ -475,7 +475,10 @@ const DataStore = {
         localStorage.setItem(STORAGE_KEYS.TODOS, JSON.stringify(initialTodos));
         return initialTodos;
       }
-      return JSON.parse(raw);
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) return parsed;
+      if (parsed && Array.isArray(parsed.list)) return parsed.list;
+      return [];
     } catch (e) {
       console.error("LocalStorage todo okuma hatası:", e);
       return [];

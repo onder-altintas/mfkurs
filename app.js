@@ -6498,49 +6498,48 @@ function hideDevTodoList() {
   if (wrapper) wrapper.classList.add('hidden');
   if (navbarBtn) navbarBtn.classList.add('hidden');
   if (adminTabBtn) adminTabBtn.classList.add('hidden');
-  closeDevTodoDrawer();
+  closeDevTodoModal();
+}
+
+function openDevTodoModal() {
+  const modal = document.getElementById('devTodoModal') || document.getElementById('devTodoDrawer');
+  if (!modal) return;
+
+  modal.classList.remove('hidden');
+  modal.style.display = 'flex';
+
+  try {
+    renderDevTodos();
+  } catch (err) {
+    console.error("renderDevTodos error:", err);
+  }
+  refreshLucide();
+
+  setTimeout(() => {
+    const input = document.getElementById('devTodoInput');
+    if (input) input.focus();
+  }, 100);
+}
+
+function closeDevTodoModal() {
+  const modal = document.getElementById('devTodoModal') || document.getElementById('devTodoDrawer');
+  if (!modal) return;
+  modal.classList.add('hidden');
+  modal.style.display = 'none';
 }
 
 function openDevTodoDrawer() {
-  const drawer = document.getElementById('devTodoDrawer');
-  const panel = document.getElementById('devTodoPanel');
-  const backdrop = document.getElementById('devTodoBackdrop');
-  if (!drawer || !panel) return;
-
-  drawer.classList.remove('hidden');
-  drawer.style.display = 'block';
-
-  renderDevTodos();
-  refreshLucide();
-
-  requestAnimationFrame(() => {
-    if (backdrop) {
-      backdrop.classList.remove('opacity-0');
-      backdrop.style.opacity = '1';
-    }
-    panel.style.transform = 'translateX(0%)';
-  });
+  openDevTodoModal();
 }
 
 function closeDevTodoDrawer() {
-  const drawer = document.getElementById('devTodoDrawer');
-  const panel = document.getElementById('devTodoPanel');
-  const backdrop = document.getElementById('devTodoBackdrop');
-  if (!drawer || !panel) return;
-
-  if (backdrop) {
-    backdrop.style.opacity = '0';
-  }
-  panel.style.transform = 'translateX(100%)';
-
-  setTimeout(() => {
-    drawer.classList.add('hidden');
-    drawer.style.display = 'none';
-  }, 300);
+  closeDevTodoModal();
 }
 
-window.openDevTodoDrawer = openDevTodoDrawer;
-window.closeDevTodoDrawer = closeDevTodoDrawer;
+window.openDevTodoModal = openDevTodoModal;
+window.closeDevTodoModal = closeDevTodoModal;
+window.openDevTodoDrawer = openDevTodoModal;
+window.closeDevTodoDrawer = closeDevTodoModal;
 
 function initDevTodoList() {
   if (devTodoInitialized) return;
@@ -6554,16 +6553,16 @@ function initDevTodoList() {
   const clearCompletedBtn = document.getElementById('devTodoClearCompletedBtn');
 
   if (openBtn) {
-    openBtn.addEventListener('click', openDevTodoDrawer);
+    openBtn.onclick = (e) => { e.preventDefault(); openDevTodoModal(); };
   }
   if (navbarBtn) {
-    navbarBtn.addEventListener('click', openDevTodoDrawer);
+    navbarBtn.onclick = (e) => { e.preventDefault(); openDevTodoModal(); };
   }
   if (closeBtn) {
-    closeBtn.addEventListener('click', closeDevTodoDrawer);
+    closeBtn.onclick = (e) => { e.preventDefault(); closeDevTodoModal(); };
   }
   if (backdrop) {
-    backdrop.addEventListener('click', closeDevTodoDrawer);
+    backdrop.onclick = (e) => { e.preventDefault(); closeDevTodoModal(); };
   }
 
   // Drawer Form submit (Yeni Görev Ekleme)
@@ -6718,7 +6717,8 @@ function renderDevTodos() {
   const navbarCount = document.getElementById('navbarDevTodoCount');
   const adminStatsText = document.getElementById('adminTodoStatsText');
 
-  const todos = DataStore.getTodos();
+  const rawTodos = (typeof DataStore !== 'undefined' && DataStore.getTodos) ? DataStore.getTodos() : [];
+  const todos = Array.isArray(rawTodos) ? rawTodos : (rawTodos && Array.isArray(rawTodos.list) ? rawTodos.list : []);
   const total = todos.length;
   const completed = todos.filter(t => t.completed).length;
   const active = total - completed;
@@ -6934,7 +6934,9 @@ window.saveEditDevTodo = function(id) {
   }
 };
 
-window.openDevTodoDrawer = openDevTodoDrawer;
-window.closeDevTodoDrawer = closeDevTodoDrawer;
+window.openDevTodoModal = openDevTodoModal;
+window.closeDevTodoModal = closeDevTodoModal;
+window.openDevTodoDrawer = openDevTodoModal;
+window.closeDevTodoDrawer = closeDevTodoModal;
 window.checkDevTodoList = checkDevTodoList;
 window.isDevUser = isDevUser;
