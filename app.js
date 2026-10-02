@@ -120,7 +120,7 @@ const userFormTitle = document.getElementById('userFormTitle');
 const roleTeacher = document.getElementById('roleTeacher');
 const roleAdmin = document.getElementById('roleAdmin');
 
-// Modal: Kurs Merkezi (Sadece Merkez İsmi)
+// Modal: Kurs Merkezi (Merkez İsmi & Sorumlu)
 const centerModal = document.getElementById('centerModal');
 const centerModalTitle = document.getElementById('centerModalTitle');
 const closeCenterModalBtn = document.getElementById('closeCenterModalBtn');
@@ -128,6 +128,7 @@ const cancelCenterModalBtn = document.getElementById('cancelCenterModalBtn');
 const centerForm = document.getElementById('centerForm');
 const centerFormId = document.getElementById('centerFormId');
 const centerFormName = document.getElementById('centerFormName');
+const centerFormSupervisor = document.getElementById('centerFormSupervisor');
 
 // Modal: Kurs Şablonu & Müfredat
 const courseTmplModal = document.getElementById('courseTmplModal');
@@ -396,6 +397,7 @@ window.onCloudSync = function(type, data) {
   } else if (type === 'centers') {
     currentCenters = data;
     if (typeof renderCentersTable === 'function') renderCentersTable();
+    if (typeof renderAdminCenters === 'function') renderAdminCenters();
   } else if (type === 'templates') {
     currentTemplates = data;
     if (typeof renderTemplatesTable === 'function') renderTemplatesTable();
@@ -862,6 +864,17 @@ function setupEventListeners() {
     });
   }
 
+  // Kurs Merkezi Seçildiğinde Otomatik Sorumlu Doldurma
+  if (courseFormInstitutionSelect) {
+    courseFormInstitutionSelect.addEventListener('change', (e) => {
+      const selectedName = e.target.value;
+      const matchedCenter = currentCenters.find(c => c.name === selectedName);
+      if (matchedCenter && matchedCenter.supervisor) {
+        courseFormSupervisor.value = matchedCenter.supervisor;
+      }
+    });
+  }
+
   // Kurs Detay Modalı
   closeDetailModalBtn.addEventListener('click', () => closeDetailModal());
   bottomCloseDetailBtn.addEventListener('click', () => closeDetailModal());
@@ -1239,6 +1252,16 @@ function renderAdminCenters() {
     const card = document.createElement('div');
     card.className = 'bg-white rounded-2xl border border-slate-200 p-5 shadow-xs hover:border-indigo-300 hover:shadow-md transition flex items-center justify-between gap-4';
 
+    const supervisorInfo = center.supervisor
+      ? `<div class="flex items-center gap-1.5 text-xs text-slate-600 mt-1 font-medium">
+           <i data-lucide="user-check" class="w-3.5 h-3.5 text-emerald-600 shrink-0"></i>
+           <span>Sorumlu: <strong class="text-slate-800">${escapeHtml(center.supervisor)}</strong></span>
+         </div>`
+      : `<div class="flex items-center gap-1 text-[11px] text-slate-400 mt-1 italic">
+           <i data-lucide="user-x" class="w-3.5 h-3.5 text-slate-300 shrink-0"></i>
+           <span>Sorumlu belirtilmemiş</span>
+         </div>`;
+
     card.innerHTML = `
       <div class="flex items-center gap-3">
         <div class="p-3 rounded-xl bg-indigo-50 text-indigo-700 shrink-0">
@@ -1247,6 +1270,7 @@ function renderAdminCenters() {
         <div>
           <h4 class="font-bold text-slate-800 text-sm sm:text-base leading-snug">${escapeHtml(center.name)}</h4>
           <span class="text-[11px] text-slate-400">Kayıtlı Kurs Merkezi</span>
+          ${supervisorInfo}
         </div>
       </div>
 
@@ -1254,7 +1278,7 @@ function renderAdminCenters() {
         <button
           onclick="editCenter('${center.id}')"
           class="p-2 text-indigo-700 hover:bg-indigo-50 rounded-xl transition cursor-pointer"
-          title="Merkez Adını Düzenle"
+          title="Merkez Bilgilerini Düzenle"
         >
           <i data-lucide="edit-3" class="w-4 h-4"></i>
         </button>
@@ -1278,13 +1302,15 @@ function openCenterModal(centerToEdit = null) {
   centerModal.classList.remove('hidden');
 
   if (centerToEdit) {
-    centerModalTitle.innerText = 'Kurs Merkezi Adını Güncelle';
+    centerModalTitle.innerText = 'Kurs Merkezi Bilgilerini Güncelle';
     centerFormId.value = centerToEdit.id;
     centerFormName.value = centerToEdit.name;
+    if (centerFormSupervisor) centerFormSupervisor.value = centerToEdit.supervisor || '';
   } else {
     centerModalTitle.innerText = 'Yeni Kurs Merkezi Ekle';
     centerForm.reset();
     centerFormId.value = '';
+    if (centerFormSupervisor) centerFormSupervisor.value = '';
   }
   centerFormName.focus();
   refreshLucide();
@@ -1298,14 +1324,16 @@ function handleSaveCenter(e) {
   e.preventDefault();
   const id = centerFormId.value;
   const name = centerFormName.value.trim();
+  const supervisor = centerFormSupervisor ? centerFormSupervisor.value.trim() : '';
   if (!name) return;
 
   if (id) {
-    currentCenters = currentCenters.map(c => c.id === id ? { ...c, name } : c);
+    currentCenters = currentCenters.map(c => c.id === id ? { ...c, name, supervisor } : c);
   } else {
     const newCenter = {
       id: `center_${Date.now()}`,
-      name
+      name,
+      supervisor
     };
     currentCenters.unshift(newCenter);
   }
@@ -1903,7 +1931,7 @@ function openCourseModal(courseToEdit = null) {
     }
 
     courseFormInstitutionSelect.value = courseToEdit.institution || currentCenters[0]?.name || '';
-    courseFormSupervisor.value = courseToEdit.supervisor || '';
+    courseFormSupervisor.value = courseToEdit.supervisor || (currentCenters.find(c => c.name === courseToEdit.institution)?.supervisor) || '';
     courseFormInstructor.value = getCourseInstructorName(courseToEdit);
     courseFormCode.value = courseToEdit.code || '';
     courseFormCategory.value = courseToEdit.category || 'Bilişim Teknolojileri';
@@ -1944,6 +1972,9 @@ function openCourseModal(courseToEdit = null) {
     if (courseFormDocumentType) courseFormDocumentType.value = 'Sertifika';
     if (currentCenters.length > 0) {
       courseFormInstitutionSelect.value = currentCenters[0].name;
+      if (currentCenters[0].supervisor) {
+        courseFormSupervisor.value = currentCenters[0].supervisor;
+      }
     }
 
     // Varsayılan Hafta İçi Günleri ve Saatleri

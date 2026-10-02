@@ -71,11 +71,11 @@ const DEFAULT_USERS = [
   }
 ];
 
-// Kurs Merkezleri Tanımları (Yalnızca Merkez İsmi)
+// Kurs Merkezleri Tanımları (Merkez İsmi ve Tercihen Sorumlu Bilgisi)
 const DEFAULT_CENTERS = [
-  { id: "center_1", name: "Kadıköy Halk Eğitimi Merkezi" },
-  { id: "center_2", name: "Üsküdar Mesleki Eğitim Merkezi" },
-  { id: "center_3", name: "Şişli Halk Eğitimi Merkezi" }
+  { id: "center_1", name: "Kadıköy Halk Eğitimi Merkezi", supervisor: "Kemal Demir (Müdür Yrd.)" },
+  { id: "center_2", name: "Üsküdar Mesleki Eğitim Merkezi", supervisor: "Mehmet Ali Şahin (Müdür Yrd.)" },
+  { id: "center_3", name: "Şişli Halk Eğitimi Merkezi", supervisor: "" }
 ];
 
 // Resmi Kurs ve Saatlik Konu / Müfredat Dağılım Şablonları
