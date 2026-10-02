@@ -36,11 +36,8 @@ const loginThemeText = document.getElementById('loginThemeText');
 // Navigasyon & Roller
 const roleBadge = document.getElementById('roleBadge');
 const navViewSwitcher = document.getElementById('navViewSwitcher');
-const mobileNavSwitcher = document.getElementById('mobileNavSwitcher');
 const navTeacherViewBtn = document.getElementById('navTeacherViewBtn');
 const navAdminViewBtn = document.getElementById('navAdminViewBtn');
-const mobileTeacherBtn = document.getElementById('mobileTeacherBtn');
-const mobileAdminBtn = document.getElementById('mobileAdminBtn');
 const teacherSection = document.getElementById('teacherSection');
 const adminSection = document.getElementById('adminSection');
 
@@ -522,13 +519,11 @@ function showDashboard() {
     roleBadge.innerText = 'Sistem Yöneticisi (Admin)';
     roleBadge.className = 'px-2 py-0.5 text-[10px] uppercase font-bold tracking-wider rounded bg-[#540B0E] text-white border border-[#FFF3B0]/30 shadow-xs';
     navViewSwitcher.style.setProperty('display', 'flex', 'important');
-    if (mobileNavSwitcher) mobileNavSwitcher.style.setProperty('display', 'flex', 'important');
     switchView('admin');
   } else {
     roleBadge.innerText = 'Öğretici Paneli';
     roleBadge.className = 'px-2 py-0.5 text-[10px] uppercase font-bold tracking-wider rounded bg-[#FFF3B0] text-[#540B0E] border border-[#E09F3E]/40 shadow-xs';
     navViewSwitcher.style.setProperty('display', 'none', 'important');
-    if (mobileNavSwitcher) mobileNavSwitcher.style.setProperty('display', 'none', 'important');
     switchView('teacher');
   }
 
@@ -550,24 +545,12 @@ function switchView(view) {
     adminSection.classList.remove('hidden');
     navAdminViewBtn.className = 'px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-white dark:bg-[#152125] text-[#540B0E] dark:text-[#FFF3B0] shadow-xs cursor-pointer flex items-center gap-1.5 transition border border-[#540B0E]/20';
     navTeacherViewBtn.className = 'px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 cursor-pointer flex items-center gap-1.5 transition';
-    if (mobileAdminBtn) {
-      mobileAdminBtn.className = 'px-3.5 py-1.5 bg-white dark:bg-[#152125] text-xs font-bold text-[#540B0E] dark:text-[#FFF3B0] rounded-lg shadow-xs border border-slate-200 dark:border-[#23353c] cursor-pointer';
-    }
-    if (mobileTeacherBtn) {
-      mobileTeacherBtn.className = 'px-3.5 py-1.5 text-xs font-bold text-slate-600 dark:text-slate-400 hover:text-slate-900 rounded-lg cursor-pointer';
-    }
     renderAdminPanel();
   } else {
     adminSection.classList.add('hidden');
     teacherSection.classList.remove('hidden');
     navTeacherViewBtn.className = 'px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-white dark:bg-[#152125] text-[#335C67] dark:text-[#FFF3B0] shadow-xs cursor-pointer flex items-center gap-1.5 transition border border-[#335C67]/20';
     navAdminViewBtn.className = 'px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 cursor-pointer flex items-center gap-1.5 transition';
-    if (mobileTeacherBtn) {
-      mobileTeacherBtn.className = 'px-3.5 py-1.5 bg-white dark:bg-[#152125] text-xs font-bold text-[#335C67] dark:text-[#FFF3B0] rounded-lg shadow-xs border border-slate-200 dark:border-[#23353c] cursor-pointer';
-    }
-    if (mobileAdminBtn) {
-      mobileAdminBtn.className = 'px-3.5 py-1.5 text-xs font-bold text-slate-600 dark:text-slate-400 hover:text-slate-900 rounded-lg cursor-pointer';
-    }
     renderTeacherDashboard();
   }
   if (typeof checkDevTodoList === 'function') checkDevTodoList();
@@ -799,8 +782,6 @@ function setupEventListeners() {
   // View Switcher (Admin / Teacher)
   navTeacherViewBtn?.addEventListener('click', () => switchView('teacher'));
   navAdminViewBtn?.addEventListener('click', () => switchView('admin'));
-  mobileTeacherBtn?.addEventListener('click', () => switchView('teacher'));
-  mobileAdminBtn?.addEventListener('click', () => switchView('admin'));
 
   // Admin Alt Sekmeleri
   adminTabCentersBtn.addEventListener('click', () => switchAdminTab('centers'));
