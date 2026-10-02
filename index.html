@@ -579,6 +579,20 @@
             <span id="navbarThemeText" class="hidden sm:inline">Açık</span>
           </button>
 
+          <!-- Geliştirici Todo Listesi Hızlı Erişim Butonu -->
+          <button
+            type="button"
+            id="navbarDevTodoBtn"
+            onclick="openDevTodoDrawer()"
+            title="Geliştirici Todo & Yapılacaklar Listesi"
+            class="hidden px-2.5 py-1.5 rounded-xl border border-amber-300 dark:border-amber-700/60 bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-950/40 dark:to-orange-950/40 hover:from-amber-100 hover:to-orange-100 text-amber-800 dark:text-amber-200 transition flex items-center gap-1.5 text-xs font-bold cursor-pointer shadow-2xs"
+          >
+            <i data-lucide="check-square" class="w-4 h-4 text-amber-600"></i>
+            <span class="hidden md:inline">Geliştirici Todo</span>
+            <span class="md:hidden">Todo</span>
+            <span id="navbarDevTodoCount" class="px-1.5 py-0.5 bg-amber-600 text-white rounded-full text-[10px] font-extrabold leading-none">0</span>
+          </button>
+
           <!-- Sistem Yedeği İndir / Yükle -->
           <div class="flex items-center gap-1">
             <button
@@ -867,6 +881,14 @@
           <i data-lucide="users-2" class="w-4 h-4"></i>
           <span>Kullanıcı Yönetimi & Yetkiler (<span id="adminUsersCount">0</span>)</span>
         </button>
+
+        <button
+          id="adminTabTodosBtn"
+          class="flex items-center gap-2 px-5 py-3 text-xs sm:text-sm font-bold border-b-2 border-transparent text-slate-600 hover:text-slate-900 transition cursor-pointer whitespace-nowrap"
+        >
+          <i data-lucide="check-square" class="w-4 h-4 text-amber-600"></i>
+          <span>Geliştirici Todo (<span id="adminDevTodoCount">0</span>)</span>
+        </button>
       </div>
 
       <!-- Admin Sekme 1: Kurs Merkezleri -->
@@ -921,6 +943,93 @@
                 <!-- JS ile render edilecek -->
               </tbody>
             </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Admin Sekme 4: Geliştirici Todo Listesi -->
+      <div id="adminTabTodosContent" class="hidden space-y-4">
+        <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100">
+            <div>
+              <div class="flex items-center gap-2">
+                <h3 class="font-bold text-slate-800 text-base flex items-center gap-2">
+                  <i data-lucide="list-todo" class="w-5 h-5 text-amber-600"></i>
+                  <span>Geliştirici Görev ve Todo Listesi</span>
+                </h3>
+                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-300">
+                  Özgür & Önder
+                </span>
+              </div>
+              <p class="text-xs text-slate-500 mt-0.5">
+                Proje geliştirme sürecindeki görevleri takip edin, yeni görev ekleyin ve durumunu güncelleyin.
+              </p>
+            </div>
+            <div class="flex items-center gap-2">
+              <span id="adminTodoStatsText" class="text-xs font-semibold text-slate-600">0 görev</span>
+              <button
+                type="button"
+                id="adminTodoClearCompletedBtn"
+                class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition cursor-pointer"
+              >
+                Tamamlananları Temizle
+              </button>
+            </div>
+          </div>
+
+          <!-- Yeni Görev Ekleme Formu -->
+          <form id="adminDevTodoForm" class="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-3">
+            <div class="flex flex-col sm:flex-row gap-2">
+              <div class="relative flex-1">
+                <input
+                  type="text"
+                  id="adminDevTodoInput"
+                  placeholder="Yeni yapılacak geliştirici görevi yazın..."
+                  required
+                  class="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#335C67] transition"
+                />
+              </div>
+              <div class="flex items-center gap-2">
+                <select
+                  id="adminDevTodoAssignee"
+                  class="px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-xs text-slate-700 focus:outline-none"
+                >
+                  <option value="Özgür">👤 Özgür</option>
+                  <option value="Önder">👤 Önder</option>
+                  <option value="Ortak" selected>👥 Ortak (İkimiz)</option>
+                </select>
+                <select
+                  id="adminDevTodoPriority"
+                  class="px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-xs text-slate-700 focus:outline-none"
+                >
+                  <option value="urgent">🔥 Acil</option>
+                  <option value="high">⚡ Yüksek</option>
+                  <option value="normal" selected>📌 Normal</option>
+                  <option value="low">☕ Düşük</option>
+                </select>
+                <button
+                  type="submit"
+                  class="px-5 py-2.5 bg-[#335C67] hover:bg-[#26444d] text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-sm cursor-pointer whitespace-nowrap"
+                >
+                  <i data-lucide="plus" class="w-4 h-4"></i>
+                  <span>Görev Ekle</span>
+                </button>
+              </div>
+            </div>
+          </form>
+
+          <!-- Filtreler -->
+          <div class="flex items-center justify-between gap-2 pt-1">
+            <div class="flex items-center gap-1 bg-slate-100 p-1 rounded-xl text-xs">
+              <button type="button" class="admin-todo-filter-btn px-3 py-1 rounded-lg font-bold bg-white text-slate-800 shadow-xs cursor-pointer" data-filter="all">Tümü</button>
+              <button type="button" class="admin-todo-filter-btn px-3 py-1 rounded-lg font-medium text-slate-500 hover:text-slate-800 cursor-pointer" data-filter="active">Bekleyenler</button>
+              <button type="button" class="admin-todo-filter-btn px-3 py-1 rounded-lg font-medium text-slate-500 hover:text-slate-800 cursor-pointer" data-filter="completed">Tamamlananlar</button>
+            </div>
+          </div>
+
+          <!-- Görev Listesi -->
+          <div id="adminTodoListContainer" class="space-y-2.5 pt-2">
+            <!-- JS ile enjekte edilecek -->
           </div>
         </div>
       </div>
@@ -3246,20 +3355,20 @@
     <button
       type="button"
       id="devTodoOpenBtn"
-      class="fixed right-5 bottom-5 z-40 px-4 py-2.5 bg-gradient-to-r from-amber-600 via-orange-600 to-rose-600 hover:from-amber-700 hover:to-rose-700 text-white rounded-full shadow-2xl flex items-center gap-2.5 font-bold text-xs sm:text-sm border-2 border-white/30 backdrop-blur-md cursor-pointer transition-all transform hover:scale-105 group"
+      class="fixed right-5 bottom-5 z-50 px-4 py-2.5 bg-gradient-to-r from-amber-600 via-orange-600 to-rose-600 hover:from-amber-700 hover:to-rose-700 text-white rounded-full shadow-2xl flex items-center gap-2.5 font-bold text-xs sm:text-sm border-2 border-white/30 backdrop-blur-md cursor-pointer transition-all transform hover:scale-105 group"
       title="Geliştirici Todo & Yapılacaklar Listesi"
     >
       <div class="relative">
         <i data-lucide="check-square" class="w-4 h-4 text-amber-200 group-hover:rotate-6 transition-transform"></i>
         <span id="devTodoUncompletedDot" class="hidden absolute -top-1 -right-1 w-2 h-2 bg-rose-400 rounded-full animate-ping"></span>
       </div>
-      <span>Yapılacaklar</span>
+      <span>Geliştirici Todo</span>
       <span id="devTodoBadge" class="px-2 py-0.5 bg-white text-orange-700 font-extrabold text-[11px] rounded-full shadow-xs">0</span>
     </button>
   </div>
 
   <!-- Sağdan Kayan Todo Panel / Çekmece (Drawer) -->
-  <div id="devTodoDrawer" class="hidden fixed inset-0 z-50 overflow-hidden pointer-events-none transition-opacity duration-300">
+  <div id="devTodoDrawer" class="hidden fixed inset-0 z-[60] overflow-hidden pointer-events-none transition-opacity duration-300">
     <!-- Karartma Arkaplan (Tıklanınca kapatır) -->
     <div id="devTodoBackdrop" class="absolute inset-0 bg-slate-900/40 backdrop-blur-xs pointer-events-auto opacity-0 transition-opacity duration-300"></div>
 
