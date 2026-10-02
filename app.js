@@ -440,16 +440,7 @@ window.onCloudSync = function(type, data) {
 };
 
 function loadData() {
-  // Kullanıcının talebi: Mevcut tüm eski kursları temizle, yeni kurallara uygun yeni kursları kendisi açacak
-  if (localStorage.getItem('kurs_sonu_courses_wiped_v8') !== 'true') {
-    if (typeof DataStore.clearAllCourses === 'function') {
-      DataStore.clearAllCourses();
-    }
-    currentCourses = [];
-    localStorage.setItem('kurs_sonu_courses_wiped_v8', 'true');
-  } else {
-    currentCourses = DataStore.getCourses();
-  }
+  currentCourses = DataStore.getCourses();
   currentCenters = DataStore.getCenters();
   currentAreas = DataStore.getAreas();
   currentTemplates = DataStore.getCourseTemplates();
@@ -1446,26 +1437,16 @@ window.deleteCenter = function(centerId) {
 function populateAllAreaDropdowns() {
   const areas = (currentAreas && currentAreas.length > 0)
     ? currentAreas.map(a => typeof a === 'string' ? a : a.name).filter(Boolean)
-    : [
-        "Bilişim Teknolojileri",
-        "Kişisel Gelişim",
-        "El Sanatları",
-        "Yabancı Dil",
-        "Mesleki Eğitim",
-        "Muhasebe ve Finansman",
-        "Görsel Sanatlar",
-        "Müzik ve Gösteri Sanatları",
-        "Spor ve Beden Eğitimi",
-        "Halk Oyunları",
-        "Güzellik ve Saç Bakım Hizmetleri",
-        "Yiyecek İçecek Hizmetleri",
-        "Diğer"
-      ];
+    : [];
+
+  const optionsHtml = areas.length > 0
+    ? areas.map(a => `<option value="${escapeHtml(a)}">${escapeHtml(a)}</option>`).join('')
+    : `<option value="">Tanımlı Alan Yok</option>`;
 
   // 1. tmplFormCategory (Admin kurs şablonu oluşturma)
   if (tmplFormCategory) {
     const curVal = tmplFormCategory.value;
-    tmplFormCategory.innerHTML = areas.map(a => `<option value="${escapeHtml(a)}">${escapeHtml(a)}</option>`).join('');
+    tmplFormCategory.innerHTML = optionsHtml;
     if (curVal && areas.includes(curVal)) {
       tmplFormCategory.value = curVal;
     }
@@ -1474,7 +1455,7 @@ function populateAllAreaDropdowns() {
   // 2. courseFormCategory (Kurs açma modalındaki alan select'i)
   if (courseFormCategory) {
     const curVal = courseFormCategory.value;
-    courseFormCategory.innerHTML = areas.map(a => `<option value="${escapeHtml(a)}">${escapeHtml(a)}</option>`).join('');
+    courseFormCategory.innerHTML = optionsHtml;
     if (curVal && areas.includes(curVal)) {
       courseFormCategory.value = curVal;
     }
@@ -1488,7 +1469,9 @@ function populateAllAreaDropdowns() {
       <option value="my_area">⭐ Kendi Branşım (${escapeHtml(userArea)})</option>
       <option value="all">🌐 Tüm Alanlar (Tüm Kursları Göster)</option>
     `;
-    html += areas.map(a => `<option value="${escapeHtml(a)}">${escapeHtml(a)}</option>`).join('');
+    if (areas.length > 0) {
+      html += areas.map(a => `<option value="${escapeHtml(a)}">${escapeHtml(a)}</option>`).join('');
+    }
     courseFormCategoryFilter.innerHTML = html;
     courseFormCategoryFilter.value = curVal;
   }
@@ -1496,7 +1479,7 @@ function populateAllAreaDropdowns() {
   // 4. profileArea (Profil düzenleme modalındaki alan)
   if (profileArea) {
     const curVal = profileArea.value;
-    profileArea.innerHTML = areas.map(a => `<option value="${escapeHtml(a)}">${escapeHtml(a)}</option>`).join('');
+    profileArea.innerHTML = optionsHtml;
     if (curVal && areas.includes(curVal)) {
       profileArea.value = curVal;
     }
