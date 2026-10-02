@@ -2457,39 +2457,41 @@ window.autoLoadHolidaysIntoForm = function() {
  * Seçilen kurs şablonuna göre artan, benzersiz bir kurs numarası / kodu üretir.
  * Kurs tanımlanırken girilen kodu temel alır ve mevcut kurslara göre artan rakamlar ekler.
  * Örn: Şablon kodu "BLG-160" ise -> "BLG-160-01", "BLG-160-02" ...
- * Şablon kodu "DKS" ise -> "DKS-01", "DKS-02" ...
+/**
+ * Kurs Kodu Otomatik Oluşturucu
+ * Örn: Canva kursu için -> "canvat0001", "canvat0002"
  */
 function generateNextCourseCode(tmpl, excludeCourseId = null) {
   if (!tmpl) return '';
 
-  // 1. Temel Kodu / Ön Eki belirle
-  let prefix = (tmpl.code || '').trim().toUpperCase();
-  if (!prefix) {
-    prefix = (tmpl.name || 'KRS')
-      .split(' ')
-      .map(w => w[0])
-      .join('')
-      .toUpperCase()
-      .replace(/[^A-Z0-9ĞÜŞİÖÇ]/g, '')
-      .slice(0, 8) || 'KRS';
+  // 1. Temel Kodu / Ön Eki belirle (küçük harfli, örn: canvat, blg160)
+  let prefix = '';
+  if (tmpl.code && tmpl.code.trim()) {
+    prefix = tmpl.code.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
   }
+  if (!prefix && tmpl.name) {
+    const words = tmpl.name.trim().toLowerCase().split(/\s+/);
+    if (words[0] && words[0].length >= 3) {
+      prefix = words[0].replace(/[^a-z0-9]/g, '');
+    } else {
+      prefix = words.map(w => w[0]).join('').replace(/[^a-z0-9]/g, '');
+    }
+  }
+  if (!prefix) prefix = 'kurs';
 
-  // 2. Bu şablona ait veya kodu bu prefix ile başlayan mevcut kursları bul
+  // 2. Bu ön ek ile başlayan mevcut kurs kodlarını incele
   const relevantCourses = (currentCourses || []).filter(c => {
-    if (!c) return false;
+    if (!c || !c.code) return false;
     if (excludeCourseId && c.id === excludeCourseId) return false;
-    if (c.templateId && c.templateId === tmpl.id) return true;
-    if (c.name && tmpl.name && c.name.trim().toLowerCase() === tmpl.name.trim().toLowerCase()) return true;
-    if (c.code && c.code.trim().toUpperCase().startsWith(prefix)) return true;
-    return false;
+    return c.code.toLowerCase().startsWith(prefix);
   });
 
   // 3. Mevcut kodlardaki en yüksek son sıra numarasını bul
   let maxSeq = 0;
   relevantCourses.forEach(c => {
-    if (!c.code) return;
-    const codeStr = c.code.trim().toUpperCase();
-    const match = codeStr.match(/[-_/\s](\d+)$/) || codeStr.match(/(\d+)$/);
+    const codeStr = c.code.trim().toLowerCase();
+    const remainder = codeStr.slice(prefix.length);
+    const match = remainder.match(/^(\d+)/) || codeStr.match(/(\d+)$/);
     if (match) {
       const num = parseInt(match[1], 10);
       if (!isNaN(num) && num > maxSeq) {
@@ -2498,14 +2500,14 @@ function generateNextCourseCode(tmpl, excludeCourseId = null) {
     }
   });
 
-  // 4. Sıradaki numarayı belirle (en az 1)
+  // 4. Sıradaki 4 haneli numarayı belirle (0001, 0002 vb.)
   let nextNum = Math.max(maxSeq + 1, 1);
-  let candidate = `${prefix}-${String(nextNum).padStart(2, '0')}`;
+  let candidate = `${prefix}${String(nextNum).padStart(4, '0')}`;
 
   // 5. Kesin benzersizlik kontrolü (tüm kurslar içinde tekil olana kadar artır)
-  while ((currentCourses || []).some(c => (!excludeCourseId || c.id !== excludeCourseId) && c.code && c.code.trim().toUpperCase() === candidate.toUpperCase())) {
+  while ((currentCourses || []).some(c => (!excludeCourseId || c.id !== excludeCourseId) && c.code && c.code.trim().toLowerCase() === candidate.toLowerCase())) {
     nextNum++;
-    candidate = `${prefix}-${String(nextNum).padStart(2, '0')}`;
+    candidate = `${prefix}${String(nextNum).padStart(4, '0')}`;
   }
 
   return candidate;
@@ -2528,7 +2530,7 @@ function populateCourseTemplatesDropdown(filterArea = 'my_area', selectedTmplId 
 
   let optionsHtml = `<option value="">-- Kurs Seçiniz (${filtered.length} Kurs Mevcut) --</option>`;
   optionsHtml += filtered.map(tmpl => `
-    <option value="${tmpl.id}">[${escapeHtml(tmpl.category || 'Genel')}] ${escapeHtml(tmpl.name)} (${tmpl.totalHours} Saat / ${tmpl.moduleCount || 1} Modül)</option>
+    <option value="${tmpl.id}">${escapeHtml(tmpl.name)} (${tmpl.totalHours} Saat / ${tmpl.moduleCount || 1} Modül)</option>
   `).join('');
 
   if (courseFormTemplateSelect) {
@@ -2674,25 +2676,25 @@ function handleSaveCourse(e) {
   }
 
   const supervisor = courseFormSupervisor.value.trim();
-  const instructor = courseFormInstructor.value.trim() || currentUser.fullName;
-  let code = courseFormCode.value.trim().toUpperCase();
+  const instructor = (currentUser?.fullName || courseFormInstructor.value || 'Kurs Eğitmeni').trim();
+  let code = courseFormCode.value.trim().toLowerCase();
   if (!code) {
-    code = tmpl ? generateNextCourseCode(tmpl, id) : `KRS-${new Date().getFullYear()}-01`;
+    code = tmpl ? generateNextCourseCode(tmpl, id) : 'kurs0001';
   }
 
   // Kurs kodunun tekil ve benzersiz olduğunu doğrula
-  const duplicateCourse = currentCourses.find(c => c.id !== id && c.code && c.code.trim().toUpperCase() === code);
+  const duplicateCourse = currentCourses.find(c => c.id !== id && c.code && c.code.trim().toLowerCase() === code.toLowerCase());
   if (duplicateCourse) {
     alert(`"${code}" kurs numarası/kodu zaten "${duplicateCourse.name}" (${duplicateCourse.institution || ''}) kursunda kayıtlı!\nLütfen her kurs için benzersiz bir kurs numarası kullanınız.`);
     courseFormCode.focus();
     return;
   }
-  const category = courseFormCategory.value;
+  const category = tmpl ? (tmpl.category || tmpl.area || 'Genel') : (courseFormCategory.value || 'Genel');
   const startDate = courseFormStartDate.value;
   const endDate = courseFormEndDate.value;
-  const totalHours = Number(courseFormTotalHours.value) || (tmpl ? tmpl.totalHours : 120);
-  const moduleCount = courseFormModuleCount ? Math.max(1, Number(courseFormModuleCount.value) || 1) : (tmpl ? (tmpl.moduleCount || 1) : 1);
-  const status = courseFormStatus.value;
+  const totalHours = (tmpl && tmpl.totalHours) ? Number(tmpl.totalHours) : (Number(courseFormTotalHours.value) || 120);
+  const moduleCount = (tmpl && tmpl.moduleCount) ? Math.max(1, Number(tmpl.moduleCount)) : (courseFormModuleCount ? Math.max(1, Number(courseFormModuleCount.value) || 1) : 1);
+  const status = id ? (currentCourses.find(c => c.id === id)?.status || 'active') : 'active';
   const documentType = courseFormDocumentType ? courseFormDocumentType.value : 'Sertifika';
   const classroom = courseFormClassroom.value.trim();
   const description = courseFormDescription.value.trim();
