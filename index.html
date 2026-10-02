@@ -854,6 +854,7 @@
       <div class="flex border-b border-slate-200 bg-white rounded-t-2xl px-6 pt-3 shadow-xs overflow-x-auto">
         <button
           id="adminTabCentersBtn"
+          onclick="switchAdminTab('centers')"
           class="flex items-center gap-2 px-5 py-3 text-xs sm:text-sm font-bold border-b-2 border-indigo-600 text-indigo-700 transition cursor-pointer whitespace-nowrap"
         >
           <i data-lucide="building-2" class="w-4 h-4"></i>
@@ -862,6 +863,7 @@
 
         <button
           id="adminTabTemplatesBtn"
+          onclick="switchAdminTab('templates')"
           class="flex items-center gap-2 px-5 py-3 text-xs sm:text-sm font-bold border-b-2 border-transparent text-slate-600 hover:text-slate-900 transition cursor-pointer whitespace-nowrap"
         >
           <i data-lucide="layers" class="w-4 h-4"></i>
@@ -870,6 +872,7 @@
 
         <button
           id="adminTabUsersBtn"
+          onclick="switchAdminTab('users')"
           class="flex items-center gap-2 px-5 py-3 text-xs sm:text-sm font-bold border-b-2 border-transparent text-slate-600 hover:text-slate-900 transition cursor-pointer whitespace-nowrap"
         >
           <i data-lucide="users-2" class="w-4 h-4"></i>
@@ -878,6 +881,7 @@
 
         <button
           id="adminTabTodosBtn"
+          onclick="switchAdminTab('todos')"
           class="flex items-center gap-2 px-5 py-3 text-xs sm:text-sm font-bold border-b-2 border-transparent text-slate-600 hover:text-slate-900 transition cursor-pointer whitespace-nowrap"
         >
           <i data-lucide="check-square" class="w-4 h-4 text-amber-600"></i>
@@ -3365,12 +3369,15 @@
   <!-- Modern & Güvenilir Todo Modal -->
   <div
     id="devTodoModal"
-    class="hidden fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-sm"
-    onclick="if(event.target === this) closeDevTodoModal()"
+    class="hidden fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-sm"
+    style="z-index: 9999;"
   >
+    <!-- Arka plan overlay (Tıklanınca kapatır) -->
+    <div id="devTodoBackdrop" class="fixed inset-0 cursor-pointer" onclick="closeDevTodoModal(event)"></div>
+
     <div
       id="devTodoPanel"
-      class="bg-white dark:bg-[#152125] rounded-2xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden shadow-2xl border border-slate-200 dark:border-[#2b3e45] relative"
+      class="bg-white dark:bg-[#152125] rounded-2xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden shadow-2xl border border-slate-200 dark:border-[#2b3e45] relative z-10"
     >
       <!-- Header -->
       <div class="p-4 sm:p-5 bg-gradient-to-r from-slate-900 via-[#1f353c] to-[#335C67] text-white flex items-center justify-between shrink-0 shadow-sm">
@@ -3503,7 +3510,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
   <!-- Firebase Bulut Servisi & Veri Deposu -->
-  <script src="firebase.js?v=20261002_0940"></script>
-  <script src="app.js?v=20261002_0940"></script>
+  <script src="firebase.js?v=20261002_0950"></script>
+  <script src="app.js?v=20261002_0950"></script>
 </body>
 </html>

@@ -1020,6 +1020,8 @@ function switchAdminTab(tab) {
   refreshLucide();
 }
 
+window.switchAdminTab = switchAdminTab;
+
 function renderAdminPanel() {
   loadData();
   renderAdminCenters();
@@ -6482,12 +6484,22 @@ function hideDevTodoList() {
   closeDevTodoModal();
 }
 
-function openDevTodoModal() {
+function openDevTodoModal(e) {
+  if (e && typeof e.preventDefault === 'function') e.preventDefault();
   const modal = document.getElementById('devTodoModal') || document.getElementById('devTodoDrawer');
-  if (!modal) return;
+  if (modal) {
+    modal.style.removeProperty('display');
+    modal.classList.remove('hidden');
+  }
 
-  modal.classList.remove('hidden');
-  modal.style.display = 'flex';
+  // Eğer kullanıcı Admin panelindeyse, Admin sekmesini de 'todos'a geçir
+  if (typeof currentActiveView !== 'undefined' && currentActiveView === 'admin' && typeof switchAdminTab === 'function') {
+    try {
+      switchAdminTab('todos');
+    } catch(err) {
+      console.warn("switchAdminTab todos hatası:", err);
+    }
+  }
 
   try {
     renderDevTodos();
@@ -6502,19 +6514,21 @@ function openDevTodoModal() {
   }, 100);
 }
 
-function closeDevTodoModal() {
+function closeDevTodoModal(e) {
+  if (e && typeof e.preventDefault === 'function') e.preventDefault();
   const modal = document.getElementById('devTodoModal') || document.getElementById('devTodoDrawer');
-  if (!modal) return;
-  modal.classList.add('hidden');
-  modal.style.display = 'none';
+  if (modal) {
+    modal.style.removeProperty('display');
+    modal.classList.add('hidden');
+  }
 }
 
-function openDevTodoDrawer() {
-  openDevTodoModal();
+function openDevTodoDrawer(e) {
+  openDevTodoModal(e);
 }
 
-function closeDevTodoDrawer() {
-  closeDevTodoModal();
+function closeDevTodoDrawer(e) {
+  closeDevTodoModal(e);
 }
 
 window.openDevTodoModal = openDevTodoModal;
