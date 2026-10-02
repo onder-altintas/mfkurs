@@ -448,28 +448,57 @@ function loadData() {
   populateAllAreaDropdowns();
   syncCoursesWithCurrentInstructor();
 }
+ 
+/**
+ * Bir kursun oturum açmış kullanıcı ile ilgili olup olmadığını belirler.
+ * Kullanıcı kimliği (userId), kullanıcı adı veya eğitmen adı eşleşmesini inceler.
+ */
+function isCourseRelatedToUser(course, user) {
+  if (!course || !user) return false;
+
+  // 1. Doğrudan id veya username eşleşmesi
+  if (course.userId) {
+    if (course.userId === user.id || course.userId === user.username) return true;
+  }
+
+  // 2. Eğitmen kullanıcı adı eşleşmesi
+  if (course.instructorUsername && user.username) {
+    if (course.instructorUsername.toLowerCase() === user.username.toLowerCase()) return true;
+  }
+
+  // 3. Eğitmen tam adı eşleşmesi (Türkçe karakter duyarsız)
+  if (course.instructor && user.fullName) {
+    const cInst = course.instructor.trim().toLowerCase();
+    const uName = user.fullName.trim().toLowerCase();
+    if (cInst === uName) return true;
+    if (typeof normalizeUsername === 'function') {
+      if (normalizeUsername(cInst) === normalizeUsername(uName)) return true;
+    }
+  }
+
+  return false;
+}
+window.isCourseRelatedToUser = isCourseRelatedToUser;
 
 // Kursun güncel eğitmen adını dinamik olarak çözümleyen yardımcı fonksiyon
 function getCourseInstructorName(course) {
   if (!course) return (currentUser?.fullName || 'Kurs Eğitmeni').trim();
 
-  // 1. Kurs aktif kullanıcıya aitse veya kullanıcı admin değilse, güncel profil adını kullan
-  if (currentUser) {
-    if (course.userId === currentUser.id || currentUser.role !== 'admin') {
-      return (currentUser.fullName || course.instructor || 'Kurs Eğitmeni').trim();
-    }
+  // 1. Kurs aktif kullanıcıya aitse güncel profil adını kullan
+  if (currentUser && isCourseRelatedToUser(course, currentUser)) {
+    return (currentUser.fullName || course.instructor || 'Kurs Eğitmeni').trim();
   }
 
   // 2. Kursun sahibinin kullanıcı kaydındaki güncel adını bul
   if (course.userId && Array.isArray(currentUsers)) {
-    const owner = currentUsers.find(u => u.id === course.userId);
+    const owner = currentUsers.find(u => u.id === course.userId || u.username === course.userId);
     if (owner && owner.fullName) {
       return owner.fullName.trim();
     }
   }
 
-  // 3. Kurs üzerinde kayıtlı eğitmen adı veya aktif kullanıcı
-  return (course.instructor || currentUser?.fullName || 'Kurs Eğitmeni').trim();
+  // 3. Kurs üzerinde kayıtlı eğitmen adı
+  return (course.instructor || 'Kurs Eğitmeni').trim();
 }
 
 // Kursun kurum adını dinamik olarak çözümleyen yardımcı fonksiyon
@@ -477,20 +506,28 @@ function getCourseInstitutionName(course) {
   if (!course) return (currentUser?.institution || 'Halk Eğitimi Merkezi').trim();
   if (course.institution) return course.institution.trim();
   if (course.centerName) return course.centerName.trim();
-  if (currentUser && (course.userId === currentUser.id || currentUser.role !== 'admin')) {
+  if (currentUser && isCourseRelatedToUser(course, currentUser)) {
     if (currentUser.institution) return currentUser.institution.trim();
   }
   return 'Halk Eğitimi Merkezi';
 }
 
-// Eğitmenin güncel profil adını ve kurumunu tüm kurslarıyla senkronize eden fonksiyon
+// Eğitmenin güncel profil adını ve kurumunu sadece kendine ait kurslarla senkronize eden fonksiyon
 function syncCoursesWithCurrentInstructor() {
   if (!currentUser) return;
   let updated = false;
 
   currentCourses = currentCourses.map(c => {
-    // Kullanıcıya ait olan veya admin olmayan eğitmenin açtığı kurslar
-    if (c.userId === currentUser.id || (!c.userId && currentUser.role !== 'admin')) {
+    // Yalnızca aktif kullanıcıya ait kurslar
+    if (c && isCourseRelatedToUser(c, currentUser)) {
+      if (!c.userId) {
+        c.userId = currentUser.id;
+        updated = true;
+      }
+      if (currentUser.username && !c.instructorUsername) {
+        c.instructorUsername = currentUser.username;
+        updated = true;
+      }
       if (currentUser.fullName && c.instructor !== currentUser.fullName) {
         c.instructor = currentUser.fullName;
         updated = true;
@@ -507,7 +544,7 @@ function syncCoursesWithCurrentInstructor() {
     DataStore.saveCourses(currentCourses);
   }
 
-  if (activeCourseForDetail && (activeCourseForDetail.userId === currentUser.id || (!activeCourseForDetail.userId && currentUser.role !== 'admin'))) {
+  if (activeCourseForDetail && isCourseRelatedToUser(activeCourseForDetail, currentUser)) {
     if (currentUser.fullName) activeCourseForDetail.instructor = currentUser.fullName;
     if (currentUser.institution && (!activeCourseForDetail.institution || activeCourseForDetail.institution === 'Kadıköy Halk Eğitimi Merkezi')) {
       activeCourseForDetail.institution = currentUser.institution;
@@ -2155,9 +2192,8 @@ function setCourseFilter(filter) {
 
 function renderTeacherDashboard() {
   loadData();
-  const userCourses = (currentUser.role === 'admin') 
-    ? currentCourses // Admin tüm kursları görebilir
-    : currentCourses.filter(c => c.userId === currentUser.id);
+  // Her kullanıcı (admin dahil) ana ekranda yalnızca kendisiyle ilgili kursları görür
+  const userCourses = currentCourses.filter(c => isCourseRelatedToUser(c, currentUser));
 
   const total = userCourses.length;
   const active = userCourses.filter(c => c.status === 'active').length;
@@ -2177,9 +2213,8 @@ function renderTeacherDashboard() {
 }
 
 function renderCourseList() {
-  const userCourses = (currentUser.role === 'admin')
-    ? currentCourses
-    : currentCourses.filter(c => c.userId === currentUser.id);
+  // Her kullanıcı yalnızca kendisiyle ilgili kursları listeler
+  const userCourses = currentCourses.filter(c => isCourseRelatedToUser(c, currentUser));
 
   const filtered = userCourses.filter(course => {
     const matchesFilter = (currentFilter === 'all') || (course.status === currentFilter);
@@ -2725,6 +2760,8 @@ function handleSaveCourse(e) {
 
         return {
           ...c,
+          userId: c.userId || currentUser.id,
+          instructorUsername: c.instructorUsername || currentUser.username,
           templateId: selectedTmplId,
           name: courseName,
           institution,
@@ -2757,6 +2794,7 @@ function handleSaveCourse(e) {
     const newCourse = {
       id: `crs_${Date.now()}`,
       userId: currentUser.id,
+      instructorUsername: currentUser.username,
       templateId: selectedTmplId,
       name: courseName,
       institution,
@@ -2803,10 +2841,21 @@ function handleSaveCourse(e) {
 
 window.editCourse = function(courseId) {
   const course = currentCourses.find(c => c.id === courseId);
-  if (course) openCourseModal(course);
+  if (!course) return;
+  if (!isCourseRelatedToUser(course, currentUser) && currentUser.role !== 'admin') {
+    alert('Yalnızca kendinizle ilgili kursları düzenleyebilirsiniz.');
+    return;
+  }
+  openCourseModal(course);
 };
 
 window.deleteCourse = function(courseId) {
+  const course = currentCourses.find(c => c.id === courseId);
+  if (!course) return;
+  if (!isCourseRelatedToUser(course, currentUser) && currentUser.role !== 'admin') {
+    alert('Yalnızca kendinizle ilgili kursları silebilirsiniz.');
+    return;
+  }
   if (confirm('Bu kursu ve bağlı tüm kursiyer kayıtlarını silmek istediğinize emin misiniz?')) {
     currentCourses = currentCourses.filter(c => c.id !== courseId);
     DataStore.saveCourses(currentCourses);
@@ -2819,6 +2868,10 @@ window.deleteCourse = function(courseId) {
 window.openCourseDetail = function(courseId) {
   activeCourseForDetail = currentCourses.find(c => c.id === courseId);
   if (!activeCourseForDetail) return;
+  if (!isCourseRelatedToUser(activeCourseForDetail, currentUser) && currentUser.role !== 'admin') {
+    alert('Bu kursu görüntüleme yetkiniz bulunmamaktadır.');
+    return;
+  }
 
   if (activeCourseForDetail.students) {
     sortStudentsAlphabetically(activeCourseForDetail.students);
