@@ -6508,14 +6508,18 @@ function openDevTodoDrawer() {
   if (!drawer || !panel) return;
 
   drawer.classList.remove('hidden');
-  setTimeout(() => {
-    backdrop?.classList.remove('opacity-0');
-    backdrop?.classList.add('opacity-100');
-    panel.classList.remove('translate-x-full');
-    panel.classList.add('translate-x-0');
-  }, 10);
+  drawer.style.display = 'block';
+
   renderDevTodos();
   refreshLucide();
+
+  requestAnimationFrame(() => {
+    if (backdrop) {
+      backdrop.classList.remove('opacity-0');
+      backdrop.style.opacity = '1';
+    }
+    panel.style.transform = 'translateX(0%)';
+  });
 }
 
 function closeDevTodoDrawer() {
@@ -6524,14 +6528,19 @@ function closeDevTodoDrawer() {
   const backdrop = document.getElementById('devTodoBackdrop');
   if (!drawer || !panel) return;
 
-  backdrop?.classList.remove('opacity-100');
-  backdrop?.classList.add('opacity-0');
-  panel.classList.remove('translate-x-0');
-  panel.classList.add('translate-x-full');
+  if (backdrop) {
+    backdrop.style.opacity = '0';
+  }
+  panel.style.transform = 'translateX(100%)';
+
   setTimeout(() => {
     drawer.classList.add('hidden');
+    drawer.style.display = 'none';
   }, 300);
 }
+
+window.openDevTodoDrawer = openDevTodoDrawer;
+window.closeDevTodoDrawer = closeDevTodoDrawer;
 
 function initDevTodoList() {
   if (devTodoInitialized) return;

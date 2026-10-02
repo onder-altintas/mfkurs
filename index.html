@@ -3355,6 +3355,7 @@
     <button
       type="button"
       id="devTodoOpenBtn"
+      onclick="openDevTodoDrawer()"
       class="fixed right-5 bottom-5 z-50 px-4 py-2.5 bg-gradient-to-r from-amber-600 via-orange-600 to-rose-600 hover:from-amber-700 hover:to-rose-700 text-white rounded-full shadow-2xl flex items-center gap-2.5 font-bold text-xs sm:text-sm border-2 border-white/30 backdrop-blur-md cursor-pointer transition-all transform hover:scale-105 group"
       title="Geliştirici Todo & Yapılacaklar Listesi"
     >
@@ -3368,12 +3369,12 @@
   </div>
 
   <!-- Sağdan Kayan Todo Panel / Çekmece (Drawer) -->
-  <div id="devTodoDrawer" class="hidden fixed inset-0 z-[60] overflow-hidden pointer-events-none transition-opacity duration-300">
+  <div id="devTodoDrawer" class="hidden fixed inset-0 z-[100] overflow-hidden pointer-events-auto" style="display: none;">
     <!-- Karartma Arkaplan (Tıklanınca kapatır) -->
-    <div id="devTodoBackdrop" class="absolute inset-0 bg-slate-900/40 backdrop-blur-xs pointer-events-auto opacity-0 transition-opacity duration-300"></div>
+    <div id="devTodoBackdrop" class="absolute inset-0 bg-slate-900/60 backdrop-blur-xs transition-opacity duration-300 opacity-0 cursor-pointer" onclick="closeDevTodoDrawer()"></div>
 
     <div class="absolute inset-y-0 right-0 max-w-full flex pl-6 sm:pl-10 pointer-events-auto">
-      <div id="devTodoPanel" class="w-screen max-w-md bg-white dark:bg-[#152125] shadow-2xl border-l border-slate-200 dark:border-[#2b3e45] flex flex-col transform translate-x-full transition-transform duration-300 ease-in-out">
+      <div id="devTodoPanel" class="w-screen max-w-md bg-white dark:bg-[#152125] shadow-2xl border-l border-slate-200 dark:border-[#2b3e45] flex flex-col transition-transform duration-300 ease-in-out relative z-10" style="transform: translateX(100%);">
         
         <!-- Header -->
         <div class="p-4 sm:p-5 bg-gradient-to-r from-slate-900 via-[#1f353c] to-[#335C67] text-white flex items-center justify-between shrink-0 shadow-sm">
@@ -3398,6 +3399,7 @@
           <button
             type="button"
             id="devTodoCloseBtn"
+            onclick="closeDevTodoDrawer()"
             class="p-2 text-white/70 hover:text-white hover:bg-white/10 rounded-xl transition cursor-pointer"
             title="Kapat"
           >
@@ -3498,7 +3500,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
   <!-- Firebase Bulut Servisi & Veri Deposu -->
-  <script src="firebase.js?v=20261001_1640"></script>
-  <script src="app.js?v=20261001_1640"></script>
+  <script src="firebase.js?v=20261002_0925"></script>
+  <script src="app.js?v=20261002_0925"></script>
 </body>
 </html>
