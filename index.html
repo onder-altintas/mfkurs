@@ -1175,33 +1175,6 @@
             </select>
           </div>
           <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">Toplam Kurs Saati *</label>
-            <input
-              type="number"
-              id="tmplFormTotalHours"
-              required
-              min="1"
-              placeholder="160"
-              class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-sky-500 font-bold"
-            />
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1 flex items-center gap-1">
-              <i data-lucide="layers" class="w-3.5 h-3.5 text-sky-600"></i>
-              <span>Modül Sayısı *</span>
-            </label>
-            <input
-              type="number"
-              id="tmplFormModuleCount"
-              required
-              min="1"
-              max="20"
-              value="1"
-              placeholder="1"
-              class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-sky-500 font-bold text-sky-900 bg-sky-50/50"
-            />
-          </div>
-          <div>
             <label class="block text-xs font-semibold text-slate-700 mb-1 flex items-center gap-1">
               <i data-lucide="award" class="w-3.5 h-3.5 text-amber-500"></i>
               <span>Belge Türü</span>
@@ -1215,73 +1188,66 @@
             </select>
           </div>
           <div class="md:col-span-3">
-            <label class="block text-xs font-semibold text-slate-700 mb-1">Genel Açıklama</label>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Genel Açıklama / Amaç</label>
             <input
               type="text"
               id="tmplFormDescription"
-              placeholder="Kursun hedefi ve genel içeriği..."
+              placeholder="Kursun hedefi, kazanımları ve genel içeriği..."
               class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-sky-500"
             />
           </div>
         </div>
 
-        <!-- Saatlik Konu Dağılımı (Syllabus) Bölümü -->
-        <div class="pt-3 border-t border-slate-100 space-y-3">
-          <div class="flex items-center justify-between">
+        <!-- Gizli Otomatik Hesaplanan Inputlar -->
+        <input type="hidden" id="tmplFormTotalHours" value="20" />
+        <input type="hidden" id="tmplFormModuleCount" value="1" />
+
+        <!-- ================= MODÜL MODÜL MÜFREDAT TANIMLAMA BÖLÜMÜ ================= -->
+        <div class="pt-4 border-t border-slate-100 space-y-3.5">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
             <div>
               <h4 class="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
-                <i data-lucide="clock" class="w-4 h-4 text-sky-600"></i>
-                <span>Saatlik Ders Konuları (Ders Defteri & Evrak Müfredatı)</span>
+                <i data-lucide="layers" class="w-4 h-4 text-sky-600"></i>
+                <span>Modül Modül Kurs Yapısı ve Sınav Planlaması</span>
               </h4>
-              <p class="text-[11px] text-slate-500">Her saat için işlenecek konuyu satır satır veya toplu girin</p>
+              <p class="text-[11px] text-slate-500 mt-0.5">
+                Her modülün saatini belirleyin. Planda modül sonundaki <strong>2 saat otomatik olarak Modül Sınavı</strong> olarak ayrılır (Örn: 20 saatlik modülde 18 saat ders konusu + 2 saat sınav).
+              </p>
             </div>
             <button
               type="button"
-              id="addSyllabusRowBtn"
-              class="px-2.5 py-1 bg-sky-50 text-sky-700 hover:bg-sky-100 rounded-lg text-xs font-bold border border-sky-200 flex items-center gap-1 cursor-pointer"
+              id="addModuleBtn"
+              class="self-start sm:self-auto px-3 py-1.5 bg-sky-600 hover:bg-sky-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-sm transition cursor-pointer whitespace-nowrap"
             >
-              <i data-lucide="plus" class="w-3.5 h-3.5"></i>
-              <span>+ Saat Ekle</span>
+              <i data-lucide="plus-circle" class="w-4 h-4"></i>
+              <span>+ Yeni Modül Ekle</span>
             </button>
           </div>
 
-          <!-- Saatlik Liste Tablosu / Inputları -->
-          <div class="max-h-64 overflow-y-auto border border-slate-200 rounded-xl">
-            <table class="w-full text-left text-xs">
-              <thead class="bg-slate-50 text-slate-700 font-semibold border-b border-slate-200">
-                <tr>
-                  <th class="px-3 py-2 w-20">Saat No</th>
-                  <th class="px-3 py-2">Anlatılacak Konu / Kazanım</th>
-                  <th class="px-3 py-2 w-12 text-center">Sil</th>
-                </tr>
-              </thead>
-              <tbody id="syllabusTableBody" class="divide-y divide-slate-100 bg-white">
-                <!-- Dinamik satırlar -->
-              </tbody>
-            </table>
+          <!-- Canlı İstatistik ve Süre Dağılım Özeti -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 bg-slate-50/90 border border-slate-200/80 rounded-2xl p-3 shadow-2xs">
+            <div class="text-center p-1.5 bg-white rounded-xl border border-slate-100">
+              <span class="block text-[10px] text-slate-400 font-semibold uppercase">Modül Sayısı</span>
+              <span id="tmplLiveModuleCount" class="text-sm font-extrabold text-sky-700">1 Modül</span>
+            </div>
+            <div class="text-center p-1.5 bg-white rounded-xl border border-slate-100">
+              <span class="block text-[10px] text-slate-400 font-semibold uppercase">Ders İçeriği</span>
+              <span id="tmplLiveLessonHours" class="text-sm font-extrabold text-slate-700">18 Saat</span>
+            </div>
+            <div class="text-center p-1.5 bg-white rounded-xl border border-slate-100">
+              <span class="block text-[10px] text-slate-400 font-semibold uppercase">Modül Sınavları</span>
+              <span id="tmplLiveExamHours" class="text-sm font-extrabold text-purple-600">2 Saat</span>
+            </div>
+            <div class="text-center p-1.5 bg-white rounded-xl border border-slate-100">
+              <span class="block text-[10px] text-slate-400 font-semibold uppercase">Toplam Süre</span>
+              <span id="tmplLiveTotalHours" class="text-sm font-extrabold text-emerald-600">20 Saat</span>
+            </div>
           </div>
 
-          <!-- Toplu Konu Yapıştırma Butonu ve Kutusu -->
-          <details class="text-xs text-slate-600 bg-slate-50 p-2.5 rounded-xl border border-slate-200">
-            <summary class="font-semibold text-slate-700 cursor-pointer select-none">
-              Toplu Konu Yapıştır (Her satır 1 saatlik ders olur)
-            </summary>
-            <div class="mt-2 space-y-2">
-              <textarea
-                id="bulkSyllabusInput"
-                rows="3"
-                placeholder="1. Saat konusu&#10;2. Saat konusu&#10;3. Saat konusu..."
-                class="w-full p-2 bg-white border border-slate-200 rounded-lg text-xs"
-              ></textarea>
-              <button
-                type="button"
-                id="applyBulkSyllabusBtn"
-                class="px-3 py-1 bg-slate-700 hover:bg-slate-800 text-white rounded-lg text-xs font-semibold cursor-pointer"
-              >
-                Toplu Konuları Listeye Aktar
-              </button>
-            </div>
-          </details>
+          <!-- Modül Kartları Listesi -->
+          <div id="tmplModulesContainer" class="space-y-3.5 max-h-[480px] overflow-y-auto pr-1">
+            <!-- JS ile dinamik modül kartları yüklenecek -->
+          </div>
         </div>
 
         <div class="flex justify-end gap-2.5 pt-3 border-t border-slate-100">
@@ -1398,6 +1364,24 @@
               class="w-full px-3.5 py-2 bg-slate-50 dark:bg-[#10191b] border border-slate-200 dark:border-[#2b3e45] rounded-xl text-xs focus:ring-2 focus:ring-[#335C67] focus:outline-none"
             />
           </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Eğitmen Kurs Alanı (Branş) *</label>
+          <select
+            id="profileArea"
+            class="w-full px-3.5 py-2 bg-slate-50 dark:bg-[#10191b] border border-slate-200 dark:border-[#2b3e45] rounded-xl text-xs font-semibold text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-[#335C67] focus:outline-none"
+          >
+            <option value="Bilişim Teknolojileri">Bilişim Teknolojileri</option>
+            <option value="El Sanatları">El Sanatları</option>
+            <option value="Kişisel Gelişim">Kişisel Gelişim</option>
+            <option value="Yabancı Dil">Yabancı Dil</option>
+            <option value="Mesleki Eğitim">Mesleki Eğitim</option>
+            <option value="Diğer">Diğer</option>
+          </select>
+          <p class="text-[10px] text-slate-400 mt-1">
+            Yeni kurs açarken bu alan altındaki kurslar öncelikli olarak listelenir.
+          </p>
         </div>
 
         <!-- Rol Bilgisi (Bilgilendirme) -->
@@ -1555,11 +1539,40 @@
         <input type="hidden" id="courseFormId" value="" />
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Kurs Alanı Filtresi (Eğitmenin Alanına Göre Filtreler) -->
+          <div class="md:col-span-2">
+            <div class="flex items-center justify-between mb-1.5">
+              <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+                <i data-lucide="tag" class="w-4 h-4 text-sky-600"></i>
+                <span>Kurs Alanı / Branş Filtresi</span>
+              </label>
+              <span id="courseFormAreaBadge" class="text-[11px] font-bold text-sky-700 bg-sky-50 dark:bg-sky-950 dark:text-sky-300 px-2.5 py-0.5 rounded-full border border-sky-200 dark:border-sky-800">
+                Branşınız: Bilişim Teknolojileri
+              </span>
+            </div>
+            <select
+              id="courseFormCategoryFilter"
+              class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-[#152125] border border-slate-200 dark:border-[#23353c] rounded-xl text-xs sm:text-sm font-semibold text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:bg-white transition"
+            >
+              <option value="my_area">⭐ Kendi Branşım (Varsayılan)</option>
+              <option value="all">🌐 Tüm Alanlar (Tüm Kursları Göster)</option>
+              <option value="Bilişim Teknolojileri">Bilişim Teknolojileri</option>
+              <option value="El Sanatları">El Sanatları</option>
+              <option value="Kişisel Gelişim">Kişisel Gelişim</option>
+              <option value="Yabancı Dil">Yabancı Dil</option>
+              <option value="Mesleki Eğitim">Mesleki Eğitim</option>
+              <option value="Diğer">Diğer</option>
+            </select>
+            <p class="text-[11px] text-slate-400 mt-1">
+              Varsayılan olarak kendi branşınızdaki kurslar listelenir. Dilerseniz yukarıdan farklı bir alan seçebilirsiniz.
+            </p>
+          </div>
+
           <!-- Kurs Adı Açılır Listesi -->
           <div class="md:col-span-2">
             <label class="block text-xs font-semibold text-slate-700 mb-1 flex items-center gap-1.5">
               <i data-lucide="book-open" class="w-4 h-4 text-sky-600"></i>
-              <span>Kurs Adı (Açılır Listeden Seçiniz) *</span>
+              <span>Kurs Adı (Seçilen Alandaki Kurslar) *</span>
             </label>
             <select
               id="courseFormTemplateSelect"
@@ -1569,7 +1582,7 @@
               <option value="">-- Kurs Seçiniz --</option>
             </select>
             <p class="text-[11px] text-slate-400 mt-1">
-              Admin panelinde tanımlanan resmi kurslar listelenir. Kurs seçildiğinde toplam saat ve saatlik müfredat otomatik bağlanır.
+              Admin panelinde tanımlanan modüler kurslar listelenir. Kurs seçildiğinde modüller, saatler ve sınav planı otomatik bağlanır.
             </p>
           </div>
 
@@ -2404,6 +2417,22 @@
             <span class="px-2.5 py-1 bg-purple-50 text-purple-700 border border-purple-200 rounded-lg text-xs font-bold">
               Baraj: 50 Puan
             </span>
+          </div>
+        </div>
+
+        <!-- Modül Sınav Tarihleri ve Planlama Bilgisi Çubuğu -->
+        <div id="moduleExamsDatesBar" class="p-3.5 bg-gradient-to-r from-purple-50 via-slate-50 to-purple-50 dark:from-purple-950/40 dark:via-[#152125] dark:to-purple-950/40 border border-purple-200/80 dark:border-purple-800/50 rounded-2xl space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-purple-950 dark:text-purple-200 flex items-center gap-1.5 uppercase tracking-wider">
+              <i data-lucide="calendar" class="w-4 h-4 text-purple-600"></i>
+              <span>Modül Değerlendirme Sınav Takvimi ve Tarihleri</span>
+            </span>
+            <span class="text-[11px] font-semibold text-purple-700 dark:text-purple-300 bg-white/80 dark:bg-[#10191b] px-2.5 py-0.5 rounded-full border border-purple-200/60 dark:border-purple-800/40 shadow-2xs">
+              Planda Son 2 Saat
+            </span>
+          </div>
+          <div id="moduleExamsDatesCards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 pt-1">
+            <!-- JS ile dinamik modül sınav tarih kartları -->
           </div>
         </div>
 
@@ -3530,7 +3559,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
   <!-- Firebase Bulut Servisi & Veri Deposu -->
-  <script src="firebase.js?v=20261002_1010"></script>
-  <script src="app.js?v=20261002_1010"></script>
+  <script src="firebase.js?v=20261002_1030"></script>
+  <script src="app.js?v=20261002_1030"></script>
 </body>
 </html>

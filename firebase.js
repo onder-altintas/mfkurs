@@ -21,6 +21,7 @@ const DEFAULT_USERS = [
     fullName: "Yönetici (Admin)",
     role: "admin",
     title: "Sistem ve Evrak Yöneticisi",
+    area: "Bilişim Teknolojileri",
     institution: "Milli Eğitim Bakanlığı / İlçe MEM",
     email: "admin@meb.k12.tr",
     avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80"
@@ -32,6 +33,7 @@ const DEFAULT_USERS = [
     fullName: "Özgür",
     role: "admin",
     title: "Geliştirici & Eğitmen",
+    area: "Bilişim Teknolojileri",
     institution: "Meslek Fabrikası",
     email: "ozgur@meslekfabrikasi.org",
     avatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80"
@@ -43,6 +45,7 @@ const DEFAULT_USERS = [
     fullName: "Önder Altıntaş",
     role: "admin",
     title: "Geliştirici & Eğitmen",
+    area: "Bilişim Teknolojileri",
     institution: "İBB Meslek Fabrikası",
     email: "onder@meslekfabrikasi.org",
     avatar: "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=150&auto=format&fit=crop&q=80"
@@ -54,6 +57,7 @@ const DEFAULT_USERS = [
     fullName: "Ahmet Yılmaz",
     role: "teacher",
     title: "Bilişim Teknolojileri Eğitmeni",
+    area: "Bilişim Teknolojileri",
     institution: "Kadıköy Halk Eğitimi Merkezi",
     email: "ahmet.yilmaz@meb.k12.tr",
     avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&auto=format&fit=crop&q=80"
@@ -65,6 +69,7 @@ const DEFAULT_USERS = [
     fullName: "Ayşe Demir",
     role: "teacher",
     title: "El Sanatları ve Tasarım Eğitmeni",
+    area: "El Sanatları",
     institution: "Üsküdar Mesleki Eğitim Merkezi",
     email: "ayse.demir@meb.k12.tr",
     avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&auto=format&fit=crop&q=80"
@@ -78,7 +83,7 @@ const DEFAULT_CENTERS = [
   { id: "center_3", name: "Şişli Halk Eğitimi Merkezi", supervisor: "" }
 ];
 
-// Resmi Kurs ve Saatlik Konu / Müfredat Dağılım Şablonları
+// Resmi Kurs ve Saatlik Konu / Müfredat Dağılım Şablonları (Modüler Yapı)
 const DEFAULT_COURSE_TEMPLATES = [
   {
     id: "tmpl_1",
@@ -86,27 +91,78 @@ const DEFAULT_COURSE_TEMPLATES = [
     code: "BLG-160",
     category: "Bilişim Teknolojileri",
     totalHours: 160,
-    moduleCount: 3,
+    moduleCount: 4,
     documentType: "Sertifika",
     description: "Temel bilgisayar donanımı, işletim sistemi, ofis programları (Word, Excel, PowerPoint) ve internet güvenliği.",
-    syllabus: [
-      { hour: 1, topic: "Bilgisayara Giriş: Temel donanım birimleri (Kasa, Monitör, Klavye, Fare)" },
-      { hour: 2, topic: "Donanım parçalarının tanıtımı (Anakart, İşlemci, RAM, Sabit Disk)" },
-      { hour: 3, topic: "Giriş-Çıkış birimleri ve harici depolama aygıtları kullanımı" },
-      { hour: 4, topic: "İşletim Sistemleri kavramı ve Windows ortamına giriş" },
-      { hour: 5, topic: "Masaüstü, Görev Çubuğu, Başlat Menüsü ve pencere yönetimi" },
-      { hour: 6, topic: "Dosya ve Klasör yönetimi: Oluşturma, adlandırma, kopyalama ve taşıma" },
-      { hour: 7, topic: "Denetim Masası ve Sistem Ayarlarının yapılandırılması" },
-      { hour: 8, topic: "Kelime İşlemci (Word) Programına Giriş ve Temel Arayüz" },
-      { hour: 9, topic: "Metin yazma, biçimlendirme, yazı tipi ve paragraf ayarları" },
-      { hour: 10, topic: "Tablo ekleme, satır/sütun düzenleme ve tablo biçimlendirme" },
-      { hour: 11, topic: "Resim, şekil, simge ve sayfa numarası ekleme" },
-      { hour: 12, topic: "Sayfa yapısı, kenar boşlukları ve yazdırma ayarları" },
-      { hour: 13, topic: "Elektronik Tablolama (Excel) Programına Giriş ve Hücre Yapısı" },
-      { hour: 14, topic: "Temel Matematiksel Formüller (TOPLA, ORTALAMA, EĞER)" },
-      { hour: 15, topic: "Tablo filtreleme, sıralama ve grafik oluşturma teknikleri" },
-      { hour: 16, topic: "İnternet Güvenliği, e-Devlet, e-Posta kullanımı ve Dönem Sonu Değerlendirmesi" }
-    ]
+    modules: [
+      {
+        id: "mod_blg_1",
+        number: 1,
+        name: "Bilgisayara Giriş ve İşletim Sistemleri",
+        totalHours: 40,
+        lessonHours: 38,
+        examHours: 2,
+        topics: [
+          "Bilgisayara Giriş: Temel donanım birimleri (Kasa, Monitör, Klavye, Fare)",
+          "Donanım parçalarının tanıtımı (Anakart, İşlemci, RAM, Sabit Disk)",
+          "Giriş-Çıkış birimleri ve harici depolama aygıtları kullanımı",
+          "İşletim Sistemleri kavramı ve Windows ortamına giriş",
+          "Masaüstü, Görev Çubuğu, Başlat Menüsü ve pencere yönetimi",
+          "Dosya ve Klasör yönetimi: Oluşturma, adlandırma, kopyalama ve taşıma",
+          "Denetim Masası ve Sistem Ayarlarının yapılandırılması",
+          "Donanım ve yazılım sorunlarını giderme temel yöntemleri"
+        ]
+      },
+      {
+        id: "mod_blg_2",
+        number: 2,
+        name: "Kelime İşlemci (Word)",
+        totalHours: 40,
+        lessonHours: 38,
+        examHours: 2,
+        topics: [
+          "Kelime İşlemci (Word) Programına Giriş ve Temel Arayüz",
+          "Metin yazma, biçimlendirme, yazı tipi ve paragraf ayarları",
+          "Tablo ekleme, satır/sütun düzenleme ve tablo biçimlendirme",
+          "Resim, şekil, simge ve sayfa numarası ekleme",
+          "Sayfa yapısı, kenar boşlukları ve yazdırma ayarları",
+          "Üstbilgi, altbilgi ve içindekiler tablosu oluşturma"
+        ]
+      },
+      {
+        id: "mod_blg_3",
+        number: 3,
+        name: "Elektronik Tablolama (Excel)",
+        totalHours: 40,
+        lessonHours: 38,
+        examHours: 2,
+        topics: [
+          "Elektronik Tablolama (Excel) Programına Giriş ve Hücre Yapısı",
+          "Hücre veri türleri, formül yazma ve otomatik doldurma",
+          "Temel Matematiksel Formüller (TOPLA, ORTALAMA, EĞER)",
+          "Mantıksal ve Arama Formülleri (DÜŞEYARA, ÇOKEĞERSAY)",
+          "Tablo filtreleme, sıralama ve veri doğrulama teknikleri",
+          "Grafik oluşturma, biçimlendirme ve raporlama teknikleri"
+        ]
+      },
+      {
+        id: "mod_blg_4",
+        number: 4,
+        name: "Sunu Hazırlama ve İnternet Güvenliği",
+        totalHours: 40,
+        lessonHours: 38,
+        examHours: 2,
+        topics: [
+          "Sunu Programı (PowerPoint) Giriş ve Slayt Düzenleri",
+          "Slayt geçişleri, animasyonlar ve multimedya ekleme",
+          "İnternet Tarayıcıları, Arama Motorları ve e-Devlet Kullanımı",
+          "e-Posta Yönetimi, dosya ekleme ve bulut depolama",
+          "Siber Güvenlik, parola güvenliği ve zararlı yazılımlardan korunma",
+          "Bilişim Etiği, telif hakları ve dijital vatandaşlık"
+        ]
+      }
+    ],
+    syllabus: []
   },
   {
     id: "tmpl_2",
@@ -117,20 +173,40 @@ const DEFAULT_COURSE_TEMPLATES = [
     moduleCount: 2,
     documentType: "Katılım Belgesi",
     description: "Türkçenin doğru, anlaşılır ve etkili konuşulması, doğru nefes alma, tonlama ve beden dili eğitimi.",
-    syllabus: [
-      { hour: 1, topic: "İletişimin Temelleri ve Diksiyonun Önemi" },
-      { hour: 2, topic: "Doğru Nefes Alma ve Diyafram Egzersizleri" },
-      { hour: 3, topic: "Ses Organları ve Artikülasyon (Boğumlanma) Çalışmaları" },
-      { hour: 4, topic: "Ünlülerin (Sesli Harfler) Doğru Çıkarılışı ve Boğumlanması" },
-      { hour: 5, topic: "Ünsüzlerin (Sessiz Harfler) Doğru Çıkarılışı ve Tembelliklerin Giderilmesi" },
-      { hour: 6, topic: "Türkçede Vurgu Kuralları (Kelime Vurgusu, Cümle Vurgusu)" },
-      { hour: 7, topic: "Ulama, Durak ve Tonlama Teknikleri" },
-      { hour: 8, topic: "Tekerleme Çalışmaları ve Hızlı/Akıcı Konuşma Pratikleri" },
-      { hour: 9, topic: "Beden Dili, Jest ve Mimiklerin Doğru Kullanımı" },
-      { hour: 10, topic: "Topluluk Önünde Konuşma ve Heyecan Kontrolü" },
-      { hour: 11, topic: "Hazırlıksız Konuşma Becerisi ve Doğaçlama Sunumlar" },
-      { hour: 12, topic: "Kurs Sonu Canlı Değerlendirme ve Konuşma Uygulamaları" }
-    ]
+    modules: [
+      {
+        id: "mod_dks_1",
+        number: 1,
+        name: "Doğru Nefes Alma ve Ses Organları",
+        totalHours: 32,
+        lessonHours: 30,
+        examHours: 2,
+        topics: [
+          "İletişimin Temelleri ve Diksiyonun Önemi",
+          "Doğru Nefes Alma ve Diyafram Egzersizleri",
+          "Ses Organları ve Artikülasyon (Boğumlanma) Çalışmaları",
+          "Ünlülerin (Sesli Harfler) Doğru Çıkarılışı ve Boğumlanması",
+          "Ünsüzlerin (Sessiz Harfler) Doğru Çıkarılışı ve Tembelliklerin Giderilmesi"
+        ]
+      },
+      {
+        id: "mod_dks_2",
+        number: 2,
+        name: "Beden Dili, Vurgu ve Sunum Becerileri",
+        totalHours: 32,
+        lessonHours: 30,
+        examHours: 2,
+        topics: [
+          "Türkçede Vurgu Kuralları (Kelime Vurgusu, Cümle Vurgusu)",
+          "Ulama, Durak ve Tonlama Teknikleri",
+          "Tekerleme Çalışmaları ve Hızlı/Akıcı Konuşma Pratikleri",
+          "Beden Dili, Jest ve Mimiklerin Doğru Kullanımı",
+          "Topluluk Önünde Konuşma ve Heyecan Kontrolü",
+          "Hazırlıksız Konuşma Becerisi ve Doğaçlama Sunumlar"
+        ]
+      }
+    ],
+    syllabus: []
   },
   {
     id: "tmpl_3",
@@ -141,117 +217,45 @@ const DEFAULT_COURSE_TEMPLATES = [
     moduleCount: 2,
     documentType: "Sertifika",
     description: "Ahşap yüzey hazırlığı, zımparalama, astar boya, transfer, dekupaj, eskitme ve vernikleme teknikleri.",
-    syllabus: [
-      { hour: 1, topic: "Ahşap Süslemede Kullanılan Araç, Gereç ve Güvenlik Kuralları" },
-      { hour: 2, topic: "Ham Ahşap Yüzeylerin Hazırlanması ve Zımpara Teknikleri" },
-      { hour: 3, topic: "Astar Boya Uygulaması ve Zemin Boyama Teknikleri" },
-      { hour: 4, topic: "Fırça Kullanımı, Süngerleme ve Düz Renk Boyama Pratiği" },
-      { hour: 5, topic: "Dekupaj Kağıdı ve Pirinç Kağıt Yapıştırma Teknikleri" },
-      { hour: 6, topic: "Kolay Transfer ve Stencil (Şablon) Boyama Uygulamaları" },
-      { hour: 7, topic: "Rölyef Pasta ile Boyutlu Desen ve Doku Oluşturma" },
-      { hour: 8, topic: "Budak ve Doku Tarakları ile Efekt Verme" },
-      { hour: 9, topic: "Eskitme Teknikleri (Antik Eskitme, Mum Eskitme, Kuru Fırça)" },
-      { hour: 10, topic: "Çatlatma Teknikleri (Tek Adım ve Çift Adım Çatlatma)" },
-      { hour: 11, topic: "Ahşap Koruyucu Vernik Çeşitleri ve Vernikleme İşlemi" },
-      { hour: 12, topic: "Kurs Sonu Sergi Hazırlığı ve Ürün Kalite Kontrolü" }
-    ]
+    modules: [
+      {
+        id: "mod_ahs_1",
+        number: 1,
+        name: "Ahşap Yüzey Hazırlığı ve Temel Boyama",
+        totalHours: 70,
+        lessonHours: 68,
+        examHours: 2,
+        topics: [
+          "Ahşap Süslemede Kullanılan Araç, Gereç ve Güvenlik Kuralları",
+          "Ham Ahşap Yüzeylerin Hazırlanması ve Zımpara Teknikleri",
+          "Astar Boya Uygulaması ve Zemin Boyama Teknikleri",
+          "Fırça Kullanımı, Süngerleme ve Düz Renk Boyama Pratiği"
+        ]
+      },
+      {
+        id: "mod_ahs_2",
+        number: 2,
+        name: "Transfer, Dekupaj, Eskitme ve Vernikleme",
+        totalHours: 70,
+        lessonHours: 68,
+        examHours: 2,
+        topics: [
+          "Dekupaj Kağıdı ve Pirinç Kağıt Yapıştırma Teknikleri",
+          "Kolay Transfer ve Stencil (Şablon) Boyama Uygulamaları",
+          "Rölyef Pasta ile Boyutlu Desen ve Doku Oluşturma",
+          "Budak ve Doku Tarakları ile Efekt Verme",
+          "Eskitme Teknikleri (Antik Eskitme, Mum Eskitme, Kuru Fırça)",
+          "Çatlatma Teknikleri (Tek Adım ve Çift Adım Çatlatma)",
+          "Ahşap Koruyucu Vernik Çeşitleri ve Vernikleme İşlemi"
+        ]
+      }
+    ],
+    syllabus: []
   }
 ];
 
-const INITIAL_COURSES = [
-  {
-    id: "crs_101",
-    userId: "user_1",
-    name: "Bilgisayar İşletmenliği (Operatörlüğü)",
-    templateId: "tmpl_1",
-    code: "BLG-2026-01",
-    category: "Bilişim Teknolojileri",
-    institution: "Kadıköy Halk Eğitimi Merkezi",
-    instructor: "Ahmet Yılmaz",
-    supervisor: "Kemal Demir (Müdür Yrd.)",
-    days: ["Pazartesi", "Salı", "Çarşamba", "Perşembe"],
-    dailyHours: 4,
-    startTime: "09:00",
-    endTime: "12:15",
-    offDays: [
-      { id: "od_1", date: "2026-04-23", reason: "23 Nisan Ulusal Egemenlik ve Çocuk Bayramı" }
-    ],
-    totalHours: 160,
-    moduleCount: 3,
-    startDate: "2026-01-15",
-    endDate: "2026-04-10",
-    status: "active",
-    documentType: "Sertifika",
-    classroom: "Lab 2 - Bilişim Atölyesi",
-    description: "Temel bilgisayar kullanımı, Office programları ve internet teknolojileri eğitimi.",
-    syllabus: DEFAULT_COURSE_TEMPLATES[0].syllabus,
-    students: [
-      { id: "std_1", tcNo: "12345678901", firstName: "Mehmet", lastName: "Kaya", fullName: "Mehmet Kaya", phone: "0532 111 2233", absentHours: 4, attendance: "Devamlı", attendanceNote: "", moduleScores: { 1: 85, 2: 90, 3: 89 }, examScore: 88, result: "Başarılı" },
-      { id: "std_2", tcNo: "23456789012", firstName: "Zeynep", lastName: "Çelik", fullName: "Zeynep Çelik", phone: "0543 222 3344", absentHours: 0, attendance: "Devamlı", attendanceNote: "", moduleScores: { 1: 92, 2: 95, 3: 95 }, examScore: 94, result: "Başarılı" },
-      { id: "std_3", tcNo: "34567890123", firstName: "Burak", lastName: "Şahin", fullName: "Burak Şahin", phone: "0555 333 4455", absentHours: 36, attendance: "Devamsız", attendanceNote: "1/5 devamsızlık sınırını aştı", moduleScores: { 1: 35, 2: 0, 3: 0 }, examScore: 35, result: "Devamsız" },
-      { id: "std_4", tcNo: "45678901234", firstName: "Elif", lastName: "Öztürk", fullName: "Elif Öztürk", phone: "0505 444 5566", absentHours: 8, attendance: "Devamlı", attendanceNote: "", moduleScores: { 1: 80, 2: 82, 3: 84 }, examScore: 82, result: "Başarılı" }
-    ]
-  },
-  {
-    id: "crs_102",
-    userId: "user_1",
-    name: "Python ile Programlama Temelleri",
-    templateId: "tmpl_2",
-    code: "PYT-2026-02",
-    category: "Yazılım Geliştirme",
-    institution: "Kadıköy Halk Eğitimi Merkezi",
-    instructor: "Ahmet Yılmaz",
-    supervisor: "Kemal Demir (Müdür Yrd.)",
-    days: ["Cumartesi", "Pazar"],
-    dailyHours: 6,
-    startTime: "10:00",
-    endTime: "15:30",
-    offDays: [],
-    totalHours: 120,
-    moduleCount: 2,
-    startDate: "2026-02-01",
-    endDate: "2026-05-20",
-    status: "active",
-    documentType: "Katılım Belgesi",
-    classroom: "Lab 1",
-    description: "Python programlama dili temelleri, veri yapıları ve algoritmalar.",
-    syllabus: [],
-    students: [
-      { id: "std_5", tcNo: "56789012345", firstName: "Can", lastName: "Aksoy", fullName: "Can Aksoy", phone: "0533 555 6677", absentHours: 0, attendance: "Devamlı", attendanceNote: "", moduleScores: { 1: 94, 2: 96 }, examScore: 95, result: "Başarılı" },
-      { id: "std_6", tcNo: "67890123456", firstName: "Deniz", lastName: "Yıldız", fullName: "Deniz Yıldız", phone: "0542 666 7788", absentHours: 2, attendance: "Devamlı", attendanceNote: "", moduleScores: { 1: 88, 2: 92 }, examScore: 90, result: "Başarılı" }
-    ]
-  },
-  {
-    id: "crs_201",
-    userId: "user_2",
-    name: "Dekoratif Ahşap Süsleme",
-    templateId: "tmpl_3",
-    code: "AHS-2026-01",
-    category: "El Sanatları",
-    institution: "Üsküdar Mesleki Eğitim Merkezi",
-    instructor: "Ayşe Demir",
-    supervisor: "Mehmet Ali Şahin (Müdür Yrd.)",
-    days: ["Salı", "Perşembe", "Cuma"],
-    dailyHours: 5,
-    startTime: "13:30",
-    endTime: "17:45",
-    offDays: [
-      { id: "od_2", date: "2026-05-01", reason: "1 Mayıs Emek ve Dayanışma Günü" }
-    ],
-    totalHours: 140,
-    moduleCount: 2,
-    startDate: "2026-01-20",
-    endDate: "2026-04-30",
-    status: "active",
-    classroom: "Ahşap Sanat Atölyesi",
-    description: "Ahşap boyama, dekupaj ve rölyef teknikleri.",
-    syllabus: DEFAULT_COURSE_TEMPLATES[2].syllabus,
-    students: [
-      { id: "std_201", tcNo: "11223344556", firstName: "Fatma", lastName: "Korkmaz", fullName: "Fatma Korkmaz", phone: "0532 999 1122", absentHours: 4, attendance: "Devamlı", attendanceNote: "", moduleScores: { 1: 95, 2: 97 }, examScore: 96, result: "Başarılı" },
-      { id: "std_202", tcNo: "22334455667", firstName: "Emine", lastName: "Arslan", fullName: "Emine Arslan", phone: "0543 888 2233", absentHours: 0, attendance: "Devamlı", attendanceNote: "", moduleScores: { 1: 90, 2: 90 }, examScore: 90, result: "Başarılı" }
-    ]
-  }
-];
+// Başlangıç kursları temizlendi - Kullanıcı kurallara uygun yeni kursları kendisi açacaktır
+const INITIAL_COURSES = [];
 
 // Firebase Yapılandırması ve Başlatma
 const firebaseConfig = {
@@ -277,9 +281,9 @@ try {
 }
 
 const STORAGE_KEYS = {
-  COURSES: 'kurs_sonu_courses_v7',
+  COURSES: 'kurs_sonu_courses_v8',
   CENTERS: 'kurs_sonu_centers_v4',
-  TEMPLATES: 'kurs_sonu_templates_v5',
+  TEMPLATES: 'kurs_sonu_templates_v6',
   USERS: 'kurs_sonu_users_v4',
   AUTH_USER: 'kurs_sonu_active_user_v3',
   TODOS: 'kurs_sonu_dev_todos_v1'
@@ -571,6 +575,29 @@ const DataStore = {
       }
     } catch (e) {
       console.error("Kurs kayıt hatası:", e);
+    }
+  },
+
+  clearAllCourses() {
+    try {
+      localStorage.setItem(STORAGE_KEYS.COURSES, JSON.stringify([]));
+      localStorage.removeItem('kurs_sonu_courses_v5');
+      localStorage.removeItem('kurs_sonu_courses_v6');
+      localStorage.removeItem('kurs_sonu_courses_v7');
+      if (db) {
+        db.collection('courses').get().then(snapshot => {
+          if (!snapshot.empty) {
+            const batch = db.batch();
+            snapshot.forEach(doc => batch.delete(doc.ref));
+            return batch.commit();
+          }
+        }).then(() => {
+          console.log("Bulut kurs koleksiyonu tamamen temizlendi.");
+        }).catch(e => console.error("Bulut kurs silme hatası:", e));
+      }
+      this._knownCourseIds = new Set();
+    } catch (e) {
+      console.error("clearAllCourses hatası:", e);
     }
   },
 

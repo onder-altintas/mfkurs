@@ -62,6 +62,7 @@ const profileInstitution = document.getElementById('profileInstitution');
 const profileAvatarUrl = document.getElementById('profileAvatarUrl');
 const profilePreviewAvatar = document.getElementById('profilePreviewAvatar');
 const profileRoleBadge = document.getElementById('profileRoleBadge');
+const profileArea = document.getElementById('profileArea');
 
 // Eğitmen Dashboard Sayaçları & Listesi
 const statTotalCourses = document.getElementById('statTotalCourses');
@@ -146,10 +147,12 @@ const tmplFormTotalHours = document.getElementById('tmplFormTotalHours');
 const tmplFormModuleCount = document.getElementById('tmplFormModuleCount');
 const tmplFormDocumentType = document.getElementById('tmplFormDocumentType');
 const tmplFormDescription = document.getElementById('tmplFormDescription');
-const addSyllabusRowBtn = document.getElementById('addSyllabusRowBtn');
-const syllabusTableBody = document.getElementById('syllabusTableBody');
-const bulkSyllabusInput = document.getElementById('bulkSyllabusInput');
-const applyBulkSyllabusBtn = document.getElementById('applyBulkSyllabusBtn');
+const addModuleBtn = document.getElementById('addModuleBtn');
+const tmplModulesContainer = document.getElementById('tmplModulesContainer');
+const tmplLiveModuleCount = document.getElementById('tmplLiveModuleCount');
+const tmplLiveLessonHours = document.getElementById('tmplLiveLessonHours');
+const tmplLiveExamHours = document.getElementById('tmplLiveExamHours');
+const tmplLiveTotalHours = document.getElementById('tmplLiveTotalHours');
 
 // Modal: Eğitmen Kurs Ekleme
 const courseModal = document.getElementById('courseModal');
@@ -158,6 +161,8 @@ const closeCourseModalBtn = document.getElementById('closeCourseModalBtn');
 const cancelCourseModalBtn = document.getElementById('cancelCourseModalBtn');
 const courseForm = document.getElementById('courseForm');
 const courseFormId = document.getElementById('courseFormId');
+const courseFormCategoryFilter = document.getElementById('courseFormCategoryFilter');
+const courseFormAreaBadge = document.getElementById('courseFormAreaBadge');
 const courseFormTemplateSelect = document.getElementById('courseFormTemplateSelect');
 const courseFormInstitutionSelect = document.getElementById('courseFormInstitutionSelect');
 const courseFormSupervisor = document.getElementById('courseFormSupervisor');
@@ -255,6 +260,8 @@ const attHeaderDailyHours = document.getElementById('attHeaderDailyHours');
 const examsMatrixThead = document.getElementById('examsMatrixThead');
 const examsMatrixTbody = document.getElementById('examsMatrixTbody');
 const saveAllExamsBtn = document.getElementById('saveAllExamsBtn');
+const moduleExamsDatesBar = document.getElementById('moduleExamsDatesBar');
+const moduleExamsDatesCards = document.getElementById('moduleExamsDatesCards');
 
 // Tekil Kursiyer Devamsızlık Modalı (Gün Gün Devamsızlık)
 const singleAttendanceModal = document.getElementById('singleAttendanceModal');
@@ -413,7 +420,16 @@ window.onCloudSync = function(type, data) {
 };
 
 function loadData() {
-  currentCourses = DataStore.getCourses();
+  // Kullanıcının talebi: Mevcut tüm eski kursları temizle, yeni kurallara uygun yeni kursları kendisi açacak
+  if (localStorage.getItem('kurs_sonu_courses_wiped_v8') !== 'true') {
+    if (typeof DataStore.clearAllCourses === 'function') {
+      DataStore.clearAllCourses();
+    }
+    currentCourses = [];
+    localStorage.setItem('kurs_sonu_courses_wiped_v8', 'true');
+  } else {
+    currentCourses = DataStore.getCourses();
+  }
   currentCenters = DataStore.getCenters();
   currentTemplates = DataStore.getCourseTemplates();
   currentUsers = DataStore.getUsers();
@@ -557,7 +573,19 @@ function switchView(view) {
   refreshLucide();
 }
 
-// =================== KİŞİSEL PROFİL DÜZENLEME FONKSİYONLARI ===================
+// Kullanıcının / Eğitmenin alanını (branşını) getiren yardımcı fonksiyon
+function getUserArea(user) {
+  if (!user) return 'Bilişim Teknolojileri';
+  if (user.area) return user.area;
+  const title = (user.title || '').toLowerCase();
+  if (title.includes('bilişim') || title.includes('yazılım') || title.includes('bilgisayar')) return 'Bilişim Teknolojileri';
+  if (title.includes('el sanat') || title.includes('tasarım') || title.includes('ahşap')) return 'El Sanatları';
+  if (title.includes('diksiyon') || title.includes('iletişim') || title.includes('kişisel')) return 'Kişisel Gelişim';
+  if (title.includes('dil') || title.includes('ingilizce') || title.includes('almanca')) return 'Yabancı Dil';
+  if (title.includes('meslek') || title.includes('teknik')) return 'Mesleki Eğitim';
+  return 'Bilişim Teknolojileri';
+}
+window.getUserArea = getUserArea;
 
 function openProfileModal() {
   if (!currentUser) return;
@@ -567,6 +595,7 @@ function openProfileModal() {
   if (profilePassword) profilePassword.value = currentUser.password || '';
   if (profileTitle) profileTitle.value = currentUser.title || '';
   if (profileInstitution) profileInstitution.value = currentUser.institution || '';
+  if (profileArea) profileArea.value = getUserArea(currentUser);
   if (profileAvatarUrl) profileAvatarUrl.value = currentUser.avatar || '';
   if (profilePreviewAvatar) {
     profilePreviewAvatar.src = currentUser.avatar || 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&auto=format&fit=crop&q=80';
@@ -598,6 +627,7 @@ function handleSaveProfile(e) {
   const password = profilePassword?.value.trim() || '';
   const title = profileTitle?.value.trim() || '';
   const institution = profileInstitution?.value.trim() || '';
+  const area = profileArea ? profileArea.value : getUserArea(currentUser);
   const avatar = profileAvatarUrl?.value.trim() || '';
 
   if (!fullName || !username || !password) {
@@ -618,6 +648,7 @@ function handleSaveProfile(e) {
   currentUser.password = password;
   currentUser.title = title;
   currentUser.institution = institution;
+  currentUser.area = area;
   if (avatar) {
     currentUser.avatar = avatar;
   }
@@ -810,8 +841,16 @@ function setupEventListeners() {
   cancelCourseTmplModalBtn.addEventListener('click', () => closeCourseTmplModal());
   courseTmplForm.addEventListener('submit', handleSaveCourseTemplate);
 
-  addSyllabusRowBtn.addEventListener('click', () => addSyllabusRow());
-  applyBulkSyllabusBtn.addEventListener('click', applyBulkSyllabus);
+  if (addModuleBtn) {
+    addModuleBtn.addEventListener('click', () => addNewModuleCard());
+  }
+
+  // Kurs Alanı / Branş Filtresi Değiştiğinde Kurs Seçeneklerini Yenile
+  if (courseFormCategoryFilter) {
+    courseFormCategoryFilter.addEventListener('change', (e) => {
+      populateCourseTemplatesDropdown(e.target.value);
+    });
+  }
 
   // Eğitmen Kurs Arama & Filtre
   searchCourseInput.addEventListener('input', (e) => {
@@ -1461,10 +1500,189 @@ function renderAdminTemplates() {
   refreshLucide();
 }
 
+let editingTmplModules = [];
+
+function renderTmplModules() {
+  if (!tmplModulesContainer) return;
+  tmplModulesContainer.innerHTML = '';
+
+  editingTmplModules.forEach((mod, idx) => {
+    const mNum = idx + 1;
+    const totalHours = Math.max(3, Number(mod.totalHours) || 20);
+    const lessonHours = Math.max(1, totalHours - 2);
+    const canDelete = editingTmplModules.length > 1;
+
+    let topicsText = '';
+    if (Array.isArray(mod.topics)) {
+      topicsText = mod.topics.map(t => typeof t === 'string' ? t : (t.topic || '')).join('\n');
+    } else if (typeof mod.topics === 'string') {
+      topicsText = mod.topics;
+    }
+
+    const linesCount = topicsText.split('\n').filter(l => l.trim().length > 0).length;
+
+    const card = document.createElement('div');
+    card.className = 'module-card border border-slate-200 dark:border-[#23353c] rounded-2xl p-4 bg-white dark:bg-[#10191b] shadow-xs space-y-3';
+    card.setAttribute('data-mod-id', mod.id);
+
+    card.innerHTML = `
+      <div class="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-[#23353c]">
+        <div class="flex items-center gap-2">
+          <span class="w-6 h-6 rounded-lg bg-sky-100 dark:bg-sky-950 text-sky-700 dark:text-sky-300 font-black text-xs flex items-center justify-center">
+            ${mNum}
+          </span>
+          <span class="font-bold text-xs text-slate-800 dark:text-slate-100">${mNum}. Modül</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="mod-pill text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-purple-50 text-purple-700 dark:bg-purple-950/60 dark:text-purple-300 border border-purple-200/60">
+            ${lessonHours}s Ders + 2s Sınav = ${totalHours}s
+          </span>
+          ${canDelete ? `
+            <button type="button" class="remove-mod-btn text-rose-500 hover:text-rose-700 p-1 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/40 cursor-pointer transition" title="Bu Modülü Sil">
+              <i data-lucide="trash-2" class="w-4 h-4"></i>
+            </button>
+          ` : ''}
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div class="sm:col-span-2">
+          <label class="block text-[11px] font-semibold text-slate-700 dark:text-slate-300 mb-1">
+            Modül Adı *
+          </label>
+          <input
+            type="text"
+            required
+            class="mod-name-input w-full px-3 py-1.5 bg-slate-50 dark:bg-[#152125] border border-slate-200 dark:border-[#23353c] rounded-xl text-xs font-semibold text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-sky-500"
+            placeholder="Örn: Kelime İşlemci (Word)"
+            value="${escapeHtml(mod.name || '')}"
+          />
+        </div>
+        <div>
+          <label class="block text-[11px] font-semibold text-slate-700 dark:text-slate-300 mb-1">
+            Modül Toplam Saati *
+          </label>
+          <input
+            type="number"
+            min="3"
+            required
+            class="mod-hours-input w-full px-3 py-1.5 bg-slate-50 dark:bg-[#152125] border border-slate-200 dark:border-[#23353c] rounded-xl text-xs font-bold text-sky-700 dark:text-sky-300 focus:ring-2 focus:ring-sky-500"
+            placeholder="20"
+            value="${totalHours}"
+          />
+        </div>
+      </div>
+
+      <div>
+        <div class="flex items-center justify-between mb-1">
+          <label class="block text-[11px] font-semibold text-slate-700 dark:text-slate-300">
+            Ders İçeriği Konuları (<span class="mod-lesson-hours-label">${lessonHours}</span> Saat)
+          </label>
+          <span class="mod-counter-label text-[10px] text-slate-400">
+            ${linesCount} / ${lessonHours} saat konu girildi
+          </span>
+        </div>
+        <textarea
+          rows="4"
+          class="mod-topics-input w-full px-3 py-2 bg-slate-50 dark:bg-[#152125] border border-slate-200 dark:border-[#23353c] rounded-xl text-xs font-sans text-slate-700 dark:text-slate-200 focus:ring-2 focus:ring-sky-500"
+          placeholder="Her satıra 1 saatlik ders konusu yazınız (Örn:&#10;1. Saat: Word Arayüzü ve Metin Girişi&#10;2. Saat: Paragraf ve Yazı Tipi Biçimlendirme...)"
+        >${escapeHtml(topicsText)}</textarea>
+        <div class="flex items-center justify-between text-[10.5px] text-purple-700 dark:text-purple-300 bg-purple-50/70 dark:bg-purple-950/30 px-2.5 py-1.5 rounded-lg mt-1 border border-purple-100 dark:border-purple-900/30">
+          <span class="flex items-center gap-1.5 font-medium">
+            <i data-lucide="award" class="w-3.5 h-3.5 text-purple-600 shrink-0"></i>
+            <span>Planda modülün son 2 saati (${totalHours - 1} ve ${totalHours}. Saat) otomatik olarak <strong>2 Saatlik Modül Değerlendirme Sınavı</strong> olarak ayrılacaktır.</span>
+          </span>
+        </div>
+      </div>
+    `;
+
+    // Input etkileşimleri
+    const nameInput = card.querySelector('.mod-name-input');
+    const hoursInput = card.querySelector('.mod-hours-input');
+    const topicsInput = card.querySelector('.mod-topics-input');
+    const removeBtn = card.querySelector('.remove-mod-btn');
+    const pill = card.querySelector('.mod-pill');
+    const lessonHoursLabel = card.querySelector('.mod-lesson-hours-label');
+    const counterLabel = card.querySelector('.mod-counter-label');
+
+    nameInput?.addEventListener('input', (e) => {
+      mod.name = e.target.value;
+    });
+
+    hoursInput?.addEventListener('input', (e) => {
+      const val = Math.max(3, parseInt(e.target.value, 10) || 3);
+      mod.totalHours = val;
+      const lh = val - 2;
+      mod.lessonHours = lh;
+      if (pill) pill.innerText = `${lh}s Ders + 2s Sınav = ${val}s`;
+      if (lessonHoursLabel) lessonHoursLabel.innerText = lh;
+      const cnt = (topicsInput?.value || '').split('\n').filter(l => l.trim().length > 0).length;
+      if (counterLabel) counterLabel.innerText = `${cnt} / ${lh} saat konu girildi`;
+      updateTmplLiveSummary();
+    });
+
+    topicsInput?.addEventListener('input', (e) => {
+      mod.topics = e.target.value;
+      const lh = (Math.max(3, Number(mod.totalHours) || 20)) - 2;
+      const cnt = e.target.value.split('\n').filter(l => l.trim().length > 0).length;
+      if (counterLabel) counterLabel.innerText = `${cnt} / ${lh} saat konu girildi`;
+    });
+
+    removeBtn?.addEventListener('click', () => {
+      if (editingTmplModules.length <= 1) {
+        alert('En az 1 modül tanımlanmalıdır.');
+        return;
+      }
+      editingTmplModules = editingTmplModules.filter(m => m.id !== mod.id);
+      renderTmplModules();
+      updateTmplLiveSummary();
+    });
+
+    tmplModulesContainer.appendChild(card);
+  });
+
+  refreshLucide();
+  updateTmplLiveSummary();
+}
+
+function addNewModuleCard(data = null) {
+  const nextNum = editingTmplModules.length + 1;
+  const newMod = data || {
+    id: `mod_${Date.now()}_${Math.random()}`,
+    number: nextNum,
+    name: `${nextNum}. Modül`,
+    totalHours: 20,
+    lessonHours: 18,
+    examHours: 2,
+    topics: []
+  };
+  editingTmplModules.push(newMod);
+  renderTmplModules();
+  updateTmplLiveSummary();
+}
+
+function updateTmplLiveSummary() {
+  const modCount = editingTmplModules.length;
+  let totalH = 0;
+  let examH = modCount * 2;
+
+  editingTmplModules.forEach(m => {
+    totalH += Math.max(3, Number(m.totalHours) || 20);
+  });
+
+  const lessonH = Math.max(0, totalH - examH);
+
+  if (tmplLiveModuleCount) tmplLiveModuleCount.innerText = `${modCount} Modül`;
+  if (tmplLiveLessonHours) tmplLiveLessonHours.innerText = `${lessonH} Saat`;
+  if (tmplLiveExamHours) tmplLiveExamHours.innerText = `${examH} Saat`;
+  if (tmplLiveTotalHours) tmplLiveTotalHours.innerText = `${totalH} Saat`;
+
+  if (tmplFormTotalHours) tmplFormTotalHours.value = totalH;
+  if (tmplFormModuleCount) tmplFormModuleCount.value = modCount;
+}
+
 function openCourseTmplModal(tmplToEdit = null) {
   courseTmplModal.classList.remove('hidden');
-  syllabusTableBody.innerHTML = '';
-  bulkSyllabusInput.value = '';
 
   if (tmplToEdit) {
     courseTmplModalTitle.innerText = 'Kurs ve Müfredat Tanımını Güncelle';
@@ -1472,83 +1690,62 @@ function openCourseTmplModal(tmplToEdit = null) {
     tmplFormName.value = tmplToEdit.name;
     tmplFormCode.value = tmplToEdit.code || '';
     tmplFormCategory.value = tmplToEdit.category || 'Bilişim Teknolojileri';
-    tmplFormTotalHours.value = tmplToEdit.totalHours || 120;
-    if (tmplFormModuleCount) tmplFormModuleCount.value = tmplToEdit.moduleCount || 1;
     if (tmplFormDocumentType) tmplFormDocumentType.value = tmplToEdit.documentType || 'Sertifika';
     tmplFormDescription.value = tmplToEdit.description || '';
 
-    (tmplToEdit.syllabus || []).forEach(s => addSyllabusRow(s.hour, s.topic));
+    if (Array.isArray(tmplToEdit.modules) && tmplToEdit.modules.length > 0) {
+      editingTmplModules = JSON.parse(JSON.stringify(tmplToEdit.modules));
+    } else {
+      // Eski şablonu modüler yapıya dönüştür
+      const modCount = Math.max(1, Number(tmplToEdit.moduleCount) || 1);
+      const totalH = Number(tmplToEdit.totalHours) || 20;
+      const hoursPerMod = Math.max(3, Math.round(totalH / modCount));
+      const oldSyllabus = tmplToEdit.syllabus || [];
+
+      editingTmplModules = [];
+      for (let i = 1; i <= modCount; i++) {
+        const sliceStart = (i - 1) * (hoursPerMod - 2);
+        const sliceEnd = i * (hoursPerMod - 2);
+        const modTopics = oldSyllabus.slice(sliceStart, sliceEnd).map(s => s.topic);
+
+        editingTmplModules.push({
+          id: `mod_${Date.now()}_${i}`,
+          number: i,
+          name: `${i}. Modül`,
+          totalHours: hoursPerMod,
+          lessonHours: hoursPerMod - 2,
+          examHours: 2,
+          topics: modTopics
+        });
+      }
+    }
   } else {
     courseTmplModalTitle.innerText = 'Yeni Kurs ve Müfredat Tanımla';
     courseTmplForm.reset();
     tmplFormId.value = '';
-    tmplFormTotalHours.value = 120;
-    if (tmplFormModuleCount) tmplFormModuleCount.value = 1;
+    if (tmplFormCategory) tmplFormCategory.value = getUserArea(currentUser) || 'Bilişim Teknolojileri';
     if (tmplFormDocumentType) tmplFormDocumentType.value = 'Sertifika';
-    // Varsayılan ilk 5 saati ekle
-    for (let i = 1; i <= 5; i++) {
-      addSyllabusRow(i, '');
-    }
+
+    editingTmplModules = [
+      {
+        id: `mod_${Date.now()}_1`,
+        number: 1,
+        name: '1. Modül',
+        totalHours: 20,
+        lessonHours: 18,
+        examHours: 2,
+        topics: []
+      }
+    ];
   }
+
+  renderTmplModules();
+  updateTmplLiveSummary();
   refreshLucide();
 }
 
 function closeCourseTmplModal() {
   courseTmplModal.classList.add('hidden');
-}
-
-function addSyllabusRow(hour = null, topic = '') {
-  const currentRows = syllabusTableBody.querySelectorAll('tr').length;
-  const hourNum = hour !== null ? hour : currentRows + 1;
-
-  const tr = document.createElement('tr');
-  tr.className = 'syllabus-row';
-  tr.innerHTML = `
-    <td class="px-3 py-1.5">
-      <input
-        type="number"
-        value="${hourNum}"
-        class="hour-input w-16 px-2 py-1 bg-slate-50 border border-slate-200 rounded text-xs text-center font-bold"
-      />
-    </td>
-    <td class="px-3 py-1.5">
-      <input
-        type="text"
-        value="${escapeHtml(topic)}"
-        placeholder="${hourNum}. Ders Saati Konusu..."
-        class="topic-input w-full px-2.5 py-1 bg-slate-50 border border-slate-200 rounded text-xs focus:ring-1 focus:ring-sky-500"
-      />
-    </td>
-    <td class="px-3 py-1.5 text-center">
-      <button
-        type="button"
-        onclick="this.closest('tr').remove()"
-        class="p-1 text-slate-400 hover:text-rose-600 rounded"
-      >
-        <i data-lucide="trash-2" class="w-4 h-4"></i>
-      </button>
-    </td>
-  `;
-  syllabusTableBody.appendChild(tr);
-  refreshLucide();
-}
-
-function applyBulkSyllabus() {
-  const rawText = bulkSyllabusInput.value.trim();
-  if (!rawText) return;
-
-  const lines = rawText.split('\n').map(l => l.trim()).filter(Boolean);
-  if (lines.length === 0) return;
-
-  syllabusTableBody.innerHTML = '';
-  lines.forEach((line, idx) => {
-    // Varsa baştaki "1. ", "1 - " gibi rakamları temizle
-    const cleanTopic = line.replace(/^\d+[\.\-\)\s]+/, '');
-    addSyllabusRow(idx + 1, cleanTopic);
-  });
-
-  tmplFormTotalHours.value = lines.length;
-  bulkSyllabusInput.value = '';
 }
 
 function handleSaveCourseTemplate(e) {
@@ -1577,44 +1774,110 @@ function handleSaveCourseTemplate(e) {
     return;
   }
 
-  // Saatlik konuları topla
-  const rows = syllabusTableBody.querySelectorAll('.syllabus-row');
-  const syllabus = [];
-  rows.forEach(row => {
-    const h = Number(row.querySelector('.hour-input').value) || (syllabus.length + 1);
-    const t = row.querySelector('.topic-input').value.trim();
-    if (t) {
-      syllabus.push({ hour: h, topic: t });
-    }
-  });
+  if (editingTmplModules.length === 0) {
+    alert('Lütfen kurs için en az 1 modül tanımlayınız.');
+    return;
+  }
 
-  syllabus.sort((a, b) => a.hour - b.hour);
-  const moduleCount = tmplFormModuleCount ? Math.max(1, Number(tmplFormModuleCount.value) || 1) : 1;
+  // Modül doğrulama ve saatlik müfredat derleme
+  let globalHour = 1;
+  const fullSyllabus = [];
+  const savedModules = [];
+
+  for (let idx = 0; idx < editingTmplModules.length; idx++) {
+    const mod = editingTmplModules[idx];
+    const mNum = idx + 1;
+    const modName = (mod.name || '').trim();
+    if (!modName) {
+      alert(`Lütfen ${mNum}. modülün adını giriniz.`);
+      return;
+    }
+
+    const totalH = Math.max(3, Number(mod.totalHours) || 20);
+    const lessonH = totalH - 2;
+
+    let rawTopics = [];
+    if (Array.isArray(mod.topics)) {
+      rawTopics = mod.topics.map(t => typeof t === 'string' ? t : (t.topic || '')).filter(Boolean);
+    } else if (typeof mod.topics === 'string') {
+      rawTopics = mod.topics.split('\n').map(l => l.trim()).filter(Boolean);
+    }
+
+    const moduleLessonTopics = [];
+    for (let h = 1; h <= lessonH; h++) {
+      let topic = rawTopics[h - 1] || `${modName} - Konu ${h}`;
+      topic = topic.replace(/^\d+[\.\-\)\s]+/, '').trim();
+      moduleLessonTopics.push(topic);
+
+      fullSyllabus.push({
+        hour: globalHour++,
+        topic: topic,
+        moduleNumber: mNum,
+        moduleName: modName,
+        isExam: false
+      });
+    }
+
+    // Planda her modülün son 2 saati Modül Sınavı olarak eklenir
+    fullSyllabus.push({
+      hour: globalHour++,
+      topic: `${modName} - Modül Değerlendirme Sınavı (Uygulama)`,
+      moduleNumber: mNum,
+      moduleName: modName,
+      isExam: true
+    });
+    fullSyllabus.push({
+      hour: globalHour++,
+      topic: `${modName} - Modül Değerlendirme Sınavı (Teorik & Değerlendirme)`,
+      moduleNumber: mNum,
+      moduleName: modName,
+      isExam: true
+    });
+
+    savedModules.push({
+      id: mod.id || `mod_${Date.now()}_${mNum}`,
+      number: mNum,
+      name: modName,
+      totalHours: totalH,
+      lessonHours: lessonH,
+      examHours: 2,
+      topics: moduleLessonTopics
+    });
+  }
+
+  const category = tmplFormCategory.value;
   const documentType = tmplFormDocumentType ? tmplFormDocumentType.value : 'Sertifika';
+  const description = tmplFormDescription.value.trim();
+  const totalHours = fullSyllabus.length;
+  const moduleCount = savedModules.length;
 
   if (id) {
     currentTemplates = currentTemplates.map(t => t.id === id ? {
       ...t,
       name,
       code,
-      category: tmplFormCategory.value,
-      totalHours: Number(tmplFormTotalHours.value) || 0,
+      category,
+      area: category,
+      totalHours,
       moduleCount,
       documentType,
-      description: tmplFormDescription.value.trim(),
-      syllabus
+      description,
+      modules: savedModules,
+      syllabus: fullSyllabus
     } : t);
   } else {
     const newTmpl = {
       id: `tmpl_${Date.now()}`,
       name,
       code,
-      category: tmplFormCategory.value,
-      totalHours: Number(tmplFormTotalHours.value) || 0,
+      category,
+      area: category,
+      totalHours,
       moduleCount,
       documentType,
-      description: tmplFormDescription.value.trim(),
-      syllabus
+      description,
+      modules: savedModules,
+      syllabus: fullSyllabus
     };
     currentTemplates.unshift(newTmpl);
   }
@@ -1734,6 +1997,12 @@ function renderCourseList() {
               <i data-lucide="award" class="w-3 h-3 text-[#E09F3E]"></i>
               <span>${escapeHtml(course.documentType || 'Sertifika')}</span>
             </span>
+            ${(course.category || course.area) ? `
+            <span class="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-teal-50 dark:bg-teal-950/40 text-teal-800 dark:text-teal-300 border border-teal-200/80 dark:border-teal-800/40 flex items-center gap-1" title="Kurs Alanı">
+              <i data-lucide="tag" class="w-3 h-3 text-teal-600"></i>
+              <span>${escapeHtml(course.category || course.area)}</span>
+            </span>
+            ` : ''}
           </div>
           <span class="text-[11px] font-mono text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-[#10191b] px-2 py-0.5 rounded border border-slate-100 dark:border-[#23353c]">
             ${course.code || 'KODSUZ'}
@@ -1755,12 +2024,16 @@ function renderCourseList() {
           </p>` : ''}
         </div>
 
-        <div class="pt-2 border-t border-slate-100 dark:border-[#23353c] grid grid-cols-2 gap-2 text-xs text-slate-600 dark:text-slate-300">
-          <div class="flex items-center gap-1.5">
+        <div class="pt-2 border-t border-slate-100 dark:border-[#23353c] grid grid-cols-3 gap-2 text-xs text-slate-600 dark:text-slate-300">
+          <div class="flex items-center gap-1.5" title="Toplam Saat">
             <i data-lucide="clock" class="w-4 h-4 text-[#335C67] shrink-0"></i>
             <span>${course.totalHours || 0} Saat</span>
           </div>
-          <div class="flex items-center gap-1.5">
+          <div class="flex items-center gap-1.5" title="Modül Sayısı">
+            <i data-lucide="layers" class="w-4 h-4 text-purple-600 shrink-0"></i>
+            <span>${(course.modules && course.modules.length > 0) ? course.modules.length : (course.moduleCount || 1)} Modül</span>
+          </div>
+          <div class="flex items-center gap-1.5" title="Kursiyer Sayısı">
             <i data-lucide="users" class="w-4 h-4 text-[#E09F3E] shrink-0"></i>
             <span>${course.students?.length || 0} Kursiyer</span>
           </div>
@@ -1991,8 +2264,44 @@ function generateNextCourseCode(tmpl, excludeCourseId = null) {
 }
 window.generateNextCourseCode = generateNextCourseCode;
 
+// Eğitmenin alanına veya seçilen alana göre kurs şablonlarını açılır listeye doldurur
+function populateCourseTemplatesDropdown(filterArea = 'my_area', selectedTmplId = '') {
+  const userArea = getUserArea(currentUser);
+  let filtered = currentTemplates;
+
+  if (filterArea === 'my_area') {
+    filtered = currentTemplates.filter(t => (t.category || t.area || 'Diğer') === userArea);
+    if (filtered.length === 0) {
+      filtered = currentTemplates;
+    }
+  } else if (filterArea !== 'all') {
+    filtered = currentTemplates.filter(t => (t.category || t.area || 'Diğer') === filterArea);
+  }
+
+  let optionsHtml = `<option value="">-- Kurs Seçiniz (${filtered.length} Kurs Mevcut) --</option>`;
+  optionsHtml += filtered.map(tmpl => `
+    <option value="${tmpl.id}">[${escapeHtml(tmpl.category || 'Genel')}] ${escapeHtml(tmpl.name)} (${tmpl.totalHours} Saat / ${tmpl.moduleCount || 1} Modül)</option>
+  `).join('');
+
+  if (courseFormTemplateSelect) {
+    courseFormTemplateSelect.innerHTML = optionsHtml;
+    if (selectedTmplId) {
+      courseFormTemplateSelect.value = selectedTmplId;
+    }
+  }
+}
+window.populateCourseTemplatesDropdown = populateCourseTemplatesDropdown;
+
 function openCourseModal(courseToEdit = null) {
   courseModal.classList.remove('hidden');
+
+  const userArea = getUserArea(currentUser);
+  if (courseFormAreaBadge) {
+    courseFormAreaBadge.innerText = `Branşınız: ${userArea}`;
+  }
+  if (courseFormCategoryFilter && courseFormCategoryFilter.options && courseFormCategoryFilter.options[0]) {
+    courseFormCategoryFilter.options[0].text = `⭐ Kendi Branşım (${userArea})`;
+  }
 
   // Kurs Merkezleri Seçeneklerini Yükle (Admin panelinde tanımlanan merkezler)
   courseFormInstitutionSelect.innerHTML = currentCenters.length > 0
@@ -2001,12 +2310,6 @@ function openCourseModal(courseToEdit = null) {
       `).join('')
     : `<option value="">Kayıtlı Merkez Yok (Admin panelinden ekleyiniz)</option>`;
 
-  // Kurs Şablonları / Kurs Adı Seçeneklerini Yükle (Admin panelinde tanımlanan kurslar)
-  courseFormTemplateSelect.innerHTML = `<option value="">-- Kurs Seçiniz --</option>` + 
-    currentTemplates.map(tmpl => `
-      <option value="${tmpl.id}">${escapeHtml(tmpl.name)} (${tmpl.totalHours} Saat)</option>
-    `).join('');
-
   if (courseToEdit) {
     courseModalTitle.innerText = 'Kurs Bilgilerini Güncelle';
     courseFormId.value = courseToEdit.id;
@@ -2014,6 +2317,11 @@ function openCourseModal(courseToEdit = null) {
     // Şablon eşleştir
     let matchedTmpl = currentTemplates.find(t => t.id === courseToEdit.templateId) ||
                       currentTemplates.find(t => t.name === courseToEdit.name);
+
+    const filterVal = (courseToEdit.category && courseToEdit.category !== userArea) ? courseToEdit.category : 'my_area';
+    if (courseFormCategoryFilter) courseFormCategoryFilter.value = filterVal;
+    populateCourseTemplatesDropdown(filterVal, matchedTmpl ? matchedTmpl.id : '');
+
     if (matchedTmpl) {
       courseFormTemplateSelect.value = matchedTmpl.id;
     } else {
@@ -2028,7 +2336,7 @@ function openCourseModal(courseToEdit = null) {
     courseFormSupervisor.value = courseToEdit.supervisor || (currentCenters.find(c => c.name === courseToEdit.institution)?.supervisor) || '';
     courseFormInstructor.value = getCourseInstructorName(courseToEdit);
     courseFormCode.value = courseToEdit.code || '';
-    courseFormCategory.value = courseToEdit.category || 'Bilişim Teknolojileri';
+    courseFormCategory.value = courseToEdit.category || userArea;
     courseFormStartDate.value = courseToEdit.startDate || '';
     courseFormEndDate.value = courseToEdit.endDate || '';
     courseFormTotalHours.value = courseToEdit.totalHours || 120;
@@ -2064,6 +2372,11 @@ function openCourseModal(courseToEdit = null) {
     if (courseFormModuleCount) courseFormModuleCount.value = 1;
     courseFormStatus.value = 'active';
     if (courseFormDocumentType) courseFormDocumentType.value = 'Sertifika';
+    if (courseFormCategory) courseFormCategory.value = userArea;
+
+    if (courseFormCategoryFilter) courseFormCategoryFilter.value = 'my_area';
+    populateCourseTemplatesDropdown('my_area');
+
     if (currentCenters.length > 0) {
       courseFormInstitutionSelect.value = currentCenters[0].name;
       if (currentCenters[0].supervisor) {
@@ -2177,6 +2490,7 @@ function handleSaveCourse(e) {
           instructor,
           code,
           category,
+          area: category,
           startDate,
           endDate,
           totalHours,
@@ -2190,6 +2504,7 @@ function handleSaveCourse(e) {
           startTime,
           endTime,
           offDays: [...currentOffDays],
+          modules: (tmpl && tmpl.modules) ? tmpl.modules : (c.modules || []),
           syllabus: (tmpl && tmpl.syllabus && tmpl.syllabus.length > 0) ? tmpl.syllabus : (c.syllabus || []),
           students: cleanedStudents
         };
@@ -2207,6 +2522,7 @@ function handleSaveCourse(e) {
       instructor,
       code,
       category,
+      area: category,
       startDate,
       endDate,
       totalHours,
@@ -2220,6 +2536,7 @@ function handleSaveCourse(e) {
       startTime,
       endTime,
       offDays: [...currentOffDays],
+      modules: tmpl && tmpl.modules ? tmpl.modules : [],
       syllabus: tmpl ? tmpl.syllabus : [],
       students: []
     };
@@ -3671,11 +3988,81 @@ function handleMarkDayPresent() {
 
 // =================== MODÜL SINAVLARI & NOT GİRİŞ EKRANI ===================
 
+// Kursun belirli bir modülünün sınav tarih ve plan bilgilerini hesaplar
+function getModuleExamInfo(course, moduleNumber) {
+  if (!course) return { moduleNumber, moduleName: `${moduleNumber}. Modül`, formattedDate: '-', dayName: '' };
+  const validDates = getValidCourseDates(course);
+  const dailyHours = Number(course.dailyHours) || 4;
+  const totalHours = Number(course.totalHours) || 120;
+  const moduleCount = course.moduleCount ? Math.max(1, Number(course.moduleCount)) : 1;
+
+  let targetHour = 0;
+  let moduleName = `${moduleNumber}. Modül`;
+  let modTotalHours = 0;
+
+  if (Array.isArray(course.modules) && course.modules.length >= moduleNumber) {
+    const mod = course.modules[moduleNumber - 1];
+    moduleName = mod.name || moduleName;
+    modTotalHours = Number(mod.totalHours) || 20;
+    for (let i = 0; i < moduleNumber; i++) {
+      targetHour += Number(course.modules[i].totalHours) || 0;
+    }
+  } else {
+    modTotalHours = Math.round(totalHours / moduleCount);
+    targetHour = Math.min(totalHours, moduleNumber * modTotalHours);
+  }
+
+  // Bu sınav saatinin denk geldiği gün/oturum indeksi
+  const sessionIndex = Math.min(validDates.length - 1, Math.max(0, Math.ceil(targetHour / dailyHours) - 1));
+  const dateStr = validDates[sessionIndex] || course.endDate || course.startDate || new Date().toISOString().split('T')[0];
+
+  const dObj = new Date(dateStr + 'T00:00:00');
+  const dayName = isNaN(dObj.getTime()) ? '' : (TURKISH_DAYS_MAP[dObj.getDay()] || '');
+  const parts = dateStr.split('-');
+  const formattedDate = (parts.length === 3) ? `${parts[2]}.${parts[1]}.${parts[0]}` : dateStr;
+
+  return {
+    moduleNumber,
+    moduleName,
+    modTotalHours,
+    targetHour,
+    dateStr,
+    formattedDate,
+    dayName
+  };
+}
+window.getModuleExamInfo = getModuleExamInfo;
+
 function renderExamsTab() {
   if (!activeCourseForDetail) return;
   activeCourseForDetail.students = sortStudentsAlphabetically(activeCourseForDetail.students || []);
   const students = activeCourseForDetail.students;
   const moduleCount = activeCourseForDetail.moduleCount ? Math.max(1, Number(activeCourseForDetail.moduleCount)) : 1;
+
+  // Modül sınav bilgileri ve sınav tarihleri
+  const examInfos = [];
+  for (let m = 1; m <= moduleCount; m++) {
+    examInfos.push(getModuleExamInfo(activeCourseForDetail, m));
+  }
+
+  // Üstte Sınav Tarihleri Bilgi Kartlarını Doldur
+  if (moduleExamsDatesCards) {
+    moduleExamsDatesCards.innerHTML = examInfos.map(info => `
+      <div class="p-3 bg-white dark:bg-[#10191b] border border-purple-200/80 dark:border-purple-800/40 rounded-xl flex items-center gap-3 shadow-2xs">
+        <div class="w-8 h-8 rounded-lg bg-purple-100 text-purple-800 dark:bg-purple-950 dark:text-purple-300 flex items-center justify-center font-extrabold text-xs shrink-0">
+          ${info.moduleNumber}
+        </div>
+        <div class="min-w-0 flex-1">
+          <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">${escapeHtml(info.moduleName)}</div>
+          <div class="text-[11px] font-semibold text-purple-700 dark:text-purple-300 flex items-center gap-1.5 mt-0.5">
+            <i data-lucide="calendar" class="w-3.5 h-3.5 text-purple-600"></i>
+            <span>${info.formattedDate} (${info.dayName})</span>
+            <span class="text-[10px] text-slate-400 font-normal">• Son 2 Saat</span>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }
 
   // Başlıklar
   let theadHtml = `
@@ -3686,9 +4073,15 @@ function renderExamsTab() {
   `;
 
   for (let m = 1; m <= moduleCount; m++) {
+    const info = examInfos[m - 1];
     theadHtml += `
-      <th class="px-3 py-3 text-center w-28 bg-purple-50/50 text-purple-900 border-x border-slate-200">
-        ${m}. Modül Sınavı
+      <th class="px-2.5 py-2.5 text-center w-36 bg-purple-50/70 dark:bg-purple-950/40 text-purple-950 dark:text-purple-100 border-x border-slate-200 dark:border-[#23353c]">
+        <div class="font-bold text-xs">${m}. Modül Sınavı</div>
+        <div class="text-[10px] font-bold text-purple-700 dark:text-purple-300 mt-1 flex items-center justify-center gap-1 bg-white/90 dark:bg-[#10191b] py-0.5 px-1.5 rounded-md border border-purple-200/80 shadow-2xs">
+          <i data-lucide="calendar" class="w-3 h-3 text-purple-600"></i>
+          <span>${info.formattedDate}</span>
+        </div>
+        <div class="text-[9.5px] text-purple-600/80 font-medium mt-0.5">${info.dayName} (Son 2 Saat)</div>
       </th>
     `;
   }
