@@ -83,6 +83,23 @@ const DEFAULT_CENTERS = [
   { id: "center_3", name: "Şişli Halk Eğitimi Merkezi", supervisor: "" }
 ];
 
+// Kurs Alanları / Branş Tanımları
+const DEFAULT_AREAS = [
+  { id: "area_1", name: "Bilişim Teknolojileri" },
+  { id: "area_2", name: "Kişisel Gelişim" },
+  { id: "area_3", name: "El Sanatları" },
+  { id: "area_4", name: "Yabancı Dil" },
+  { id: "area_5", name: "Mesleki Eğitim" },
+  { id: "area_6", name: "Muhasebe ve Finansman" },
+  { id: "area_7", name: "Görsel Sanatlar" },
+  { id: "area_8", name: "Müzik ve Gösteri Sanatları" },
+  { id: "area_9", name: "Spor ve Beden Eğitimi" },
+  { id: "area_10", name: "Halk Oyunları" },
+  { id: "area_11", name: "Güzellik ve Saç Bakım Hizmetleri" },
+  { id: "area_12", name: "Yiyecek İçecek Hizmetleri" },
+  { id: "area_13", name: "Diğer" }
+];
+
 // Resmi Kurs ve Saatlik Konu / Müfredat Dağılım Şablonları (Modüler Yapı)
 const DEFAULT_COURSE_TEMPLATES = [
   {
@@ -280,6 +297,7 @@ try {
 const STORAGE_KEYS = {
   COURSES: 'kurs_sonu_courses_v8',
   CENTERS: 'kurs_sonu_centers_v4',
+  AREAS: 'kurs_sonu_areas_v1',
   TEMPLATES: 'kurs_sonu_templates_v6',
   USERS: 'kurs_sonu_users_v4',
   AUTH_USER: 'kurs_sonu_active_user_v3',
@@ -385,6 +403,21 @@ const DataStore = {
       }
     }, (err) => {
       console.error("Firestore todo dinleme hatası:", err);
+    });
+
+    // 6. Alanları Buluttan Dinle
+    db.collection('settings').doc('areas').onSnapshot((doc) => {
+      if (!doc.exists) {
+        db.collection('settings').doc('areas').set({ list: DEFAULT_AREAS }).catch(e => console.error(e));
+        return;
+      }
+      const list = doc.data()?.list || DEFAULT_AREAS;
+      localStorage.setItem(STORAGE_KEYS.AREAS, JSON.stringify(list));
+      if (typeof window.onCloudSync === 'function') {
+        window.onCloudSync('areas', list);
+      }
+    }, (err) => {
+      console.error("Firestore alan dinleme hatası:", err);
     });
   },
 
@@ -620,6 +653,31 @@ const DataStore = {
       }
     } catch (e) {
       console.error("Merkez kayıt hatası:", e);
+    }
+  },
+
+  getAreas() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEYS.AREAS);
+      if (!raw) {
+        localStorage.setItem(STORAGE_KEYS.AREAS, JSON.stringify(DEFAULT_AREAS));
+        return DEFAULT_AREAS;
+      }
+      return JSON.parse(raw);
+    } catch (e) {
+      console.error("LocalStorage alan okuma hatası:", e);
+      return DEFAULT_AREAS;
+    }
+  },
+
+  saveAreas(areas) {
+    try {
+      localStorage.setItem(STORAGE_KEYS.AREAS, JSON.stringify(areas));
+      if (db) {
+        db.collection('settings').doc('areas').set({ list: areas }).catch(e => console.error("Firestore alan kayıt:", e));
+      }
+    } catch (e) {
+      console.error("Alan kayıt hatası:", e);
     }
   },
 

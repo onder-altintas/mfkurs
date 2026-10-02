@@ -3,6 +3,7 @@
 let currentUser = null;
 let currentCourses = [];
 let currentCenters = [];
+let currentAreas = [];
 let currentTemplates = [];
 let currentFilter = 'all';
 let searchQuery = '';
@@ -88,18 +89,23 @@ const centersGrid = document.getElementById('centersGrid');
 const templatesGrid = document.getElementById('templatesGrid');
 
 const openAddCenterModalBtn = document.getElementById('openAddCenterModalBtn');
+const openAddAreaModalBtn = document.getElementById('openAddAreaModalBtn');
 const openAddCourseTmplModalBtn = document.getElementById('openAddCourseTmplModalBtn');
 const openAddUserModalBtn = document.getElementById('openAddUserModalBtn');
 const adminAddUserSecondaryBtn = document.getElementById('adminAddUserSecondaryBtn');
 
 // Admin Sekmeleri & Elementleri
 const adminTabCentersBtn = document.getElementById('adminTabCentersBtn');
+const adminTabAreasBtn = document.getElementById('adminTabAreasBtn');
 const adminTabTemplatesBtn = document.getElementById('adminTabTemplatesBtn');
 const adminTabUsersBtn = document.getElementById('adminTabUsersBtn');
 const adminTabCentersContent = document.getElementById('adminTabCentersContent');
+const adminTabAreasContent = document.getElementById('adminTabAreasContent');
 const adminTabTemplatesContent = document.getElementById('adminTabTemplatesContent');
 const adminTabUsersContent = document.getElementById('adminTabUsersContent');
 const adminCentersCount = document.getElementById('adminCentersCount');
+const adminAreasCount = document.getElementById('adminAreasCount');
+const areasGrid = document.getElementById('areasGrid');
 const adminTemplatesCount = document.getElementById('adminTemplatesCount');
 const adminUsersCount = document.getElementById('adminUsersCount');
 const adminUsersTableBody = document.getElementById('adminUsersTableBody');
@@ -132,6 +138,16 @@ const centerForm = document.getElementById('centerForm');
 const centerFormId = document.getElementById('centerFormId');
 const centerFormName = document.getElementById('centerFormName');
 const centerFormSupervisor = document.getElementById('centerFormSupervisor');
+
+// Modal: Kurs Alanı / Branş
+const areaModal = document.getElementById('areaModal');
+const areaModalTitle = document.getElementById('areaModalTitle');
+const closeAreaModalBtn = document.getElementById('closeAreaModalBtn');
+const cancelAreaModalBtn = document.getElementById('cancelAreaModalBtn');
+const areaForm = document.getElementById('areaForm');
+const areaFormId = document.getElementById('areaFormId');
+const areaFormName = document.getElementById('areaFormName');
+const tmplQuickAddAreaBtn = document.getElementById('tmplQuickAddAreaBtn');
 
 // Modal: Kurs Şablonu & Müfredat
 const courseTmplModal = document.getElementById('courseTmplModal');
@@ -411,6 +427,10 @@ window.onCloudSync = function(type, data) {
     currentCenters = data;
     if (typeof renderCentersTable === 'function') renderCentersTable();
     if (typeof renderAdminCenters === 'function') renderAdminCenters();
+  } else if (type === 'areas') {
+    currentAreas = data;
+    if (typeof renderAdminAreas === 'function') renderAdminAreas();
+    if (typeof populateAllAreaDropdowns === 'function') populateAllAreaDropdowns();
   } else if (type === 'templates') {
     currentTemplates = data;
     if (typeof renderTemplatesTable === 'function') renderTemplatesTable();
@@ -431,8 +451,10 @@ function loadData() {
     currentCourses = DataStore.getCourses();
   }
   currentCenters = DataStore.getCenters();
+  currentAreas = DataStore.getAreas();
   currentTemplates = DataStore.getCourseTemplates();
   currentUsers = DataStore.getUsers();
+  populateAllAreaDropdowns();
   syncCoursesWithCurrentInstructor();
 }
 
@@ -815,12 +837,20 @@ function setupEventListeners() {
   navAdminViewBtn?.addEventListener('click', () => switchView('admin'));
 
   // Admin Alt Sekmeleri
-  adminTabCentersBtn.addEventListener('click', () => switchAdminTab('centers'));
-  adminTabTemplatesBtn.addEventListener('click', () => switchAdminTab('templates'));
-  adminTabUsersBtn.addEventListener('click', () => switchAdminTab('users'));
+  adminTabCentersBtn?.addEventListener('click', () => switchAdminTab('centers'));
+  adminTabAreasBtn?.addEventListener('click', () => switchAdminTab('areas'));
+  adminTabTemplatesBtn?.addEventListener('click', () => switchAdminTab('templates'));
+  adminTabUsersBtn?.addEventListener('click', () => switchAdminTab('users'));
   if (adminTabTodosBtn) {
     adminTabTodosBtn.addEventListener('click', () => switchAdminTab('todos'));
   }
+
+  // Alan Ekleme / Düzenleme Dinleyicileri
+  openAddAreaModalBtn?.addEventListener('click', () => openAreaModal());
+  tmplQuickAddAreaBtn?.addEventListener('click', () => openAreaModal());
+  closeAreaModalBtn?.addEventListener('click', () => closeAreaModal());
+  cancelAreaModalBtn?.addEventListener('click', () => closeAreaModal());
+  areaForm?.addEventListener('submit', handleSaveArea);
 
   // Kullanıcı Yönetimi Ekleme / Düzenleme
   openAddUserModalBtn.addEventListener('click', () => openUserModal());
@@ -1036,23 +1066,28 @@ function setupEventListeners() {
 // =================== ADMIN YÖNETİM PANELİ İŞLEMLERİ ===================
 
 function switchAdminTab(tab) {
-  const allBtns = [adminTabCentersBtn, adminTabTemplatesBtn, adminTabUsersBtn, adminTabTodosBtn].filter(Boolean);
+  const allBtns = [adminTabCentersBtn, adminTabAreasBtn, adminTabTemplatesBtn, adminTabUsersBtn, adminTabTodosBtn].filter(Boolean);
   allBtns.forEach(btn => {
     btn.className = 'flex items-center gap-2 px-5 py-3 text-xs sm:text-sm font-bold border-b-2 border-transparent text-slate-600 hover:text-slate-900 transition cursor-pointer whitespace-nowrap';
   });
   if (adminTabCentersContent) adminTabCentersContent.classList.add('hidden');
+  if (adminTabAreasContent) adminTabAreasContent.classList.add('hidden');
   if (adminTabTemplatesContent) adminTabTemplatesContent.classList.add('hidden');
   if (adminTabUsersContent) adminTabUsersContent.classList.add('hidden');
   if (adminTabTodosContent) adminTabTodosContent.classList.add('hidden');
 
   if (tab === 'centers') {
-    adminTabCentersBtn.className = 'flex items-center gap-2 px-5 py-3 text-xs sm:text-sm font-bold border-b-2 border-indigo-600 text-indigo-700 transition cursor-pointer whitespace-nowrap';
+    if (adminTabCentersBtn) adminTabCentersBtn.className = 'flex items-center gap-2 px-5 py-3 text-xs sm:text-sm font-bold border-b-2 border-indigo-600 text-indigo-700 transition cursor-pointer whitespace-nowrap';
     if (adminTabCentersContent) adminTabCentersContent.classList.remove('hidden');
+  } else if (tab === 'areas') {
+    if (adminTabAreasBtn) adminTabAreasBtn.className = 'flex items-center gap-2 px-5 py-3 text-xs sm:text-sm font-bold border-b-2 border-teal-600 text-teal-700 transition cursor-pointer whitespace-nowrap';
+    if (adminTabAreasContent) adminTabAreasContent.classList.remove('hidden');
+    renderAdminAreas();
   } else if (tab === 'templates') {
-    adminTabTemplatesBtn.className = 'flex items-center gap-2 px-5 py-3 text-xs sm:text-sm font-bold border-b-2 border-sky-600 text-sky-700 transition cursor-pointer whitespace-nowrap';
+    if (adminTabTemplatesBtn) adminTabTemplatesBtn.className = 'flex items-center gap-2 px-5 py-3 text-xs sm:text-sm font-bold border-b-2 border-sky-600 text-sky-700 transition cursor-pointer whitespace-nowrap';
     if (adminTabTemplatesContent) adminTabTemplatesContent.classList.remove('hidden');
   } else if (tab === 'users') {
-    adminTabUsersBtn.className = 'flex items-center gap-2 px-5 py-3 text-xs sm:text-sm font-bold border-b-2 border-purple-600 text-purple-700 transition cursor-pointer whitespace-nowrap';
+    if (adminTabUsersBtn) adminTabUsersBtn.className = 'flex items-center gap-2 px-5 py-3 text-xs sm:text-sm font-bold border-b-2 border-purple-600 text-purple-700 transition cursor-pointer whitespace-nowrap';
     if (adminTabUsersContent) adminTabUsersContent.classList.remove('hidden');
     renderAdminUsers();
   } else if (tab === 'todos') {
@@ -1070,6 +1105,7 @@ window.switchAdminTab = switchAdminTab;
 function renderAdminPanel() {
   loadData();
   renderAdminCenters();
+  renderAdminAreas();
   renderAdminTemplates();
   renderAdminUsers();
 }
@@ -1402,6 +1438,229 @@ window.deleteCenter = function(centerId) {
     currentCenters = currentCenters.filter(c => c.id !== centerId);
     DataStore.saveCenters(currentCenters);
     renderAdminCenters();
+  }
+};
+
+// =================== KURS ALANLARI / BRANŞ YÖNETİMİ ===================
+
+function populateAllAreaDropdowns() {
+  const areas = (currentAreas && currentAreas.length > 0)
+    ? currentAreas.map(a => typeof a === 'string' ? a : a.name).filter(Boolean)
+    : [
+        "Bilişim Teknolojileri",
+        "Kişisel Gelişim",
+        "El Sanatları",
+        "Yabancı Dil",
+        "Mesleki Eğitim",
+        "Muhasebe ve Finansman",
+        "Görsel Sanatlar",
+        "Müzik ve Gösteri Sanatları",
+        "Spor ve Beden Eğitimi",
+        "Halk Oyunları",
+        "Güzellik ve Saç Bakım Hizmetleri",
+        "Yiyecek İçecek Hizmetleri",
+        "Diğer"
+      ];
+
+  // 1. tmplFormCategory (Admin kurs şablonu oluşturma)
+  if (tmplFormCategory) {
+    const curVal = tmplFormCategory.value;
+    tmplFormCategory.innerHTML = areas.map(a => `<option value="${escapeHtml(a)}">${escapeHtml(a)}</option>`).join('');
+    if (curVal && areas.includes(curVal)) {
+      tmplFormCategory.value = curVal;
+    }
+  }
+
+  // 2. courseFormCategory (Kurs açma modalındaki alan select'i)
+  if (courseFormCategory) {
+    const curVal = courseFormCategory.value;
+    courseFormCategory.innerHTML = areas.map(a => `<option value="${escapeHtml(a)}">${escapeHtml(a)}</option>`).join('');
+    if (curVal && areas.includes(curVal)) {
+      courseFormCategory.value = curVal;
+    }
+  }
+
+  // 3. courseFormCategoryFilter (Kurs açarken alan filtreleme dropdown'u)
+  if (courseFormCategoryFilter) {
+    const curVal = courseFormCategoryFilter.value || 'my_area';
+    const userArea = typeof getUserArea === 'function' ? getUserArea(currentUser) : 'Bilişim Teknolojileri';
+    let html = `
+      <option value="my_area">⭐ Kendi Branşım (${escapeHtml(userArea)})</option>
+      <option value="all">🌐 Tüm Alanlar (Tüm Kursları Göster)</option>
+    `;
+    html += areas.map(a => `<option value="${escapeHtml(a)}">${escapeHtml(a)}</option>`).join('');
+    courseFormCategoryFilter.innerHTML = html;
+    courseFormCategoryFilter.value = curVal;
+  }
+
+  // 4. profileArea (Profil düzenleme modalındaki alan)
+  if (profileArea) {
+    const curVal = profileArea.value;
+    profileArea.innerHTML = areas.map(a => `<option value="${escapeHtml(a)}">${escapeHtml(a)}</option>`).join('');
+    if (curVal && areas.includes(curVal)) {
+      profileArea.value = curVal;
+    }
+  }
+}
+window.populateAllAreaDropdowns = populateAllAreaDropdowns;
+
+function renderAdminAreas() {
+  if (adminAreasCount) adminAreasCount.innerText = currentAreas.length;
+  if (!areasGrid) return;
+  areasGrid.innerHTML = '';
+
+  if (currentAreas.length === 0) {
+    areasGrid.innerHTML = `
+      <div class="col-span-full p-8 text-center bg-slate-50 dark:bg-[#10191b] rounded-2xl border border-dashed border-slate-200 dark:border-[#23353c]">
+        <i data-lucide="tag" class="w-8 h-8 text-slate-300 mx-auto mb-2"></i>
+        <p class="text-sm font-semibold text-slate-600 dark:text-slate-300">Henüz tanımlanmış kurs alanı bulunmuyor.</p>
+        <p class="text-xs text-slate-400 mt-1">"Yeni Alan Ekle" butonuna basarak ilk alanı tanımlayabilirsiniz.</p>
+      </div>
+    `;
+    refreshLucide();
+    return;
+  }
+
+  currentAreas.forEach(area => {
+    const areaName = typeof area === 'string' ? area : area.name;
+    const areaId = typeof area === 'string' ? area : area.id;
+
+    // Bu alana ait şablon ve kurs sayısı
+    const tmplCount = currentTemplates.filter(t => (t.category === areaName || t.area === areaName)).length;
+    const courseCount = currentCourses.filter(c => (c.category === areaName || c.area === areaName)).length;
+
+    const card = document.createElement('div');
+    card.className = 'bg-white dark:bg-[#152125] rounded-2xl border border-slate-200 dark:border-[#23353c] p-4 shadow-xs hover:border-teal-400 dark:hover:border-teal-500 hover:shadow-md transition flex items-center justify-between gap-3 group';
+
+    card.innerHTML = `
+      <div class="flex items-center gap-3 min-w-0">
+        <div class="w-10 h-10 rounded-xl bg-teal-50 dark:bg-teal-950 text-teal-700 dark:text-teal-300 flex items-center justify-center shrink-0 border border-teal-200/60 dark:border-teal-800/60 group-hover:scale-105 transition-transform">
+          <i data-lucide="tag" class="w-5 h-5 text-teal-600"></i>
+        </div>
+        <div class="min-w-0">
+          <h4 class="font-bold text-slate-800 dark:text-slate-100 text-sm truncate" title="${escapeHtml(areaName)}">
+            ${escapeHtml(areaName)}
+          </h4>
+          <div class="flex items-center gap-2 text-[11px] text-slate-400 mt-0.5">
+            <span>${tmplCount} Kurs Şablonu</span>
+            <span>•</span>
+            <span>${courseCount} Aktif Kurs</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-1 shrink-0">
+        <button
+          onclick="editArea('${escapeHtml(areaId)}')"
+          class="p-1.5 text-teal-700 dark:text-teal-400 hover:bg-teal-50 dark:hover:bg-teal-950 rounded-lg transition cursor-pointer"
+          title="Alanı Düzenle"
+        >
+          <i data-lucide="edit-3" class="w-4 h-4"></i>
+        </button>
+        <button
+          onclick="deleteArea('${escapeHtml(areaId)}')"
+          class="p-1.5 text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-lg transition cursor-pointer"
+          title="Alanı Sil"
+        >
+          <i data-lucide="trash-2" class="w-4 h-4"></i>
+        </button>
+      </div>
+    `;
+
+    areasGrid.appendChild(card);
+  });
+
+  refreshLucide();
+}
+window.renderAdminAreas = renderAdminAreas;
+
+function openAreaModal(areaToEdit = null) {
+  if (!areaModal) return;
+  areaModal.classList.remove('hidden');
+
+  if (areaToEdit) {
+    const areaName = typeof areaToEdit === 'string' ? areaToEdit : areaToEdit.name;
+    const areaId = typeof areaToEdit === 'string' ? areaToEdit : areaToEdit.id;
+    if (areaModalTitle) areaModalTitle.innerText = 'Kurs Alanını Düzenle';
+    if (areaFormId) areaFormId.value = areaId;
+    if (areaFormName) areaFormName.value = areaName;
+  } else {
+    if (areaModalTitle) areaModalTitle.innerText = 'Yeni Kurs Alanı Ekle';
+    if (areaForm) areaForm.reset();
+    if (areaFormId) areaFormId.value = '';
+  }
+
+  if (areaFormName) areaFormName.focus();
+  refreshLucide();
+}
+window.openAreaModal = openAreaModal;
+
+function closeAreaModal() {
+  if (areaModal) areaModal.classList.add('hidden');
+}
+window.closeAreaModal = closeAreaModal;
+
+function handleSaveArea(e) {
+  e.preventDefault();
+  const id = areaFormId ? areaFormId.value : '';
+  const name = areaFormName ? areaFormName.value.trim() : '';
+  if (!name) return;
+
+  // İsim çakışması kontrolü
+  const exists = currentAreas.some(a => {
+    const an = typeof a === 'string' ? a : a.name;
+    const ai = typeof a === 'string' ? a : a.id;
+    return ai !== id && an.toLowerCase() === name.toLowerCase();
+  });
+
+  if (exists) {
+    alert(`"${name}" adında bir kurs alanı zaten mevcut.`);
+    return;
+  }
+
+  if (id) {
+    // Güncelleme
+    currentAreas = currentAreas.map(a => {
+      const aId = typeof a === 'string' ? a : a.id;
+      if (aId === id) {
+        return typeof a === 'string' ? name : { ...a, name };
+      }
+      return a;
+    });
+  } else {
+    // Yeni ekleme
+    const newArea = {
+      id: `area_${Date.now()}`,
+      name: name
+    };
+    currentAreas.push(newArea);
+  }
+
+  DataStore.saveAreas(currentAreas);
+  closeAreaModal();
+  renderAdminAreas();
+  populateAllAreaDropdowns();
+
+  // Eğer şablon modalı açıksa eklenen alanı doğrudan seç
+  if (tmplFormCategory && name) {
+    tmplFormCategory.value = name;
+  }
+}
+
+window.editArea = function(areaId) {
+  const found = currentAreas.find(a => (typeof a === 'string' ? a : a.id) === areaId);
+  if (found) openAreaModal(found);
+};
+
+window.deleteArea = function(areaId) {
+  const found = currentAreas.find(a => (typeof a === 'string' ? a : a.id) === areaId);
+  const areaName = found ? (typeof found === 'string' ? found : found.name) : '';
+
+  if (confirm(`"${areaName || 'Bu'}" kurs alanını silmek istediğinize emin misiniz?`)) {
+    currentAreas = currentAreas.filter(a => (typeof a === 'string' ? a : a.id) !== areaId);
+    DataStore.saveAreas(currentAreas);
+    renderAdminAreas();
+    populateAllAreaDropdowns();
   }
 };
 
