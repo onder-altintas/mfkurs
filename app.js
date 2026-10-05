@@ -7542,6 +7542,33 @@ function renderDevTodos() {
     filtered = filtered.filter(t => t.completed);
   }
 
+  // Öncelik puanlama (Urgent / Acil: 4, High / Yüksek: 3, Normal: 2, Low / Düşük: 1)
+  const getPriorityWeight = (priority) => {
+    const p = (priority || 'normal').toLowerCase();
+    if (p === 'urgent' || p === 'acil') return 4;
+    if (p === 'high' || p === 'yuksek' || p === 'yüksek') return 3;
+    if (p === 'normal') return 2;
+    if (p === 'low' || p === 'dusuk' || p === 'düşük') return 1;
+    return 2;
+  };
+
+  // Öncelik sırasına göre sırala (Acil > Yüksek > Normal > Düşük)
+  filtered.sort((a, b) => {
+    // Tamamlanmamışlar önce, tamamlananlar altta
+    if (a.completed !== b.completed) {
+      return a.completed ? 1 : -1;
+    }
+    const weightA = getPriorityWeight(a.priority);
+    const weightB = getPriorityWeight(b.priority);
+    if (weightB !== weightA) {
+      return weightB - weightA;
+    }
+    // Aynı öncelikte en son eklenen üstte
+    const timeA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+    const timeB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+    return timeB - timeA;
+  });
+
   let html = '';
   if (filtered.length === 0) {
     html = `
