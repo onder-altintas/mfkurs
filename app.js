@@ -5215,6 +5215,351 @@ function getStudentKararDurumu(student, course) {
   return 'Transkript';
 }
 
+// =================== RESMİ EVRAK: MODÜLER KURS ÇERÇEVE VE ÇALIŞMA PLANI (KURS PLANI) ===================
+
+function generateKursPlaniHtml(course) {
+  if (!course) return '<p class="p-6 text-center text-slate-500">Kurs bilgisi bulunamadı.</p>';
+
+  // Yıl bilgisi (örn: 2026-2027)
+  let startYear = 2026;
+  if (course.startDate) {
+    const d = new Date(course.startDate + (course.startDate.includes('T') ? '' : 'T00:00:00'));
+    if (!isNaN(d.getTime())) startYear = d.getFullYear();
+  }
+  let endYear = startYear;
+  if (course.endDate) {
+    const dEnd = new Date(course.endDate + (course.endDate.includes('T') ? '' : 'T00:00:00'));
+    if (!isNaN(dEnd.getTime())) endYear = dEnd.getFullYear();
+  }
+  const yearText = (startYear === endYear) ? `${startYear}-${startYear + 1}` : `${startYear}-${endYear}`;
+
+  const rawInstitution = getCourseInstitutionName(course) || 'Halk Eğitimi Merkezi Müdürlüğü';
+  const institutionUpper = toTurkishUpper(rawInstitution);
+  const courseName = toTurkishTitleCase(course.name || course.title || 'Kurs');
+  const courseNameUpper = toTurkishUpper(courseName);
+  const instructor = toTurkishPersonName(getCourseInstructorName(course));
+  const supervisor = toTurkishPersonName(course.supervisor || 'Kurs Merkezi Sorumlusu');
+  const startDate = formatShortDate(course.startDate);
+  const endDate = formatShortDate(course.endDate);
+  const courseNumber = course.code || course.id || '-';
+  const totalHours = Number(course.totalHours) || 120;
+  const dailyHours = Number(course.dailyHours) || 4;
+  const validDates = getValidCourseDates(course);
+  const syllabus = course.syllabus || [];
+  const courseDays = (course.days && course.days.length > 0)
+    ? course.days.join(', ')
+    : 'Pazartesi, Salı, Çarşamba, Perşembe, Cuma';
+  const courseCategory = course.category || course.area || 'Genel Kurs Programı';
+  const docType = (course.documentType) ? course.documentType : 'Sertifika / Kurs Bitirme Belgesi';
+  const courseTimeText = (course.startTime && course.endTime)
+    ? `${course.startTime} - ${course.endTime}`
+    : `${dailyHours} Ders Saati`;
+
+  // 1. MODÜLLER VE TARİHLERİ
+  let modulesList = [];
+  if (Array.isArray(course.modules) && course.modules.length > 0) {
+    modulesList = course.modules.map((m, idx) => ({
+      no: idx + 1,
+      name: toTurkishTitleCase(m.name || `${idx + 1}. Modül`),
+      totalHours: Number(m.totalHours) || Math.round(totalHours / course.modules.length)
+    }));
+  } else {
+    const modCount = course.moduleCount ? Math.max(1, Number(course.moduleCount)) : 1;
+    const perModHours = Math.round(totalHours / modCount);
+    for (let i = 1; i <= modCount; i++) {
+      modulesList.push({
+        no: i,
+        name: `${i}. Modül`,
+        totalHours: (i === modCount) ? Math.max(1, totalHours - perModHours * (modCount - 1)) : perModHours
+      });
+    }
+  }
+
+  // Modüller için başlangıç saati, bitiş saati ve tarih hesaplama
+  let runningHour = 0;
+  const computedModules = modulesList.map(mod => {
+    const startHour = runningHour + 1;
+    runningHour += mod.totalHours;
+    const endHour = runningHour;
+
+    const startIdx = Math.min(validDates.length - 1, Math.max(0, Math.ceil(startHour / dailyHours) - 1));
+    const endIdx = Math.min(validDates.length - 1, Math.max(0, Math.ceil(endHour / dailyHours) - 1));
+
+    const modStartDate = validDates[startIdx] ? formatShortDate(validDates[startIdx]) : startDate;
+    const modEndDate = validDates[endIdx] ? formatShortDate(validDates[endIdx]) : endDate;
+    const examDate = modEndDate;
+
+    return {
+      ...mod,
+      startHour,
+      endHour,
+      modStartDate,
+      modEndDate,
+      examDate
+    };
+  });
+
+  // Modül Dağılım Tablosu HTML
+  let moduleRowsHtml = '';
+  computedModules.forEach(m => {
+    moduleRowsHtml += `
+      <tr style="height: 22px;">
+        <td style="border: 1px solid black; text-align: center; font-weight: bold; padding: 2px;">${m.no}</td>
+        <td style="border: 1px solid black; padding: 2px 6px; font-weight: 500;">${escapeHtml(m.name)}</td>
+        <td style="border: 1px solid black; text-align: center; font-weight: bold; padding: 2px;">${m.totalHours} Saat</td>
+        <td style="border: 1px solid black; text-align: center; padding: 2px;">${m.modStartDate}</td>
+        <td style="border: 1px solid black; text-align: center; padding: 2px;">${m.modEndDate}</td>
+        <td style="border: 1px solid black; text-align: center; font-weight: 600; padding: 2px; color: #1e3a8a;">${m.examDate}</td>
+      </tr>
+    `;
+  });
+
+  // 2. HAFTALIK DAĞILIM VE KONU PLANI (Takvim Haftalarına Göre Gruplama)
+  const weeksMap = [];
+  let currentWeek = null;
+
+  validDates.forEach((dStr, dayIdx) => {
+    const dObj = new Date(dStr + 'T00:00:00');
+    const dayOfWeek = (dObj.getDay() + 6) % 7; // 0 = Pazartesi
+    const monday = new Date(dObj);
+    monday.setDate(monday.getDate() - dayOfWeek);
+    const weekKey = `${monday.getFullYear()}-${String(monday.getMonth() + 1).padStart(2, '0')}-${String(monday.getDate()).padStart(2, '0')}`;
+
+    if (!currentWeek || currentWeek.weekKey !== weekKey) {
+      if (currentWeek) weeksMap.push(currentWeek);
+      currentWeek = {
+        weekNumber: weeksMap.length + 1,
+        weekKey: weekKey,
+        dates: [dStr],
+        dayIndices: [dayIdx]
+      };
+    } else {
+      currentWeek.dates.push(dStr);
+      currentWeek.dayIndices.push(dayIdx);
+    }
+  });
+  if (currentWeek) weeksMap.push(currentWeek);
+
+  if (weeksMap.length === 0) {
+    weeksMap.push({
+      weekNumber: 1,
+      weekKey: '2026-01-01',
+      dates: [course.startDate || '2026-01-01'],
+      dayIndices: [0]
+    });
+  }
+
+  const userOffDays = course.offDays || [];
+  const rangeHolidays = getTurkishHolidaysBetween(validDates[0] || course.startDate, validDates[validDates.length - 1] || course.endDate);
+
+  let cumulativeHours = 0;
+  let weeklyRowsHtml = '';
+
+  weeksMap.forEach(wk => {
+    const wkDates = wk.dates;
+    const wkStartDate = formatShortDate(wkDates[0]);
+    const wkEndDate = formatShortDate(wkDates[wkDates.length - 1]);
+    const dateRangeText = (wkDates.length === 1) ? wkStartDate : `${wkStartDate} - ${wkEndDate}`;
+    const weekLessonHours = wkDates.length * dailyHours;
+
+    const startHour = cumulativeHours + 1;
+    cumulativeHours += weekLessonHours;
+    const endHour = Math.min(totalHours, cumulativeHours);
+
+    // Bu haftadaki modüller
+    const activeModsInWeek = computedModules.filter(m => (startHour <= m.endHour && endHour >= m.startHour));
+    const moduleNamesInWeek = activeModsInWeek.map(m => m.name).join('<br>') || 'Kurs Uygulamaları';
+
+    // Bu haftadaki sınavlar
+    const examsInWeek = activeModsInWeek.filter(m => (m.endHour >= startHour && m.endHour <= endHour));
+
+    // Tatiller
+    const holidaysInWeek = [];
+    wkDates.forEach(dStr => {
+      const h = rangeHolidays.find(rh => rh.date === dStr);
+      if (h && !holidaysInWeek.includes(h.name)) holidaysInWeek.push(h.name);
+      const u = userOffDays.find(uo => uo.date === dStr);
+      if (u && !holidaysInWeek.includes(u.reason || 'Ders Dışı')) holidaysInWeek.push(u.reason || 'Ders Dışı');
+    });
+
+    // Konular
+    const topicsInWeek = [];
+    for (let h = startHour; h <= endHour; h++) {
+      const item = syllabus.find(s => Number(s.hour) === h);
+      if (item && item.topic && !topicsInWeek.includes(item.topic)) {
+        topicsInWeek.push(item.topic);
+      }
+    }
+
+    let topicsText = '';
+    if (topicsInWeek.length > 0) {
+      topicsText = topicsInWeek.map(t => escapeHtml(toTurkishTitleCase(t))).join('; ');
+    } else {
+      topicsText = `${escapeHtml(courseName)} modüler kazanımları, mesleki bilgi, beceri ve temrin uygulamaları`;
+    }
+
+    let olcmeText = 'Gözlem, Uygulama ve Süreç Değerlendirmesi';
+    if (examsInWeek.length > 0) {
+      olcmeText = examsInWeek.map(e => `<strong>${escapeHtml(e.name)} Sınavı (${e.examDate})</strong>`).join('<br>') + '<br><span style="font-size: 6.5pt; color: #555;">Uygulama ve Süreç Takibi</span>';
+    }
+
+    let aciklamaText = '&nbsp;';
+    if (holidaysInWeek.length > 0) {
+      aciklamaText = `<span style="color: #b91c1c; font-weight: bold;">${escapeHtml(holidaysInWeek.join(', '))}</span>`;
+    }
+
+    weeklyRowsHtml += `
+      <tr style="height: 22px;">
+        <td style="border: 1px solid black; text-align: center; font-weight: bold; padding: 2px;">${wk.weekNumber}</td>
+        <td style="border: 1px solid black; text-align: center; font-size: 6.8pt; padding: 2px 3px; white-space: nowrap;">${dateRangeText}</td>
+        <td style="border: 1px solid black; text-align: center; font-weight: bold; padding: 2px;">${weekLessonHours} Sa.</td>
+        <td style="border: 1px solid black; padding: 2px 4px; font-weight: 500; font-size: 6.8pt; line-height: 1.2;">${moduleNamesInWeek}</td>
+        <td style="border: 1px solid black; padding: 2px 5px; text-align: left; font-size: 6.8pt; line-height: 1.2;">${topicsText}</td>
+        <td style="border: 1px solid black; text-align: center; font-size: 6.5pt; padding: 2px 3px;">Anlatım, Gösterip Yaptırma, Soru-Cevap, Uygulama</td>
+        <td style="border: 1px solid black; text-align: center; font-size: 6.5pt; padding: 2px 3px;">Ders Notları, Bilgisayar, Temrin Malzemeleri</td>
+        <td style="border: 1px solid black; text-align: center; font-size: 6.8pt; padding: 2px 4px; line-height: 1.2;">${olcmeText}</td>
+        <td style="border: 1px solid black; text-align: center; font-size: 6.5pt; padding: 2px 2px;">${aciklamaText}</td>
+      </tr>
+    `;
+  });
+
+  return `
+    <div class="kurs-plani-document" style="font-family: Arial, Helvetica, sans-serif; color: #000; line-height: 1.2; width: 100%; max-width: 1050px; margin: 0 auto; background: #fff; box-sizing: border-box; padding: 6px;">
+      
+      <!-- Başlık (Ortalı & Kalın) -->
+      <div style="text-align: center; margin-bottom: 8px;">
+        <div style="font-size: 10pt; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">T.C.</div>
+        <div style="font-size: 9.5pt; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">MİLLÎ EĞİTİM BAKANLIĞI</div>
+        <div style="font-size: 9.5pt; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">HAYAT BOYU ÖĞRENME GENEL MÜDÜRLÜĞÜ</div>
+        <div style="font-size: 10.5pt; font-weight: bold; text-transform: uppercase; margin-top: 2px;">${escapeHtml(institutionUpper)}</div>
+        <div style="font-size: 10pt; font-weight: bold; margin-top: 3px; text-transform: uppercase;">
+          ${yearText} EĞİTİM VE ÖĞRETİM YILI
+        </div>
+        <div style="font-size: 11pt; font-weight: 800; margin-top: 2px; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #000; display: inline-block; padding-bottom: 2px;">
+          ${escapeHtml(courseNameUpper)} KURSU MODÜLER ÇERÇEVE VE ÇALIŞMA PLANI
+        </div>
+      </div>
+
+      <!-- Kurs Üst / Kimlik Bilgileri Tablosu -->
+      <table style="width: 100%; border-collapse: collapse; border: 1.5px solid black; font-size: 7.5pt; margin-bottom: 8px;">
+        <tbody>
+          <tr>
+            <td style="border: 1px solid black; padding: 2.5px 5px; font-weight: bold; width: 15%; background: #f8fafc;">Kursun Adı</td>
+            <td style="border: 1px solid black; padding: 2.5px 5px; width: 35%; font-weight: 600;">${escapeHtml(courseName)}</td>
+            <td style="border: 1px solid black; padding: 2.5px 5px; font-weight: bold; width: 17%; background: #f8fafc;">Kursun Onay / Kod No</td>
+            <td style="border: 1px solid black; padding: 2.5px 5px; width: 33%; font-family: monospace; font-weight: bold;">${escapeHtml(courseNumber)}</td>
+          </tr>
+          <tr>
+            <td style="border: 1px solid black; padding: 2.5px 5px; font-weight: bold; background: #f8fafc;">Alan / Branş</td>
+            <td style="border: 1px solid black; padding: 2.5px 5px;">${escapeHtml(toTurkishTitleCase(courseCategory))}</td>
+            <td style="border: 1px solid black; padding: 2.5px 5px; font-weight: bold; background: #f8fafc;">Verilecek Belge Türü</td>
+            <td style="border: 1px solid black; padding: 2.5px 5px;">${escapeHtml(docType)}</td>
+          </tr>
+          <tr>
+            <td style="border: 1px solid black; padding: 2.5px 5px; font-weight: bold; background: #f8fafc;">Başlama / Bitiş Tarihi</td>
+            <td style="border: 1px solid black; padding: 2.5px 5px;">${startDate} - ${endDate}</td>
+            <td style="border: 1px solid black; padding: 2.5px 5px; font-weight: bold; background: #f8fafc;">Toplam Ders Saati</td>
+            <td style="border: 1px solid black; padding: 2.5px 5px; font-weight: 600;">${totalHours} Saat (${validDates.length} Ders Günü)</td>
+          </tr>
+          <tr>
+            <td style="border: 1px solid black; padding: 2.5px 5px; font-weight: bold; background: #f8fafc;">Ders Günleri ve Saatleri</td>
+            <td style="border: 1px solid black; padding: 2.5px 5px;">${escapeHtml(courseDays)} &bull; ${escapeHtml(courseTimeText)}</td>
+            <td style="border: 1px solid black; padding: 2.5px 5px; font-weight: bold; background: #f8fafc;">Günlük Ders Saati</td>
+            <td style="border: 1px solid black; padding: 2.5px 5px;">${dailyHours} Saat</td>
+          </tr>
+          <tr>
+            <td style="border: 1px solid black; padding: 2.5px 5px; font-weight: bold; background: #f8fafc;">Kursun Eğitmeni</td>
+            <td style="border: 1px solid black; padding: 2.5px 5px; font-weight: 600;">${escapeHtml(instructor)}</td>
+            <td style="border: 1px solid black; padding: 2.5px 5px; font-weight: bold; background: #f8fafc;">Kurs Yeri / Kurum</td>
+            <td style="border: 1px solid black; padding: 2.5px 5px;">${escapeHtml(toTurkishTitleCase(rawInstitution))}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- I. BÖLÜM: MODÜL DAĞILIM VE SINAV ÇİZELGESİ -->
+      <div style="font-size: 8pt; font-weight: bold; text-transform: uppercase; margin: 6px 0 3px 0; display: flex; align-items: center; justify-content: space-between;">
+        <span>I. BÖLÜM: MODÜL DAĞILIM VE DEĞERLENDİRME ÇİZELGESİ</span>
+        <span style="font-weight: normal; font-size: 7pt; text-transform: none; color: #444;">Modül bazlı süre ve sınav takvimi</span>
+      </div>
+      <table style="width: 100%; border-collapse: collapse; border: 1.5px solid black; font-size: 7.5pt; margin-bottom: 8px;">
+        <thead>
+          <tr style="background: #f1f5f9; text-align: center; font-weight: bold;">
+            <th style="border: 1px solid black; width: 32px; padding: 3px 2px;">Sıra</th>
+            <th style="border: 1px solid black; text-align: left; padding: 3px 6px;">Modülün Adı</th>
+            <th style="border: 1px solid black; width: 75px; padding: 3px 4px;">Modül Süresi</th>
+            <th style="border: 1px solid black; width: 90px; padding: 3px 4px;">Başlama Tarihi</th>
+            <th style="border: 1px solid black; width: 90px; padding: 3px 4px;">Bitiş Tarihi</th>
+            <th style="border: 1px solid black; width: 110px; padding: 3px 4px;">Sınav / Değerlendirme</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${moduleRowsHtml}
+        </tbody>
+      </table>
+
+      <!-- II. BÖLÜM: HAFTALIK DERS ÇALIŞMA VE UYGULAMA PLANI -->
+      <div style="font-size: 8pt; font-weight: bold; text-transform: uppercase; margin: 6px 0 3px 0; display: flex; align-items: center; justify-content: space-between;">
+        <span>II. BÖLÜM: HAFTALIK DERS ÇALIŞMA VE UYGULAMA PLANI</span>
+        <span style="font-weight: normal; font-size: 7pt; text-transform: none; color: #444;">Dönemlik hafta dağılımı, konular ve yöntemler</span>
+      </div>
+      <table style="width: 100%; border-collapse: collapse; border: 1.5px solid black; font-size: 7pt; margin-bottom: 10px;">
+        <thead>
+          <tr style="background: #f1f5f9; text-align: center; font-weight: bold;">
+            <th style="border: 1px solid black; width: 30px; padding: 3px 1px;">Hafta</th>
+            <th style="border: 1px solid black; width: 95px; padding: 3px 2px;">Tarih Aralığı</th>
+            <th style="border: 1px solid black; width: 42px; padding: 3px 1px;">Süre</th>
+            <th style="border: 1px solid black; width: 115px; padding: 3px 4px; text-align: left;">Modül</th>
+            <th style="border: 1px solid black; padding: 3px 5px; text-align: left;">Konular ve Kazanımlar</th>
+            <th style="border: 1px solid black; width: 105px; padding: 3px 2px;">Yöntem ve Teknikler</th>
+            <th style="border: 1px solid black; width: 100px; padding: 3px 2px;">Araç ve Gereçler</th>
+            <th style="border: 1px solid black; width: 115px; padding: 3px 2px;">Ölçme ve Değerlendirme</th>
+            <th style="border: 1px solid black; width: 80px; padding: 3px 2px;">Açıklamalar</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${weeklyRowsHtml}
+        </tbody>
+      </table>
+
+      <!-- III. BÖLÜM: MEB 3'LÜ ONAY VE İMZA BLOĞU -->
+      <div style="margin-top: 10px; page-break-inside: avoid; break-inside: avoid;">
+        <div style="font-size: 7pt; font-style: italic; color: #333; margin-bottom: 6px; text-align: justify; line-height: 1.3;">
+          * İşbu çerçeve ve çalışma planı, MEB Hayat Boyu Öğrenme Kurumları Yönetmeliği (Madde 42) ve ilgili modüler öğretim programı esas alınarak hazırlanmış olup, belirlenen gün, saat ve derslik şartlarında uygulanması uygun bulunmuştur.
+        </div>
+        <table style="width: 100%; border-collapse: collapse; border: none; text-align: center; font-size: 8pt; margin-top: 8px;">
+          <tr>
+            <td style="width: 33%; vertical-align: top; padding: 4px 10px;">
+              <div style="font-weight: bold; text-transform: uppercase;">HAZIRLAYAN</div>
+              <div style="margin-top: 3px; font-weight: 600;">${escapeHtml(instructor)}</div>
+              <div style="color: #444; font-size: 7.5pt;">Kurs Öğretmeni / Usta Öğretici</div>
+              <div style="margin-top: 4px; font-size: 7.5pt;">Tarih: ${startDate}</div>
+              <div style="margin-top: 28px; border-bottom: 1px dotted #888; width: 130px; margin-left: auto; margin-right: auto;"></div>
+              <div style="font-size: 7pt; color: #666; margin-top: 2px;">İmza</div>
+            </td>
+            <td style="width: 34%; vertical-align: top; padding: 4px 10px;">
+              <div style="font-weight: bold; text-transform: uppercase;">İNCELEYEN</div>
+              <div style="margin-top: 3px; font-weight: 600;">${escapeHtml(supervisor)}</div>
+              <div style="color: #444; font-size: 7.5pt;">Müdür Yardımcısı / Kurs Sorumlusu</div>
+              <div style="margin-top: 4px; font-size: 7.5pt;">Tarih: ${startDate}</div>
+              <div style="margin-top: 28px; border-bottom: 1px dotted #888; width: 130px; margin-left: auto; margin-right: auto;"></div>
+              <div style="font-size: 7pt; color: #666; margin-top: 2px;">İmza</div>
+            </td>
+            <td style="width: 33%; vertical-align: top; padding: 4px 10px;">
+              <div style="font-weight: bold; text-transform: uppercase;">UYGUNDUR / ONAY</div>
+              <div style="margin-top: 3px; font-weight: 600;">...................................................</div>
+              <div style="color: #444; font-size: 7.5pt;">Halk Eğitimi Merkezi Müdürü</div>
+              <div style="margin-top: 4px; font-size: 7.5pt;">Tarih: ${startDate}</div>
+              <div style="margin-top: 28px; border-bottom: 1px dotted #888; width: 130px; margin-left: auto; margin-right: auto;"></div>
+              <div style="font-size: 7pt; color: #666; margin-top: 2px;">Mühür / İmza</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+
+    </div>
+  `;
+}
+
 function generateKararDurumuHtml(course) {
   if (!course) return '<p class="p-6 text-center text-slate-500">Kurs bilgisi bulunamadı.</p>';
 
@@ -5378,6 +5723,44 @@ function renderDocumentsTab() {
   const students = activeCourseForDetail.students;
   const totalHours = Number(activeCourseForDetail.totalHours) || 0;
   const maxAllowed = Math.floor(totalHours / 5);
+
+  // 0. Kurs Planı Özeti (Kurs Açılış Evrakı)
+  try {
+    const kursPlaniStatsBar = document.getElementById('kursPlaniStatsBar');
+    if (kursPlaniStatsBar) {
+      const validDates = getValidCourseDates(activeCourseForDetail);
+      const modCount = (Array.isArray(activeCourseForDetail.modules) && activeCourseForDetail.modules.length > 0)
+        ? activeCourseForDetail.modules.length
+        : (activeCourseForDetail.moduleCount ? Math.max(1, Number(activeCourseForDetail.moduleCount)) : 1);
+      const syllabusCount = (activeCourseForDetail.syllabus || []).length;
+
+      kursPlaniStatsBar.innerHTML = `
+        <div class="flex flex-wrap items-center justify-between gap-3 w-full">
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="font-bold text-teal-800 dark:text-teal-300">Plan Parametreleri:</span>
+            <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-white dark:bg-[#152125] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-[#2b3e45] rounded-lg font-bold">
+              <span>Toplam:</span> <strong class="text-teal-700 dark:text-teal-300">${totalHours}</strong> Saat
+            </span>
+            <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-teal-50 dark:bg-teal-950/40 text-teal-800 dark:text-teal-300 border border-teal-200 dark:border-teal-800 rounded-lg font-bold">
+              <span>Modül:</span> <strong>${modCount}</strong> Modül
+            </span>
+            <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-sky-50 dark:bg-sky-950/40 text-sky-800 dark:text-sky-300 border border-sky-200 dark:border-sky-800 rounded-lg font-bold">
+              <span>Ders Günü:</span> <strong>${validDates.length}</strong> Gün
+            </span>
+            <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800 rounded-lg font-bold">
+              <span>Konu Planı:</span> <strong>${syllabusCount}</strong> Saat
+            </span>
+          </div>
+          <div class="text-[11px] text-teal-700 dark:text-teal-400 font-semibold flex items-center gap-1">
+            <i data-lucide="check-circle" class="w-3.5 h-3.5"></i>
+            <span>Resmi Onaya Hazır (Yatay A4)</span>
+          </div>
+        </div>
+      `;
+    }
+  } catch (err) {
+    console.error('Error rendering kursPlaniStatsBar:', err);
+  }
 
   // 1. Karar Durumu Özeti
   try {
@@ -5576,6 +5959,32 @@ function renderDocumentsTab() {
     console.error('Error rendering imzaListesiStatsBar:', err);
   }
 }
+
+window.openKursPlaniPreview = function() {
+  if (!activeCourseForDetail) {
+    alert('Lütfen önce bir kurs seçiniz.');
+    return;
+  }
+  const container = document.getElementById('kursPlaniPreviewContainer');
+  const modal = document.getElementById('kursPlaniModal');
+  if (container) {
+    container.innerHTML = generateKursPlaniHtml(activeCourseForDetail);
+  }
+  modal?.classList.remove('hidden');
+  refreshLucide();
+};
+
+window.closeKursPlaniPreview = function() {
+  const modal = document.getElementById('kursPlaniModal');
+  modal?.classList.add('hidden');
+  cleanupPrintArea();
+};
+
+window.triggerPrintKursPlani = function() {
+  if (!activeCourseForDetail) return;
+  const title = getDocumentSaveTitle('Kurs Planı', activeCourseForDetail);
+  safePrint(generateKursPlaniHtml(activeCourseForDetail), true, title);
+};
 
 window.openKararDurumuPreview = function() {
   if (!activeCourseForDetail) return;
@@ -5984,7 +6393,10 @@ window.downloadSingleDocument = function(docName) {
   let html = '';
   let isLandscape = false;
 
-  if (docName.includes('Karar')) {
+  if (docName.includes('Plan') || docName.includes('plan')) {
+    html = generateKursPlaniHtml(course);
+    isLandscape = true;
+  } else if (docName.includes('Karar')) {
     html = generateKararDurumuHtml(course);
     isLandscape = false;
   } else if (docName.includes('Defter') || docName.includes('Yoklama')) {
@@ -6302,6 +6714,7 @@ function generateDefterHtml(course) {
       for (let h = 1; h <= dailyHours; h++) {
         const overallHour = (globalDayIndex * dailyHours) + h;
         if (overallHour <= totalHours) {
+          const syllabusItem = syllabus.find(s => Number(s.hour) === overallHour);
           const rawTopic = syllabusItem?.topic || `${courseName} Uygulamaları ve Değerlendirme`;
           const topicText = toTurkishTitleCase(rawTopic);
 
