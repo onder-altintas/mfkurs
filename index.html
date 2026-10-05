@@ -1105,6 +1105,7 @@
           <input
             type="text"
             id="centerFormName"
+            data-casing="title"
             required
             placeholder="Örn: Kadıköy Halk Eğitimi Merkezi"
             class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition"
@@ -1125,6 +1126,7 @@
           <input
             type="text"
             id="centerFormSupervisor"
+            data-casing="person"
             placeholder="Örn: Kemal Demir (Müdür Yrd.)"
             class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition"
           />
@@ -1178,6 +1180,7 @@
           <input
             type="text"
             id="areaFormName"
+            data-casing="title"
             required
             placeholder="Örn: Havacılık ve Uzay Teknolojileri"
             class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-[#10191b] border border-slate-200 dark:border-[#23353c] rounded-xl text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-teal-500 focus:bg-white transition"
@@ -1233,6 +1236,7 @@
             <input
               type="text"
               id="tmplFormName"
+              data-casing="title"
               required
               placeholder="Örn: Bilgisayar İşletmenliği"
               class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-sky-500"
@@ -1274,6 +1278,7 @@
             <input
               type="text"
               id="tmplFormCode"
+              data-casing="upper"
               required
               placeholder="Örn: BLG-160 veya DKS"
               class="w-full px-3.5 py-2 uppercase bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono font-semibold focus:ring-2 focus:ring-sky-500 focus:bg-white transition"
@@ -1386,6 +1391,7 @@
           <input
             type="text"
             id="profileFullName"
+            data-casing="person"
             required
             placeholder="Örn: Selin Yılmaz"
             class="w-full px-3.5 py-2 bg-slate-50 dark:bg-[#10191b] border border-slate-200 dark:border-[#2b3e45] rounded-xl text-xs focus:ring-2 focus:ring-[#335C67] focus:outline-none font-medium"
@@ -1421,6 +1427,7 @@
             <input
               type="text"
               id="profileTitle"
+              data-casing="title"
               placeholder="Bilişim Eğitmeni"
               class="w-full px-3.5 py-2 bg-slate-50 dark:bg-[#10191b] border border-slate-200 dark:border-[#2b3e45] rounded-xl text-xs focus:ring-2 focus:ring-[#335C67] focus:outline-none"
             />
@@ -1430,6 +1437,7 @@
             <input
               type="text"
               id="profileInstitution"
+              data-casing="title"
               placeholder="Halk Eğitimi Merkezi"
               class="w-full px-3.5 py-2 bg-slate-50 dark:bg-[#10191b] border border-slate-200 dark:border-[#2b3e45] rounded-xl text-xs focus:ring-2 focus:ring-[#335C67] focus:outline-none"
             />
@@ -1509,6 +1517,7 @@
           <input
             type="text"
             id="userFormFullName"
+            data-casing="person"
             required
             placeholder="Örn: Selin Yılmaz"
             class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-purple-500"
@@ -1543,6 +1552,7 @@
           <input
             type="text"
             id="userFormTitle"
+            data-casing="title"
             placeholder="Örn: Bilişim Teknolojileri Eğitmeni"
             class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-purple-500"
           />
@@ -1707,6 +1717,7 @@
             <input
               type="text"
               id="courseFormSupervisor"
+              data-casing="person"
               placeholder="Örn: Mehmet Ali Şahin (Müdür Yrd.)"
               class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-500 focus:bg-white transition"
             />
@@ -1734,6 +1745,7 @@
             <input
               type="text"
               id="courseFormClassroom"
+              data-casing="title"
               placeholder="Örn: 2 Nolu Atölye"
               class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-sky-500"
             />
@@ -2125,6 +2137,7 @@
               <input
                 type="text"
                 id="stdFirstName"
+                data-casing="person"
                 required
                 placeholder="Örn: Ahmet"
                 class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs focus:ring-2 focus:ring-sky-500 focus:outline-none"
@@ -2135,9 +2148,10 @@
               <input
                 type="text"
                 id="stdLastName"
+                data-casing="upper"
                 required
-                placeholder="Örn: Yılmaz"
-                class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs focus:ring-2 focus:ring-sky-500 focus:outline-none"
+                placeholder="Örn: YILMAZ"
+                class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs uppercase focus:ring-2 focus:ring-sky-500 focus:outline-none"
               />
             </div>
             <div>

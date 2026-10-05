@@ -10,6 +10,128 @@ let searchQuery = '';
 let activeCourseForDetail = null;
 let currentActiveView = 'teacher'; // 'teacher' | 'admin'
 
+// ============================================================================
+// TÜRKÇE TİPOGRAFİ & BÜYÜK/KÜÇÜK HARF STANDARDIZASYON MOTORU
+// Evrakların tek bir resmi kalemden çıkmış gibi standart görünmesini sağlar.
+// ============================================================================
+
+const TURKISH_ACRONYMS = new Set([
+  'TC', 'T.C.', 'MEB', 'HEM', 'A1', 'A2', 'B1', 'B2', 'C1', 'C2',
+  'SQL', 'HTML', 'CSS', 'CAD', 'CAM', 'CNC', '3D', '2D', 'BT', 'IT', 'PHP', 'JS', 'C#', 'C++', 'PC', 'RAM', 'SSD'
+]);
+
+const TURKISH_LOWER_CONJUNCTIONS = new Set(['ve', 'ile', 'veya', 'de', 'da', 'ki']);
+
+// Türkçe tam büyük harfe dönüştür (i -> İ, ı -> I duyarlı)
+function toTurkishUpper(str) {
+  if (!str || typeof str !== 'string') return '';
+  return str.trim().toLocaleUpperCase('tr-TR');
+}
+
+// Türkçe tam küçük harfe dönüştür (İ -> i, I -> ı duyarlı)
+function toTurkishLower(str) {
+  if (!str || typeof str !== 'string') return '';
+  return str.trim().toLocaleLowerCase('tr-TR');
+}
+
+// Türkçe Baş Harfleri Büyük (Title Case): Kurum adı, kurs adı, derslik, alan, unvan vb. için
+function toTurkishTitleCase(str) {
+  if (!str || typeof str !== 'string') return '';
+  const words = str.trim().split(/\s+/).filter(Boolean);
+  return words.map((word, idx) => {
+    const cleanLower = word.toLocaleLowerCase('tr-TR');
+    if (idx > 0 && TURKISH_LOWER_CONJUNCTIONS.has(cleanLower)) {
+      return cleanLower;
+    }
+    const cleanUpper = word.replace(/[^a-zA-Z0-9çğıöşüÇĞİÖŞÜ\.]/g, '').toLocaleUpperCase('tr-TR');
+    if (TURKISH_ACRONYMS.has(cleanUpper)) {
+      return word.toLocaleUpperCase('tr-TR');
+    }
+    return word.replace(/(\p{L})(\p{L}*)/gu, (match, firstLetter, restOfWord) => {
+      return firstLetter.toLocaleUpperCase('tr-TR') + restOfWord.toLocaleLowerCase('tr-TR');
+    });
+  }).join(' ');
+}
+
+// Türkçe Kursiyer Adı Soyadı Standart Formatı: Ad(lar) İlk Harf Büyük, Soyad TÜMÜ BÜYÜK (Örn: Ahmet YILMAZ, Fatma Zehra KAYA)
+function toTurkishStudentName(fullName) {
+  if (!fullName || typeof fullName !== 'string') return '';
+  const parts = fullName.trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return '';
+  if (parts.length === 1) return toTurkishTitleCase(parts[0]);
+  const surname = parts.pop().toLocaleUpperCase('tr-TR');
+  const firstNames = parts.map(p => toTurkishTitleCase(p)).join(' ');
+  return `${firstNames} ${surname}`;
+}
+
+// Türkçe Kişi / Eğitmen / Sorumlu Adı Standart Formatı
+function toTurkishPersonName(fullName) {
+  if (!fullName || typeof fullName !== 'string') return '';
+  return toTurkishStudentName(fullName);
+}
+
+// Cümle Düzeni: Açıklamalar, notlar, mazeretler için (Örn: "İlk ders tamamlandı. Raporlu.")
+function toTurkishSentenceCase(str) {
+  if (!str || typeof str !== 'string') return '';
+  const trimmed = str.trim();
+  if (!trimmed) return '';
+  const lower = trimmed.toLocaleLowerCase('tr-TR');
+  return lower.replace(/(^|[.?!]\s+)(\p{L})/gu, (m, prefix, letter) => {
+    return prefix + letter.toLocaleUpperCase('tr-TR');
+  });
+}
+
+// Otomatik Dinleyici: Kullanıcı form alanından çıktığında (blur/change) anında dönüştürür
+function setupAutoCasingListeners() {
+  if (window._autoCasingInitialized) return;
+  window._autoCasingInitialized = true;
+
+  document.addEventListener('focusout', (e) => {
+    const target = e.target;
+    if (!target || !target.tagName || (target.tagName !== 'INPUT' && target.tagName !== 'TEXTAREA')) return;
+    if (target.type === 'password' || target.type === 'file' || target.type === 'checkbox' || target.type === 'radio' || target.type === 'date' || target.type === 'time' || target.type === 'number') return;
+
+    const id = target.id || '';
+    const name = target.name || '';
+    if (id.toLowerCase().includes('password') || id.toLowerCase().includes('username') || id.toLowerCase().includes('url') || id.toLowerCase().includes('code') || id.toLowerCase().includes('tcno') || id.toLowerCase().includes('phone')) return;
+    if (name.toLowerCase().includes('password') || name.toLowerCase().includes('username')) return;
+    if (target.hasAttribute('data-no-autocase')) return;
+
+    const val = target.value;
+    if (!val || typeof val !== 'string' || !val.trim()) return;
+
+    if (target.getAttribute('data-casing') === 'upper' || id === 'stdLastName') {
+      target.value = toTurkishUpper(val);
+    } else if (target.getAttribute('data-casing') === 'person' || id === 'stdFirstName') {
+      target.value = toTurkishTitleCase(val);
+    } else if (target.getAttribute('data-casing') === 'student' || id === 'stdFullName') {
+      target.value = toTurkishStudentName(val);
+    } else if (target.getAttribute('data-casing') === 'sentence' || target.tagName === 'TEXTAREA' || id.toLowerCase().includes('description') || id.toLowerCase().includes('note')) {
+      target.value = toTurkishSentenceCase(val);
+    } else if (target.getAttribute('data-casing') === 'title' || 
+               id.toLowerCase().includes('name') || 
+               id.toLowerCase().includes('institution') || 
+               id.toLowerCase().includes('classroom') || 
+               id.toLowerCase().includes('supervisor') || 
+               id.toLowerCase().includes('title') || 
+               id.toLowerCase().includes('category') || 
+               id.toLowerCase().includes('area')) {
+      target.value = toTurkishTitleCase(val);
+    }
+  });
+}
+
+// Sayfa yüklenir yüklenmez dinleyiciyi hazırla
+setupAutoCasingListeners();
+
+window.toTurkishUpper = toTurkishUpper;
+window.toTurkishLower = toTurkishLower;
+window.toTurkishTitleCase = toTurkishTitleCase;
+window.toTurkishStudentName = toTurkishStudentName;
+window.toTurkishPersonName = toTurkishPersonName;
+window.toTurkishSentenceCase = toTurkishSentenceCase;
+window.setupAutoCasingListeners = setupAutoCasingListeners;
+
 // DOM Elementleri
 const loginScreen = document.getElementById('loginScreen');
 const dashboardScreen = document.getElementById('dashboardScreen');
@@ -482,34 +604,37 @@ window.isCourseRelatedToUser = isCourseRelatedToUser;
 
 // Kursun güncel eğitmen adını dinamik olarak çözümleyen yardımcı fonksiyon
 function getCourseInstructorName(course) {
-  if (!course) return (currentUser?.fullName || 'Kurs Eğitmeni').trim();
-
-  // 1. Kurs aktif kullanıcıya aitse güncel profil adını kullan
-  if (currentUser && isCourseRelatedToUser(course, currentUser)) {
-    return (currentUser.fullName || course.instructor || 'Kurs Eğitmeni').trim();
-  }
-
-  // 2. Kursun sahibinin kullanıcı kaydındaki güncel adını bul
-  if (course.userId && Array.isArray(currentUsers)) {
+  let name = 'Kurs Eğitmeni';
+  if (!course) {
+    name = currentUser?.fullName || 'Kurs Eğitmeni';
+  } else if (currentUser && isCourseRelatedToUser(course, currentUser)) {
+    name = currentUser.fullName || course.instructor || 'Kurs Eğitmeni';
+  } else if (course.userId && Array.isArray(currentUsers)) {
     const owner = currentUsers.find(u => u.id === course.userId || u.username === course.userId);
     if (owner && owner.fullName) {
-      return owner.fullName.trim();
+      name = owner.fullName;
+    } else {
+      name = course.instructor || 'Kurs Eğitmeni';
     }
+  } else {
+    name = course.instructor || 'Kurs Eğitmeni';
   }
-
-  // 3. Kurs üzerinde kayıtlı eğitmen adı
-  return (course.instructor || 'Kurs Eğitmeni').trim();
+  return toTurkishPersonName(name.trim());
 }
 
 // Kursun kurum adını dinamik olarak çözümleyen yardımcı fonksiyon
 function getCourseInstitutionName(course) {
-  if (!course) return (currentUser?.institution || 'Halk Eğitimi Merkezi').trim();
-  if (course.institution) return course.institution.trim();
-  if (course.centerName) return course.centerName.trim();
-  if (currentUser && isCourseRelatedToUser(course, currentUser)) {
-    if (currentUser.institution) return currentUser.institution.trim();
+  let inst = 'Halk Eğitimi Merkezi';
+  if (!course) {
+    inst = currentUser?.institution || 'Halk Eğitimi Merkezi';
+  } else if (course.institution) {
+    inst = course.institution;
+  } else if (course.centerName) {
+    inst = course.centerName;
+  } else if (currentUser && isCourseRelatedToUser(course, currentUser) && currentUser.institution) {
+    inst = currentUser.institution;
   }
-  return 'Halk Eğitimi Merkezi';
+  return toTurkishTitleCase(inst.trim());
 }
 
 // Eğitmenin güncel profil adını ve kurumunu sadece kendine ait kurslarla senkronize eden fonksiyon
@@ -672,11 +797,11 @@ function handleSaveProfile(e) {
   e.preventDefault();
   if (!currentUser) return;
 
-  const fullName = profileFullName?.value.trim() || '';
+  const fullName = toTurkishPersonName(profileFullName?.value || '');
   const username = profileUsername?.value.trim() || '';
   const password = profilePassword?.value.trim() || '';
-  const title = profileTitle?.value.trim() || '';
-  const institution = profileInstitution?.value.trim() || '';
+  const title = toTurkishTitleCase(profileTitle?.value || '');
+  const institution = toTurkishTitleCase(profileInstitution?.value || '');
   const area = profileArea ? profileArea.value : getUserArea(currentUser);
   const avatar = profileAvatarUrl?.value.trim() || '';
 
@@ -1262,10 +1387,10 @@ function closeUserModal() {
 function handleSaveUser(e) {
   e.preventDefault();
   const id = userFormId.value;
-  const fullName = userFormFullName.value.trim();
+  const fullName = toTurkishPersonName(userFormFullName.value);
   const username = userFormUsername.value.trim().toLowerCase();
   const password = userFormPassword.value.trim();
-  const title = userFormTitle.value.trim();
+  const title = toTurkishTitleCase(userFormTitle.value);
   const role = roleAdmin.checked ? 'admin' : 'teacher';
 
   if (!fullName || !username || !password) {
@@ -1439,8 +1564,8 @@ function closeCenterModal() {
 function handleSaveCenter(e) {
   e.preventDefault();
   const id = centerFormId.value;
-  const name = centerFormName.value.trim();
-  const supervisor = centerFormSupervisor ? centerFormSupervisor.value.trim() : '';
+  const name = toTurkishTitleCase(centerFormName.value);
+  const supervisor = centerFormSupervisor ? toTurkishPersonName(centerFormSupervisor.value) : '';
   if (!name) return;
 
   if (id) {
@@ -1626,8 +1751,9 @@ window.closeAreaModal = closeAreaModal;
 function handleSaveArea(e) {
   e.preventDefault();
   const id = areaFormId ? areaFormId.value : '';
-  const name = areaFormName ? areaFormName.value.trim() : '';
-  if (!name) return;
+  const rawName = areaFormName ? areaFormName.value.trim() : '';
+  if (!rawName) return;
+  const name = toTurkishTitleCase(rawName);
 
   // İsim çakışması kontrolü
   const exists = currentAreas.some(a => {
@@ -2025,8 +2151,8 @@ function closeCourseTmplModal() {
 function handleSaveCourseTemplate(e) {
   e.preventDefault();
   const id = tmplFormId.value;
-  const name = tmplFormName.value.trim();
-  const code = tmplFormCode.value.trim().toUpperCase();
+  const name = toTurkishTitleCase(tmplFormName.value);
+  const code = toTurkishUpper(tmplFormCode.value);
 
   if (!name) {
     alert('Lütfen kurs adını giriniz.');
@@ -2061,7 +2187,7 @@ function handleSaveCourseTemplate(e) {
   for (let idx = 0; idx < editingTmplModules.length; idx++) {
     const mod = editingTmplModules[idx];
     const mNum = idx + 1;
-    const modName = (mod.name || '').trim();
+    const modName = toTurkishTitleCase(mod.name || '');
     if (!modName) {
       alert(`Lütfen ${mNum}. modülün adını giriniz.`);
       return;
@@ -2079,8 +2205,9 @@ function handleSaveCourseTemplate(e) {
 
     const moduleLessonTopics = [];
     for (let h = 1; h <= lessonH; h++) {
-      let topic = rawTopics[h - 1] || `${modName} - Konu ${h}`;
-      topic = topic.replace(/^\d+[\.\-\)\s]+/, '').trim();
+      let rawTopic = rawTopics[h - 1] || `${modName} - Konu ${h}`;
+      rawTopic = rawTopic.replace(/^\d+[\.\-\)\s]+/, '').trim();
+      const topic = toTurkishTitleCase(rawTopic);
       moduleLessonTopics.push(topic);
 
       fullSyllabus.push({
@@ -2693,17 +2820,19 @@ function handleSaveCourse(e) {
 
   const tmpl = currentTemplates.find(t => t.id === selectedTmplId);
   const selectedText = courseFormTemplateSelect.options[courseFormTemplateSelect.selectedIndex]?.text || '';
-  const courseName = tmpl ? tmpl.name : selectedText.replace(/ \(\d+ Saat\)/, '').replace(/ \(Özel\)/, '').trim();
+  const rawCourseName = tmpl ? tmpl.name : selectedText.replace(/ \(\d+ Saat\)/, '').replace(/ \(Özel\)/, '').trim();
+  const courseName = toTurkishTitleCase(rawCourseName);
 
-  const institution = courseFormInstitutionSelect.value;
-  if (!institution) {
+  const rawInstitution = courseFormInstitutionSelect.value;
+  if (!rawInstitution) {
     alert('Lütfen bir kurs merkezi seçiniz.');
     courseFormInstitutionSelect.focus();
     return;
   }
+  const institution = toTurkishTitleCase(rawInstitution);
 
-  const supervisor = courseFormSupervisor.value.trim();
-  const instructor = (currentUser?.fullName || courseFormInstructor.value || 'Kurs Eğitmeni').trim();
+  const supervisor = toTurkishPersonName(courseFormSupervisor.value);
+  const instructor = toTurkishPersonName(currentUser?.fullName || courseFormInstructor.value || 'Kurs Eğitmeni');
   let code = courseFormCode.value.trim().toLowerCase();
   if (!code) {
     code = tmpl ? generateNextCourseCode(tmpl, id) : 'kurs0001';
@@ -2723,8 +2852,8 @@ function handleSaveCourse(e) {
   const moduleCount = (tmpl && tmpl.moduleCount) ? Math.max(1, Number(tmpl.moduleCount)) : (courseFormModuleCount ? Math.max(1, Number(courseFormModuleCount.value) || 1) : 1);
   const status = id ? (currentCourses.find(c => c.id === id)?.status || 'active') : 'active';
   const documentType = courseFormDocumentType ? courseFormDocumentType.value : 'Sertifika';
-  const classroom = courseFormClassroom.value.trim();
-  const description = courseFormDescription.value.trim();
+  const classroom = toTurkishTitleCase(courseFormClassroom.value);
+  const description = toTurkishSentenceCase(courseFormDescription.value);
 
   // Günler ve Saatler
   const selectedDays = Array.from(document.querySelectorAll('.course-day-checkbox:checked')).map(cb => cb.value);
@@ -3098,7 +3227,7 @@ function renderStudentTable() {
     tr.innerHTML = `
       <td class="px-4 py-3 font-medium text-slate-400">${idx + 1}</td>
       <td class="px-4 py-3 font-semibold text-slate-800">
-        <div>${escapeHtml(s.fullName)}</div>
+        <div>${escapeHtml(toTurkishStudentName(s.fullName || `${s.firstName || ''} ${s.lastName || ''}`))}</div>
         <div class="text-[10px] text-slate-400 font-normal">Kayıtlı Kursiyer</div>
       </td>
       <td class="px-4 py-3 font-mono text-slate-500">${escapeHtml(s.tcNo || '-')}</td>
@@ -3243,23 +3372,19 @@ function handleAddStudent(e) {
   if (!activeCourseForDetail) return;
 
   const editId = (document.getElementById('stdEditId')?.value || '').trim();
-  const firstName = (document.getElementById('stdFirstName')?.value || '').trim();
-  const lastName = (document.getElementById('stdLastName')?.value || '').trim();
+  const rawFirstName = (document.getElementById('stdFirstName')?.value || '').trim();
+  const rawLastName = (document.getElementById('stdLastName')?.value || '').trim();
   const tcNo = (document.getElementById('stdTcNo')?.value || '').trim();
   const phone = (document.getElementById('stdPhone')?.value || '').trim();
 
-  if (!firstName || !lastName) {
+  if (!rawFirstName || !rawLastName) {
     alert('Lütfen Kursiyer Adı ve Soyadı alanlarını doldurunuz.');
     return;
   }
 
-  if (tcNo && !isValidTcKimlikNo(tcNo)) {
-    if (!confirm('Girdiğiniz T.C. Kimlik Numarası algoritma kontrolünden geçemedi (hatalı olabilir). Yine de devam etmek istiyor musunuz?')) {
-      return;
-    }
-  }
-
-  const fullName = `${firstName} ${lastName}`.trim();
+  const firstName = toTurkishTitleCase(rawFirstName);
+  const lastName = toTurkishUpper(rawLastName);
+  const fullName = toTurkishStudentName(`${firstName} ${lastName}`);
 
   if (editId) {
     // Kursiyer Güncelleme
@@ -3454,17 +3579,20 @@ function parseBulkStudentLine(line) {
   let lastName = '';
 
   if (words.length === 1) {
-    firstName = words[0];
+    firstName = toTurkishTitleCase(words[0]);
     lastName = '';
   } else {
-    lastName = words.pop();
-    firstName = words.join(' ');
+    const lName = words.pop();
+    lastName = toTurkishUpper(lName);
+    firstName = toTurkishTitleCase(words.join(' '));
   }
+
+  const fullName = toTurkishStudentName(`${firstName} ${lastName}`);
 
   return {
     firstName,
     lastName,
-    fullName: `${firstName} ${lastName}`.trim(),
+    fullName,
     tcNo,
     phone
   };
@@ -5099,10 +5227,10 @@ function generateKararDurumuHtml(course) {
     if (!isNaN(d.getTime())) courseYear = d.getFullYear();
   }
 
-  const institution = getCourseInstitutionName(course);
-  const courseName = course.name || course.title || 'Kurs';
-  const instructor = getCourseInstructorName(course);
-  const supervisor = course.supervisor || '';
+  const institution = toTurkishTitleCase(getCourseInstitutionName(course));
+  const courseName = toTurkishTitleCase(course.name || course.title || 'Kurs');
+  const instructor = toTurkishPersonName(getCourseInstructorName(course));
+  const supervisor = toTurkishPersonName(course.supervisor || '');
   const startDateFormatted = formatShortDate(course.startDate);
   const endDateFormatted = formatShortDate(course.endDate);
   const courseDays = (course.days && course.days.length > 0) ? course.days.join(', ') : 'Pazartesi, Salı, Çarşamba, Perşembe, Cuma';
@@ -5132,10 +5260,12 @@ function generateKararDurumuHtml(course) {
       else if (dec === 'Transkript') transcriptCount++;
       else if (dec === 'Devamsız') failedCount++;
 
+      const sFullName = toTurkishStudentName(s.fullName || `${s.firstName || ''} ${s.lastName || ''}`);
+
       rowsHtml += `
         <tr style="height: 22px;">
           <td style="border: 1px solid black; text-align: center; font-weight: bold; font-size: 8.5pt; padding: 1px 2px;">${i}</td>
-          <td style="border: 1px solid black; padding: 1px 8px; font-size: 8.5pt; text-align: left; font-weight: 500;">${escapeHtml(s.fullName || `${s.firstName || ''} ${s.lastName || ''}`.trim())}</td>
+          <td style="border: 1px solid black; padding: 1px 8px; font-size: 8.5pt; text-align: left; font-weight: 500;">${escapeHtml(sFullName)}</td>
           <td style="border: 1px solid black; text-align: center; font-size: 8.5pt; padding: 1px 6px;">${dec}</td>
         </tr>
       `;
@@ -5962,9 +6092,9 @@ function formatDayMonth(dateStr) {
 function generateDefterHtml(course) {
   if (!course) return '<p class="p-6 text-center text-slate-500">Kurs bilgisi bulunamadı.</p>';
 
-  const institution = getCourseInstitutionName(course) || 'Halk Eğitimi Merkezi Müdürlüğü';
-  const courseName = course.name || course.title || 'Kurs';
-  const instructor = getCourseInstructorName(course);
+  const institution = toTurkishTitleCase(getCourseInstitutionName(course) || 'Halk Eğitimi Merkezi Müdürlüğü');
+  const courseName = toTurkishTitleCase(course.name || course.title || 'Kurs');
+  const instructor = toTurkishPersonName(getCourseInstructorName(course));
   const startDate = formatShortDate(course.startDate);
   const endDate = formatShortDate(course.endDate);
   const courseNumber = course.code || course.id || '-';
@@ -6017,7 +6147,7 @@ function generateDefterHtml(course) {
     for (let r = 1; r <= maxAttRows; r++) {
       if (r <= sortedStudents.length) {
         const s = sortedStudents[r - 1];
-        const sFullName = (s.fullName || `${s.firstName || ''} ${s.lastName || ''}`).trim();
+        const sFullName = toTurkishStudentName(s.fullName || `${s.firstName || ''} ${s.lastName || ''}`);
         const absences = s.dailyAbsences || [];
 
         let totalAbsentHours = absences.reduce((sum, d) => sum + Number(d.hours || 0), 0);
@@ -6089,9 +6219,9 @@ function generateDefterHtml(course) {
       <div class="defter-page" style="min-height: 980px; padding: 25px 20px; box-sizing: border-box; background: #fff; display: flex; flex-direction: column; justify-content: space-between;">
         <div>
           <div style="text-align: center; margin-bottom: 10px;">
-            <div style="font-weight: bold; font-size: 10.5pt; text-transform: uppercase;">${escapeHtml(institution)}</div>
+            <div style="font-weight: bold; font-size: 10.5pt; text-transform: uppercase;">${escapeHtml(toTurkishUpper(institution))}</div>
             <div style="font-weight: bold; font-size: 11pt; text-transform: uppercase; margin-top: 2px;">
-              ${escapeHtml(courseName)} KURSU SINIF YOKLAMA LİSTESİ${pageSubtitle}
+              ${escapeHtml(toTurkishUpper(courseName))} KURSU SINIF YOKLAMA LİSTESİ${pageSubtitle}
             </div>
           </div>
           <div style="display: flex; justify-content: space-between; font-size: 8.5pt; font-weight: bold; margin-bottom: 6px;">
@@ -6172,8 +6302,8 @@ function generateDefterHtml(course) {
       for (let h = 1; h <= dailyHours; h++) {
         const overallHour = (globalDayIndex * dailyHours) + h;
         if (overallHour <= totalHours) {
-          const syllabusItem = syllabus.find(s => Number(s.hour) === overallHour);
-          const topicText = syllabusItem?.topic || `${courseName} Uygulamaları ve Değerlendirme`;
+          const rawTopic = syllabusItem?.topic || `${courseName} Uygulamaları ve Değerlendirme`;
+          const topicText = toTurkishTitleCase(rawTopic);
 
           hourBlocksHtml += `
             <div style="border-bottom: 1px solid black; padding: ${isHalfSlot ? '3px 5px' : '4px 6px'}; min-height: ${isHalfSlot ? '38px' : '48px'}; display: flex; flex-direction: column; justify-content: space-between; box-sizing: border-box;">
@@ -6410,11 +6540,11 @@ window.triggerPrintDocument = function(documentName) {
 function generateNotCizelgesiHtml(course) {
   if (!course) return '<p class="p-6 text-center text-slate-500">Kurs bilgisi bulunamadı.</p>';
 
-  const institution = getCourseInstitutionName(course);
-  const courseName = course.name || course.title || 'Kurs';
-  const instructor = getCourseInstructorName(course);
+  const institution = toTurkishTitleCase(getCourseInstitutionName(course));
+  const courseName = toTurkishTitleCase(course.name || course.title || 'Kurs');
+  const instructor = toTurkishPersonName(getCourseInstructorName(course));
   const courseNumber = course.code || course.id || '-';
-  const classroom = course.classroom || institution;
+  const classroom = toTurkishTitleCase(course.classroom || institution);
   const moduleCount = course.moduleCount ? Math.max(1, Number(course.moduleCount)) : 1;
   const docType = (course && course.documentType) ? course.documentType : 'Sertifika';
   const totalHours = Number(course.totalHours) || 0;
@@ -6467,7 +6597,7 @@ function generateNotCizelgesiHtml(course) {
   for (let i = 1; i <= totalRows; i++) {
     if (i <= sortedStudents.length) {
       const s = sortedStudents[i - 1];
-      const sFullName = (s.fullName || `${s.firstName || ''} ${s.lastName || ''}`).trim();
+      const sFullName = toTurkishStudentName(s.fullName || `${s.firstName || ''} ${s.lastName || ''}`);
       const absentHours = Number(s.absentHours || 0);
       const isDevamsiz = (s.attendance === 'Devamsız') || 
                          (s.result === 'Devamsız') ||
@@ -6694,9 +6824,9 @@ window.triggerPrintNotCizelgesi = function() {
 function generateSinavTutanagiHtml(course) {
   if (!course) return '<p class="p-6 text-center text-slate-500">Kurs bilgisi bulunamadı.</p>';
 
-  const institution = getCourseInstitutionName(course);
-  const courseName = course.name || course.title || 'Kurs';
-  const instructor = getCourseInstructorName(course);
+  const institution = toTurkishTitleCase(getCourseInstitutionName(course));
+  const courseName = toTurkishTitleCase(course.name || course.title || 'Kurs');
+  const instructor = toTurkishPersonName(getCourseInstructorName(course));
 
   // Kursiyerleri alfabetik sırala (Türkçe alfabe duyarlı)
   const sortedStudents = [...(course.students || [])].sort((a, b) => {
@@ -6711,7 +6841,7 @@ function generateSinavTutanagiHtml(course) {
   for (let i = 1; i <= totalRows; i++) {
     if (i <= sortedStudents.length) {
       const s = sortedStudents[i - 1];
-      const sFullName = (s.fullName || `${s.firstName || ''} ${s.lastName || ''}`).trim();
+      const sFullName = toTurkishStudentName(s.fullName || `${s.firstName || ''} ${s.lastName || ''}`);
 
       rowsHtml += `
         <tr style="height: 25px;">
@@ -6745,10 +6875,10 @@ function generateSinavTutanagiHtml(course) {
       <!-- BAŞLIK -->
       <div style="text-align: center; margin-bottom: 25px; line-height: 1.45;">
         <h2 style="font-size: 11pt; font-weight: bold; margin: 0; text-transform: uppercase; letter-spacing: 0.5px;">
-          ${escapeHtml(institution)}
+          ${escapeHtml(toTurkishUpper(institution))}
         </h2>
         <div style="font-size: 10pt; font-weight: bold; margin: 4px 0 0 0; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px dotted #666; display: inline-block; padding: 0 10px;">
-          ${escapeHtml(courseName)} KURSU
+          ${escapeHtml(toTurkishUpper(courseName))} KURSU
         </div>
         <h1 style="font-size: 11.5pt; font-weight: bold; margin: 6px 0 0 0; text-transform: uppercase; letter-spacing: 0.8px;">
           SINAV KATILIM LİSTESİ
@@ -6822,10 +6952,10 @@ window.triggerPrintSinavTutanagi = function() {
 function generateImzaListesiHtml(course) {
   if (!course) return '<p class="p-6 text-center text-slate-500">Kurs bilgisi bulunamadı.</p>';
 
-  const courseName = course.name || course.title || 'Kurs';
+  const courseName = toTurkishTitleCase(course.name || course.title || 'Kurs');
   const docType = course.documentType || 'Katılım Belgesi';
   const docTypeSuffix = docType === 'Sertifika' ? 'SERTİFİKALI' : 'KATILIM BELGELİ';
-  const fullTitle = `${courseName.toUpperCase()} KURSU (${docTypeSuffix})`;
+  const fullTitle = `${toTurkishUpper(courseName)} KURSU (${docTypeSuffix})`;
 
   // Kurs günleri
   const validDates = getValidCourseDates(course);
@@ -6880,6 +7010,9 @@ function generateImzaListesiHtml(course) {
         }
       }
 
+      adi = toTurkishTitleCase(adi);
+      soyadi = toTurkishUpper(soyadi);
+
       let dateCellsHtml = '';
       for (let c = 0; c < dateColumnsPerPage; c++) {
         dateCellsHtml += `<td style="border: 1px solid black; padding: 2px;">&nbsp;</td>`;
@@ -6888,8 +7021,8 @@ function generateImzaListesiHtml(course) {
       tbodyRowsHtml += `
         <tr style="height: 24px;">
           <td style="border: 1px solid black; text-align: center; font-weight: bold; font-size: 8pt; padding: 2px;">${r}</td>
-          <td style="border: 1px solid black; padding: 2px 6px; font-size: 8pt; text-align: left; text-transform: uppercase;">${escapeHtml(adi)}</td>
-          <td style="border: 1px solid black; padding: 2px 6px; font-size: 8pt; text-align: left; text-transform: uppercase;">${escapeHtml(soyadi)}</td>
+          <td style="border: 1px solid black; padding: 2px 6px; font-size: 8pt; text-align: left;">${escapeHtml(adi)}</td>
+          <td style="border: 1px solid black; padding: 2px 6px; font-size: 8pt; text-align: left; font-weight: bold;">${escapeHtml(soyadi)}</td>
           ${dateCellsHtml}
         </tr>
       `;
@@ -7103,17 +7236,19 @@ function handleImportStudentsFromExcel(e) {
         let lastName = '';
 
         if (nameKey && surnameKey) {
-          firstName = String(row[nameKey]).trim();
-          lastName = String(row[surnameKey]).trim();
-          fullName = `${firstName} ${lastName}`.trim();
+          firstName = toTurkishTitleCase(String(row[nameKey]).trim());
+          lastName = toTurkishUpper(String(row[surnameKey]).trim());
+          fullName = toTurkishStudentName(`${firstName} ${lastName}`);
         } else if (nameKey) {
-          fullName = String(row[nameKey]).trim();
+          const rawFull = String(row[nameKey]).trim();
+          fullName = toTurkishStudentName(rawFull);
           const parts = fullName.split(/\s+/);
           if (parts.length > 1) {
             lastName = parts.pop();
             firstName = parts.join(' ');
           } else {
             firstName = fullName;
+            lastName = '';
           }
         }
 
