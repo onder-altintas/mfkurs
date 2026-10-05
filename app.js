@@ -5233,12 +5233,14 @@ function generateKursPlaniHtml(course) {
   }
   const yearText = (startYear === endYear) ? `${startYear}-${startYear + 1}` : `${startYear}-${endYear}`;
 
-  const rawInstitution = getCourseInstitutionName(course) || 'Halk Eğitimi Merkezi Müdürlüğü';
-  const institutionUpper = toTurkishUpper(rawInstitution);
+  const docType = (course.documentType) ? course.documentType : 'Sertifika';
+  const isKatilimBelgesi = docType.toLowerCase().includes('katılım') || docType.toLowerCase().includes('katilim');
+
+  const rawInstitution = getCourseInstitutionName(course) || (isKatilimBelgesi ? 'Meslek Fabrikası' : 'Halk Eğitimi Merkezi');
   const courseName = toTurkishTitleCase(course.name || course.title || 'Kurs');
   const courseNameUpper = toTurkishUpper(courseName);
   const instructor = toTurkishPersonName(getCourseInstructorName(course));
-  const supervisor = toTurkishPersonName(course.supervisor || 'Kurs Merkezi Sorumlusu');
+  const supervisor = toTurkishPersonName(course.supervisor || '');
   const startDate = formatShortDate(course.startDate);
   const endDate = formatShortDate(course.endDate);
   const courseNumber = course.code || course.id || '-';
@@ -5250,10 +5252,83 @@ function generateKursPlaniHtml(course) {
     ? course.days.join(', ')
     : 'Pazartesi, Salı, Çarşamba, Perşembe, Cuma';
   const courseCategory = course.category || course.area || 'Genel Kurs Programı';
-  const docType = (course.documentType) ? course.documentType : 'Sertifika / Kurs Bitirme Belgesi';
   const courseTimeText = (course.startTime && course.endTime)
     ? `${course.startTime} - ${course.endTime}`
     : `${dailyHours} Ders Saati`;
+
+  // Kurumsal Makam, Üst Başlık, İnceleyen ve Onaylayan Yetkili Tanımlamaları
+  let headerHtml = '';
+  let institutionTableLabel = '';
+  let documentTypeLabel = '';
+  let footnoteText = '';
+  let instructorTitle = '';
+  let reviewerTitle = '';
+  let approverTitle = '';
+
+  if (isKatilimBelgesi) {
+    // 1. KURS KATILIM BELGESİ: İZMİR BÜYÜKŞEHİR BELEDİYESİ MESLEK FABRİKASI
+    // Kurs Merkezi Sorumlusu inceler, Meslek Fabrikası Şube Müdürü onaylar.
+    const centerName = rawInstitution.toLowerCase().includes('halk eğitimi')
+      ? 'Halkapınar Kurs Merkezi'
+      : rawInstitution;
+
+    headerHtml = `
+      <div style="font-size: 10pt; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">T.C.</div>
+      <div style="font-size: 11pt; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; color: #111;">İZMİR BÜYÜKŞEHİR BELEDİYESİ</div>
+      <div style="font-size: 9pt; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; color: #333;">SOSYAL HİZMETLER DAİRESİ BAŞKANLIĞI</div>
+      <div style="font-size: 10.5pt; font-weight: 800; text-transform: uppercase; margin-top: 1px; letter-spacing: 0.5px;">MESLEK FABRİKASI ŞUBE MÜDÜRLÜĞÜ</div>
+      <div style="font-size: 8.5pt; font-weight: 600; text-transform: uppercase; margin-top: 1px; color: #444;">${escapeHtml(toTurkishUpper(centerName))}</div>
+      <div style="font-size: 9.5pt; font-weight: bold; margin-top: 3px; text-transform: uppercase;">
+        ${yearText} EĞİTİM VE ÖĞRETİM YILI
+      </div>
+      <div style="font-size: 11pt; font-weight: 800; margin-top: 2px; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #000; display: inline-block; padding-bottom: 2px;">
+        ${escapeHtml(courseNameUpper)} KURSU ÇERÇEVE VE ÇALIŞMA PLANI
+      </div>
+    `;
+
+    institutionTableLabel = `İzmir Büyükşehir Belediyesi Meslek Fabrikası (${escapeHtml(toTurkishTitleCase(centerName))})`;
+    documentTypeLabel = 'Kurs Katılım Belgesi (İzmir Büyükşehir Belediyesi)';
+    footnoteText = '* İşbu çalışma ve uygulama planı, İzmir Büyükşehir Belediyesi Meslek Fabrikası Şube Müdürlüğü eğitim ve kurs yönergesi esas alınarak hazırlanmış olup, belirlenen gün, saat ve derslik şartlarında uygulanması uygun bulunmuştur.';
+    instructorTitle = 'Kurs Eğitmeni';
+    reviewerTitle = 'Kurs Merkezi Sorumlusu';
+    approverTitle = 'Meslek Fabrikası Şube Müdürü';
+  } else {
+    // 2. SERTİFİKA: MEB HALK EĞİTİMİ MERKEZİ MÜDÜRLÜĞÜ
+    // Kurs sorumlusu değil, Halk Eğitimi Merkezi Müdür Yardımcısı inceler ve imzalar. HEM Müdürü onaylar.
+    let hemInstitution = rawInstitution;
+    if (!hemInstitution.toLowerCase().includes('halk eğitimi') && !hemInstitution.toLowerCase().includes('halk egitimi')) {
+      if (currentUser?.institution && (currentUser.institution.toLowerCase().includes('halk eğitimi') || currentUser.institution.toLowerCase().includes('halk egitimi'))) {
+        hemInstitution = currentUser.institution;
+      } else {
+        hemInstitution = 'Halk Eğitimi Merkezi Müdürlüğü';
+      }
+    }
+    if (!hemInstitution.toLowerCase().includes('müdürlüğü') && !hemInstitution.toLowerCase().includes('mudurlugu')) {
+      hemInstitution += ' Müdürlüğü';
+    }
+    const hemInstitutionUpper = toTurkishUpper(hemInstitution);
+
+    headerHtml = `
+      <div style="font-size: 10pt; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">T.C.</div>
+      <div style="font-size: 9.5pt; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">MİLLÎ EĞİTİM BAKANLIĞI</div>
+      <div style="font-size: 9.5pt; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">HAYAT BOYU ÖĞRENME GENEL MÜDÜRLÜĞÜ</div>
+      <div style="font-size: 10.5pt; font-weight: bold; text-transform: uppercase; margin-top: 2px;">${escapeHtml(hemInstitutionUpper)}</div>
+      <div style="font-size: 8.5pt; font-weight: 600; text-transform: uppercase; margin-top: 1px; color: #444;">(İzmir Büyükşehir Belediyesi Meslek Fabrikası İş Birliğiyle)</div>
+      <div style="font-size: 9.5pt; font-weight: bold; margin-top: 3px; text-transform: uppercase;">
+        ${yearText} EĞİTİM VE ÖĞRETİM YILI
+      </div>
+      <div style="font-size: 11pt; font-weight: 800; margin-top: 2px; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #000; display: inline-block; padding-bottom: 2px;">
+        ${escapeHtml(courseNameUpper)} KURSU MODÜLER ÇERÇEVE VE ÇALIŞMA PLANI
+      </div>
+    `;
+
+    institutionTableLabel = `${escapeHtml(toTurkishTitleCase(hemInstitution))} &bull; Meslek Fabrikası (${escapeHtml(toTurkishTitleCase(rawInstitution))})`;
+    documentTypeLabel = 'Sertifika (MEB Hayat Boyu Öğrenme Onaylı)';
+    footnoteText = '* İşbu çerçeve ve çalışma planı, MEB Hayat Boyu Öğrenme Kurumları Yönetmeliği (Madde 42) ve ilgili modüler öğretim programı esas alınarak hazırlanmış olup, belirlenen gün, saat ve derslik şartlarında uygulanması uygun bulunmuştur.';
+    instructorTitle = 'Kurs Öğretmeni / Usta Öğretici';
+    reviewerTitle = 'Halk Eğitimi Merkezi Müdür Yardımcısı';
+    approverTitle = 'Halk Eğitimi Merkezi Müdürü';
+  }
 
   // 1. MODÜLLER VE TARİHLERİ
   let modulesList = [];
@@ -5426,18 +5501,9 @@ function generateKursPlaniHtml(course) {
   return `
     <div class="kurs-plani-document" style="font-family: Arial, Helvetica, sans-serif; color: #000; line-height: 1.2; width: 100%; max-width: 1050px; margin: 0 auto; background: #fff; box-sizing: border-box; padding: 6px;">
       
-      <!-- Başlık (Ortalı & Kalın) -->
+      <!-- Başlık (Dinamik: Meslek Fabrikası veya MEB HEM) -->
       <div style="text-align: center; margin-bottom: 8px;">
-        <div style="font-size: 10pt; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">T.C.</div>
-        <div style="font-size: 9.5pt; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">MİLLÎ EĞİTİM BAKANLIĞI</div>
-        <div style="font-size: 9.5pt; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">HAYAT BOYU ÖĞRENME GENEL MÜDÜRLÜĞÜ</div>
-        <div style="font-size: 10.5pt; font-weight: bold; text-transform: uppercase; margin-top: 2px;">${escapeHtml(institutionUpper)}</div>
-        <div style="font-size: 10pt; font-weight: bold; margin-top: 3px; text-transform: uppercase;">
-          ${yearText} EĞİTİM VE ÖĞRETİM YILI
-        </div>
-        <div style="font-size: 11pt; font-weight: 800; margin-top: 2px; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #000; display: inline-block; padding-bottom: 2px;">
-          ${escapeHtml(courseNameUpper)} KURSU MODÜLER ÇERÇEVE VE ÇALIŞMA PLANI
-        </div>
+        ${headerHtml}
       </div>
 
       <!-- Kurs Üst / Kimlik Bilgileri Tablosu -->
@@ -5453,7 +5519,7 @@ function generateKursPlaniHtml(course) {
             <td style="border: 1px solid black; padding: 2.5px 5px; font-weight: bold; background: #f8fafc;">Alan / Branş</td>
             <td style="border: 1px solid black; padding: 2.5px 5px;">${escapeHtml(toTurkishTitleCase(courseCategory))}</td>
             <td style="border: 1px solid black; padding: 2.5px 5px; font-weight: bold; background: #f8fafc;">Verilecek Belge Türü</td>
-            <td style="border: 1px solid black; padding: 2.5px 5px;">${escapeHtml(docType)}</td>
+            <td style="border: 1px solid black; padding: 2.5px 5px; font-weight: 600;">${escapeHtml(documentTypeLabel)}</td>
           </tr>
           <tr>
             <td style="border: 1px solid black; padding: 2.5px 5px; font-weight: bold; background: #f8fafc;">Başlama / Bitiş Tarihi</td>
@@ -5471,7 +5537,7 @@ function generateKursPlaniHtml(course) {
             <td style="border: 1px solid black; padding: 2.5px 5px; font-weight: bold; background: #f8fafc;">Kursun Eğitmeni</td>
             <td style="border: 1px solid black; padding: 2.5px 5px; font-weight: 600;">${escapeHtml(instructor)}</td>
             <td style="border: 1px solid black; padding: 2.5px 5px; font-weight: bold; background: #f8fafc;">Kurs Yeri / Kurum</td>
-            <td style="border: 1px solid black; padding: 2.5px 5px;">${escapeHtml(toTurkishTitleCase(rawInstitution))}</td>
+            <td style="border: 1px solid black; padding: 2.5px 5px;">${institutionTableLabel}</td>
           </tr>
         </tbody>
       </table>
@@ -5521,25 +5587,25 @@ function generateKursPlaniHtml(course) {
         </tbody>
       </table>
 
-      <!-- III. BÖLÜM: MEB 3'LÜ ONAY VE İMZA BLOĞU -->
+      <!-- III. BÖLÜM: RESMİ 3'LÜ ONAY VE İMZA BLOĞU -->
       <div style="margin-top: 10px; page-break-inside: avoid; break-inside: avoid;">
         <div style="font-size: 7pt; font-style: italic; color: #333; margin-bottom: 6px; text-align: justify; line-height: 1.3;">
-          * İşbu çerçeve ve çalışma planı, MEB Hayat Boyu Öğrenme Kurumları Yönetmeliği (Madde 42) ve ilgili modüler öğretim programı esas alınarak hazırlanmış olup, belirlenen gün, saat ve derslik şartlarında uygulanması uygun bulunmuştur.
+          ${footnoteText}
         </div>
         <table style="width: 100%; border-collapse: collapse; border: none; text-align: center; font-size: 8pt; margin-top: 8px;">
           <tr>
             <td style="width: 33%; vertical-align: top; padding: 4px 10px;">
               <div style="font-weight: bold; text-transform: uppercase;">HAZIRLAYAN</div>
               <div style="margin-top: 3px; font-weight: 600;">${escapeHtml(instructor)}</div>
-              <div style="color: #444; font-size: 7.5pt;">Kurs Öğretmeni / Usta Öğretici</div>
+              <div style="color: #444; font-size: 7.5pt;">${instructorTitle}</div>
               <div style="margin-top: 4px; font-size: 7.5pt;">Tarih: ${startDate}</div>
               <div style="margin-top: 28px; border-bottom: 1px dotted #888; width: 130px; margin-left: auto; margin-right: auto;"></div>
               <div style="font-size: 7pt; color: #666; margin-top: 2px;">İmza</div>
             </td>
             <td style="width: 34%; vertical-align: top; padding: 4px 10px;">
               <div style="font-weight: bold; text-transform: uppercase;">İNCELEYEN</div>
-              <div style="margin-top: 3px; font-weight: 600;">${escapeHtml(supervisor)}</div>
-              <div style="color: #444; font-size: 7.5pt;">Müdür Yardımcısı / Kurs Sorumlusu</div>
+              <div style="margin-top: 3px; font-weight: 600;">${escapeHtml(supervisor || reviewerTitle)}</div>
+              <div style="color: #444; font-size: 7.5pt;">${reviewerTitle}</div>
               <div style="margin-top: 4px; font-size: 7.5pt;">Tarih: ${startDate}</div>
               <div style="margin-top: 28px; border-bottom: 1px dotted #888; width: 130px; margin-left: auto; margin-right: auto;"></div>
               <div style="font-size: 7pt; color: #666; margin-top: 2px;">İmza</div>
@@ -5547,7 +5613,7 @@ function generateKursPlaniHtml(course) {
             <td style="width: 33%; vertical-align: top; padding: 4px 10px;">
               <div style="font-weight: bold; text-transform: uppercase;">UYGUNDUR / ONAY</div>
               <div style="margin-top: 3px; font-weight: 600;">...................................................</div>
-              <div style="color: #444; font-size: 7.5pt;">Halk Eğitimi Merkezi Müdürü</div>
+              <div style="color: #444; font-size: 7.5pt;">${approverTitle}</div>
               <div style="margin-top: 4px; font-size: 7.5pt;">Tarih: ${startDate}</div>
               <div style="margin-top: 28px; border-bottom: 1px dotted #888; width: 130px; margin-left: auto; margin-right: auto;"></div>
               <div style="font-size: 7pt; color: #666; margin-top: 2px;">Mühür / İmza</div>
@@ -5704,8 +5770,8 @@ function generateKararDurumuHtml(course) {
         </div>
 
         <div style="text-align: center; width: 260px;">
-          <div style="font-weight: bold;">Kurs Merkezi Sorumlusu</div>
-          <div style="font-weight: bold;">/ Büro Personeli Ad-Soyad İmza</div>
+          <div style="font-weight: bold;">${(docType && (docType.toLowerCase().includes('katılım') || docType.toLowerCase().includes('katilim'))) ? 'Kurs Merkezi Sorumlusu' : 'Halk Eğitimi Merkezi Müdür Yardımcısı'}</div>
+          <div style="font-weight: bold;">Ad-Soyad İmza</div>
           <div style="margin-top: 5px; font-weight: 600; color: #111;">${escapeHtml(supervisor || '')}</div>
           <div style="margin-top: 35px; border-bottom: 1px dotted #888; width: 140px; margin-left: auto; margin-right: auto;"></div>
         </div>
@@ -5720,6 +5786,7 @@ function renderDocumentsTab() {
   activeCourseForDetail.students = sortStudentsAlphabetically(activeCourseForDetail.students || []);
 
   const docType = (activeCourseForDetail && activeCourseForDetail.documentType) ? activeCourseForDetail.documentType : 'Sertifika';
+  const isKatilim = docType.toLowerCase().includes('katılım') || docType.toLowerCase().includes('katilim');
   const students = activeCourseForDetail.students;
   const totalHours = Number(activeCourseForDetail.totalHours) || 0;
   const maxAllowed = Math.floor(totalHours / 5);
@@ -5735,25 +5802,28 @@ function renderDocumentsTab() {
       const syllabusCount = (activeCourseForDetail.syllabus || []).length;
 
       kursPlaniStatsBar.innerHTML = `
-        <div class="flex flex-wrap items-center justify-between gap-3 w-full">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 w-full">
           <div class="flex flex-wrap items-center gap-2">
             <span class="font-bold text-teal-800 dark:text-teal-300">Plan Parametreleri:</span>
+            <span class="inline-flex items-center gap-1 px-2.5 py-1 ${isKatilim ? 'bg-amber-50 dark:bg-amber-950/40 text-amber-900 dark:text-amber-200 border border-amber-200 dark:border-amber-800' : 'bg-teal-50 dark:bg-teal-950/40 text-teal-900 dark:text-teal-200 border border-teal-200 dark:border-teal-800'} rounded-lg font-bold">
+              <span>Bünye:</span> <strong>${isKatilim ? 'İBB Meslek Fabrikası' : 'MEB Halk Eğitimi'}</strong>
+            </span>
             <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-white dark:bg-[#152125] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-[#2b3e45] rounded-lg font-bold">
               <span>Toplam:</span> <strong class="text-teal-700 dark:text-teal-300">${totalHours}</strong> Saat
             </span>
-            <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-teal-50 dark:bg-teal-950/40 text-teal-800 dark:text-teal-300 border border-teal-200 dark:border-teal-800 rounded-lg font-bold">
-              <span>Modül:</span> <strong>${modCount}</strong> Modül
-            </span>
             <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-sky-50 dark:bg-sky-950/40 text-sky-800 dark:text-sky-300 border border-sky-200 dark:border-sky-800 rounded-lg font-bold">
-              <span>Ders Günü:</span> <strong>${validDates.length}</strong> Gün
+              <span>Modül:</span> <strong>${modCount}</strong>
             </span>
-            <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800 rounded-lg font-bold">
-              <span>Konu Planı:</span> <strong>${syllabusCount}</strong> Saat
+            <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-slate-50 dark:bg-[#10191b] text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-[#23353c] rounded-lg font-bold">
+              <span>Ders Günü:</span> <strong>${validDates.length}</strong>
+            </span>
+            <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-indigo-50 dark:bg-indigo-950/40 text-indigo-800 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 rounded-lg font-bold">
+              <span>Konu:</span> <strong>${syllabusCount}</strong> Saat
             </span>
           </div>
-          <div class="text-[11px] text-teal-700 dark:text-teal-400 font-semibold flex items-center gap-1">
-            <i data-lucide="check-circle" class="w-3.5 h-3.5"></i>
-            <span>Resmi Onaya Hazır (Yatay A4)</span>
+          <div class="text-[11px] ${isKatilim ? 'text-amber-800 dark:text-amber-300' : 'text-teal-800 dark:text-teal-300'} font-semibold flex items-center gap-1.5 shrink-0">
+            <i data-lucide="shield-check" class="w-3.5 h-3.5"></i>
+            <span>${isKatilim ? 'İnceleyen: Kurs Sorumlusu &bull; Onay: Meslek Fabrikası Müdürü' : 'İnceleyen: HEM Müdür Yrd. &bull; Onay: HEM Müdürü'}</span>
           </div>
         </div>
       `;
