@@ -8316,7 +8316,8 @@ function renderDevTodos() {
     filtered = filtered.filter(t => {
       const textMatch = (t.text || '').toLowerCase().includes(searchTrimmed);
       const creatorMatch = (t.createdBy || '').toLowerCase().includes(searchTrimmed);
-      return textMatch || creatorMatch;
+      const completerMatch = (t.completedBy || '').toLowerCase().includes(searchTrimmed);
+      return textMatch || creatorMatch || completerMatch;
     });
   }
 
@@ -8443,7 +8444,7 @@ function renderDevTodos() {
         `;
       }
 
-      // Tarih formatı
+      // Tarih formatı (Oluşturulma)
       let dateStr = '';
       if (t.createdAt) {
         try {
@@ -8452,8 +8453,28 @@ function renderDevTodos() {
         } catch(e) {}
       }
 
+      // Tamamlanma geçmişi formatı (Kim & Ne Zaman)
+      let completionBadge = '';
+      if (t.completed) {
+        let completedDateStr = '';
+        if (t.completedAt) {
+          try {
+            const cd = new Date(t.completedAt);
+            completedDateStr = cd.toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' }) + ' ' + cd.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+          } catch(e) {}
+        }
+        const byWho = escapeHtml(t.completedBy || 'Kullanıcı');
+        const timePart = completedDateStr ? ` • ${completedDateStr}` : '';
+        completionBadge = `
+          <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-semibold bg-emerald-100/90 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-300/60 dark:border-emerald-800/60 shadow-2xs">
+            <i data-lucide="check-check" class="w-3 h-3 text-emerald-600 dark:text-emerald-400"></i>
+            <span>Tamamlandı: ${byWho}${timePart}</span>
+          </span>
+        `;
+      }
+
       return `
-        <div class="group p-3 rounded-xl border ${priorityBorder} ${t.completed ? 'bg-slate-100/70 dark:bg-[#121c1f]/70 border-slate-200 dark:border-[#223338] opacity-70' : 'bg-white dark:bg-[#152125] border-slate-200 dark:border-[#2b3e45] shadow-xs hover:border-[#335C67]/50'} transition flex items-start gap-2.5">
+        <div class="group p-3 rounded-xl border ${priorityBorder} ${t.completed ? 'bg-slate-100/70 dark:bg-[#121c1f]/70 border-slate-200 dark:border-[#223338] opacity-75' : 'bg-white dark:bg-[#152125] border-slate-200 dark:border-[#2b3e45] shadow-xs hover:border-[#335C67]/50'} transition flex items-start gap-2.5">
           <input
             type="checkbox"
             onchange="toggleDevTodo('${t.id}')"
@@ -8469,6 +8490,7 @@ function renderDevTodos() {
               <span class="text-[10px] text-slate-400">
                 ${escapeHtml(t.createdBy || 'Yönetici')} • ${dateStr}
               </span>
+              ${completionBadge}
             </div>
           </div>
           <div class="flex items-center gap-1 opacity-60 group-hover:opacity-100 shrink-0 transition">
@@ -8505,6 +8527,13 @@ window.toggleDevTodo = function(id) {
   const todo = todos.find(t => t.id === id);
   if (todo) {
     todo.completed = !todo.completed;
+    if (todo.completed) {
+      todo.completedAt = new Date().toISOString();
+      todo.completedBy = currentUser?.fullName || currentUser?.username || 'Kullanıcı';
+    } else {
+      delete todo.completedAt;
+      delete todo.completedBy;
+    }
     DataStore.saveTodos(todos);
     renderDevTodos();
   }
