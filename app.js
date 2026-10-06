@@ -249,7 +249,41 @@ const userFormUsername = document.getElementById('userFormUsername');
 const userFormPassword = document.getElementById('userFormPassword');
 const userFormTitle = document.getElementById('userFormTitle');
 const roleTeacher = document.getElementById('roleTeacher');
-const roleAdmin = document.getElementById('roleAdmin');
+const roleAdmin = document.getElementById('roleDeveloper') || document.getElementById('roleAdmin');
+const roleDeveloper = document.getElementById('roleDeveloper');
+const roleSupervisor = document.getElementById('roleSupervisor');
+const roleDeptHead = document.getElementById('roleDeptHead');
+
+// Üst Menü & Bölümler (Yetkilendirme)
+const navSupervisorViewBtn = document.getElementById('navSupervisorViewBtn');
+const supervisorSection = document.getElementById('supervisorSection');
+const deptHeadNewTmplBtn = document.getElementById('deptHeadNewTmplBtn');
+
+// Eğitim Sorumlusu Dashboard Elementleri
+const supStatTotalCourses = document.getElementById('supStatTotalCourses');
+const supStatTotalStudents = document.getElementById('supStatTotalStudents');
+const supStatSuccessRate = document.getElementById('supStatSuccessRate');
+const supStatTotalCenters = document.getElementById('supStatTotalCenters');
+const supCentersBreakdown = document.getElementById('supCentersBreakdown');
+const supAreasBreakdown = document.getElementById('supAreasBreakdown');
+const supCourseCountText = document.getElementById('supCourseCountText');
+const supSearchInput = document.getElementById('supSearchInput');
+const supSearchClearBtn = document.getElementById('supSearchClearBtn');
+const supFilterCenter = document.getElementById('supFilterCenter');
+const supFilterArea = document.getElementById('supFilterArea');
+const supFilterStatus = document.getElementById('supFilterStatus');
+const supFilterInstructor = document.getElementById('supFilterInstructor');
+const supSort = document.getElementById('supSort');
+const supResetFiltersBtn = document.getElementById('supResetFiltersBtn');
+const supCoursesTableBody = document.getElementById('supCoursesTableBody');
+
+// Salt-Okunur Kurs Denetim Modalı Elementleri
+const supervisorCourseModal = document.getElementById('supervisorCourseModal');
+const supModalCourseTitle = document.getElementById('supModalCourseTitle');
+const supModalCourseSubtitle = document.getElementById('supModalCourseSubtitle');
+const supModalStatsRow = document.getElementById('supModalStatsRow');
+const supModalStudentCountBadge = document.getElementById('supModalStudentCountBadge');
+const supModalStudentsBody = document.getElementById('supModalStudentsBody');
 
 // Modal: Kurs Merkezi (Merkez İsmi & Sorumlu)
 const centerModal = document.getElementById('centerModal');
@@ -688,6 +722,34 @@ function updateCurrentDate() {
   currentDateText.innerText = new Date().toLocaleDateString('tr-TR', options);
 }
 
+// ==================== YETKİLENDİRME VE ROL YARDIMCILARI ====================
+function isDeveloper(user = currentUser) {
+  if (!user) return false;
+  if (user.role === 'developer' || user.role === 'admin') return true;
+  if (typeof isDevUser === 'function' && isDevUser(user)) return true;
+  return false;
+}
+
+function isSupervisor(user = currentUser) {
+  if (!user) return false;
+  return user.role === 'supervisor';
+}
+
+function isDepartmentHead(user = currentUser) {
+  if (!user) return false;
+  return user.role === 'department_head';
+}
+
+function isTeacher(user = currentUser) {
+  if (!user) return false;
+  return user.role === 'teacher';
+}
+
+window.isDeveloper = isDeveloper;
+window.isSupervisor = isSupervisor;
+window.isDepartmentHead = isDepartmentHead;
+window.isTeacher = isTeacher;
+
 // Ekran Değişimleri
 function showLogin() {
   loginScreen.classList.remove('hidden');
@@ -706,11 +768,22 @@ function showDashboard() {
   welcomeUserName.innerText = currentUser.fullName;
   userInstitution.innerText = currentUser.institution;
 
-  if (currentUser.role === 'admin') {
-    roleBadge.innerText = 'Sistem Yöneticisi (Admin)';
+  if (isDeveloper(currentUser)) {
+    roleBadge.innerText = 'Geliştirici (Tam Yetkili)';
     roleBadge.className = 'px-2 py-0.5 text-[10px] uppercase font-bold tracking-wider rounded bg-[#540B0E] text-white border border-[#FFF3B0]/30 shadow-xs';
     navViewSwitcher.style.setProperty('display', 'flex', 'important');
+    if (navSupervisorViewBtn) navSupervisorViewBtn.classList.remove('hidden');
     switchView('admin');
+  } else if (isSupervisor(currentUser)) {
+    roleBadge.innerText = 'Eğitim Sorumlusu';
+    roleBadge.className = 'px-2 py-0.5 text-[10px] uppercase font-bold tracking-wider rounded bg-indigo-700 text-white border border-indigo-300/30 shadow-xs';
+    navViewSwitcher.style.setProperty('display', 'none', 'important');
+    switchView('supervisor');
+  } else if (isDepartmentHead(currentUser)) {
+    roleBadge.innerText = 'Zümre Başkanı';
+    roleBadge.className = 'px-2 py-0.5 text-[10px] uppercase font-bold tracking-wider rounded bg-teal-700 text-white border border-teal-300/30 shadow-xs';
+    navViewSwitcher.style.setProperty('display', 'none', 'important');
+    switchView('teacher');
   } else {
     roleBadge.innerText = 'Öğretici Paneli';
     roleBadge.className = 'px-2 py-0.5 text-[10px] uppercase font-bold tracking-wider rounded bg-[#FFF3B0] text-[#540B0E] border border-[#E09F3E]/40 shadow-xs';
@@ -720,30 +793,71 @@ function showDashboard() {
 
   renderTeacherDashboard();
   renderAdminPanel();
+  if (typeof renderSupervisorDashboard === 'function') renderSupervisorDashboard();
   if (typeof checkDevTodoList === 'function') checkDevTodoList();
   refreshLucide();
 }
 
 function switchView(view) {
-  // GÜVENLİK: Admin olmayan kullanıcı asla admin paneline geçemez
-  if (view === 'admin' && currentUser?.role !== 'admin') {
-    view = 'teacher';
+  // GÜVENLİK YETKİ KONTROLLERİ:
+  if (isSupervisor(currentUser)) {
+    // Eğitim sorumlusu sadece kendilerine özel dashboard'u görebilir
+    view = 'supervisor';
+  } else if (!isDeveloper(currentUser)) {
+    // Zümre başkanı veya standart eğitmen admin veya supervisor ekranlarına asla geçemez
+    if (view === 'admin' || view === 'supervisor') {
+      view = 'teacher';
+    }
   }
 
   currentActiveView = view;
+
+  // Tüm ana panelleri gizle
+  teacherSection?.classList.add('hidden');
+  adminSection?.classList.add('hidden');
+  const supSection = document.getElementById('supervisorSection');
+  if (supSection) supSection.classList.add('hidden');
+
+  // Nav buton stilleri sıfırlama
+  const inactiveBtnClass = 'px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 cursor-pointer flex items-center gap-1.5 transition';
+  if (navAdminViewBtn) navAdminViewBtn.className = inactiveBtnClass;
+  if (navTeacherViewBtn) navTeacherViewBtn.className = inactiveBtnClass;
+  if (navSupervisorViewBtn) navSupervisorViewBtn.className = inactiveBtnClass;
+
   if (view === 'admin') {
-    teacherSection.classList.add('hidden');
-    adminSection.classList.remove('hidden');
-    navAdminViewBtn.className = 'px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-white dark:bg-[#152125] text-[#540B0E] dark:text-[#FFF3B0] shadow-xs cursor-pointer flex items-center gap-1.5 transition border border-[#540B0E]/20';
-    navTeacherViewBtn.className = 'px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 cursor-pointer flex items-center gap-1.5 transition';
+    adminSection?.classList.remove('hidden');
+    if (navAdminViewBtn) {
+      navAdminViewBtn.className = 'px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-white dark:bg-[#152125] text-[#540B0E] dark:text-[#FFF3B0] shadow-xs cursor-pointer flex items-center gap-1.5 transition border border-[#540B0E]/20';
+    }
     renderAdminPanel();
+  } else if (view === 'supervisor') {
+    if (supSection) supSection.classList.remove('hidden');
+    if (navSupervisorViewBtn) {
+      navSupervisorViewBtn.className = 'px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-white dark:bg-[#152125] text-indigo-700 dark:text-indigo-300 shadow-xs cursor-pointer flex items-center gap-1.5 transition border border-indigo-500/20';
+    }
+    renderSupervisorDashboard();
   } else {
-    adminSection.classList.add('hidden');
-    teacherSection.classList.remove('hidden');
-    navTeacherViewBtn.className = 'px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-white dark:bg-[#152125] text-[#335C67] dark:text-[#FFF3B0] shadow-xs cursor-pointer flex items-center gap-1.5 transition border border-[#335C67]/20';
-    navAdminViewBtn.className = 'px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 cursor-pointer flex items-center gap-1.5 transition';
+    // 'teacher' görünümü
+    teacherSection?.classList.remove('hidden');
+    if (navTeacherViewBtn) {
+      navTeacherViewBtn.className = 'px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-white dark:bg-[#152125] text-[#335C67] dark:text-[#FFF3B0] shadow-xs cursor-pointer flex items-center gap-1.5 transition border border-[#335C67]/20';
+    }
+
+    // Zümre Başkanı veya Geliştirici ise "Yeni Müfredat Tanımla" butonunu göster
+    const deptHeadBtn = document.getElementById('deptHeadNewTmplBtn');
+    if (deptHeadBtn) {
+      if (isDeveloper(currentUser) || isDepartmentHead(currentUser)) {
+        deptHeadBtn.classList.remove('hidden');
+        deptHeadBtn.classList.add('flex');
+      } else {
+        deptHeadBtn.classList.add('hidden');
+        deptHeadBtn.classList.remove('flex');
+      }
+    }
+
     renderTeacherDashboard();
   }
+
   if (typeof checkDevTodoList === 'function') checkDevTodoList();
   refreshLucide();
 }
@@ -777,11 +891,19 @@ function openProfileModal() {
   }
 
   if (profileRoleBadge) {
-    const isAdmin = currentUser.role === 'admin';
-    profileRoleBadge.innerText = isAdmin ? 'Sistem Yöneticisi (Admin)' : 'Eğitmen';
-    profileRoleBadge.className = isAdmin
-      ? 'font-bold px-2 py-0.5 rounded text-[11px] bg-[#540B0E] text-white'
-      : 'font-bold px-2 py-0.5 rounded text-[11px] bg-[#335C67] text-white';
+    if (isDeveloper(currentUser)) {
+      profileRoleBadge.innerText = 'Geliştirici (Admin)';
+      profileRoleBadge.className = 'font-bold px-2 py-0.5 rounded text-[11px] bg-[#540B0E] text-white';
+    } else if (isSupervisor(currentUser)) {
+      profileRoleBadge.innerText = 'Eğitim Sorumlusu';
+      profileRoleBadge.className = 'font-bold px-2 py-0.5 rounded text-[11px] bg-indigo-700 text-white';
+    } else if (isDepartmentHead(currentUser)) {
+      profileRoleBadge.innerText = 'Zümre Başkanı';
+      profileRoleBadge.className = 'font-bold px-2 py-0.5 rounded text-[11px] bg-teal-700 text-white';
+    } else {
+      profileRoleBadge.innerText = 'Eğitmen';
+      profileRoleBadge.className = 'font-bold px-2 py-0.5 rounded text-[11px] bg-[#335C67] text-white';
+    }
   }
 
   profileModal?.classList.remove('hidden');
@@ -920,10 +1042,12 @@ function setupEventListeners() {
 
   // Hızlı Giriş Butonları
   quickLoginAdmin.addEventListener('click', () => {
-    const admin = DataStore.getUsers().find(u => u.role === 'admin');
-    loginUsernameInput.value = admin.username;
-    loginPasswordInput.value = admin.password;
-    loginForm.dispatchEvent(new Event('submit'));
+    const admin = DataStore.getUsers().find(u => u.role === 'admin' || u.role === 'developer' || u.username === 'admin');
+    if (admin) {
+      loginUsernameInput.value = admin.username;
+      loginPasswordInput.value = admin.password;
+      loginForm.dispatchEvent(new Event('submit'));
+    }
   });
 
   const quickLoginOzgur = document.getElementById('quickLoginOzgur');
@@ -985,9 +1109,13 @@ function setupEventListeners() {
   navbarThemeToggle?.addEventListener('click', toggleTheme);
   loginThemeToggle?.addEventListener('click', toggleTheme);
 
-  // View Switcher (Admin / Teacher)
+  // View Switcher (Admin / Teacher / Supervisor)
   navTeacherViewBtn?.addEventListener('click', () => switchView('teacher'));
   navAdminViewBtn?.addEventListener('click', () => switchView('admin'));
+  navSupervisorViewBtn?.addEventListener('click', () => switchView('supervisor'));
+
+  // Zümre Başkanı & Geliştirici: Müfredat Tanımlama Butonu
+  deptHeadNewTmplBtn?.addEventListener('click', () => openCourseTmplModal());
 
   // Admin Alt Sekmeleri
   adminTabCentersBtn?.addEventListener('click', () => switchAdminTab('centers'));
@@ -1217,6 +1345,11 @@ function setupEventListeners() {
   exportBackupJsonBtn?.addEventListener('click', exportSystemBackupJson);
   importBackupJsonBtn?.addEventListener('click', () => importBackupJsonInput?.click());
   importBackupJsonInput?.addEventListener('change', handleImportSystemBackupJson);
+
+  // Eğitim Sorumlusu Dinleyicileri
+  if (typeof initSupervisorDashboard === 'function') {
+    initSupervisorDashboard();
+  }
 }
 
 // =================== ADMIN YÖNETİM PANELİ İŞLEMLERİ ===================
@@ -1276,8 +1409,17 @@ function renderAdminUsers() {
     const tr = document.createElement('tr');
     tr.className = 'hover:bg-slate-50/80 transition';
 
-    const isAdmin = user.role === 'admin';
     const isCurrentActiveUser = (user.id === currentUser?.id);
+    let roleBadgeHtml = '';
+    if (user.role === 'developer' || user.role === 'admin') {
+      roleBadgeHtml = `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-bold bg-rose-100 text-rose-800 border border-rose-200"><i data-lucide="shield-check" class="w-3 h-3 text-rose-700"></i><span>Geliştirici</span></span>`;
+    } else if (user.role === 'supervisor') {
+      roleBadgeHtml = `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-bold bg-indigo-100 text-indigo-800 border border-indigo-200"><i data-lucide="bar-chart-3" class="w-3 h-3 text-indigo-700"></i><span>Eğitim Sorumlusu</span></span>`;
+    } else if (user.role === 'department_head') {
+      roleBadgeHtml = `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-bold bg-teal-100 text-teal-800 border border-teal-200"><i data-lucide="award" class="w-3 h-3 text-teal-700"></i><span>Zümre Başkanı</span></span>`;
+    } else {
+      roleBadgeHtml = `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-bold bg-sky-50 text-sky-700 border border-sky-200"><i data-lucide="user" class="w-3 h-3 text-sky-600"></i><span>Eğitmen</span></span>`;
+    }
 
     tr.innerHTML = `
       <td class="px-4 py-3">
@@ -1303,36 +1445,17 @@ function renderAdminUsers() {
         </div>
       </td>
       <td class="px-4 py-3">
-        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-bold ${
-          isAdmin 
-            ? 'bg-purple-100 text-purple-800 border border-purple-200' 
-            : 'bg-sky-50 text-sky-700 border border-sky-200'
-        }">
-          <i data-lucide="${isAdmin ? 'shield-check' : 'user'}" class="w-3 h-3"></i>
-          <span>${isAdmin ? 'Sistem Yöneticisi (Admin)' : 'Eğitmen'}</span>
-        </span>
+        ${roleBadgeHtml}
       </td>
       <td class="px-4 py-3 text-right">
         <div class="flex items-center justify-end gap-1.5">
           <button
-            onclick="toggleUserAdminRole('${user.id}')"
-            class="px-2 py-1 rounded-lg text-[11px] font-bold border transition cursor-pointer ${
-              isAdmin
-                ? 'bg-slate-50 text-slate-600 hover:bg-slate-100 border-slate-200'
-                : 'bg-purple-50 text-purple-700 hover:bg-purple-100 border-purple-200'
-            }"
-            title="${isAdmin ? 'Admin Yetkisini Kaldır' : 'Admin Yetkisi Ver'}"
-            ${isCurrentActiveUser ? 'disabled title="Kendi admin yetkinizi kaldıramazsınız"' : ''}
-          >
-            ${isAdmin ? 'Yetkiyi Düşür' : 'Admin Yap'}
-          </button>
-
-          <button
             onclick="editUserAccount('${user.id}')"
-            class="p-1.5 text-slate-500 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition cursor-pointer"
-            title="Şifre ve Bilgileri Düzenle"
+            class="px-2.5 py-1 text-xs font-semibold text-purple-700 bg-purple-50 hover:bg-purple-100 rounded-lg border border-purple-200 transition cursor-pointer flex items-center gap-1"
+            title="Yetki ve Bilgileri Düzenle"
           >
-            <i data-lucide="edit-3" class="w-4 h-4"></i>
+            <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
+            <span>Düzenle</span>
           </button>
 
           <button
@@ -1364,16 +1487,21 @@ function openUserModal(userToEdit = null) {
     userFormUsername.value = userToEdit.username;
     userFormPassword.value = userToEdit.password;
     userFormTitle.value = userToEdit.title || '';
-    if (userToEdit.role === 'admin') {
-      roleAdmin.checked = true;
+    const r = userToEdit.role || 'teacher';
+    if (r === 'developer' || r === 'admin') {
+      if (roleDeveloper) roleDeveloper.checked = true;
+    } else if (r === 'supervisor') {
+      if (roleSupervisor) roleSupervisor.checked = true;
+    } else if (r === 'department_head') {
+      if (roleDeptHead) roleDeptHead.checked = true;
     } else {
-      roleTeacher.checked = true;
+      if (roleTeacher) roleTeacher.checked = true;
     }
   } else {
     userModalTitle.innerText = 'Yeni Kullanıcı Hesabı Ekle';
     userForm.reset();
     userFormId.value = '';
-    roleTeacher.checked = true;
+    if (roleTeacher) roleTeacher.checked = true;
   }
 
   userFormFullName.focus();
@@ -1391,7 +1519,17 @@ function handleSaveUser(e) {
   const username = userFormUsername.value.trim().toLowerCase();
   const password = userFormPassword.value.trim();
   const title = toTurkishTitleCase(userFormTitle.value);
-  const role = roleAdmin.checked ? 'admin' : 'teacher';
+  
+  let role = 'teacher';
+  if (roleDeveloper && roleDeveloper.checked) {
+    role = 'developer';
+  } else if (roleSupervisor && roleSupervisor.checked) {
+    role = 'supervisor';
+  } else if (roleDeptHead && roleDeptHead.checked) {
+    role = 'department_head';
+  } else {
+    role = 'teacher';
+  }
 
   if (!fullName || !username || !password) {
     alert('Lütfen Ad Soyad, Kullanıcı Adı ve Şifre alanlarını doldurunuz.');
@@ -1427,12 +1565,17 @@ function handleSaveUser(e) {
     });
   } else {
     // Yeni kullanıcı
+    let defaultTitle = 'Eğitmen';
+    if (role === 'developer') defaultTitle = 'Geliştirici';
+    else if (role === 'supervisor') defaultTitle = 'Eğitim Sorumlusu';
+    else if (role === 'department_head') defaultTitle = 'Zümre Başkanı';
+
     const newUser = {
       id: `user_${Date.now()}`,
       fullName,
       username,
       password,
-      title: title || (role === 'admin' ? 'Yönetici' : 'Eğitmen'),
+      title: title || defaultTitle,
       role,
       email: `${username}@meb.k12.tr`,
       avatar: `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(fullName)}`
@@ -1451,22 +1594,8 @@ window.editUserAccount = function(userId) {
 };
 
 window.toggleUserAdminRole = function(userId) {
-  if (userId === currentUser?.id) {
-    alert('Kendi admin yetkinizi kaldıramazsınız.');
-    return;
-  }
-
   const user = currentUsers.find(u => u.id === userId);
-  if (!user) return;
-
-  const newRole = user.role === 'admin' ? 'teacher' : 'admin';
-  const roleTitle = newRole === 'admin' ? 'Sistem Yöneticisi (Admin)' : 'Eğitmen';
-
-  if (confirm(`"${user.fullName}" kullanıcısının yetkisi "${roleTitle}" olarak değiştirilsin mi?`)) {
-    user.role = newRole;
-    DataStore.saveUsers(currentUsers);
-    renderAdminUsers();
-  }
+  if (user) openUserModal(user);
 };
 
 window.deleteUserAccount = function(userId) {
@@ -2969,9 +3098,13 @@ function handleSaveCourse(e) {
 }
 
 window.editCourse = function(courseId) {
+  if (isSupervisor(currentUser)) {
+    alert('Eğitim sorumluları kurs düzenleyemez. Salt okunur denetim yetkiniz bulunmaktadır.');
+    return;
+  }
   const course = currentCourses.find(c => c.id === courseId);
   if (!course) return;
-  if (!isCourseRelatedToUser(course, currentUser) && currentUser.role !== 'admin') {
+  if (!isCourseRelatedToUser(course, currentUser) && !isDeveloper(currentUser)) {
     alert('Yalnızca kendinizle ilgili kursları düzenleyebilirsiniz.');
     return;
   }
@@ -2979,9 +3112,13 @@ window.editCourse = function(courseId) {
 };
 
 window.deleteCourse = function(courseId) {
+  if (isSupervisor(currentUser)) {
+    alert('Eğitim sorumluları kurs silemez.');
+    return;
+  }
   const course = currentCourses.find(c => c.id === courseId);
   if (!course) return;
-  if (!isCourseRelatedToUser(course, currentUser) && currentUser.role !== 'admin') {
+  if (!isCourseRelatedToUser(course, currentUser) && !isDeveloper(currentUser)) {
     alert('Yalnızca kendinizle ilgili kursları silebilirsiniz.');
     return;
   }
@@ -2995,9 +3132,13 @@ window.deleteCourse = function(courseId) {
 // =================== KURS DETAYI, KURSİYER & SAATLİK MÜFREDAT ===================
 
 window.openCourseDetail = function(courseId) {
+  if (isSupervisor(currentUser)) {
+    openSupervisorCourseModal(courseId);
+    return;
+  }
   activeCourseForDetail = currentCourses.find(c => c.id === courseId);
   if (!activeCourseForDetail) return;
-  if (!isCourseRelatedToUser(activeCourseForDetail, currentUser) && currentUser.role !== 'admin') {
+  if (!isCourseRelatedToUser(activeCourseForDetail, currentUser) && !isDeveloper(currentUser)) {
     alert('Bu kursu görüntüleme yetkiniz bulunmamaktadır.');
     return;
   }
@@ -8592,3 +8733,528 @@ window.openDevTodoDrawer = openDevTodoModal;
 window.closeDevTodoDrawer = closeDevTodoModal;
 window.checkDevTodoList = checkDevTodoList;
 window.isDevUser = isDevUser;
+
+// =========================================================================
+// ==================== EĞİTİM SORUMLUSU DASHBOARD & DENETİM ================
+// =========================================================================
+
+let supervisorInitialized = false;
+
+function initSupervisorDashboard() {
+  if (supervisorInitialized) return;
+  supervisorInitialized = true;
+
+  supSearchInput?.addEventListener('input', () => {
+    supSearchClearBtn?.classList.toggle('hidden', !supSearchInput.value.trim());
+    renderSupervisorCoursesTable();
+  });
+
+  supSearchClearBtn?.addEventListener('click', () => {
+    if (supSearchInput) supSearchInput.value = '';
+    supSearchClearBtn?.classList.add('hidden');
+    renderSupervisorCoursesTable();
+  });
+
+  supFilterCenter?.addEventListener('change', renderSupervisorCoursesTable);
+  supFilterArea?.addEventListener('change', renderSupervisorCoursesTable);
+  supFilterStatus?.addEventListener('change', renderSupervisorCoursesTable);
+  supFilterInstructor?.addEventListener('change', renderSupervisorCoursesTable);
+  supSort?.addEventListener('change', renderSupervisorCoursesTable);
+  supResetFiltersBtn?.addEventListener('click', resetSupervisorFilters);
+}
+
+function calculateCourseStats(course) {
+  const students = course?.students || [];
+  const total = students.length;
+  let passed = 0;
+  let failed = 0;
+  let inProgress = 0;
+  let sumScore = 0;
+  let scoredCount = 0;
+
+  students.forEach(s => {
+    const hasScore = (s.examScore !== null && s.examScore !== undefined && !isNaN(Number(s.examScore)));
+    if (hasScore) {
+      sumScore += Number(s.examScore);
+      scoredCount++;
+    }
+
+    const isExplicitSuccess = s.result && (s.result.includes('Başarılı') || s.result.includes('Belge') || s.result.includes('Sertifika') || s.result.includes('Katılım'));
+    const isExplicitFail = s.result && s.result.includes('Başarısız');
+
+    if ((hasScore && Number(s.examScore) >= 50) || isExplicitSuccess) {
+      passed++;
+    } else if ((hasScore && Number(s.examScore) < 50) || isExplicitFail) {
+      failed++;
+    } else {
+      inProgress++;
+    }
+  });
+
+  const evaluated = passed + failed;
+  const rate = evaluated > 0 ? Math.round((passed / evaluated) * 100) : (total > 0 && course.status === 'completed' ? 0 : null);
+  const avgScore = scoredCount > 0 ? Math.round((sumScore / scoredCount) * 10) / 10 : null;
+
+  return {
+    total,
+    passed,
+    failed,
+    inProgress,
+    evaluated,
+    rate,
+    avgScore
+  };
+}
+
+function populateSupervisorSelectOptions() {
+  const curCenter = supFilterCenter?.value || 'all';
+  const curArea = supFilterArea?.value || 'all';
+  const curInstructor = supFilterInstructor?.value || 'all';
+
+  // 1. Kurs Merkezleri
+  if (supFilterCenter) {
+    const centersSet = new Set();
+    currentCenters.forEach(c => { if (c.name) centersSet.add(c.name); });
+    currentCourses.forEach(c => { if (c.center) centersSet.add(c.center); });
+    const sortedCenters = Array.from(centersSet).sort((a, b) => a.localeCompare(b, 'tr'));
+
+    let cHtml = '<option value="all">Tüm Merkezler</option>';
+    sortedCenters.forEach(c => {
+      cHtml += `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`;
+    });
+    supFilterCenter.innerHTML = cHtml;
+    if (sortedCenters.includes(curCenter)) {
+      supFilterCenter.value = curCenter;
+    }
+  }
+
+  // 2. Kurs Alanları / Branşlar
+  if (supFilterArea) {
+    const areasSet = new Set();
+    currentAreas.forEach(a => {
+      const name = typeof a === 'string' ? a : a.name;
+      if (name) areasSet.add(name);
+    });
+    currentCourses.forEach(c => { if (c.category) areasSet.add(c.category); });
+    const sortedAreas = Array.from(areasSet).sort((a, b) => a.localeCompare(b, 'tr'));
+
+    let aHtml = '<option value="all">Tüm Alanlar</option>';
+    sortedAreas.forEach(a => {
+      aHtml += `<option value="${escapeHtml(a)}">${escapeHtml(a)}</option>`;
+    });
+    supFilterArea.innerHTML = aHtml;
+    if (sortedAreas.includes(curArea)) {
+      supFilterArea.value = curArea;
+    }
+  }
+
+  // 3. Eğitmenler
+  if (supFilterInstructor) {
+    const instSet = new Set();
+    currentCourses.forEach(c => {
+      const name = c.instructor || getCourseInstructorName(c);
+      if (name && name !== 'Kurs Eğitmeni') instSet.add(name);
+    });
+    const sortedInst = Array.from(instSet).sort((a, b) => a.localeCompare(b, 'tr'));
+
+    let iHtml = '<option value="all">Tüm Eğitmenler</option>';
+    sortedInst.forEach(i => {
+      iHtml += `<option value="${escapeHtml(i)}">${escapeHtml(i)}</option>`;
+    });
+    supFilterInstructor.innerHTML = iHtml;
+    if (sortedInst.includes(curInstructor)) {
+      supFilterInstructor.value = curInstructor;
+    }
+  }
+}
+
+function renderSupervisorDashboard() {
+  loadData();
+  initSupervisorDashboard();
+
+  const totalCourses = currentCourses.length;
+  const totalStudents = currentCourses.reduce((sum, c) => sum + (c.students?.length || 0), 0);
+
+  let totalPassed = 0;
+  let totalEvaluated = 0;
+  currentCourses.forEach(c => {
+    const st = calculateCourseStats(c);
+    totalPassed += st.passed;
+    totalEvaluated += st.evaluated;
+  });
+
+  const overallSuccessRate = totalEvaluated > 0 ? Math.round((totalPassed / totalEvaluated) * 100) : 0;
+  const totalCenters = currentCenters.length || new Set(currentCourses.map(c => c.center).filter(Boolean)).size;
+
+  if (supStatTotalCourses) supStatTotalCourses.innerText = totalCourses;
+  if (supStatTotalStudents) supStatTotalStudents.innerText = totalStudents;
+  if (supStatSuccessRate) supStatSuccessRate.innerText = `%${overallSuccessRate}`;
+  if (supStatTotalCenters) supStatTotalCenters.innerText = totalCenters;
+
+  populateSupervisorSelectOptions();
+  renderSupervisorBreakdowns();
+  renderSupervisorCoursesTable();
+  refreshLucide();
+}
+
+function renderSupervisorBreakdowns() {
+  // 1. Merkez Dağılımı
+  if (supCentersBreakdown) {
+    const centerCounts = {};
+    currentCourses.forEach(c => {
+      const cName = c.center || 'Belirtilmemiş';
+      if (!centerCounts[cName]) {
+        centerCounts[cName] = { courses: 0, students: 0 };
+      }
+      centerCounts[cName].courses++;
+      centerCounts[cName].students += (c.students?.length || 0);
+    });
+
+    const entries = Object.entries(centerCounts).sort((a, b) => b[1].courses - a[1].courses);
+    if (entries.length === 0) {
+      supCentersBreakdown.innerHTML = '<p class="text-xs text-slate-400 py-3 text-center">Henüz kurs merkezi verisi yok.</p>';
+    } else {
+      const maxCourses = Math.max(...entries.map(e => e[1].courses), 1);
+      supCentersBreakdown.innerHTML = entries.map(([centerName, data]) => {
+        const pct = Math.round((data.courses / maxCourses) * 100);
+        return `
+          <div class="space-y-1">
+            <div class="flex items-center justify-between text-xs">
+              <span class="font-semibold text-slate-700 dark:text-slate-300 truncate max-w-[200px]" title="${escapeHtml(centerName)}">${escapeHtml(centerName)}</span>
+              <span class="text-slate-500 font-mono text-[11px]">${data.courses} Kurs &bull; ${data.students} Kursiyer</span>
+            </div>
+            <div class="w-full h-1.5 bg-slate-100 dark:bg-[#1f2d31] rounded-full overflow-hidden">
+              <div class="h-full bg-indigo-500 rounded-full" style="width: ${pct}%"></div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+  }
+
+  // 2. Alan / Branş Dağılımı
+  if (supAreasBreakdown) {
+    const areaCounts = {};
+    currentCourses.forEach(c => {
+      const aName = c.category || 'Genel';
+      if (!areaCounts[aName]) {
+        areaCounts[aName] = { courses: 0, students: 0 };
+      }
+      areaCounts[aName].courses++;
+      areaCounts[aName].students += (c.students?.length || 0);
+    });
+
+    const entries = Object.entries(areaCounts).sort((a, b) => b[1].courses - a[1].courses);
+    if (entries.length === 0) {
+      supAreasBreakdown.innerHTML = '<p class="text-xs text-slate-400 py-3 text-center">Henüz alan verisi yok.</p>';
+    } else {
+      const maxCourses = Math.max(...entries.map(e => e[1].courses), 1);
+      supAreasBreakdown.innerHTML = entries.map(([areaName, data]) => {
+        const pct = Math.round((data.courses / maxCourses) * 100);
+        return `
+          <div class="space-y-1">
+            <div class="flex items-center justify-between text-xs">
+              <span class="font-semibold text-slate-700 dark:text-slate-300 truncate max-w-[200px]" title="${escapeHtml(areaName)}">${escapeHtml(areaName)}</span>
+              <span class="text-slate-500 font-mono text-[11px]">${data.courses} Kurs &bull; ${data.students} Kursiyer</span>
+            </div>
+            <div class="w-full h-1.5 bg-slate-100 dark:bg-[#1f2d31] rounded-full overflow-hidden">
+              <div class="h-full bg-teal-500 rounded-full" style="width: ${pct}%"></div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+  }
+}
+
+function renderSupervisorCoursesTable() {
+  if (!supCoursesTableBody) return;
+
+  const searchQuery = (supSearchInput?.value || '').trim().toLowerCase();
+  const selectedCenter = supFilterCenter?.value || 'all';
+  const selectedArea = supFilterArea?.value || 'all';
+  const selectedStatus = supFilterStatus?.value || 'all';
+  const selectedInstructor = supFilterInstructor?.value || 'all';
+  const sortMode = supSort?.value || 'date_desc';
+
+  const isFiltered = (searchQuery !== '' || selectedCenter !== 'all' || selectedArea !== 'all' || selectedStatus !== 'all' || selectedInstructor !== 'all');
+  if (supResetFiltersBtn) {
+    supResetFiltersBtn.classList.toggle('hidden', !isFiltered);
+    supResetFiltersBtn.classList.toggle('flex', isFiltered);
+  }
+
+  let filtered = currentCourses.filter(course => {
+    // 1. Merkez
+    if (selectedCenter !== 'all' && course.center !== selectedCenter) return false;
+
+    // 2. Alan
+    if (selectedArea !== 'all' && course.category !== selectedArea) return false;
+
+    // 3. Durum
+    if (selectedStatus !== 'all' && course.status !== selectedStatus) return false;
+
+    // 4. Eğitmen
+    if (selectedInstructor !== 'all') {
+      const instName = course.instructor || getCourseInstructorName(course);
+      if (instName !== selectedInstructor) return false;
+    }
+
+    // 5. Canlı Arama
+    if (searchQuery) {
+      const cName = (course.name || '').toLowerCase();
+      const cCode = (course.code || '').toLowerCase();
+      const cInst = (course.instructor || getCourseInstructorName(course) || '').toLowerCase();
+      const cCenter = (course.center || '').toLowerCase();
+      const cCat = (course.category || '').toLowerCase();
+
+      const matches = cName.includes(searchQuery) ||
+        cCode.includes(searchQuery) ||
+        cInst.includes(searchQuery) ||
+        cCenter.includes(searchQuery) ||
+        cCat.includes(searchQuery);
+
+      if (!matches) return false;
+    }
+
+    return true;
+  });
+
+  // Sıralama
+  filtered.sort((a, b) => {
+    if (sortMode === 'date_desc') {
+      return new Date(b.startDate || 0) - new Date(a.startDate || 0);
+    } else if (sortMode === 'date_asc') {
+      return new Date(a.startDate || 0) - new Date(b.startDate || 0);
+    } else if (sortMode === 'students_desc') {
+      return (b.students?.length || 0) - (a.students?.length || 0);
+    } else if (sortMode === 'success_desc') {
+      const aRate = calculateCourseStats(a).rate || 0;
+      const bRate = calculateCourseStats(b).rate || 0;
+      return bRate - aRate;
+    } else if (sortMode === 'name_asc') {
+      return (a.name || '').localeCompare(b.name || '', 'tr');
+    }
+    return 0;
+  });
+
+  if (supCourseCountText) {
+    supCourseCountText.innerText = isFiltered
+      ? `Filtrelenen ${filtered.length} kurs listeleniyor (Toplam ${currentCourses.length} kurs)`
+      : `Toplam ${filtered.length} kurs listeleniyor`;
+  }
+
+  supCoursesTableBody.innerHTML = '';
+
+  if (filtered.length === 0) {
+    supCoursesTableBody.innerHTML = `
+      <tr>
+        <td colspan="8" class="text-center py-10 text-slate-400">
+          <div class="flex flex-col items-center justify-center gap-2">
+            <i data-lucide="search-x" class="w-8 h-8 text-slate-300"></i>
+            <p class="font-medium text-xs">Aradığınız kriterlere uygun kurs bulunamadı.</p>
+            ${isFiltered ? '<button onclick="resetSupervisorFilters()" class="text-indigo-600 hover:underline text-xs font-bold mt-1">Filtreleri Temizle</button>' : ''}
+          </div>
+        </td>
+      </tr>
+    `;
+    refreshLucide();
+    return;
+  }
+
+  filtered.forEach(course => {
+    const stats = calculateCourseStats(course);
+    const instName = course.instructor || getCourseInstructorName(course);
+    const isActive = course.status === 'active';
+
+    let successBadgeHtml = '';
+    if (stats.rate !== null) {
+      const color = stats.rate >= 70 ? 'text-emerald-700 bg-emerald-50 border-emerald-200' : (stats.rate >= 50 ? 'text-amber-700 bg-amber-50 border-amber-200' : 'text-rose-700 bg-rose-50 border-rose-200');
+      successBadgeHtml = `
+        <div class="flex items-center gap-2">
+          <span class="inline-flex px-2 py-0.5 rounded text-[11px] font-bold border ${color}">
+            %${stats.rate}
+          </span>
+          <span class="text-[10px] text-slate-400">(${stats.passed}/${stats.evaluated || stats.total})</span>
+        </div>
+      `;
+    } else {
+      successBadgeHtml = `<span class="text-[11px] text-slate-400 italic">Değerlendirme Yok</span>`;
+    }
+
+    const tr = document.createElement('tr');
+    tr.className = 'hover:bg-slate-50/80 dark:hover:bg-[#1a292f] transition';
+    tr.innerHTML = `
+      <td class="px-4 py-3">
+        <div class="font-bold text-slate-800 dark:text-slate-100 text-xs">${escapeHtml(course.name)}</div>
+        <div class="flex items-center gap-1.5 mt-0.5">
+          <span class="font-mono text-[10px] text-indigo-600 dark:text-indigo-400 font-bold bg-indigo-50 dark:bg-indigo-950/40 px-1.5 py-0.2 rounded border border-indigo-200/50">${escapeHtml(course.code || '-')}</span>
+          <span class="text-[10px] text-slate-400">${escapeHtml(course.category || 'Genel')}</span>
+        </div>
+      </td>
+      <td class="px-4 py-3">
+        <div class="font-semibold text-slate-800 dark:text-slate-200 text-xs">${escapeHtml(instName)}</div>
+        <div class="text-[10px] text-slate-400">${escapeHtml(course.institution || '-')}</div>
+      </td>
+      <td class="px-4 py-3">
+        <span class="text-xs text-slate-700 dark:text-slate-300 font-medium">${escapeHtml(course.center || '-')}</span>
+      </td>
+      <td class="px-3 py-3 text-center">
+        <span class="font-bold text-slate-700 dark:text-slate-300">${course.totalHours || '-'} Saat</span>
+      </td>
+      <td class="px-3 py-3 text-center">
+        <span class="inline-flex items-center justify-center px-2 py-0.5 rounded-full text-xs font-bold bg-slate-100 dark:bg-[#10191b] text-slate-800 dark:text-slate-200">
+          ${stats.total}
+        </span>
+      </td>
+      <td class="px-4 py-3">
+        ${successBadgeHtml}
+      </td>
+      <td class="px-3 py-3 text-center">
+        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold ${
+          isActive 
+            ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/50 dark:text-emerald-300' 
+            : 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300'
+        }">
+          <span class="w-1.5 h-1.5 rounded-full ${isActive ? 'bg-emerald-500' : 'bg-slate-400'}"></span>
+          <span>${isActive ? 'Devam Ediyor' : 'Tamamlandı'}</span>
+        </span>
+      </td>
+      <td class="px-4 py-3 text-right">
+        <button
+          type="button"
+          onclick="openSupervisorCourseModal('${course.id}')"
+          class="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-bold text-indigo-700 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950/40 hover:bg-indigo-100 dark:hover:bg-indigo-950/70 border border-indigo-200 dark:border-indigo-800 rounded-lg shadow-2xs transition cursor-pointer"
+          title="Kursiyer Başarı ve Not Denetimini Aç"
+        >
+          <i data-lucide="file-search" class="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400"></i>
+          <span>İncele</span>
+        </button>
+      </td>
+    `;
+    supCoursesTableBody.appendChild(tr);
+  });
+
+  refreshLucide();
+}
+
+function resetSupervisorFilters() {
+  if (supSearchInput) supSearchInput.value = '';
+  if (supSearchClearBtn) supSearchClearBtn.classList.add('hidden');
+  if (supFilterCenter) supFilterCenter.value = 'all';
+  if (supFilterArea) supFilterArea.value = 'all';
+  if (supFilterStatus) supFilterStatus.value = 'all';
+  if (supFilterInstructor) supFilterInstructor.value = 'all';
+  if (supSort) supSort.value = 'date_desc';
+  renderSupervisorCoursesTable();
+}
+
+function openSupervisorCourseModal(courseId) {
+  const course = currentCourses.find(c => c.id === courseId);
+  if (!course) return;
+
+  const instName = course.instructor || getCourseInstructorName(course);
+  const stats = calculateCourseStats(course);
+
+  if (supModalCourseTitle) {
+    supModalCourseTitle.innerText = `${course.name} (${course.code || '-'})`;
+  }
+  if (supModalCourseSubtitle) {
+    supModalCourseSubtitle.innerText = `Merkez: ${course.center || '-'} &bull; Eğitmen: ${instName} &bull; ${course.startDate || '-'} / ${course.endDate || '-'}`;
+  }
+
+  // Özet İstatistik Rozetleri
+  if (supModalStatsRow) {
+    supModalStatsRow.innerHTML = `
+      <div class="p-3 rounded-xl bg-slate-50 dark:bg-[#10191b] border border-slate-200 dark:border-[#23353c]">
+        <span class="text-[10px] text-slate-400 font-semibold block uppercase">Toplam Kursiyer</span>
+        <span class="text-base font-extrabold text-slate-800 dark:text-slate-100">${stats.total} Kursiyer</span>
+      </div>
+      <div class="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/40">
+        <span class="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold block uppercase">Başarılı (Geçti)</span>
+        <span class="text-base font-extrabold text-emerald-700 dark:text-emerald-300">${stats.passed} Kursiyer</span>
+      </div>
+      <div class="p-3 rounded-xl bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-800/40">
+        <span class="text-[10px] text-rose-600 dark:text-rose-400 font-semibold block uppercase">Başarısız (Kaldı)</span>
+        <span class="text-base font-extrabold text-rose-700 dark:text-rose-300">${stats.failed} Kursiyer</span>
+      </div>
+      <div class="p-3 rounded-xl bg-indigo-50 dark:bg-indigo-950/30 border border-indigo-200 dark:border-indigo-800/40">
+        <span class="text-[10px] text-indigo-600 dark:text-indigo-400 font-semibold block uppercase">Başarı Oranı / Ort.</span>
+        <span class="text-base font-extrabold text-indigo-700 dark:text-indigo-300">
+          ${stats.rate !== null ? `%${stats.rate}` : '-'} ${stats.avgScore !== null ? `(${stats.avgScore})` : ''}
+        </span>
+      </div>
+    `;
+  }
+
+  if (supModalStudentCountBadge) {
+    supModalStudentCountBadge.innerText = `${stats.total} Kursiyer Kayıtlı`;
+  }
+
+  if (supModalStudentsBody) {
+    const students = course.students || [];
+    if (students.length === 0) {
+      supModalStudentsBody.innerHTML = `
+        <tr>
+          <td colspan="6" class="text-center py-8 text-slate-400 text-xs">Bu kursa henüz kayıtlı kursiyer bulunmuyor.</td>
+        </tr>
+      `;
+    } else {
+      supModalStudentsBody.innerHTML = students.map((std, idx) => {
+        const hasScore = (std.examScore !== null && std.examScore !== undefined && !isNaN(Number(std.examScore)));
+        const scoreText = hasScore ? std.examScore : '-';
+        const isPassed = (hasScore && Number(std.examScore) >= 50) || (std.result && (std.result.includes('Başarılı') || std.result.includes('Belge') || std.result.includes('Sertifika') || std.result.includes('Katılım')));
+        const isFailed = (hasScore && Number(std.examScore) < 50) || (std.result && std.result.includes('Başarısız'));
+
+        let badgeClass = 'bg-slate-100 text-slate-600';
+        let badgeLabel = 'Devam Ediyor';
+        if (isPassed) {
+          badgeClass = 'bg-emerald-100 text-emerald-800';
+          badgeLabel = 'Başarılı';
+        } else if (isFailed) {
+          badgeClass = 'bg-rose-100 text-rose-800';
+          badgeLabel = 'Başarısız';
+        }
+
+        // Toplam devamsızlık saati
+        let totalAbsent = 0;
+        if (std.attendance) {
+          Object.values(std.attendance).forEach(val => {
+            if (typeof val === 'number') totalAbsent += val;
+            else if (val === 'absent') totalAbsent += (Number(course.dailyHours) || 2);
+          });
+        }
+
+        return `
+          <tr class="hover:bg-slate-50 dark:hover:bg-[#1a292f] transition">
+            <td class="px-3 py-2 text-center text-slate-400 font-mono text-[11px]">${idx + 1}</td>
+            <td class="px-3 py-2 font-semibold text-slate-800 dark:text-slate-100">${escapeHtml(std.fullName || '-')}</td>
+            <td class="px-3 py-2 text-center font-mono text-slate-500">${escapeHtml(std.tc || '-')}</td>
+            <td class="px-3 py-2 text-center font-bold ${hasScore && std.examScore >= 50 ? 'text-emerald-600' : (hasScore ? 'text-rose-600' : 'text-slate-400')}">${scoreText}</td>
+            <td class="px-3 py-2 text-center font-mono ${totalAbsent > 0 ? 'text-amber-600 font-bold' : 'text-slate-400'}">${totalAbsent} Saat</td>
+            <td class="px-3 py-2 text-center">
+              <span class="inline-flex px-2 py-0.5 rounded text-[10px] font-bold ${badgeClass}">
+                ${badgeLabel}
+              </span>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+  }
+
+  supervisorCourseModal?.classList.remove('hidden');
+  refreshLucide();
+}
+
+function closeSupervisorCourseModal() {
+  supervisorCourseModal?.classList.add('hidden');
+}
+
+window.initSupervisorDashboard = initSupervisorDashboard;
+window.renderSupervisorDashboard = renderSupervisorDashboard;
+window.renderSupervisorBreakdowns = renderSupervisorBreakdowns;
+window.renderSupervisorCoursesTable = renderSupervisorCoursesTable;
+window.resetSupervisorFilters = resetSupervisorFilters;
+window.openSupervisorCourseModal = openSupervisorCourseModal;
+window.closeSupervisorCourseModal = closeSupervisorCourseModal;
+
