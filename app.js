@@ -7873,6 +7873,10 @@ function isDevUser(user) {
 }
 
 let currentDevTodoFilter = 'all'; // 'all' | 'active' | 'completed'
+let currentDevTodoAssignee = 'all'; // 'all' | 'Özgür' | 'Önder' | 'Ortak'
+let currentDevTodoPriority = 'all'; // 'all' | 'urgent' | 'high' | 'normal' | 'low'
+let currentDevTodoSort = 'priority_desc'; // 'priority_desc' | 'date_desc' | 'date_asc' | 'text_asc'
+let currentDevTodoSearch = '';
 let editingDevTodoId = null;
 let devTodoInitialized = false;
 
@@ -8051,18 +8055,7 @@ function initDevTodoList() {
   document.querySelectorAll('.dev-todo-filter-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       currentDevTodoFilter = btn.getAttribute('data-filter') || 'all';
-      document.querySelectorAll('.dev-todo-filter-btn').forEach(b => {
-        b.className = 'dev-todo-filter-btn px-2.5 py-1 rounded-md font-medium text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-100 cursor-pointer';
-      });
-      btn.className = 'dev-todo-filter-btn px-2.5 py-1 rounded-md font-bold bg-white dark:bg-[#152125] text-slate-800 dark:text-slate-100 shadow-xs cursor-pointer';
-      // Admin filtre butonlarını da senkronize et
-      document.querySelectorAll('.admin-todo-filter-btn').forEach(b => {
-        if (b.getAttribute('data-filter') === currentDevTodoFilter) {
-          b.className = 'admin-todo-filter-btn px-3 py-1 rounded-lg font-bold bg-white text-slate-800 shadow-xs cursor-pointer';
-        } else {
-          b.className = 'admin-todo-filter-btn px-3 py-1 rounded-lg font-medium text-slate-500 hover:text-slate-800 cursor-pointer';
-        }
-      });
+      syncDevTodoFilterControls();
       renderDevTodos();
     });
   });
@@ -8071,21 +8064,110 @@ function initDevTodoList() {
   document.querySelectorAll('.admin-todo-filter-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       currentDevTodoFilter = btn.getAttribute('data-filter') || 'all';
-      document.querySelectorAll('.admin-todo-filter-btn').forEach(b => {
-        b.className = 'admin-todo-filter-btn px-3 py-1 rounded-lg font-medium text-slate-500 hover:text-slate-800 cursor-pointer';
-      });
-      btn.className = 'admin-todo-filter-btn px-3 py-1 rounded-lg font-bold bg-white text-slate-800 shadow-xs cursor-pointer';
-      // Drawer filtre butonlarını da senkronize et
-      document.querySelectorAll('.dev-todo-filter-btn').forEach(b => {
-        if (b.getAttribute('data-filter') === currentDevTodoFilter) {
-          b.className = 'dev-todo-filter-btn px-2.5 py-1 rounded-md font-bold bg-white dark:bg-[#152125] text-slate-800 dark:text-slate-100 shadow-xs cursor-pointer';
-        } else {
-          b.className = 'dev-todo-filter-btn px-2.5 py-1 rounded-md font-medium text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-100 cursor-pointer';
-        }
-      });
+      syncDevTodoFilterControls();
       renderDevTodos();
     });
   });
+
+  // Sorumlu Filtresi Event Dinleyicileri
+  const modalAssigneeSelect = document.getElementById('devTodoFilterAssignee');
+  const adminAssigneeSelect = document.getElementById('adminTodoFilterAssignee');
+  if (modalAssigneeSelect) {
+    modalAssigneeSelect.addEventListener('change', () => {
+      currentDevTodoAssignee = modalAssigneeSelect.value;
+      syncDevTodoFilterControls();
+      renderDevTodos();
+    });
+  }
+  if (adminAssigneeSelect) {
+    adminAssigneeSelect.addEventListener('change', () => {
+      currentDevTodoAssignee = adminAssigneeSelect.value;
+      syncDevTodoFilterControls();
+      renderDevTodos();
+    });
+  }
+
+  // Öncelik Filtresi Event Dinleyicileri
+  const modalPrioritySelect = document.getElementById('devTodoFilterPriority');
+  const adminPrioritySelect = document.getElementById('adminTodoFilterPriority');
+  if (modalPrioritySelect) {
+    modalPrioritySelect.addEventListener('change', () => {
+      currentDevTodoPriority = modalPrioritySelect.value;
+      syncDevTodoFilterControls();
+      renderDevTodos();
+    });
+  }
+  if (adminPrioritySelect) {
+    adminPrioritySelect.addEventListener('change', () => {
+      currentDevTodoPriority = adminPrioritySelect.value;
+      syncDevTodoFilterControls();
+      renderDevTodos();
+    });
+  }
+
+  // Sıralama Event Dinleyicileri
+  const modalSortSelect = document.getElementById('devTodoSort');
+  const adminSortSelect = document.getElementById('adminTodoSort');
+  if (modalSortSelect) {
+    modalSortSelect.addEventListener('change', () => {
+      currentDevTodoSort = modalSortSelect.value;
+      syncDevTodoFilterControls();
+      renderDevTodos();
+    });
+  }
+  if (adminSortSelect) {
+    adminSortSelect.addEventListener('change', () => {
+      currentDevTodoSort = adminSortSelect.value;
+      syncDevTodoFilterControls();
+      renderDevTodos();
+    });
+  }
+
+  // Arama Input Event Dinleyicileri
+  const modalSearchInput = document.getElementById('devTodoSearchInput');
+  const adminSearchInput = document.getElementById('adminTodoSearchInput');
+  if (modalSearchInput) {
+    modalSearchInput.addEventListener('input', () => {
+      currentDevTodoSearch = modalSearchInput.value;
+      syncDevTodoFilterControls();
+      renderDevTodos();
+    });
+  }
+  if (adminSearchInput) {
+    adminSearchInput.addEventListener('input', () => {
+      currentDevTodoSearch = adminSearchInput.value;
+      syncDevTodoFilterControls();
+      renderDevTodos();
+    });
+  }
+
+  // Arama Temizle Butonları
+  const modalSearchClear = document.getElementById('devTodoSearchClearBtn');
+  const adminSearchClear = document.getElementById('adminTodoSearchClearBtn');
+  if (modalSearchClear) {
+    modalSearchClear.addEventListener('click', () => {
+      currentDevTodoSearch = '';
+      syncDevTodoFilterControls();
+      renderDevTodos();
+    });
+  }
+  if (adminSearchClear) {
+    adminSearchClear.addEventListener('click', () => {
+      currentDevTodoSearch = '';
+      syncDevTodoFilterControls();
+      renderDevTodos();
+    });
+  }
+
+  // Filtreleri Sıfırla Butonları
+  const modalResetBtn = document.getElementById('devTodoResetFiltersBtn');
+  const adminResetBtn = document.getElementById('adminTodoResetFiltersBtn');
+  if (modalResetBtn) {
+    modalResetBtn.addEventListener('click', () => resetDevTodoFilters());
+  }
+  if (adminResetBtn) {
+    adminResetBtn.addEventListener('click', () => resetDevTodoFilters());
+  }
 
   // Bitenleri temizle (Drawer)
   if (clearCompletedBtn) {
@@ -8121,6 +8203,95 @@ function initDevTodoList() {
   }
 }
 
+// Filtre ve Sıralama Kontrollerini Senkronize Etme
+function syncDevTodoFilterControls() {
+  // Modal durum butonları
+  document.querySelectorAll('.dev-todo-filter-btn').forEach(b => {
+    const isSel = (b.getAttribute('data-filter') === currentDevTodoFilter);
+    b.className = isSel
+      ? 'dev-todo-filter-btn px-2.5 py-1 rounded-md font-bold bg-white dark:bg-[#152125] text-slate-800 dark:text-slate-100 shadow-xs cursor-pointer'
+      : 'dev-todo-filter-btn px-2.5 py-1 rounded-md font-medium text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-100 cursor-pointer';
+  });
+
+  // Admin durum butonları
+  document.querySelectorAll('.admin-todo-filter-btn').forEach(b => {
+    const isSel = (b.getAttribute('data-filter') === currentDevTodoFilter);
+    b.className = isSel
+      ? 'admin-todo-filter-btn px-3 py-1 rounded-md font-bold bg-white text-slate-800 shadow-xs cursor-pointer transition'
+      : 'admin-todo-filter-btn px-3 py-1 rounded-md font-medium text-slate-500 hover:text-slate-800 cursor-pointer transition';
+  });
+
+  // Sorumlu seçicileri
+  const modalAssignee = document.getElementById('devTodoFilterAssignee');
+  const adminAssignee = document.getElementById('adminTodoFilterAssignee');
+  if (modalAssignee && modalAssignee.value !== currentDevTodoAssignee) modalAssignee.value = currentDevTodoAssignee;
+  if (adminAssignee && adminAssignee.value !== currentDevTodoAssignee) adminAssignee.value = currentDevTodoAssignee;
+
+  // Öncelik seçicileri
+  const modalPriority = document.getElementById('devTodoFilterPriority');
+  const adminPriority = document.getElementById('adminTodoFilterPriority');
+  if (modalPriority && modalPriority.value !== currentDevTodoPriority) modalPriority.value = currentDevTodoPriority;
+  if (adminPriority && adminPriority.value !== currentDevTodoPriority) adminPriority.value = currentDevTodoPriority;
+
+  // Sıralama seçicileri
+  const modalSort = document.getElementById('devTodoSort');
+  const adminSort = document.getElementById('adminTodoSort');
+  if (modalSort && modalSort.value !== currentDevTodoSort) modalSort.value = currentDevTodoSort;
+  if (adminSort && adminSort.value !== currentDevTodoSort) adminSort.value = currentDevTodoSort;
+
+  // Arama inputları
+  const modalSearch = document.getElementById('devTodoSearchInput');
+  const adminSearch = document.getElementById('adminTodoSearchInput');
+  if (modalSearch && modalSearch.value !== currentDevTodoSearch) modalSearch.value = currentDevTodoSearch;
+  if (adminSearch && adminSearch.value !== currentDevTodoSearch) adminSearch.value = currentDevTodoSearch;
+
+  // Arama temizleme ikonları
+  const modalClear = document.getElementById('devTodoSearchClearBtn');
+  const adminClear = document.getElementById('adminTodoSearchClearBtn');
+  if (modalClear) modalClear.classList.toggle('hidden', !currentDevTodoSearch);
+  if (adminClear) adminClear.classList.toggle('hidden', !currentDevTodoSearch);
+
+  // Sıfırla butonlarının görünürlüğü
+  const isFiltered = (
+    currentDevTodoFilter !== 'all' ||
+    currentDevTodoAssignee !== 'all' ||
+    currentDevTodoPriority !== 'all' ||
+    currentDevTodoSort !== 'priority_desc' ||
+    Boolean((currentDevTodoSearch || '').trim())
+  );
+  const modalResetBtn = document.getElementById('devTodoResetFiltersBtn');
+  const adminResetBtn = document.getElementById('adminTodoResetFiltersBtn');
+  if (modalResetBtn) {
+    if (isFiltered) {
+      modalResetBtn.classList.remove('hidden');
+      modalResetBtn.classList.add('inline-flex');
+    } else {
+      modalResetBtn.classList.add('hidden');
+      modalResetBtn.classList.remove('inline-flex');
+    }
+  }
+  if (adminResetBtn) {
+    if (isFiltered) {
+      adminResetBtn.classList.remove('hidden');
+      adminResetBtn.classList.add('inline-flex');
+    } else {
+      adminResetBtn.classList.add('hidden');
+      adminResetBtn.classList.remove('inline-flex');
+    }
+  }
+}
+
+function resetDevTodoFilters() {
+  currentDevTodoFilter = 'all';
+  currentDevTodoAssignee = 'all';
+  currentDevTodoPriority = 'all';
+  currentDevTodoSort = 'priority_desc';
+  currentDevTodoSearch = '';
+  syncDevTodoFilterControls();
+  renderDevTodos();
+}
+window.resetDevTodoFilters = resetDevTodoFilters;
+
 function renderDevTodos() {
   const container = document.getElementById('devTodoListContainer');
   const adminContainer = document.getElementById('adminTodoListContainer');
@@ -8146,13 +8317,12 @@ function renderDevTodos() {
     if (active > 0) dot.classList.remove('hidden');
     else dot.classList.add('hidden');
   }
-  if (statsText) statsText.innerText = `${total} görevden ${completed}'i tamamlandı`;
-  if (adminStatsText) adminStatsText.innerText = `${total} görevden ${completed}'i tamamlandı (${active} bekliyor)`;
+
   if (activeUserTag && currentUser) {
     activeUserTag.innerText = currentUser.fullName || currentUser.username;
   }
 
-  // Filtreleme
+  // 1. Durum Filtreleme
   let filtered = [...todos];
   if (currentDevTodoFilter === 'active') {
     filtered = filtered.filter(t => !t.completed);
@@ -8160,7 +8330,41 @@ function renderDevTodos() {
     filtered = filtered.filter(t => t.completed);
   }
 
-  // Öncelik puanlama (Urgent / Acil: 4, High / Yüksek: 3, Normal: 2, Low / Düşük: 1)
+  // 2. Sorumlu Filtreleme
+  if (currentDevTodoAssignee !== 'all') {
+    filtered = filtered.filter(t => (t.assignee || 'Ortak') === currentDevTodoAssignee);
+  }
+
+  // 3. Öncelik Filtreleme
+  if (currentDevTodoPriority !== 'all') {
+    filtered = filtered.filter(t => {
+      const p = (t.priority || 'normal').toLowerCase();
+      if (currentDevTodoPriority === 'urgent') return p === 'urgent' || p === 'acil';
+      if (currentDevTodoPriority === 'high') return p === 'high' || p === 'yuksek' || p === 'yüksek';
+      if (currentDevTodoPriority === 'normal') return p === 'normal' || !t.priority;
+      if (currentDevTodoPriority === 'low') return p === 'low' || p === 'dusuk' || p === 'düşük';
+      return true;
+    });
+  }
+
+  // 4. Canlı Arama Filtreleme
+  const searchTrimmed = (currentDevTodoSearch || '').trim().toLowerCase();
+  if (searchTrimmed) {
+    filtered = filtered.filter(t => {
+      const textMatch = (t.text || '').toLowerCase().includes(searchTrimmed);
+      const assigneeMatch = (t.assignee || '').toLowerCase().includes(searchTrimmed);
+      const creatorMatch = (t.createdBy || '').toLowerCase().includes(searchTrimmed);
+      return textMatch || assigneeMatch || creatorMatch;
+    });
+  }
+
+  // İstatistik sayaçları güncelleme
+  const isFiltered = (filtered.length !== total);
+  const filterBadge = isFiltered ? ` (Filtrelenen: ${filtered.length})` : '';
+  if (statsText) statsText.innerText = `${total} görevden ${completed}'i tamamlandı${filterBadge}`;
+  if (adminStatsText) adminStatsText.innerText = `${total} görevden ${completed}'i tamamlandı (${active} bekliyor)${filterBadge}`;
+
+  // 5. Sıralama
   const getPriorityWeight = (priority) => {
     const p = (priority || 'normal').toLowerCase();
     if (p === 'urgent' || p === 'acil') return 4;
@@ -8170,31 +8374,64 @@ function renderDevTodos() {
     return 2;
   };
 
-  // Öncelik sırasına göre sırala (Acil > Yüksek > Normal > Düşük)
   filtered.sort((a, b) => {
-    // Tamamlanmamışlar önce, tamamlananlar altta
+    // Tamamlanmamışlar daima önce, tamamlananlar altta
     if (a.completed !== b.completed) {
       return a.completed ? 1 : -1;
     }
-    const weightA = getPriorityWeight(a.priority);
-    const weightB = getPriorityWeight(b.priority);
-    if (weightB !== weightA) {
-      return weightB - weightA;
+
+    if (currentDevTodoSort === 'priority_desc') {
+      const weightA = getPriorityWeight(a.priority);
+      const weightB = getPriorityWeight(b.priority);
+      if (weightB !== weightA) {
+        return weightB - weightA;
+      }
+      const timeA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+      const timeB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+      return timeB - timeA;
+    } else if (currentDevTodoSort === 'date_desc') {
+      const timeA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+      const timeB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+      return timeB - timeA;
+    } else if (currentDevTodoSort === 'date_asc') {
+      const timeA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+      const timeB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+      return timeA - timeB;
+    } else if (currentDevTodoSort === 'text_asc') {
+      return (a.text || '').localeCompare(b.text || '', 'tr');
     }
-    // Aynı öncelikte en son eklenen üstte
-    const timeA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
-    const timeB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
-    return timeB - timeA;
+    return 0;
   });
+
+  syncDevTodoFilterControls();
 
   let html = '';
   if (filtered.length === 0) {
-    html = `
-      <div class="py-12 text-center text-slate-400">
-        <i data-lucide="inbox" class="w-8 h-8 mx-auto mb-2 opacity-50"></i>
-        <p class="text-xs font-medium">Bu filtrede gösterilecek görev yok.</p>
-      </div>
-    `;
+    if (total === 0) {
+      html = `
+        <div class="py-12 text-center text-slate-400">
+          <i data-lucide="inbox" class="w-8 h-8 mx-auto mb-2 opacity-50"></i>
+          <p class="text-xs font-medium">Henüz yapılacak görev eklenmemiş.</p>
+        </div>
+      `;
+    } else {
+      html = `
+        <div class="py-10 text-center text-slate-400 space-y-2.5">
+          <i data-lucide="filter-x" class="w-8 h-8 mx-auto opacity-50"></i>
+          <p class="text-xs font-medium">Filtre kriterlerine uygun görev bulunamadı.</p>
+          <div>
+            <button
+              type="button"
+              onclick="resetDevTodoFilters()"
+              class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-200 hover:bg-slate-300 dark:bg-[#1f2d31] dark:hover:bg-[#283b40] text-slate-700 dark:text-slate-200 rounded-lg text-xs font-semibold cursor-pointer transition shadow-2xs"
+            >
+              <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+              <span>Filtreleri Temizle</span>
+            </button>
+          </div>
+        </div>
+      `;
+    }
   } else {
     html = filtered.map(t => {
       // Sorumlu rozeti

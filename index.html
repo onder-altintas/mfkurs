@@ -1059,12 +1059,91 @@
             </div>
           </form>
 
-          <!-- Filtreler -->
-          <div class="flex items-center justify-between gap-2 pt-1">
-            <div class="flex items-center gap-1 bg-slate-100 p-1 rounded-xl text-xs">
-              <button type="button" class="admin-todo-filter-btn px-3 py-1 rounded-lg font-bold bg-white text-slate-800 shadow-xs cursor-pointer" data-filter="all">Tümü</button>
-              <button type="button" class="admin-todo-filter-btn px-3 py-1 rounded-lg font-medium text-slate-500 hover:text-slate-800 cursor-pointer" data-filter="active">Bekleyenler</button>
-              <button type="button" class="admin-todo-filter-btn px-3 py-1 rounded-lg font-medium text-slate-500 hover:text-slate-800 cursor-pointer" data-filter="completed">Tamamlananlar</button>
+          <!-- Filtreleme & Sıralama & Arama Alanı -->
+          <div class="p-3.5 bg-slate-50/80 rounded-xl border border-slate-200/80 space-y-2.5">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-2.5">
+              <!-- Arama Input'u -->
+              <div class="relative flex-1 min-w-[200px]">
+                <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+                <input
+                  type="text"
+                  id="adminTodoSearchInput"
+                  placeholder="Görev metninde ara..."
+                  class="w-full pl-9 pr-8 py-1.5 bg-white border border-slate-200 rounded-lg text-xs text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-[#335C67] transition"
+                />
+                <button
+                  type="button"
+                  id="adminTodoSearchClearBtn"
+                  class="hidden absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
+                  title="Aramayı Temizle"
+                >
+                  <i data-lucide="x" class="w-3.5 h-3.5"></i>
+                </button>
+              </div>
+
+              <!-- Durum Filtresi Sekmeleri -->
+              <div class="flex items-center gap-1 bg-slate-200/80 p-0.5 rounded-lg text-xs shrink-0">
+                <button type="button" class="admin-todo-filter-btn px-3 py-1 rounded-md font-bold bg-white text-slate-800 shadow-xs cursor-pointer transition" data-filter="all">Tümü</button>
+                <button type="button" class="admin-todo-filter-btn px-3 py-1 rounded-md font-medium text-slate-500 hover:text-slate-800 cursor-pointer transition" data-filter="active">Bekleyenler</button>
+                <button type="button" class="admin-todo-filter-btn px-3 py-1 rounded-md font-medium text-slate-500 hover:text-slate-800 cursor-pointer transition" data-filter="completed">Tamamlananlar</button>
+              </div>
+            </div>
+
+            <!-- İkinci Satır: Sorumlu, Öncelik, Sıralama ve Sıfırla -->
+            <div class="flex flex-wrap items-center gap-2 pt-1 border-t border-slate-200/60 text-xs">
+              <!-- Sorumlu Filtresi -->
+              <div class="flex items-center gap-1.5">
+                <span class="text-[11px] font-semibold text-slate-500">Sorumlu:</span>
+                <select
+                  id="adminTodoFilterAssignee"
+                  class="px-2.5 py-1 bg-white border border-slate-200 rounded-lg text-xs text-slate-700 focus:outline-none focus:ring-1 focus:ring-[#335C67]"
+                >
+                  <option value="all">Tümü</option>
+                  <option value="Özgür">👤 Özgür</option>
+                  <option value="Önder">👤 Önder</option>
+                  <option value="Ortak">👥 Ortak</option>
+                </select>
+              </div>
+
+              <!-- Öncelik Filtresi -->
+              <div class="flex items-center gap-1.5">
+                <span class="text-[11px] font-semibold text-slate-500">Öncelik:</span>
+                <select
+                  id="adminTodoFilterPriority"
+                  class="px-2.5 py-1 bg-white border border-slate-200 rounded-lg text-xs text-slate-700 focus:outline-none focus:ring-1 focus:ring-[#335C67]"
+                >
+                  <option value="all">Tümü</option>
+                  <option value="urgent">🔥 Acil</option>
+                  <option value="high">⚡ Yüksek</option>
+                  <option value="normal">📌 Normal</option>
+                  <option value="low">☕ Düşük</option>
+                </select>
+              </div>
+
+              <!-- Sıralama -->
+              <div class="flex items-center gap-1.5">
+                <span class="text-[11px] font-semibold text-slate-500">Sırala:</span>
+                <select
+                  id="adminTodoSort"
+                  class="px-2.5 py-1 bg-white border border-slate-200 rounded-lg text-xs text-slate-700 focus:outline-none focus:ring-1 focus:ring-[#335C67]"
+                >
+                  <option value="priority_desc">⚡ Öncelik (Acil ➜ Düşük)</option>
+                  <option value="date_desc">🕒 En Yeni Eklenen</option>
+                  <option value="date_asc">⏳ En Eski Eklenen</option>
+                  <option value="text_asc">🔤 Alfabetik (A ➜ Z)</option>
+                </select>
+              </div>
+
+              <!-- Filtreleri Temizle Butonu -->
+              <button
+                type="button"
+                id="adminTodoResetFiltersBtn"
+                class="hidden ml-auto px-2.5 py-1 text-[11px] text-slate-500 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition items-center gap-1 cursor-pointer font-medium"
+                title="Filtreleri sıfırla"
+              >
+                <i data-lucide="rotate-ccw" class="w-3 h-3"></i>
+                <span>Filtreleri Sıfırla</span>
+              </button>
             </div>
           </div>
 
@@ -3716,6 +3795,77 @@
           </div>
         </div>
       </form>
+
+      <!-- Arama, Filtreleme ve Sıralama Barı (Modal) -->
+      <div class="px-4 py-2 bg-slate-100/80 dark:bg-[#121c1f] border-b border-slate-200 dark:border-[#2b3e45] shrink-0 space-y-2">
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2">
+          <!-- Arama Input'u -->
+          <div class="relative flex-1 min-w-[180px]">
+            <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+            <input
+              type="text"
+              id="devTodoSearchInput"
+              placeholder="Görevlerde ara..."
+              class="w-full pl-8 pr-7 py-1.5 text-xs bg-white dark:bg-[#152125] border border-slate-200 dark:border-[#2b3e45] rounded-lg text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-[#335C67] transition"
+            />
+            <button
+              type="button"
+              id="devTodoSearchClearBtn"
+              class="hidden absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
+              title="Aramayı Temizle"
+            >
+              <i data-lucide="x" class="w-3 h-3"></i>
+            </button>
+          </div>
+
+          <!-- Filtreler & Sıralama Kontrolleri -->
+          <div class="flex items-center gap-1.5 flex-wrap">
+            <select
+              id="devTodoFilterAssignee"
+              class="px-2 py-1.5 text-[11px] bg-white dark:bg-[#152125] border border-slate-200 dark:border-[#2b3e45] rounded-lg text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-[#335C67]"
+              title="Sorumlu Filtresi"
+            >
+              <option value="all">Sorumlu: Tümü</option>
+              <option value="Özgür">👤 Özgür</option>
+              <option value="Önder">👤 Önder</option>
+              <option value="Ortak">👥 Ortak</option>
+            </select>
+
+            <select
+              id="devTodoFilterPriority"
+              class="px-2 py-1.5 text-[11px] bg-white dark:bg-[#152125] border border-slate-200 dark:border-[#2b3e45] rounded-lg text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-[#335C67]"
+              title="Öncelik Filtresi"
+            >
+              <option value="all">Öncelik: Tümü</option>
+              <option value="urgent">🔥 Acil</option>
+              <option value="high">⚡ Yüksek</option>
+              <option value="normal">📌 Normal</option>
+              <option value="low">☕ Düşük</option>
+            </select>
+
+            <select
+              id="devTodoSort"
+              class="px-2 py-1.5 text-[11px] bg-white dark:bg-[#152125] border border-slate-200 dark:border-[#2b3e45] rounded-lg text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-[#335C67]"
+              title="Sıralama Ölçütü"
+            >
+              <option value="priority_desc">⚡ Öncelik (Acil ➜ Düşük)</option>
+              <option value="date_desc">🕒 En Yeni</option>
+              <option value="date_asc">⏳ En Eski</option>
+              <option value="text_asc">🔤 Alfabetik (A ➜ Z)</option>
+            </select>
+
+            <button
+              type="button"
+              id="devTodoResetFiltersBtn"
+              class="hidden px-2 py-1 text-[11px] text-slate-500 hover:text-rose-600 dark:text-slate-400 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded-lg transition items-center gap-1 cursor-pointer font-medium"
+              title="Filtreleri sıfırla"
+            >
+              <i data-lucide="rotate-ccw" class="w-3 h-3"></i>
+              <span>Sıfırla</span>
+            </button>
+          </div>
+        </div>
+      </div>
 
       <!-- Görev Listesi -->
       <div id="devTodoListContainer" class="flex-1 overflow-y-auto p-4 space-y-2.5 bg-slate-50/50 dark:bg-[#10191b]/50 max-h-[50vh]">
