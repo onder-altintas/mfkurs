@@ -7857,7 +7857,7 @@ function handleImportSystemBackupJson(e) {
 }
 
 // =========================================================================
-// ============= PROJE GELİŞTİRİCİ TODO LIST (ÖZGÜR & ÖNDER) ==============
+// ==================== PROJE GÖREV VE TODO LİSTESİ =====================
 // =========================================================================
 
 function isDevUser(user) {
@@ -7873,7 +7873,6 @@ function isDevUser(user) {
 }
 
 let currentDevTodoFilter = 'all'; // 'all' | 'active' | 'completed'
-let currentDevTodoAssignee = 'all'; // 'all' | 'Özgür' | 'Önder' | 'Ortak'
 let currentDevTodoPriority = 'all'; // 'all' | 'urgent' | 'high' | 'normal' | 'low'
 let currentDevTodoSort = 'priority_desc'; // 'priority_desc' | 'date_desc' | 'date_asc' | 'text_asc'
 let currentDevTodoSearch = '';
@@ -7989,25 +7988,22 @@ function initDevTodoList() {
     form.addEventListener('submit', (e) => {
       e.preventDefault();
       const input = document.getElementById('devTodoInput');
-      const assigneeSelect = document.getElementById('devTodoAssignee');
       const prioritySelect = document.getElementById('devTodoPriority');
       if (!input) return;
 
       const text = input.value.trim();
       if (!text) return;
 
-      const assignee = assigneeSelect ? assigneeSelect.value : 'Ortak';
       const priority = prioritySelect ? prioritySelect.value : 'normal';
 
       const todos = DataStore.getTodos();
       const newTodo = {
         id: 'todo_' + Date.now(),
         text: text,
-        assignee: assignee,
         priority: priority,
         completed: false,
         createdAt: new Date().toISOString(),
-        createdBy: currentUser?.fullName || (isDevUser(currentUser) && currentUser.username.includes('ozgur') ? 'Özgür' : 'Önder')
+        createdBy: currentUser?.fullName || currentUser?.username || 'Yönetici'
       };
 
       todos.unshift(newTodo);
@@ -8023,25 +8019,22 @@ function initDevTodoList() {
     adminForm.addEventListener('submit', (e) => {
       e.preventDefault();
       const input = document.getElementById('adminDevTodoInput');
-      const assigneeSelect = document.getElementById('adminDevTodoAssignee');
       const prioritySelect = document.getElementById('adminDevTodoPriority');
       if (!input) return;
 
       const text = input.value.trim();
       if (!text) return;
 
-      const assignee = assigneeSelect ? assigneeSelect.value : 'Ortak';
       const priority = prioritySelect ? prioritySelect.value : 'normal';
 
       const todos = DataStore.getTodos();
       const newTodo = {
         id: 'todo_' + Date.now(),
         text: text,
-        assignee: assignee,
         priority: priority,
         completed: false,
         createdAt: new Date().toISOString(),
-        createdBy: currentUser?.fullName || (isDevUser(currentUser) && currentUser.username.includes('ozgur') ? 'Özgür' : 'Önder')
+        createdBy: currentUser?.fullName || currentUser?.username || 'Yönetici'
       };
 
       todos.unshift(newTodo);
@@ -8069,23 +8062,6 @@ function initDevTodoList() {
     });
   });
 
-  // Sorumlu Filtresi Event Dinleyicileri
-  const modalAssigneeSelect = document.getElementById('devTodoFilterAssignee');
-  const adminAssigneeSelect = document.getElementById('adminTodoFilterAssignee');
-  if (modalAssigneeSelect) {
-    modalAssigneeSelect.addEventListener('change', () => {
-      currentDevTodoAssignee = modalAssigneeSelect.value;
-      syncDevTodoFilterControls();
-      renderDevTodos();
-    });
-  }
-  if (adminAssigneeSelect) {
-    adminAssigneeSelect.addEventListener('change', () => {
-      currentDevTodoAssignee = adminAssigneeSelect.value;
-      syncDevTodoFilterControls();
-      renderDevTodos();
-    });
-  }
 
   // Öncelik Filtresi Event Dinleyicileri
   const modalPrioritySelect = document.getElementById('devTodoFilterPriority');
@@ -8221,12 +8197,6 @@ function syncDevTodoFilterControls() {
       : 'admin-todo-filter-btn px-3 py-1 rounded-md font-medium text-slate-500 hover:text-slate-800 cursor-pointer transition';
   });
 
-  // Sorumlu seçicileri
-  const modalAssignee = document.getElementById('devTodoFilterAssignee');
-  const adminAssignee = document.getElementById('adminTodoFilterAssignee');
-  if (modalAssignee && modalAssignee.value !== currentDevTodoAssignee) modalAssignee.value = currentDevTodoAssignee;
-  if (adminAssignee && adminAssignee.value !== currentDevTodoAssignee) adminAssignee.value = currentDevTodoAssignee;
-
   // Öncelik seçicileri
   const modalPriority = document.getElementById('devTodoFilterPriority');
   const adminPriority = document.getElementById('adminTodoFilterPriority');
@@ -8254,7 +8224,6 @@ function syncDevTodoFilterControls() {
   // Sıfırla butonlarının görünürlüğü
   const isFiltered = (
     currentDevTodoFilter !== 'all' ||
-    currentDevTodoAssignee !== 'all' ||
     currentDevTodoPriority !== 'all' ||
     currentDevTodoSort !== 'priority_desc' ||
     Boolean((currentDevTodoSearch || '').trim())
@@ -8283,7 +8252,6 @@ function syncDevTodoFilterControls() {
 
 function resetDevTodoFilters() {
   currentDevTodoFilter = 'all';
-  currentDevTodoAssignee = 'all';
   currentDevTodoPriority = 'all';
   currentDevTodoSort = 'priority_desc';
   currentDevTodoSearch = '';
@@ -8330,12 +8298,7 @@ function renderDevTodos() {
     filtered = filtered.filter(t => t.completed);
   }
 
-  // 2. Sorumlu Filtreleme
-  if (currentDevTodoAssignee !== 'all') {
-    filtered = filtered.filter(t => (t.assignee || 'Ortak') === currentDevTodoAssignee);
-  }
-
-  // 3. Öncelik Filtreleme
+  // 2. Öncelik Filtreleme
   if (currentDevTodoPriority !== 'all') {
     filtered = filtered.filter(t => {
       const p = (t.priority || 'normal').toLowerCase();
@@ -8347,14 +8310,13 @@ function renderDevTodos() {
     });
   }
 
-  // 4. Canlı Arama Filtreleme
+  // 3. Canlı Arama Filtreleme
   const searchTrimmed = (currentDevTodoSearch || '').trim().toLowerCase();
   if (searchTrimmed) {
     filtered = filtered.filter(t => {
       const textMatch = (t.text || '').toLowerCase().includes(searchTrimmed);
-      const assigneeMatch = (t.assignee || '').toLowerCase().includes(searchTrimmed);
       const creatorMatch = (t.createdBy || '').toLowerCase().includes(searchTrimmed);
-      return textMatch || assigneeMatch || creatorMatch;
+      return textMatch || creatorMatch;
     });
   }
 
@@ -8434,16 +8396,6 @@ function renderDevTodos() {
     }
   } else {
     html = filtered.map(t => {
-      // Sorumlu rozeti
-      let assigneeBadge = '';
-      if (t.assignee === 'Özgür') {
-        assigneeBadge = `<span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-sky-100 text-sky-700 dark:bg-sky-950/60 dark:text-sky-300 border border-sky-300/40">👤 Özgür</span>`;
-      } else if (t.assignee === 'Önder') {
-        assigneeBadge = `<span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-orange-100 text-orange-700 dark:bg-orange-950/60 dark:text-orange-300 border border-orange-300/40">👤 Önder</span>`;
-      } else {
-        assigneeBadge = `<span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-purple-100 text-purple-700 dark:bg-purple-950/60 dark:text-purple-300 border border-purple-300/40">👥 Ortak</span>`;
-      }
-
       // Öncelik rozeti ve sol kenar renk vurgusu
       const prio = (t.priority || 'normal').toLowerCase();
       let priorityBadge = '';
@@ -8475,11 +8427,6 @@ function renderDevTodos() {
             />
             <div class="flex items-center justify-between gap-2">
               <div class="flex items-center gap-1.5">
-                <select id="editTodoAssignee_${t.id}" class="px-2 py-1 text-[11px] rounded border border-slate-200 dark:border-[#2b3e45] bg-slate-50 dark:bg-[#10191b] text-slate-700 dark:text-slate-200">
-                  <option value="Özgür" ${t.assignee === 'Özgür' ? 'selected' : ''}>Özgür</option>
-                  <option value="Önder" ${t.assignee === 'Önder' ? 'selected' : ''}>Önder</option>
-                  <option value="Ortak" ${t.assignee === 'Ortak' ? 'selected' : ''}>Ortak</option>
-                </select>
                 <select id="editTodoPriority_${t.id}" class="px-2 py-1 text-[11px] rounded border border-slate-200 dark:border-[#2b3e45] bg-slate-50 dark:bg-[#10191b] text-slate-700 dark:text-slate-200">
                   <option value="urgent" ${prio === 'urgent' ? 'selected' : ''}>🔥 Acil</option>
                   <option value="high" ${prio === 'high' ? 'selected' : ''}>⚡ Yüksek</option>
@@ -8518,10 +8465,9 @@ function renderDevTodos() {
               ${escapeHtml(t.text)}
             </div>
             <div class="flex flex-wrap items-center gap-1.5 mt-2">
-              ${assigneeBadge}
               ${priorityBadge}
               <span class="text-[10px] text-slate-400">
-                ${escapeHtml(t.createdBy || 'Dev')} • ${dateStr}
+                ${escapeHtml(t.createdBy || 'Yönetici')} • ${dateStr}
               </span>
             </div>
           </div>
@@ -8591,7 +8537,6 @@ window.cancelEditDevTodo = function() {
 
 window.saveEditDevTodo = function(id) {
   const input = document.getElementById(`editTodoInput_${id}`);
-  const assigneeSelect = document.getElementById(`editTodoAssignee_${id}`);
   const prioritySelect = document.getElementById(`editTodoPriority_${id}`);
   if (!input) return;
 
@@ -8605,7 +8550,6 @@ window.saveEditDevTodo = function(id) {
   const todo = todos.find(t => t.id === id);
   if (todo) {
     todo.text = newText;
-    if (assigneeSelect) todo.assignee = assigneeSelect.value;
     if (prioritySelect) todo.priority = prioritySelect.value;
     DataStore.saveTodos(todos);
     editingDevTodoId = null;
