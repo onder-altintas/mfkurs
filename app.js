@@ -8917,6 +8917,21 @@ function renderSupervisorDashboard() {
   if (supStatSuccessRate) supStatSuccessRate.innerText = `%${overallSuccessRate}`;
   if (supStatTotalCenters) supStatTotalCenters.innerText = totalCenters;
 
+  const supWelcomeUser = document.getElementById('supWelcomeUser');
+  if (supWelcomeUser) {
+    supWelcomeUser.innerText = currentUser?.fullName || '-';
+  }
+  const supBackBtn = document.getElementById('supBackToAdminBtn');
+  if (supBackBtn) {
+    if (isDeveloper(currentUser)) {
+      supBackBtn.classList.remove('hidden');
+      supBackBtn.classList.add('flex');
+    } else {
+      supBackBtn.classList.add('hidden');
+      supBackBtn.classList.remove('flex');
+    }
+  }
+
   populateSupervisorSelectOptions();
   renderSupervisorBreakdowns();
   renderSupervisorCoursesTable();
