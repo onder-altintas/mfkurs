@@ -1813,23 +1813,44 @@
           </div>
         </div>
 
-        <div>
-          <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Eğitmen Kurs Alanı (Branş) *</label>
-          <select
-            id="profileArea"
-            class="w-full px-3.5 py-2 bg-slate-50 dark:bg-[#10191b] border border-slate-200 dark:border-[#2b3e45] rounded-xl text-xs font-semibold text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-[#335C67] focus:outline-none"
-          >
-            <option value="Bilişim Teknolojileri">Bilişim Teknolojileri</option>
-            <option value="El Sanatları">El Sanatları</option>
-            <option value="Kişisel Gelişim">Kişisel Gelişim</option>
-            <option value="Yabancı Dil">Yabancı Dil</option>
-            <option value="Mesleki Eğitim">Mesleki Eğitim</option>
-            <option value="Diğer">Diğer</option>
-          </select>
-          <p class="text-[10px] text-slate-400 mt-1">
-            Yeni kurs açarken bu alan altındaki kurslar öncelikli olarak listelenir.
-          </p>
+        <!-- Branş Alanları (1. ve 2. Branş) -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">1. Kurs Alanı (Ana Branş) *</label>
+            <select
+              id="profileArea"
+              class="w-full px-3.5 py-2 bg-slate-50 dark:bg-[#10191b] border border-slate-200 dark:border-[#2b3e45] rounded-xl text-xs font-semibold text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-[#335C67] focus:outline-none"
+            >
+              <option value="Bilişim Teknolojileri">Bilişim Teknolojileri</option>
+              <option value="El Sanatları">El Sanatları</option>
+              <option value="Kişisel Gelişim">Kişisel Gelişim</option>
+              <option value="Yabancı Dil">Yabancı Dil</option>
+              <option value="Mesleki Eğitim">Mesleki Eğitim</option>
+              <option value="Diğer">Diğer</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1 flex items-center justify-between">
+              <span>2. Kurs Alanı (İkinci Branş)</span>
+              <span class="text-[10px] text-slate-400 font-normal">İsteğe Bağlı</span>
+            </label>
+            <select
+              id="profileArea2"
+              class="w-full px-3.5 py-2 bg-slate-50 dark:bg-[#10191b] border border-slate-200 dark:border-[#2b3e45] rounded-xl text-xs font-semibold text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-[#335C67] focus:outline-none"
+            >
+              <option value="">-- İkinci Branş Yok --</option>
+              <option value="Bilişim Teknolojileri">Bilişim Teknolojileri</option>
+              <option value="El Sanatları">El Sanatları</option>
+              <option value="Kişisel Gelişim">Kişisel Gelişim</option>
+              <option value="Yabancı Dil">Yabancı Dil</option>
+              <option value="Mesleki Eğitim">Mesleki Eğitim</option>
+              <option value="Diğer">Diğer</option>
+            </select>
+          </div>
         </div>
+        <p class="text-[10px] text-slate-400">
+          Tanımlanan 1. ve 2. branşlar dışındaki alanlardan kurs açamazsınız.
+        </p>
 
         <!-- Rol Bilgisi (Bilgilendirme) -->
         <div class="flex items-center justify-between p-2.5 bg-slate-100 dark:bg-[#10191b] rounded-xl text-xs border border-slate-200 dark:border-[#23353c]">
@@ -1916,8 +1937,36 @@
           </div>
         </div>
 
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1 flex items-center gap-1.5">
+              <i data-lucide="tag" class="w-3.5 h-3.5 text-purple-600"></i>
+              <span>1. Kurs Alanı / Branş *</span>
+            </label>
+            <select
+              id="userFormArea"
+              class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-purple-500 font-medium"
+            >
+              <!-- Dinamik doldurulacak -->
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1 flex items-center gap-1.5">
+              <i data-lucide="tag" class="w-3.5 h-3.5 text-slate-400"></i>
+              <span>2. Kurs Alanı / Branş (İsteğe Bağlı)</span>
+            </label>
+            <select
+              id="userFormArea2"
+              class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-purple-500 font-medium"
+            >
+              <option value="">-- 2. Branş Yok --</option>
+              <!-- Dinamik doldurulacak -->
+            </select>
+          </div>
+        </div>
+
         <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1">Unvan / Branş</label>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Unvan</label>
           <input
             type="text"
             id="userFormTitle"
@@ -2040,7 +2089,7 @@
               <option value="Mesleki Eğitim">Mesleki Eğitim</option>
               <option value="Diğer">Diğer</option>
             </select>
-            <p class="text-[11px] text-slate-400 mt-1">
+            <p id="courseFormCategoryFilterHint" class="text-[11px] text-slate-400 mt-1">
               Varsayılan olarak kendi branşınızdaki kurslar listelenir. Dilerseniz yukarıdan farklı bir alan seçebilirsiniz.
             </p>
           </div>
