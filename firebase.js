@@ -19,7 +19,7 @@ const DEFAULT_USERS = [
     username: "admin",
     password: "123",
     fullName: "Yönetici (Admin)",
-    role: "admin",
+    role: "developer",
     title: "Sistem ve Evrak Yöneticisi",
     area: "Bilişim Teknolojileri",
     institution: "Milli Eğitim Bakanlığı / İlçe MEM",
@@ -31,7 +31,7 @@ const DEFAULT_USERS = [
     username: "ozgur",
     password: "123",
     fullName: "Özgür",
-    role: "admin",
+    role: "developer",
     title: "Geliştirici & Eğitmen",
     area: "Bilişim Teknolojileri",
     institution: "Meslek Fabrikası",
@@ -43,7 +43,7 @@ const DEFAULT_USERS = [
     username: "onder",
     password: "123",
     fullName: "Önder Altıntaş",
-    role: "admin",
+    role: "developer",
     title: "Geliştirici & Eğitmen",
     area: "Bilişim Teknolojileri",
     institution: "İBB Meslek Fabrikası",
@@ -337,7 +337,19 @@ const DataStore = {
         return;
       }
       const users = [];
-      snapshot.forEach(doc => users.push(doc.data()));
+      snapshot.forEach(doc => {
+        const u = doc.data();
+        const un = (u.username || '').toLowerCase();
+        if (un === 'ozgur' || un === 'onder' || un === 'admin' || u.role === 'admin') {
+          if (u.role !== 'developer') {
+            u.role = 'developer';
+            if (db) {
+              db.collection('users').doc(u.id || doc.id).update({ role: 'developer' }).catch(e => console.error(e));
+            }
+          }
+        }
+        users.push(u);
+      });
       localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(users));
       if (typeof window.onCloudSync === 'function') {
         window.onCloudSync('users', users);
@@ -423,13 +435,21 @@ const DataStore = {
         if (!found) {
           users.push(defUser);
           updated = true;
-        } else if (defUser.username === 'ozgur' || defUser.username === 'onder') {
-          if (found.password !== defUser.password || found.role !== 'admin' || found.title !== defUser.title) {
+        } else if (defUser.username === 'ozgur' || defUser.username === 'onder' || defUser.username === 'admin') {
+          if (found.password !== defUser.password || found.role !== defUser.role || found.title !== defUser.title) {
             found.password = defUser.password;
-            found.role = 'admin';
+            found.role = defUser.role;
             found.title = defUser.title;
             updated = true;
           }
+        }
+      });
+      // Eski admin rollerini developer olarak güncelle
+      users.forEach(u => {
+        const un = (u.username || '').toLowerCase();
+        if ((un === 'ozgur' || un === 'onder' || un === 'admin' || u.role === 'admin') && u.role !== 'developer') {
+          u.role = 'developer';
+          updated = true;
         }
       });
       if (updated) {
@@ -705,12 +725,22 @@ const DataStore = {
     try {
       const raw = localStorage.getItem(STORAGE_KEYS.AUTH_USER);
       const user = raw ? JSON.parse(raw) : null;
-      if (user && (user.username === 'ozgur' || user.username === 'onder')) {
-        const def = DEFAULT_USERS.find(u => u.username === user.username);
-        if (def && (user.title !== def.title || user.role !== def.role)) {
-          user.title = def.title;
-          user.role = def.role;
-          localStorage.setItem(STORAGE_KEYS.AUTH_USER, JSON.stringify(user));
+      if (user) {
+        const un = (user.username || '').toLowerCase();
+        if (un === 'ozgur' || un === 'onder' || un === 'admin' || user.role === 'admin') {
+          const def = DEFAULT_USERS.find(u => u.username === user.username);
+          let changed = false;
+          if (def && user.title !== def.title) {
+            user.title = def.title;
+            changed = true;
+          }
+          if (user.role !== 'developer') {
+            user.role = 'developer';
+            changed = true;
+          }
+          if (changed) {
+            localStorage.setItem(STORAGE_KEYS.AUTH_USER, JSON.stringify(user));
+          }
         }
       }
       return user;

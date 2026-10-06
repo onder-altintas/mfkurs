@@ -601,6 +601,32 @@ function loadData() {
   currentAreas = DataStore.getAreas();
   currentTemplates = DataStore.getCourseTemplates();
   currentUsers = DataStore.getUsers();
+
+  // Eski yetkileri güncelle: Önder ve Özgür (ve admin) 'developer' olsun
+  let usersChanged = false;
+  currentUsers.forEach(u => {
+    const un = (u.username || '').toLowerCase();
+    if (un === 'ozgur' || un === 'onder' || un === 'admin' || u.role === 'admin') {
+      if (u.role !== 'developer') {
+        u.role = 'developer';
+        usersChanged = true;
+      }
+    }
+  });
+  if (usersChanged) {
+    DataStore.saveUsers(currentUsers);
+  }
+
+  if (currentUser) {
+    const curUn = (currentUser.username || '').toLowerCase();
+    if (curUn === 'ozgur' || curUn === 'onder' || curUn === 'admin' || currentUser.role === 'admin') {
+      if (currentUser.role !== 'developer') {
+        currentUser.role = 'developer';
+        DataStore.setActiveUser(currentUser);
+      }
+    }
+  }
+
   populateAllAreaDropdowns();
   syncCoursesWithCurrentInstructor();
 }
