@@ -1113,19 +1113,27 @@ function setupEventListeners() {
     });
   }
 
-  quickLoginUser1.addEventListener('click', () => {
-    const user = DataStore.getUsers().find(u => u.username === 'egitmen1');
-    loginUsernameInput.value = user.username;
-    loginPasswordInput.value = user.password;
-    loginForm.dispatchEvent(new Event('submit'));
-  });
+  if (quickLoginUser1) {
+    quickLoginUser1.addEventListener('click', () => {
+      const user = DataStore.getUsers().find(u => u.username === 'egitmen1');
+      if (user) {
+        loginUsernameInput.value = user.username;
+        loginPasswordInput.value = user.password;
+        loginForm.dispatchEvent(new Event('submit'));
+      }
+    });
+  }
 
-  quickLoginUser2.addEventListener('click', () => {
-    const user = DataStore.getUsers().find(u => u.username === 'egitmen2');
-    loginUsernameInput.value = user.username;
-    loginPasswordInput.value = user.password;
-    loginForm.dispatchEvent(new Event('submit'));
-  });
+  if (quickLoginUser2) {
+    quickLoginUser2.addEventListener('click', () => {
+      const user = DataStore.getUsers().find(u => u.username === 'egitmen2');
+      if (user) {
+        loginUsernameInput.value = user.username;
+        loginPasswordInput.value = user.password;
+        loginForm.dispatchEvent(new Event('submit'));
+      }
+    });
+  }
 
   // Çıkış
   logoutBtn.addEventListener('click', () => {
@@ -2580,8 +2588,10 @@ function setCourseFilter(filter) {
 
 function renderTeacherDashboard() {
   loadData();
-  // Her kullanıcı (admin dahil) ana ekranda yalnızca kendisiyle ilgili kursları görür
-  const userCourses = currentCourses.filter(c => isCourseRelatedToUser(c, currentUser));
+  // Geliştirici kullanıcılar tüm kursları görebilir; normal kullanıcılar yalnızca kendisiyle ilgili kursları görür
+  const userCourses = isDeveloper(currentUser)
+    ? currentCourses
+    : currentCourses.filter(c => isCourseRelatedToUser(c, currentUser));
 
   const total = userCourses.length;
   const active = userCourses.filter(c => c.status === 'active').length;
@@ -2601,8 +2611,10 @@ function renderTeacherDashboard() {
 }
 
 function renderCourseList() {
-  // Her kullanıcı yalnızca kendisiyle ilgili kursları listeler
-  const userCourses = currentCourses.filter(c => isCourseRelatedToUser(c, currentUser));
+  // Geliştirici kullanıcılar tüm kursları görebilir; normal kullanıcılar yalnızca kendisiyle ilgili kursları görür
+  const userCourses = isDeveloper(currentUser)
+    ? currentCourses
+    : currentCourses.filter(c => isCourseRelatedToUser(c, currentUser));
 
   const filtered = userCourses.filter(course => {
     const matchesFilter = (currentFilter === 'all') || (course.status === currentFilter);

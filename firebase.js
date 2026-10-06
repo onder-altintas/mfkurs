@@ -49,216 +49,17 @@ const DEFAULT_USERS = [
     institution: "İBB Meslek Fabrikası",
     email: "onder@meslekfabrikasi.org",
     avatar: "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=150&auto=format&fit=crop&q=80"
-  },
-  {
-    id: "user_1",
-    username: "egitmen1",
-    password: "123456",
-    fullName: "Ahmet Yılmaz",
-    role: "teacher",
-    title: "Bilişim Teknolojileri Eğitmeni",
-    area: "Bilişim Teknolojileri",
-    institution: "Kadıköy Halk Eğitimi Merkezi",
-    email: "ahmet.yilmaz@meb.k12.tr",
-    avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&auto=format&fit=crop&q=80"
-  },
-  {
-    id: "user_2",
-    username: "egitmen2",
-    password: "123456",
-    fullName: "Ayşe Demir",
-    role: "teacher",
-    title: "El Sanatları ve Tasarım Eğitmeni",
-    area: "El Sanatları",
-    institution: "Üsküdar Mesleki Eğitim Merkezi",
-    email: "ayse.demir@meb.k12.tr",
-    avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&auto=format&fit=crop&q=80"
   }
 ];
 
-// Kurs Merkezleri Tanımları (Merkez İsmi ve Tercihen Sorumlu Bilgisi)
-const DEFAULT_CENTERS = [
-  { id: "center_1", name: "Kadıköy Halk Eğitimi Merkezi", supervisor: "Kemal Demir (Müdür Yrd.)" },
-  { id: "center_2", name: "Üsküdar Mesleki Eğitim Merkezi", supervisor: "Mehmet Ali Şahin (Müdür Yrd.)" },
-  { id: "center_3", name: "Şişli Halk Eğitimi Merkezi", supervisor: "" }
-];
+// Kurs Merkezleri Tanımları (Boş başlangıç - Kullanıcı kendisi ekler)
+const DEFAULT_CENTERS = [];
 
-// Kurs Alanları / Branş Tanımları (Temel başlangıç branşları)
-const DEFAULT_AREAS = [
-  { id: "area_1", name: "Bilişim Teknolojileri" },
-  { id: "area_2", name: "Kişisel Gelişim" },
-  { id: "area_3", name: "El Sanatları" },
-  { id: "area_4", name: "Yabancı Dil" },
-  { id: "area_5", name: "Mesleki Eğitim" }
-];
+// Kurs Alanları / Branş Tanımları (Boş başlangıç - Kullanıcı kendisi ekler)
+const DEFAULT_AREAS = [];
 
-// Resmi Kurs ve Saatlik Konu / Müfredat Dağılım Şablonları (Modüler Yapı)
-const DEFAULT_COURSE_TEMPLATES = [
-  {
-    id: "tmpl_1",
-    name: "Bilgisayar İşletmenliği (Operatörlüğü)",
-    code: "BLG-160",
-    category: "Bilişim Teknolojileri",
-    totalHours: 160,
-    moduleCount: 4,
-    description: "Temel bilgisayar donanımı, işletim sistemi, ofis programları (Word, Excel, PowerPoint) ve internet güvenliği.",
-    modules: [
-      {
-        id: "mod_blg_1",
-        number: 1,
-        name: "Bilgisayara Giriş ve İşletim Sistemleri",
-        totalHours: 40,
-        lessonHours: 38,
-        examHours: 2,
-        topics: [
-          "Bilgisayara Giriş: Temel donanım birimleri (Kasa, Monitör, Klavye, Fare)",
-          "Donanım parçalarının tanıtımı (Anakart, İşlemci, RAM, Sabit Disk)",
-          "Giriş-Çıkış birimleri ve harici depolama aygıtları kullanımı",
-          "İşletim Sistemleri kavramı ve Windows ortamına giriş",
-          "Masaüstü, Görev Çubuğu, Başlat Menüsü ve pencere yönetimi",
-          "Dosya ve Klasör yönetimi: Oluşturma, adlandırma, kopyalama ve taşıma",
-          "Denetim Masası ve Sistem Ayarlarının yapılandırılması",
-          "Donanım ve yazılım sorunlarını giderme temel yöntemleri"
-        ]
-      },
-      {
-        id: "mod_blg_2",
-        number: 2,
-        name: "Kelime İşlemci (Word)",
-        totalHours: 40,
-        lessonHours: 38,
-        examHours: 2,
-        topics: [
-          "Kelime İşlemci (Word) Programına Giriş ve Temel Arayüz",
-          "Metin yazma, biçimlendirme, yazı tipi ve paragraf ayarları",
-          "Tablo ekleme, satır/sütun düzenleme ve tablo biçimlendirme",
-          "Resim, şekil, simge ve sayfa numarası ekleme",
-          "Sayfa yapısı, kenar boşlukları ve yazdırma ayarları",
-          "Üstbilgi, altbilgi ve içindekiler tablosu oluşturma"
-        ]
-      },
-      {
-        id: "mod_blg_3",
-        number: 3,
-        name: "Elektronik Tablolama (Excel)",
-        totalHours: 40,
-        lessonHours: 38,
-        examHours: 2,
-        topics: [
-          "Elektronik Tablolama (Excel) Programına Giriş ve Hücre Yapısı",
-          "Hücre veri türleri, formül yazma ve otomatik doldurma",
-          "Temel Matematiksel Formüller (TOPLA, ORTALAMA, EĞER)",
-          "Mantıksal ve Arama Formülleri (DÜŞEYARA, ÇOKEĞERSAY)",
-          "Tablo filtreleme, sıralama ve veri doğrulama teknikleri",
-          "Grafik oluşturma, biçimlendirme ve raporlama teknikleri"
-        ]
-      },
-      {
-        id: "mod_blg_4",
-        number: 4,
-        name: "Sunu Hazırlama ve İnternet Güvenliği",
-        totalHours: 40,
-        lessonHours: 38,
-        examHours: 2,
-        topics: [
-          "Sunu Programı (PowerPoint) Giriş ve Slayt Düzenleri",
-          "Slayt geçişleri, animasyonlar ve multimedya ekleme",
-          "İnternet Tarayıcıları, Arama Motorları ve e-Devlet Kullanımı",
-          "e-Posta Yönetimi, dosya ekleme ve bulut depolama",
-          "Siber Güvenlik, parola güvenliği ve zararlı yazılımlardan korunma",
-          "Bilişim Etiği, telif hakları ve dijital vatandaşlık"
-        ]
-      }
-    ],
-    syllabus: []
-  },
-  {
-    id: "tmpl_2",
-    name: "Diksiyon ve Etkili İletişim",
-    code: "DKS-64",
-    category: "Kişisel Gelişim",
-    totalHours: 64,
-    moduleCount: 2,
-    description: "Türkçenin doğru, anlaşılır ve etkili konuşulması, doğru nefes alma, tonlama ve beden dili eğitimi.",
-    modules: [
-      {
-        id: "mod_dks_1",
-        number: 1,
-        name: "Doğru Nefes Alma ve Ses Organları",
-        totalHours: 32,
-        lessonHours: 30,
-        examHours: 2,
-        topics: [
-          "İletişimin Temelleri ve Diksiyonun Önemi",
-          "Doğru Nefes Alma ve Diyafram Egzersizleri",
-          "Ses Organları ve Artikülasyon (Boğumlanma) Çalışmaları",
-          "Ünlülerin (Sesli Harfler) Doğru Çıkarılışı ve Boğumlanması",
-          "Ünsüzlerin (Sessiz Harfler) Doğru Çıkarılışı ve Tembelliklerin Giderilmesi"
-        ]
-      },
-      {
-        id: "mod_dks_2",
-        number: 2,
-        name: "Beden Dili, Vurgu ve Sunum Becerileri",
-        totalHours: 32,
-        lessonHours: 30,
-        examHours: 2,
-        topics: [
-          "Türkçede Vurgu Kuralları (Kelime Vurgusu, Cümle Vurgusu)",
-          "Ulama, Durak ve Tonlama Teknikleri",
-          "Tekerleme Çalışmaları ve Hızlı/Akıcı Konuşma Pratikleri",
-          "Beden Dili, Jest ve Mimiklerin Doğru Kullanımı",
-          "Topluluk Önünde Konuşma ve Heyecan Kontrolü",
-          "Hazırlıksız Konuşma Becerisi ve Doğaçlama Sunumlar"
-        ]
-      }
-    ],
-    syllabus: []
-  },
-  {
-    id: "tmpl_3",
-    name: "Dekoratif Ahşap Süsleme",
-    code: "AHS-140",
-    category: "El Sanatları",
-    totalHours: 140,
-    moduleCount: 2,
-    description: "Ahşap yüzey hazırlığı, zımparalama, astar boya, transfer, dekupaj, eskitme ve vernikleme teknikleri.",
-    modules: [
-      {
-        id: "mod_ahs_1",
-        number: 1,
-        name: "Ahşap Yüzey Hazırlığı ve Temel Boyama",
-        totalHours: 70,
-        lessonHours: 68,
-        examHours: 2,
-        topics: [
-          "Ahşap Süslemede Kullanılan Araç, Gereç ve Güvenlik Kuralları",
-          "Ham Ahşap Yüzeylerin Hazırlanması ve Zımpara Teknikleri",
-          "Astar Boya Uygulaması ve Zemin Boyama Teknikleri",
-          "Fırça Kullanımı, Süngerleme ve Düz Renk Boyama Pratiği"
-        ]
-      },
-      {
-        id: "mod_ahs_2",
-        number: 2,
-        name: "Transfer, Dekupaj, Eskitme ve Vernikleme",
-        totalHours: 70,
-        lessonHours: 68,
-        examHours: 2,
-        topics: [
-          "Dekupaj Kağıdı ve Pirinç Kağıt Yapıştırma Teknikleri",
-          "Kolay Transfer ve Stencil (Şablon) Boyama Uygulamaları",
-          "Rölyef Pasta ile Boyutlu Desen ve Doku Oluşturma",
-          "Budak ve Doku Tarakları ile Efekt Verme",
-          "Eskitme Teknikleri (Antik Eskitme, Mum Eskitme, Kuru Fırça)",
-          "Çatlatma Teknikleri (Tek Adım ve Çift Adım Çatlatma)",
-          "Ahşap Koruyucu Vernik Çeşitleri ve Vernikleme İşlemi"
-        ]
-      }
-    ],
-    syllabus: []
-  }
-];
+// Kurs ve Müfredat Şablonları (Boş başlangıç - Kullanıcı kendisi ekler)
+const DEFAULT_COURSE_TEMPLATES = [];
 
 // Başlangıç kursları temizlendi - Kullanıcı kurallara uygun yeni kursları kendisi açacaktır
 const INITIAL_COURSES = [];
@@ -360,11 +161,8 @@ const DataStore = {
 
     // 3. Merkezleri Buluttan Dinle
     db.collection('settings').doc('centers').onSnapshot((doc) => {
-      if (!doc.exists) {
-        db.collection('settings').doc('centers').set({ list: DEFAULT_CENTERS }).catch(e => console.error(e));
-        return;
-      }
-      const list = doc.data()?.list || DEFAULT_CENTERS;
+      if (!doc.exists) return;
+      const list = doc.data()?.list || [];
       localStorage.setItem(STORAGE_KEYS.CENTERS, JSON.stringify(list));
       if (typeof window.onCloudSync === 'function') {
         window.onCloudSync('centers', list);
@@ -375,11 +173,8 @@ const DataStore = {
 
     // 4. Şablonları Buluttan Dinle
     db.collection('settings').doc('templates').onSnapshot((doc) => {
-      if (!doc.exists) {
-        db.collection('settings').doc('templates').set({ list: DEFAULT_COURSE_TEMPLATES }).catch(e => console.error(e));
-        return;
-      }
-      const list = doc.data()?.list || DEFAULT_COURSE_TEMPLATES;
+      if (!doc.exists) return;
+      const list = doc.data()?.list || [];
       localStorage.setItem(STORAGE_KEYS.TEMPLATES, JSON.stringify(list));
       if (typeof window.onCloudSync === 'function') {
         window.onCloudSync('templates', list);
@@ -404,12 +199,9 @@ const DataStore = {
 
     // 6. Alanları Buluttan Dinle
     db.collection('settings').doc('areas').onSnapshot((doc) => {
-      if (!doc.exists) {
-        db.collection('settings').doc('areas').set({ list: DEFAULT_AREAS }).catch(e => console.error(e));
-        return;
-      }
+      if (!doc.exists) return;
       const data = doc.data();
-      const list = (data && Array.isArray(data.list)) ? data.list : DEFAULT_AREAS;
+      const list = (data && Array.isArray(data.list)) ? data.list : [];
       localStorage.setItem(STORAGE_KEYS.AREAS, JSON.stringify(list));
       if (typeof window.onCloudSync === 'function') {
         window.onCloudSync('areas', list);
@@ -641,13 +433,13 @@ const DataStore = {
     try {
       const raw = localStorage.getItem(STORAGE_KEYS.CENTERS);
       if (!raw) {
-        localStorage.setItem(STORAGE_KEYS.CENTERS, JSON.stringify(DEFAULT_CENTERS));
-        return DEFAULT_CENTERS;
+        return [];
       }
-      return JSON.parse(raw);
+      const parsed = JSON.parse(raw);
+      return Array.isArray(parsed) ? parsed : [];
     } catch (e) {
       console.error("LocalStorage merkez okuma hatası:", e);
-      return DEFAULT_CENTERS;
+      return [];
     }
   },
 
@@ -666,15 +458,14 @@ const DataStore = {
     try {
       const raw = localStorage.getItem(STORAGE_KEYS.AREAS);
       if (raw === null || raw === undefined) {
-        localStorage.setItem(STORAGE_KEYS.AREAS, JSON.stringify(DEFAULT_AREAS));
-        return DEFAULT_AREAS;
+        return [];
       }
       const parsed = JSON.parse(raw);
       if (Array.isArray(parsed)) return parsed;
-      return DEFAULT_AREAS;
+      return [];
     } catch (e) {
       console.error("LocalStorage alan okuma hatası:", e);
-      return DEFAULT_AREAS;
+      return [];
     }
   },
 
@@ -693,20 +484,20 @@ const DataStore = {
     try {
       let raw = localStorage.getItem(STORAGE_KEYS.TEMPLATES);
       if (!raw) {
-        raw = localStorage.getItem('kurs_sonu_templates_v3') || localStorage.getItem('kurs_sonu_templates_v4');
+        raw = localStorage.getItem('kurs_sonu_templates_v3') || localStorage.getItem('kurs_sonu_templates_v4') || localStorage.getItem('kurs_sonu_templates_v5');
         if (!raw) {
-          localStorage.setItem(STORAGE_KEYS.TEMPLATES, JSON.stringify(DEFAULT_COURSE_TEMPLATES));
-          return DEFAULT_COURSE_TEMPLATES;
+          return [];
         }
       }
       const parsed = JSON.parse(raw);
+      if (!Array.isArray(parsed)) return [];
       return parsed.map(t => ({
         moduleCount: t.moduleCount ? Math.max(1, Number(t.moduleCount)) : 1,
         ...t
       }));
     } catch (e) {
       console.error("LocalStorage şablon okuma hatası:", e);
-      return DEFAULT_COURSE_TEMPLATES;
+      return [];
     }
   },
 
