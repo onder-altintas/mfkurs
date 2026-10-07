@@ -134,6 +134,2635 @@ const DEFAULT_AREAS = [
 
 // Kurs ve Müfredat Şablonları (MEB Hayat Boyu Öğrenme Genel Müdürlüğü Onaylı)
 const DEFAULT_COURSE_TEMPLATES = [
+{
+  "id": "tmpl_bilgisayar_isletmenligi_163",
+  "name": "Bilgisayar İşletmenliği (Operatörlüğü) - 163 Saat",
+  "code": "BLG-163",
+  "category": "Bilişim Teknolojileri",
+  "area": "Bilişim Teknolojileri",
+  "totalHours": 163,
+  "moduleCount": 6,
+  "description": "T.C. Millî Eğitim Bakanlığı Hayat Boyu Öğrenme Genel Müdürlüğü Bilişim Teknolojileri Alanı - Bilgisayar İşletmenliği (Operatörlüğü) Kurs Programı (6 Modül, 163 Ders Saati).",
+  "modules": [
+    {
+      "id": "mod_blg163_1",
+      "number": 1,
+      "name": "Bilgisayara Giriş",
+      "totalHours": 52,
+      "lessonHours": 50,
+      "examHours": 2,
+      "topics": [
+        "Bilgi Teknolojisinin Temel Kavramları ve Bilgisayarın Tarihsel Gelişimi",
+        "Donanım ve Yazılım Kavramları, Bilgisayar Çeşitleri",
+        "Kasa ve Temel Donanım Birimleri: Anakart, İşlemci (CPU), Bellek (RAM)",
+        "Dahili ve Harici Depolama Birimleri (HDD, SSD, Flash Bellek)",
+        "Giriş Birimleri: Klavye, Fare, Tarayıcı, Barkod Okuyucu",
+        "Çıkış Birimleri: Monitör, Yazıcı, Hoparlör, Projeksiyon",
+        "Portlar, Bağlantı Noktaları ve Kablolar (HDMI, VGA, USB, DVI)",
+        "Bilgisayar Çevre Birimlerinin Güvenli Bağlantısı ve Kurulumu",
+        "BIOS / UEFI Arayüzü ve Temel Ayarları",
+        "İlk Açılış (Boot) Seçenekleri ve Başlangıç Yapılandırması",
+        "İşletim Sistemi Kavramı ve İşletim Sistemi Türleri",
+        "Bilgisayar Sistemine Uygun İşletim Sistemi Seçimi ve Ön Gereksinimleri",
+        "Kurulum Ortamı Hazırlama (Önyüklenebilir USB Oluşturma)",
+        "Sabit Disk Bölümleme (Disk Partitioning) ve Biçimlendirme (Formatting)",
+        "İşletim Sistemi Kurulum Aşamaları ve Temel Ayarlar - 1",
+        "İşletim Sistemi Kurulum Aşamaları ve Temel Ayarlar - 2",
+        "Donanım Sürücüsü (Driver) Kavramı ve Sürücü Türleri",
+        "Aygıt Yöneticisi Tanıtımı ve Donanım Durumlarının İncelenmesi",
+        "Anakart, Ekran Kartı ve Ses Kartı Sürücülerinin Kurulumu",
+        "Ağ (Ethernet/Wi-Fi) ve Çevre Birimi Sürücülerinin Kurulumu",
+        "İşletim Sistemi Kullanıcı Arayüzü: Masaüstü, Görev Çubuğu ve Bildirim Alanı",
+        "Başlat Menüsü Yapılandırması ve Kişiselleştirme Ayarları",
+        "Dosya ve Klasör Hiyerarşisi, Dizin Yapısı Mantığı",
+        "Dosya Gezgini Kullanımı ve Navigasyon Teknikleri",
+        "Dosya ve Klasör İşlemleri: Oluşturma, Yeniden Adlandırma, Silme (Geri Dönüşüm)",
+        "Dosya Kopyalama, Taşıma, Kısayol Oluşturma Pratikleri",
+        "Dosya Uzantıları, Dosya Türleri ve Varsayılan Program Eşleştirmeleri",
+        "Dosya Arama, Filtreleme ve Hızlı Erişim Özellikleri",
+        "Dosya ve Klasör Öznitelikleri (Gizli, Salt Okunur vb.)",
+        "Denetim Masası / Ayarlar Menüsü Temel Yapısı",
+        "Ekran, Çözünürlük, Tema ve Kişiselleştirme Ayarları",
+        "Saat, Dil, Bölge ve Klavye Seçeneklerinin Düzenlenmesi",
+        "Güç Seçenekleri, Uyku Modu ve Enerji Tasarrufu Ayarları",
+        "Kullanıcı Hesapları Yönetimi: Yönetici ve Standart Hesap Tanımlama",
+        "Kullanıcı Şifresi Belirleme, Hesap Güvenliği ve Oturum Açma Seçenekleri",
+        "Program Ekle/Kaldır İşlemleri ve Uygulama Yönetimi",
+        "Yazıcı ve Tarayıcı Ekleme, Varsayılan Yazıcı Ayarları",
+        "Yazdırma Kuyruğu Yönetimi ve Yazdırma Sorunlarını Giderme",
+        "Arşivleme Yazılımları (WinRAR, 7-Zip): Dosya Sıkıştırma ve Açma",
+        "PDF Okuyucu ve Belge Görüntüleyici Yazılımların Kurulumu ve Kullanımı",
+        "Medya Oynatıcılar ve Kodek Yönetimi",
+        "Görev Yöneticisi Kullanımı: İşlemler, Performans ve Başlangıç Uygulamaları",
+        "Disk Temizleme ve Sürücü İyileştirme (Bölümleme/Birleştirme) Araçları",
+        "Sistem Geri Yükleme Noktası Oluşturma ve Geri Yükleme İşlemleri",
+        "İşletim Sistemi Güncellemeleri (Windows Update) ve Bakım Stratejileri",
+        "Basit Donanım ve Yazılım Hatalarını Tanılama ve Çözme Yöntemleri",
+        "Ergonomi ve İş Sağlığı Güvenliği (İSG) Standartları",
+        "Bilgisayar Başında Doğru Oturuş ve Çalışma Ortamı Düzeni",
+        "Kapsamlı İşletim Sistemi ve Donanım Yönetimi Uygulaması - 1",
+        "Kapsamlı İşletim Sistemi ve Donanım Yönetimi Uygulaması - 2"
+      ]
+    },
+    {
+      "id": "mod_blg163_2",
+      "number": 2,
+      "name": "İnternet ve E-Posta Yönetimi",
+      "totalHours": 22,
+      "lessonHours": 20,
+      "examHours": 2,
+      "topics": [
+        "İnternet Nedir? Tarihçesi, Çalışma Mantığı ve Ağ Türleri (LAN, WAN, WWW)",
+        "İnternet Bağlantı Türleri (Fiber, ADSL, Mobil Veri, Wi-Fi)",
+        "IP Adresi, DNS, Modulasyon ve Modem/Router Temel Kavramları",
+        "Web Tarayıcı Programları (Chrome, Edge, Firefox) ve Kurulumları",
+        "Tarayıcı Arayüzü: Adres Çubuğu, Sekmeler, Geçmiş ve İndirilenler",
+        "Yer İmleri (Sık Kullanılanlar) Ekleme, Düzenleme ve Klasörleme",
+        "Arama Motorları, Mantıksal Arama Operatörleri ve İleri Düzey Arama Teknikleri",
+        "Güvenli İnternet Protokolleri (HTTP / HTTPS) ve SSL Sertifikası Doğrulama",
+        "Tarayıcı Gizlilik Ayarları, Çerezler (Cookies) ve Önbellek Temizleme",
+        "E-Posta (E-Mail) Kavramı, Çalışma Yapısı ve E-Posta Protokolleri (POP3, IMAP, SMTP)",
+        "Web Tabanlı E-Posta Hesabı Açma ve Güvenlik Ayarları",
+        "E-Posta Arayüzü: Gelen Kutusu, Gönderilenler, Taslaklar, Çöp Kutusu",
+        "Yeni E-Posta Hazırlama: Kime (To), Bilgi (CC), Gizli (BCC) Alanları Kullanımı",
+        "E-Posta Metin Biçimlendirme, Dosya ve Belge Ekleme (Attachment) Kuralları",
+        "E-Postaları Yanıtlama (Reply/Reply All) ve İletme (Forward) Kuralları",
+        "E-Posta Yönetim Yazılımları (MS Outlook) Kurulumu ve Hesap Yapılandırması",
+        "E-Posta Filtreleme, Klasörleme, Kurallar Oluşturma ve İstenmeyen (Spam) Yönetimi",
+        "E-Posta İmzası Oluşturma ve Otomatik Yanıt (Tatil Bildirimi) Ayarlama",
+        "Kişiler (Rehber) ve Adres Defteri Yönetimi, Dağıtım Listesi Oluşturma",
+        "Takvim, Randevu, Görev ve Hatırlatıcı Yönetimi Pratikleri"
+      ]
+    },
+    {
+      "id": "mod_blg163_3",
+      "number": 3,
+      "name": "Bilgi Güvenliği Bilinçlendirme Eğitimi",
+      "totalHours": 17,
+      "lessonHours": 15,
+      "examHours": 2,
+      "topics": [
+        "Bilgi Güvenliği Kavramı, Temel Prensipler (Gizlilik, Bütünlük, Erişilebilirlik)",
+        "Siber Tehditler ve Saldırı Türleri: Virüs, Truva Atı (Trojan), Solucan (Worm)",
+        "Casus Yazılımlar (Spyware), Fidye Yazılımları (Ransomware) ve Reklam Yazılımları (Adware)",
+        "Oltalama (Phishing), Sosyal Mühendislik ve Sahte Web Sitelerini Tanıma Yöntemleri",
+        "Güçlü Şifre Oluşturma Standartları ve Şifre Güvenliği Yönetimi",
+        "İki Adımlı Doğrulama (2FA) ve Çok Faktörlü Kimlik Doğrulama (MFA)",
+        "Antivirüs ve Güvenlik Yazılımları: Kurulum, Güncelleme ve Sistem Taraması",
+        "Güvenlik Duvarı (Firewall) Mantığı, Yapılandırması ve Port Güvenliği",
+        "Güvenli İnternet Kullanımı ve Halka Açık (Ortak) Wi-Fi Ağlarındaki Tehlikeler",
+        "Veri Yedekleme Stratejileri (Yerel ve Bulut Yedekleme) ve Veri Kurtarma İlkeleri",
+        "Mobil Cihaz Güvenliği: Uygulama İzinleri, Ekran Kilitleri ve Biyometrik Koruma",
+        "Mobil Cihazlarda Zararlı Yazılımlar ve Uzaktan Cihaz Kilitleme/Silme",
+        "Kişisel Verilerin Korunması Kanunu (KVKK) ve Temel Haklar",
+        "Dijital Ayak İzi, Çevrimiçi Mahremiyet ve Sosyal Medyada Gizlilik Ayarları",
+        "Siber Suçlar, Bilişim Hukuku ve Yasal Sorumluluklar"
+      ]
+    },
+    {
+      "id": "mod_blg163_4",
+      "number": 4,
+      "name": "Kelime İşlemci",
+      "totalHours": 22,
+      "lessonHours": 20,
+      "examHours": 2,
+      "topics": [
+        "Kelime İşlemci Programı (MS Word) Arayüzü, Şerit (Ribbon) ve Görünümler",
+        "Yeni Belge Oluşturma, Şablon Seçimi, Belge Kaydetme (DOCX, PDF) ve Farklı Kaydet",
+        "Metin Girişi, Seçim Yöntemleri, Kes-Kopyala-Yapıştır ve Biçim Boyacısı",
+        "Yazı Tipi Biçimlendirme: Font, Boyut, Renk, Vurgu, Kalın, İtalik, Altı Çizili",
+        "Paragraf Biçimlendirme: Hizalama, Girintiler, Satır ve Paragraf Aralıkları",
+        "Madde İmleri ve Numaralandırma, Çok Düzeyli Listeler Oluşturma",
+        "Kenarlıklar, Gölgelendirme ve Metin Kutusu Kullanımı",
+        "Belge Yazım ve Dilbilgisi Denetimi, Eşanlamlılar Sözlüğü ve Sözcük Sayımı",
+        "Bul ve Değiştir (Find and Replace) Özelliği İle Metin İyileştirme",
+        "Sayfa Yapısı: Kenar Boşlukları, Yönlendirme (Dikey/Yatay), Boyut ve Sütunlar",
+        "Sayfa Sonu, Bölüm Sonu (Section Break) ve Farklı Sayfa Düzenleri",
+        "Üstbilgi, Altbilgi ve Sayfa Numarası Ekleme ve Farklılaştırma",
+        "Belgeye Tablo Ekleme, Satır/Sütun Ekleme, Silme ve Boyutlandırma",
+        "Tablo Hücrelerini Birleştirme/Bölme, Hizalama ve Tablo Stilleri",
+        "Görsel ve Resim Ekleme, Boyutlandırma, Kırpma ve Metin Kaydırma Seçenekleri",
+        "Şekiller, Simgeler ve 3B Modeller Ekleme ve Düzenleme",
+        "SmartArt Grafikleri İle Süreç ve Hiyerarşi Şemaları Hazırlama",
+        "Başlık Stilleri (Heading 1, 2, 3) Kullanımı ve Otomatik İçindekiler Tablosu Oluşturma",
+        "Dipnot, Sonnot ve Kaynakça Ekleme Temelleri",
+        "Yazdırma Önizleme, Sayfa Ayarları ve Belge Çıktısı Alma"
+      ]
+    },
+    {
+      "id": "mod_blg163_5",
+      "number": 5,
+      "name": "Elektronik Tablolama",
+      "totalHours": 35,
+      "lessonHours": 33,
+      "examHours": 2,
+      "topics": [
+        "Elektronik Tablolama Programı (MS Excel) Arayüzü, Çalışma Kitabı ve Sayfa Yapısı",
+        "Hücre, Satır, Sütun Kavramları, Hücre Adlandırma ve Aralık Seçimleri",
+        "Veri Türleri: Metin, Sayı, Tarih, Saat, Para Birimi ve Yüzde Girişi",
+        "Hücre Biçimlendirme: Yazı Tipi, Hizalama, Kenarlıklar ve Dolgu Renkleri",
+        "Sayı Biçimlendirme, Ondalık Basamak Ayarları ve Özel Biçimler",
+        "Metni Kaydır, Hücreleri Birleştir ve Ortala Seçenekleri",
+        "Satır Yüksekliği ve Sütun Genişliği Ayarları, Otomatik Sığdırma",
+        "Temel Otomatik Doldurma (AutoFill) ve Özel Seri Listeleri Kullanımı",
+        "Formül Mantığı, Operatörler (+, -, *, /, ^) ve İşlem Önceliği Kuralları",
+        "Temel Fonksiyonlar: TOPLA (SUM), ORTALAMA (AVERAGE), MAK (MAX), MİN (MIN)",
+        "SAY (COUNT), BAĞ_DEĞ_DOLU_SAY (COUNTA) Fonksiyonları",
+        "Göreli (Bağıl) ve Mutlak ($) Hücre Başvuruları, Sabitleme Mantığı",
+        "Mantıksal Fonksiyonlar: EĞER (IF) Fonksiyonu ve Temel Karar Yapıları",
+        "İç İçe EĞER (Nested IF) Kullanımı ve Çoklu Koşullar",
+        "VE (AND), VEYA (OR) Fonksiyonları İle Birleşik Koşullar",
+        "EĞERSAY (COUNTIF) ve ETOPLA (SUMIF) Koşullu Fonksiyonları",
+        "Metin Fonksiyonları: BİRLEŞTİR, BÜYÜKHARF, KÜÇÜKHARF, YAZIM.DÜZENİ, KIRP",
+        "Parça Al (MID), Soldan (LEFT), Sağdan (RIGHT) Metin Ayrıştırma",
+        "Tarih ve Saat Fonksiyonları: BUGÜN, ŞİMDİ, GÜN, AY, YIL, TARİH",
+        "DÜŞEYARA (VLOOKUP) Fonksiyonu: Tablodan Veri Arama ve Eşleştirme",
+        "YATAYARA (HLOOKUP) ve ÇAPRAZARA (XLOOKUP) Giriş",
+        "Koşullu Biçimlendirme (Conditional Formatting): Hücre Vurgulama, Veri Çubukları",
+        "Veri Sıralama (A-Z, Z-A, Özel Sıralama) ve Çok Düzeyli Sıralama",
+        "Veri Filtreleme (Otomatik Filtre, Metin ve Sayı Filtreleri)",
+        "Veri Doğrulama (Data Validation): Açılır Liste ve Hücre Kısıtlamaları",
+        "Grafik Türleri ve Amaca Uygun Grafik Seçimi (Sütun, Çubuk, Pasta, Çizgi)",
+        "Grafik Oluşturma, Veri Serilerini Düzenleme ve Eksen Ayarları",
+        "Grafik Başlığı, Gösterge (Legend), Veri Etiketleri ve Stil Biçimlendirme",
+        "Çalışma Sayfaları Yönetimi: Ekleme, Yeniden Adlandırma, Taşıma/Kopyalama, Sekme Rengi",
+        "Sayfalar Arası Formül Kullanımı ve Veri Bağlantıları",
+        "Sayfa Yapısı, Yazdırma Alanı Belirleme ve Başlıkları Yineleme",
+        "Sayfayı Bir Sayfaya Sığdırma, Kenar Boşlukları ve Çıktı Alma",
+        "Kapsamlı Elektronik Tablolama Finans/Rapor Projesi Uygulaması"
+      ]
+    },
+    {
+      "id": "mod_blg163_6",
+      "number": 6,
+      "name": "Sunu Hazırlama",
+      "totalHours": 15,
+      "lessonHours": 13,
+      "examHours": 2,
+      "topics": [
+        "Sunu Programı (MS PowerPoint) Arayüzü ve Sunum Tasarım İlkeleri",
+        "Yeni Sunu Oluşturma, Şablon ve Tema Seçimi, Slayt Boyutları (16:9, 4:3)",
+        "Slayt Düzenleri (Layouts), Yeni Slayt Ekleme, Çoğaltma ve Sıralama",
+        "Metin Kutuları Ekleme, Tipografi, Renk Uyumu ve Okunabilirlik Kuralları",
+        "Resim, İllüstrasyon ve Fotoğraf Ekleme, Kırpma ve Görsel Efektler",
+        "Şekiller, Simgeler ve SmartArt İle Diyagram ve Kavram Haritaları Oluşturma",
+        "Tablo ve Grafik Ekleyerek Verileri Sunumda Görselleştirme",
+        "Sunuma Ses ve Video Dosyaları Ekleme ve Oynatma Seçenekleri",
+        "Slayt Geçiş Efektleri (Transitions): Türler, Süre ve Ses Ayarları",
+        "Nesne Animasyonları (Giriş, Vurgu, Çıkış, Hareket Yolları) ve Zamanlama",
+        "Fotoğraf Albümü Oluşturma ve Gösteri Dosyası (.ppsx) Olarak Kaydetme",
+        "Konuşmacı Notları Ekleme, Prova Zamanlamaları ve Sunucu Görünümü Kullanımı",
+        "Slayt Gösterisi Başlatma, Sunum Esnasında Kalem/Vurgulayıcı Kullanımı ve Çıktı Alma"
+      ]
+    }
+  ],
+  "syllabus": [
+    {
+      "hour": 1,
+      "topic": "Bilgi Teknolojisinin Temel Kavramları ve Bilgisayarın Tarihsel Gelişimi",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 2,
+      "topic": "Donanım ve Yazılım Kavramları, Bilgisayar Çeşitleri",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 3,
+      "topic": "Kasa ve Temel Donanım Birimleri: Anakart, İşlemci (CPU), Bellek (RAM)",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 4,
+      "topic": "Dahili ve Harici Depolama Birimleri (HDD, SSD, Flash Bellek)",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 5,
+      "topic": "Giriş Birimleri: Klavye, Fare, Tarayıcı, Barkod Okuyucu",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 6,
+      "topic": "Çıkış Birimleri: Monitör, Yazıcı, Hoparlör, Projeksiyon",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 7,
+      "topic": "Portlar, Bağlantı Noktaları ve Kablolar (HDMI, VGA, USB, DVI)",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 8,
+      "topic": "Bilgisayar Çevre Birimlerinin Güvenli Bağlantısı ve Kurulumu",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 9,
+      "topic": "BIOS / UEFI Arayüzü ve Temel Ayarları",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 10,
+      "topic": "İlk Açılış (Boot) Seçenekleri ve Başlangıç Yapılandırması",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 11,
+      "topic": "İşletim Sistemi Kavramı ve İşletim Sistemi Türleri",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 12,
+      "topic": "Bilgisayar Sistemine Uygun İşletim Sistemi Seçimi ve Ön Gereksinimleri",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 13,
+      "topic": "Kurulum Ortamı Hazırlama (Önyüklenebilir USB Oluşturma)",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 14,
+      "topic": "Sabit Disk Bölümleme (Disk Partitioning) ve Biçimlendirme (Formatting)",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 15,
+      "topic": "İşletim Sistemi Kurulum Aşamaları ve Temel Ayarlar - 1",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 16,
+      "topic": "İşletim Sistemi Kurulum Aşamaları ve Temel Ayarlar - 2",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 17,
+      "topic": "Donanım Sürücüsü (Driver) Kavramı ve Sürücü Türleri",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 18,
+      "topic": "Aygıt Yöneticisi Tanıtımı ve Donanım Durumlarının İncelenmesi",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 19,
+      "topic": "Anakart, Ekran Kartı ve Ses Kartı Sürücülerinin Kurulumu",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 20,
+      "topic": "Ağ (Ethernet/Wi-Fi) ve Çevre Birimi Sürücülerinin Kurulumu",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 21,
+      "topic": "İşletim Sistemi Kullanıcı Arayüzü: Masaüstü, Görev Çubuğu ve Bildirim Alanı",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 22,
+      "topic": "Başlat Menüsü Yapılandırması ve Kişiselleştirme Ayarları",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 23,
+      "topic": "Dosya ve Klasör Hiyerarşisi, Dizin Yapısı Mantığı",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 24,
+      "topic": "Dosya Gezgini Kullanımı ve Navigasyon Teknikleri",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 25,
+      "topic": "Dosya ve Klasör İşlemleri: Oluşturma, Yeniden Adlandırma, Silme (Geri Dönüşüm)",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 26,
+      "topic": "Dosya Kopyalama, Taşıma, Kısayol Oluşturma Pratikleri",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 27,
+      "topic": "Dosya Uzantıları, Dosya Türleri ve Varsayılan Program Eşleştirmeleri",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 28,
+      "topic": "Dosya Arama, Filtreleme ve Hızlı Erişim Özellikleri",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 29,
+      "topic": "Dosya ve Klasör Öznitelikleri (Gizli, Salt Okunur vb.)",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 30,
+      "topic": "Denetim Masası / Ayarlar Menüsü Temel Yapısı",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 31,
+      "topic": "Ekran, Çözünürlük, Tema ve Kişiselleştirme Ayarları",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 32,
+      "topic": "Saat, Dil, Bölge ve Klavye Seçeneklerinin Düzenlenmesi",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 33,
+      "topic": "Güç Seçenekleri, Uyku Modu ve Enerji Tasarrufu Ayarları",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 34,
+      "topic": "Kullanıcı Hesapları Yönetimi: Yönetici ve Standart Hesap Tanımlama",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 35,
+      "topic": "Kullanıcı Şifresi Belirleme, Hesap Güvenliği ve Oturum Açma Seçenekleri",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 36,
+      "topic": "Program Ekle/Kaldır İşlemleri ve Uygulama Yönetimi",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 37,
+      "topic": "Yazıcı ve Tarayıcı Ekleme, Varsayılan Yazıcı Ayarları",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 38,
+      "topic": "Yazdırma Kuyruğu Yönetimi ve Yazdırma Sorunlarını Giderme",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 39,
+      "topic": "Arşivleme Yazılımları (WinRAR, 7-Zip): Dosya Sıkıştırma ve Açma",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 40,
+      "topic": "PDF Okuyucu ve Belge Görüntüleyici Yazılımların Kurulumu ve Kullanımı",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 41,
+      "topic": "Medya Oynatıcılar ve Kodek Yönetimi",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 42,
+      "topic": "Görev Yöneticisi Kullanımı: İşlemler, Performans ve Başlangıç Uygulamaları",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 43,
+      "topic": "Disk Temizleme ve Sürücü İyileştirme (Bölümleme/Birleştirme) Araçları",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 44,
+      "topic": "Sistem Geri Yükleme Noktası Oluşturma ve Geri Yükleme İşlemleri",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 45,
+      "topic": "İşletim Sistemi Güncellemeleri (Windows Update) ve Bakım Stratejileri",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 46,
+      "topic": "Basit Donanım ve Yazılım Hatalarını Tanılama ve Çözme Yöntemleri",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 47,
+      "topic": "Ergonomi ve İş Sağlığı Güvenliği (İSG) Standartları",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 48,
+      "topic": "Bilgisayar Başında Doğru Oturuş ve Çalışma Ortamı Düzeni",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 49,
+      "topic": "Kapsamlı İşletim Sistemi ve Donanım Yönetimi Uygulaması - 1",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 50,
+      "topic": "Kapsamlı İşletim Sistemi ve Donanım Yönetimi Uygulaması - 2",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 51,
+      "topic": "Bilgisayara Giriş - Modül Değerlendirme Sınavı (Uygulama)",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": true
+    },
+    {
+      "hour": 52,
+      "topic": "Bilgisayara Giriş - Modül Değerlendirme Sınavı (Teorik & Değerlendirme)",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": true
+    },
+    {
+      "hour": 53,
+      "topic": "İnternet Nedir? Tarihçesi, Çalışma Mantığı ve Ağ Türleri (LAN, WAN, WWW)",
+      "moduleNumber": 2,
+      "moduleName": "İnternet ve E-Posta Yönetimi",
+      "isExam": false
+    },
+    {
+      "hour": 54,
+      "topic": "İnternet Bağlantı Türleri (Fiber, ADSL, Mobil Veri, Wi-Fi)",
+      "moduleNumber": 2,
+      "moduleName": "İnternet ve E-Posta Yönetimi",
+      "isExam": false
+    },
+    {
+      "hour": 55,
+      "topic": "IP Adresi, DNS, Modulasyon ve Modem/Router Temel Kavramları",
+      "moduleNumber": 2,
+      "moduleName": "İnternet ve E-Posta Yönetimi",
+      "isExam": false
+    },
+    {
+      "hour": 56,
+      "topic": "Web Tarayıcı Programları (Chrome, Edge, Firefox) ve Kurulumları",
+      "moduleNumber": 2,
+      "moduleName": "İnternet ve E-Posta Yönetimi",
+      "isExam": false
+    },
+    {
+      "hour": 57,
+      "topic": "Tarayıcı Arayüzü: Adres Çubuğu, Sekmeler, Geçmiş ve İndirilenler",
+      "moduleNumber": 2,
+      "moduleName": "İnternet ve E-Posta Yönetimi",
+      "isExam": false
+    },
+    {
+      "hour": 58,
+      "topic": "Yer İmleri (Sık Kullanılanlar) Ekleme, Düzenleme ve Klasörleme",
+      "moduleNumber": 2,
+      "moduleName": "İnternet ve E-Posta Yönetimi",
+      "isExam": false
+    },
+    {
+      "hour": 59,
+      "topic": "Arama Motorları, Mantıksal Arama Operatörleri ve İleri Düzey Arama Teknikleri",
+      "moduleNumber": 2,
+      "moduleName": "İnternet ve E-Posta Yönetimi",
+      "isExam": false
+    },
+    {
+      "hour": 60,
+      "topic": "Güvenli İnternet Protokolleri (HTTP / HTTPS) ve SSL Sertifikası Doğrulama",
+      "moduleNumber": 2,
+      "moduleName": "İnternet ve E-Posta Yönetimi",
+      "isExam": false
+    },
+    {
+      "hour": 61,
+      "topic": "Tarayıcı Gizlilik Ayarları, Çerezler (Cookies) ve Önbellek Temizleme",
+      "moduleNumber": 2,
+      "moduleName": "İnternet ve E-Posta Yönetimi",
+      "isExam": false
+    },
+    {
+      "hour": 62,
+      "topic": "E-Posta (E-Mail) Kavramı, Çalışma Yapısı ve E-Posta Protokolleri (POP3, IMAP, SMTP)",
+      "moduleNumber": 2,
+      "moduleName": "İnternet ve E-Posta Yönetimi",
+      "isExam": false
+    },
+    {
+      "hour": 63,
+      "topic": "Web Tabanlı E-Posta Hesabı Açma ve Güvenlik Ayarları",
+      "moduleNumber": 2,
+      "moduleName": "İnternet ve E-Posta Yönetimi",
+      "isExam": false
+    },
+    {
+      "hour": 64,
+      "topic": "E-Posta Arayüzü: Gelen Kutusu, Gönderilenler, Taslaklar, Çöp Kutusu",
+      "moduleNumber": 2,
+      "moduleName": "İnternet ve E-Posta Yönetimi",
+      "isExam": false
+    },
+    {
+      "hour": 65,
+      "topic": "Yeni E-Posta Hazırlama: Kime (To), Bilgi (CC), Gizli (BCC) Alanları Kullanımı",
+      "moduleNumber": 2,
+      "moduleName": "İnternet ve E-Posta Yönetimi",
+      "isExam": false
+    },
+    {
+      "hour": 66,
+      "topic": "E-Posta Metin Biçimlendirme, Dosya ve Belge Ekleme (Attachment) Kuralları",
+      "moduleNumber": 2,
+      "moduleName": "İnternet ve E-Posta Yönetimi",
+      "isExam": false
+    },
+    {
+      "hour": 67,
+      "topic": "E-Postaları Yanıtlama (Reply/Reply All) ve İletme (Forward) Kuralları",
+      "moduleNumber": 2,
+      "moduleName": "İnternet ve E-Posta Yönetimi",
+      "isExam": false
+    },
+    {
+      "hour": 68,
+      "topic": "E-Posta Yönetim Yazılımları (MS Outlook) Kurulumu ve Hesap Yapılandırması",
+      "moduleNumber": 2,
+      "moduleName": "İnternet ve E-Posta Yönetimi",
+      "isExam": false
+    },
+    {
+      "hour": 69,
+      "topic": "E-Posta Filtreleme, Klasörleme, Kurallar Oluşturma ve İstenmeyen (Spam) Yönetimi",
+      "moduleNumber": 2,
+      "moduleName": "İnternet ve E-Posta Yönetimi",
+      "isExam": false
+    },
+    {
+      "hour": 70,
+      "topic": "E-Posta İmzası Oluşturma ve Otomatik Yanıt (Tatil Bildirimi) Ayarlama",
+      "moduleNumber": 2,
+      "moduleName": "İnternet ve E-Posta Yönetimi",
+      "isExam": false
+    },
+    {
+      "hour": 71,
+      "topic": "Kişiler (Rehber) ve Adres Defteri Yönetimi, Dağıtım Listesi Oluşturma",
+      "moduleNumber": 2,
+      "moduleName": "İnternet ve E-Posta Yönetimi",
+      "isExam": false
+    },
+    {
+      "hour": 72,
+      "topic": "Takvim, Randevu, Görev ve Hatırlatıcı Yönetimi Pratikleri",
+      "moduleNumber": 2,
+      "moduleName": "İnternet ve E-Posta Yönetimi",
+      "isExam": false
+    },
+    {
+      "hour": 73,
+      "topic": "İnternet ve E-Posta Yönetimi - Modül Değerlendirme Sınavı (Uygulama)",
+      "moduleNumber": 2,
+      "moduleName": "İnternet ve E-Posta Yönetimi",
+      "isExam": true
+    },
+    {
+      "hour": 74,
+      "topic": "İnternet ve E-Posta Yönetimi - Modül Değerlendirme Sınavı (Teorik & Değerlendirme)",
+      "moduleNumber": 2,
+      "moduleName": "İnternet ve E-Posta Yönetimi",
+      "isExam": true
+    },
+    {
+      "hour": 75,
+      "topic": "Bilgi Güvenliği Kavramı, Temel Prensipler (Gizlilik, Bütünlük, Erişilebilirlik)",
+      "moduleNumber": 3,
+      "moduleName": "Bilgi Güvenliği Bilinçlendirme Eğitimi",
+      "isExam": false
+    },
+    {
+      "hour": 76,
+      "topic": "Siber Tehditler ve Saldırı Türleri: Virüs, Truva Atı (Trojan), Solucan (Worm)",
+      "moduleNumber": 3,
+      "moduleName": "Bilgi Güvenliği Bilinçlendirme Eğitimi",
+      "isExam": false
+    },
+    {
+      "hour": 77,
+      "topic": "Casus Yazılımlar (Spyware), Fidye Yazılımları (Ransomware) ve Reklam Yazılımları (Adware)",
+      "moduleNumber": 3,
+      "moduleName": "Bilgi Güvenliği Bilinçlendirme Eğitimi",
+      "isExam": false
+    },
+    {
+      "hour": 78,
+      "topic": "Oltalama (Phishing), Sosyal Mühendislik ve Sahte Web Sitelerini Tanıma Yöntemleri",
+      "moduleNumber": 3,
+      "moduleName": "Bilgi Güvenliği Bilinçlendirme Eğitimi",
+      "isExam": false
+    },
+    {
+      "hour": 79,
+      "topic": "Güçlü Şifre Oluşturma Standartları ve Şifre Güvenliği Yönetimi",
+      "moduleNumber": 3,
+      "moduleName": "Bilgi Güvenliği Bilinçlendirme Eğitimi",
+      "isExam": false
+    },
+    {
+      "hour": 80,
+      "topic": "İki Adımlı Doğrulama (2FA) ve Çok Faktörlü Kimlik Doğrulama (MFA)",
+      "moduleNumber": 3,
+      "moduleName": "Bilgi Güvenliği Bilinçlendirme Eğitimi",
+      "isExam": false
+    },
+    {
+      "hour": 81,
+      "topic": "Antivirüs ve Güvenlik Yazılımları: Kurulum, Güncelleme ve Sistem Taraması",
+      "moduleNumber": 3,
+      "moduleName": "Bilgi Güvenliği Bilinçlendirme Eğitimi",
+      "isExam": false
+    },
+    {
+      "hour": 82,
+      "topic": "Güvenlik Duvarı (Firewall) Mantığı, Yapılandırması ve Port Güvenliği",
+      "moduleNumber": 3,
+      "moduleName": "Bilgi Güvenliği Bilinçlendirme Eğitimi",
+      "isExam": false
+    },
+    {
+      "hour": 83,
+      "topic": "Güvenli İnternet Kullanımı ve Halka Açık (Ortak) Wi-Fi Ağlarındaki Tehlikeler",
+      "moduleNumber": 3,
+      "moduleName": "Bilgi Güvenliği Bilinçlendirme Eğitimi",
+      "isExam": false
+    },
+    {
+      "hour": 84,
+      "topic": "Veri Yedekleme Stratejileri (Yerel ve Bulut Yedekleme) ve Veri Kurtarma İlkeleri",
+      "moduleNumber": 3,
+      "moduleName": "Bilgi Güvenliği Bilinçlendirme Eğitimi",
+      "isExam": false
+    },
+    {
+      "hour": 85,
+      "topic": "Mobil Cihaz Güvenliği: Uygulama İzinleri, Ekran Kilitleri ve Biyometrik Koruma",
+      "moduleNumber": 3,
+      "moduleName": "Bilgi Güvenliği Bilinçlendirme Eğitimi",
+      "isExam": false
+    },
+    {
+      "hour": 86,
+      "topic": "Mobil Cihazlarda Zararlı Yazılımlar ve Uzaktan Cihaz Kilitleme/Silme",
+      "moduleNumber": 3,
+      "moduleName": "Bilgi Güvenliği Bilinçlendirme Eğitimi",
+      "isExam": false
+    },
+    {
+      "hour": 87,
+      "topic": "Kişisel Verilerin Korunması Kanunu (KVKK) ve Temel Haklar",
+      "moduleNumber": 3,
+      "moduleName": "Bilgi Güvenliği Bilinçlendirme Eğitimi",
+      "isExam": false
+    },
+    {
+      "hour": 88,
+      "topic": "Dijital Ayak İzi, Çevrimiçi Mahremiyet ve Sosyal Medyada Gizlilik Ayarları",
+      "moduleNumber": 3,
+      "moduleName": "Bilgi Güvenliği Bilinçlendirme Eğitimi",
+      "isExam": false
+    },
+    {
+      "hour": 89,
+      "topic": "Siber Suçlar, Bilişim Hukuku ve Yasal Sorumluluklar",
+      "moduleNumber": 3,
+      "moduleName": "Bilgi Güvenliği Bilinçlendirme Eğitimi",
+      "isExam": false
+    },
+    {
+      "hour": 90,
+      "topic": "Bilgi Güvenliği Bilinçlendirme Eğitimi - Modül Değerlendirme Sınavı (Uygulama)",
+      "moduleNumber": 3,
+      "moduleName": "Bilgi Güvenliği Bilinçlendirme Eğitimi",
+      "isExam": true
+    },
+    {
+      "hour": 91,
+      "topic": "Bilgi Güvenliği Bilinçlendirme Eğitimi - Modül Değerlendirme Sınavı (Teorik & Değerlendirme)",
+      "moduleNumber": 3,
+      "moduleName": "Bilgi Güvenliği Bilinçlendirme Eğitimi",
+      "isExam": true
+    },
+    {
+      "hour": 92,
+      "topic": "Kelime İşlemci Programı (MS Word) Arayüzü, Şerit (Ribbon) ve Görünümler",
+      "moduleNumber": 4,
+      "moduleName": "Kelime İşlemci",
+      "isExam": false
+    },
+    {
+      "hour": 93,
+      "topic": "Yeni Belge Oluşturma, Şablon Seçimi, Belge Kaydetme (DOCX, PDF) ve Farklı Kaydet",
+      "moduleNumber": 4,
+      "moduleName": "Kelime İşlemci",
+      "isExam": false
+    },
+    {
+      "hour": 94,
+      "topic": "Metin Girişi, Seçim Yöntemleri, Kes-Kopyala-Yapıştır ve Biçim Boyacısı",
+      "moduleNumber": 4,
+      "moduleName": "Kelime İşlemci",
+      "isExam": false
+    },
+    {
+      "hour": 95,
+      "topic": "Yazı Tipi Biçimlendirme: Font, Boyut, Renk, Vurgu, Kalın, İtalik, Altı Çizili",
+      "moduleNumber": 4,
+      "moduleName": "Kelime İşlemci",
+      "isExam": false
+    },
+    {
+      "hour": 96,
+      "topic": "Paragraf Biçimlendirme: Hizalama, Girintiler, Satır ve Paragraf Aralıkları",
+      "moduleNumber": 4,
+      "moduleName": "Kelime İşlemci",
+      "isExam": false
+    },
+    {
+      "hour": 97,
+      "topic": "Madde İmleri ve Numaralandırma, Çok Düzeyli Listeler Oluşturma",
+      "moduleNumber": 4,
+      "moduleName": "Kelime İşlemci",
+      "isExam": false
+    },
+    {
+      "hour": 98,
+      "topic": "Kenarlıklar, Gölgelendirme ve Metin Kutusu Kullanımı",
+      "moduleNumber": 4,
+      "moduleName": "Kelime İşlemci",
+      "isExam": false
+    },
+    {
+      "hour": 99,
+      "topic": "Belge Yazım ve Dilbilgisi Denetimi, Eşanlamlılar Sözlüğü ve Sözcük Sayımı",
+      "moduleNumber": 4,
+      "moduleName": "Kelime İşlemci",
+      "isExam": false
+    },
+    {
+      "hour": 100,
+      "topic": "Bul ve Değiştir (Find and Replace) Özelliği İle Metin İyileştirme",
+      "moduleNumber": 4,
+      "moduleName": "Kelime İşlemci",
+      "isExam": false
+    },
+    {
+      "hour": 101,
+      "topic": "Sayfa Yapısı: Kenar Boşlukları, Yönlendirme (Dikey/Yatay), Boyut ve Sütunlar",
+      "moduleNumber": 4,
+      "moduleName": "Kelime İşlemci",
+      "isExam": false
+    },
+    {
+      "hour": 102,
+      "topic": "Sayfa Sonu, Bölüm Sonu (Section Break) ve Farklı Sayfa Düzenleri",
+      "moduleNumber": 4,
+      "moduleName": "Kelime İşlemci",
+      "isExam": false
+    },
+    {
+      "hour": 103,
+      "topic": "Üstbilgi, Altbilgi ve Sayfa Numarası Ekleme ve Farklılaştırma",
+      "moduleNumber": 4,
+      "moduleName": "Kelime İşlemci",
+      "isExam": false
+    },
+    {
+      "hour": 104,
+      "topic": "Belgeye Tablo Ekleme, Satır/Sütun Ekleme, Silme ve Boyutlandırma",
+      "moduleNumber": 4,
+      "moduleName": "Kelime İşlemci",
+      "isExam": false
+    },
+    {
+      "hour": 105,
+      "topic": "Tablo Hücrelerini Birleştirme/Bölme, Hizalama ve Tablo Stilleri",
+      "moduleNumber": 4,
+      "moduleName": "Kelime İşlemci",
+      "isExam": false
+    },
+    {
+      "hour": 106,
+      "topic": "Görsel ve Resim Ekleme, Boyutlandırma, Kırpma ve Metin Kaydırma Seçenekleri",
+      "moduleNumber": 4,
+      "moduleName": "Kelime İşlemci",
+      "isExam": false
+    },
+    {
+      "hour": 107,
+      "topic": "Şekiller, Simgeler ve 3B Modeller Ekleme ve Düzenleme",
+      "moduleNumber": 4,
+      "moduleName": "Kelime İşlemci",
+      "isExam": false
+    },
+    {
+      "hour": 108,
+      "topic": "SmartArt Grafikleri İle Süreç ve Hiyerarşi Şemaları Hazırlama",
+      "moduleNumber": 4,
+      "moduleName": "Kelime İşlemci",
+      "isExam": false
+    },
+    {
+      "hour": 109,
+      "topic": "Başlık Stilleri (Heading 1, 2, 3) Kullanımı ve Otomatik İçindekiler Tablosu Oluşturma",
+      "moduleNumber": 4,
+      "moduleName": "Kelime İşlemci",
+      "isExam": false
+    },
+    {
+      "hour": 110,
+      "topic": "Dipnot, Sonnot ve Kaynakça Ekleme Temelleri",
+      "moduleNumber": 4,
+      "moduleName": "Kelime İşlemci",
+      "isExam": false
+    },
+    {
+      "hour": 111,
+      "topic": "Yazdırma Önizleme, Sayfa Ayarları ve Belge Çıktısı Alma",
+      "moduleNumber": 4,
+      "moduleName": "Kelime İşlemci",
+      "isExam": false
+    },
+    {
+      "hour": 112,
+      "topic": "Kelime İşlemci - Modül Değerlendirme Sınavı (Uygulama)",
+      "moduleNumber": 4,
+      "moduleName": "Kelime İşlemci",
+      "isExam": true
+    },
+    {
+      "hour": 113,
+      "topic": "Kelime İşlemci - Modül Değerlendirme Sınavı (Teorik & Değerlendirme)",
+      "moduleNumber": 4,
+      "moduleName": "Kelime İşlemci",
+      "isExam": true
+    },
+    {
+      "hour": 114,
+      "topic": "Elektronik Tablolama Programı (MS Excel) Arayüzü, Çalışma Kitabı ve Sayfa Yapısı",
+      "moduleNumber": 5,
+      "moduleName": "Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 115,
+      "topic": "Hücre, Satır, Sütun Kavramları, Hücre Adlandırma ve Aralık Seçimleri",
+      "moduleNumber": 5,
+      "moduleName": "Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 116,
+      "topic": "Veri Türleri: Metin, Sayı, Tarih, Saat, Para Birimi ve Yüzde Girişi",
+      "moduleNumber": 5,
+      "moduleName": "Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 117,
+      "topic": "Hücre Biçimlendirme: Yazı Tipi, Hizalama, Kenarlıklar ve Dolgu Renkleri",
+      "moduleNumber": 5,
+      "moduleName": "Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 118,
+      "topic": "Sayı Biçimlendirme, Ondalık Basamak Ayarları ve Özel Biçimler",
+      "moduleNumber": 5,
+      "moduleName": "Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 119,
+      "topic": "Metni Kaydır, Hücreleri Birleştir ve Ortala Seçenekleri",
+      "moduleNumber": 5,
+      "moduleName": "Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 120,
+      "topic": "Satır Yüksekliği ve Sütun Genişliği Ayarları, Otomatik Sığdırma",
+      "moduleNumber": 5,
+      "moduleName": "Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 121,
+      "topic": "Temel Otomatik Doldurma (AutoFill) ve Özel Seri Listeleri Kullanımı",
+      "moduleNumber": 5,
+      "moduleName": "Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 122,
+      "topic": "Formül Mantığı, Operatörler (+, -, *, /, ^) ve İşlem Önceliği Kuralları",
+      "moduleNumber": 5,
+      "moduleName": "Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 123,
+      "topic": "Temel Fonksiyonlar: TOPLA (SUM), ORTALAMA (AVERAGE), MAK (MAX), MİN (MIN)",
+      "moduleNumber": 5,
+      "moduleName": "Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 124,
+      "topic": "SAY (COUNT), BAĞ_DEĞ_DOLU_SAY (COUNTA) Fonksiyonları",
+      "moduleNumber": 5,
+      "moduleName": "Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 125,
+      "topic": "Göreli (Bağıl) ve Mutlak ($) Hücre Başvuruları, Sabitleme Mantığı",
+      "moduleNumber": 5,
+      "moduleName": "Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 126,
+      "topic": "Mantıksal Fonksiyonlar: EĞER (IF) Fonksiyonu ve Temel Karar Yapıları",
+      "moduleNumber": 5,
+      "moduleName": "Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 127,
+      "topic": "İç İçe EĞER (Nested IF) Kullanımı ve Çoklu Koşullar",
+      "moduleNumber": 5,
+      "moduleName": "Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 128,
+      "topic": "VE (AND), VEYA (OR) Fonksiyonları İle Birleşik Koşullar",
+      "moduleNumber": 5,
+      "moduleName": "Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 129,
+      "topic": "EĞERSAY (COUNTIF) ve ETOPLA (SUMIF) Koşullu Fonksiyonları",
+      "moduleNumber": 5,
+      "moduleName": "Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 130,
+      "topic": "Metin Fonksiyonları: BİRLEŞTİR, BÜYÜKHARF, KÜÇÜKHARF, YAZIM.DÜZENİ, KIRP",
+      "moduleNumber": 5,
+      "moduleName": "Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 131,
+      "topic": "Parça Al (MID), Soldan (LEFT), Sağdan (RIGHT) Metin Ayrıştırma",
+      "moduleNumber": 5,
+      "moduleName": "Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 132,
+      "topic": "Tarih ve Saat Fonksiyonları: BUGÜN, ŞİMDİ, GÜN, AY, YIL, TARİH",
+      "moduleNumber": 5,
+      "moduleName": "Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 133,
+      "topic": "DÜŞEYARA (VLOOKUP) Fonksiyonu: Tablodan Veri Arama ve Eşleştirme",
+      "moduleNumber": 5,
+      "moduleName": "Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 134,
+      "topic": "YATAYARA (HLOOKUP) ve ÇAPRAZARA (XLOOKUP) Giriş",
+      "moduleNumber": 5,
+      "moduleName": "Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 135,
+      "topic": "Koşullu Biçimlendirme (Conditional Formatting): Hücre Vurgulama, Veri Çubukları",
+      "moduleNumber": 5,
+      "moduleName": "Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 136,
+      "topic": "Veri Sıralama (A-Z, Z-A, Özel Sıralama) ve Çok Düzeyli Sıralama",
+      "moduleNumber": 5,
+      "moduleName": "Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 137,
+      "topic": "Veri Filtreleme (Otomatik Filtre, Metin ve Sayı Filtreleri)",
+      "moduleNumber": 5,
+      "moduleName": "Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 138,
+      "topic": "Veri Doğrulama (Data Validation): Açılır Liste ve Hücre Kısıtlamaları",
+      "moduleNumber": 5,
+      "moduleName": "Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 139,
+      "topic": "Grafik Türleri ve Amaca Uygun Grafik Seçimi (Sütun, Çubuk, Pasta, Çizgi)",
+      "moduleNumber": 5,
+      "moduleName": "Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 140,
+      "topic": "Grafik Oluşturma, Veri Serilerini Düzenleme ve Eksen Ayarları",
+      "moduleNumber": 5,
+      "moduleName": "Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 141,
+      "topic": "Grafik Başlığı, Gösterge (Legend), Veri Etiketleri ve Stil Biçimlendirme",
+      "moduleNumber": 5,
+      "moduleName": "Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 142,
+      "topic": "Çalışma Sayfaları Yönetimi: Ekleme, Yeniden Adlandırma, Taşıma/Kopyalama, Sekme Rengi",
+      "moduleNumber": 5,
+      "moduleName": "Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 143,
+      "topic": "Sayfalar Arası Formül Kullanımı ve Veri Bağlantıları",
+      "moduleNumber": 5,
+      "moduleName": "Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 144,
+      "topic": "Sayfa Yapısı, Yazdırma Alanı Belirleme ve Başlıkları Yineleme",
+      "moduleNumber": 5,
+      "moduleName": "Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 145,
+      "topic": "Sayfayı Bir Sayfaya Sığdırma, Kenar Boşlukları ve Çıktı Alma",
+      "moduleNumber": 5,
+      "moduleName": "Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 146,
+      "topic": "Kapsamlı Elektronik Tablolama Finans/Rapor Projesi Uygulaması",
+      "moduleNumber": 5,
+      "moduleName": "Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 147,
+      "topic": "Elektronik Tablolama - Modül Değerlendirme Sınavı (Uygulama)",
+      "moduleNumber": 5,
+      "moduleName": "Elektronik Tablolama",
+      "isExam": true
+    },
+    {
+      "hour": 148,
+      "topic": "Elektronik Tablolama - Modül Değerlendirme Sınavı (Teorik & Değerlendirme)",
+      "moduleNumber": 5,
+      "moduleName": "Elektronik Tablolama",
+      "isExam": true
+    },
+    {
+      "hour": 149,
+      "topic": "Sunu Programı (MS PowerPoint) Arayüzü ve Sunum Tasarım İlkeleri",
+      "moduleNumber": 6,
+      "moduleName": "Sunu Hazırlama",
+      "isExam": false
+    },
+    {
+      "hour": 150,
+      "topic": "Yeni Sunu Oluşturma, Şablon ve Tema Seçimi, Slayt Boyutları (16:9, 4:3)",
+      "moduleNumber": 6,
+      "moduleName": "Sunu Hazırlama",
+      "isExam": false
+    },
+    {
+      "hour": 151,
+      "topic": "Slayt Düzenleri (Layouts), Yeni Slayt Ekleme, Çoğaltma ve Sıralama",
+      "moduleNumber": 6,
+      "moduleName": "Sunu Hazırlama",
+      "isExam": false
+    },
+    {
+      "hour": 152,
+      "topic": "Metin Kutuları Ekleme, Tipografi, Renk Uyumu ve Okunabilirlik Kuralları",
+      "moduleNumber": 6,
+      "moduleName": "Sunu Hazırlama",
+      "isExam": false
+    },
+    {
+      "hour": 153,
+      "topic": "Resim, İllüstrasyon ve Fotoğraf Ekleme, Kırpma ve Görsel Efektler",
+      "moduleNumber": 6,
+      "moduleName": "Sunu Hazırlama",
+      "isExam": false
+    },
+    {
+      "hour": 154,
+      "topic": "Şekiller, Simgeler ve SmartArt İle Diyagram ve Kavram Haritaları Oluşturma",
+      "moduleNumber": 6,
+      "moduleName": "Sunu Hazırlama",
+      "isExam": false
+    },
+    {
+      "hour": 155,
+      "topic": "Tablo ve Grafik Ekleyerek Verileri Sunumda Görselleştirme",
+      "moduleNumber": 6,
+      "moduleName": "Sunu Hazırlama",
+      "isExam": false
+    },
+    {
+      "hour": 156,
+      "topic": "Sunuma Ses ve Video Dosyaları Ekleme ve Oynatma Seçenekleri",
+      "moduleNumber": 6,
+      "moduleName": "Sunu Hazırlama",
+      "isExam": false
+    },
+    {
+      "hour": 157,
+      "topic": "Slayt Geçiş Efektleri (Transitions): Türler, Süre ve Ses Ayarları",
+      "moduleNumber": 6,
+      "moduleName": "Sunu Hazırlama",
+      "isExam": false
+    },
+    {
+      "hour": 158,
+      "topic": "Nesne Animasyonları (Giriş, Vurgu, Çıkış, Hareket Yolları) ve Zamanlama",
+      "moduleNumber": 6,
+      "moduleName": "Sunu Hazırlama",
+      "isExam": false
+    },
+    {
+      "hour": 159,
+      "topic": "Fotoğraf Albümü Oluşturma ve Gösteri Dosyası (.ppsx) Olarak Kaydetme",
+      "moduleNumber": 6,
+      "moduleName": "Sunu Hazırlama",
+      "isExam": false
+    },
+    {
+      "hour": 160,
+      "topic": "Konuşmacı Notları Ekleme, Prova Zamanlamaları ve Sunucu Görünümü Kullanımı",
+      "moduleNumber": 6,
+      "moduleName": "Sunu Hazırlama",
+      "isExam": false
+    },
+    {
+      "hour": 161,
+      "topic": "Slayt Gösterisi Başlatma, Sunum Esnasında Kalem/Vurgulayıcı Kullanımı ve Çıktı Alma",
+      "moduleNumber": 6,
+      "moduleName": "Sunu Hazırlama",
+      "isExam": false
+    },
+    {
+      "hour": 162,
+      "topic": "Sunu Hazırlama - Modül Değerlendirme Sınavı (Uygulama)",
+      "moduleNumber": 6,
+      "moduleName": "Sunu Hazırlama",
+      "isExam": true
+    },
+    {
+      "hour": 163,
+      "topic": "Sunu Hazırlama - Modül Değerlendirme Sınavı (Teorik & Değerlendirme)",
+      "moduleNumber": 6,
+      "moduleName": "Sunu Hazırlama",
+      "isExam": true
+    }
+  ]
+},
+{
+  "id": "tmpl_bilgisayar_isletmenligi_150",
+  "name": "Bilgisayar İşletmenliği (Operatörlüğü) - 150 Saat",
+  "code": "BLG-150",
+  "category": "Bilişim Teknolojileri",
+  "area": "Bilişim Teknolojileri",
+  "totalHours": 150,
+  "moduleCount": 6,
+  "description": "T.C. Millî Eğitim Bakanlığı Hayat Boyu Öğrenme Genel Müdürlüğü Bilişim Teknolojileri Alanı - Bilgisayar İşletmenliği (Operatörlüğü) Kurs Programı (6 Modül, 150 Ders Saati Planı).",
+  "modules": [
+    {
+      "id": "mod_blg150_1",
+      "number": 1,
+      "name": "Bilgisayara Giriş",
+      "totalHours": 46,
+      "lessonHours": 44,
+      "examHours": 2,
+      "topics": [
+        "Bilgi Teknolojisinin Temel Kavramları ve Bilgisayarın Tarihsel Gelişimi",
+        "Donanım ve Yazılım Kavramları, Bilgisayar Çeşitleri",
+        "Kasa ve Temel Donanım Birimleri: Anakart, İşlemci (CPU), Bellek (RAM)",
+        "Dahili ve Harici Depolama Birimleri (HDD, SSD, Flash Bellek)",
+        "Giriş Birimleri: Klavye, Fare, Tarayıcı, Barkod Okuyucu",
+        "Çıkış Birimleri: Monitör, Yazıcı, Hoparlör, Projeksiyon",
+        "Portlar, Bağlantı Noktaları ve Kablolar (HDMI, VGA, USB, DVI)",
+        "Bilgisayar Çevre Birimlerinin Güvenli Bağlantısı ve Kurulumu",
+        "BIOS / UEFI Arayüzü ve Temel Ayarları",
+        "İlk Açılış (Boot) Seçenekleri ve Başlangıç Yapılandırması",
+        "İşletim Sistemi Kavramı ve İşletim Sistemi Türleri",
+        "Bilgisayar Sistemine Uygun İşletim Sistemi Seçimi ve Ön Gereksinimleri",
+        "Kurulum Ortamı Hazırlama (Önyüklenebilir USB Oluşturma)",
+        "Sabit Disk Bölümleme (Disk Partitioning) ve Biçimlendirme (Formatting)",
+        "İşletim Sistemi Kurulum Aşamaları ve Temel Ayarlar - 1",
+        "İşletim Sistemi Kurulum Aşamaları ve Temel Ayarlar - 2",
+        "Donanım Sürücüsü (Driver) Kavramı ve Sürücü Türleri",
+        "Aygıt Yöneticisi Tanıtımı ve Donanım Durumlarının İncelenmesi",
+        "Anakart, Ekran Kartı ve Ses Kartı Sürücülerinin Kurulumu",
+        "Ağ (Ethernet/Wi-Fi) ve Çevre Birimi Sürücülerinin Kurulumu",
+        "İşletim Sistemi Kullanıcı Arayüzü: Masaüstü, Görev Çubuğu ve Bildirim Alanı",
+        "Başlat Menüsü Yapılandırması ve Kişiselleştirme Ayarları",
+        "Dosya ve Klasör Hiyerarşisi, Dizin Yapısı Mantığı",
+        "Dosya Gezgini Kullanımı ve Navigasyon Teknikleri",
+        "Dosya ve Klasör İşlemleri: Oluşturma, Yeniden Adlandırma, Silme (Geri Dönüşüm)",
+        "Dosya Kopyalama, Taşıma, Kısayol Oluşturma Pratikleri",
+        "Dosya Uzantıları, Dosya Türleri ve Varsayılan Program Eşleştirmeleri",
+        "Dosya Arama, Filtreleme ve Hızlı Erişim Özellikleri",
+        "Dosya ve Klasör Öznitelikleri (Gizli, Salt Okunur vb.)",
+        "Denetim Masası / Ayarlar Menüsü Temel Yapısı",
+        "Ekran, Çözünürlük, Tema ve Kişiselleştirme Ayarları",
+        "Saat, Dil, Bölge ve Klavye Seçeneklerinin Düzenlenmesi",
+        "Güç Seçenekleri, Uyku Modu ve Enerji Tasarrufu Ayarları",
+        "Kullanıcı Hesapları Yönetimi: Yönetici ve Standart Hesap Tanımlama",
+        "Kullanıcı Şifresi Belirleme, Hesap Güvenliği ve Oturum Açma Seçenekleri",
+        "Program Ekle/Kaldır İşlemleri ve Uygulama Yönetimi",
+        "Yazıcı ve Tarayıcı Ekleme, Varsayılan Yazıcı Ayarları",
+        "Yazdırma Kuyruğu Yönetimi ve Yazdırma Sorunlarını Giderme",
+        "Arşivleme Yazılımları (WinRAR, 7-Zip): Dosya Sıkıştırma ve Açma",
+        "PDF Okuyucu ve Belge Görüntüleyici Yazılımların Kurulumu ve Kullanımı",
+        "Medya Oynatıcılar ve Kodek Yönetimi",
+        "Görev Yöneticisi Kullanımı: İşlemler, Performans ve Başlangıç Uygulamaları",
+        "Disk Temizleme ve Sürücü İyileştirme (Bölümleme/Birleştirme) Araçları",
+        "Sistem Geri Yükleme Noktası Oluşturma ve Geri Yükleme İşlemleri"
+      ]
+    },
+    {
+      "id": "mod_blg150_2",
+      "number": 2,
+      "name": "İnternet ve E-Posta Yönetimi",
+      "totalHours": 20,
+      "lessonHours": 18,
+      "examHours": 2,
+      "topics": [
+        "İnternet Nedir? Tarihçesi, Çalışma Mantığı ve Ağ Türleri (LAN, WAN, WWW)",
+        "İnternet Bağlantı Türleri (Fiber, ADSL, Mobil Veri, Wi-Fi)",
+        "IP Adresi, DNS, Modulasyon ve Modem/Router Temel Kavramları",
+        "Web Tarayıcı Programları (Chrome, Edge, Firefox) ve Kurulumları",
+        "Tarayıcı Arayüzü: Adres Çubuğu, Sekmeler, Geçmiş ve İndirilenler",
+        "Yer İmleri (Sık Kullanılanlar) Ekleme, Düzenleme ve Klasörleme",
+        "Arama Motorları, Mantıksal Arama Operatörleri ve İleri Düzey Arama Teknikleri",
+        "Güvenli İnternet Protokolleri (HTTP / HTTPS) ve SSL Sertifikası Doğrulama",
+        "Tarayıcı Gizlilik Ayarları, Çerezler (Cookies) ve Önbellek Temizleme",
+        "E-Posta (E-Mail) Kavramı, Çalışma Yapısı ve E-Posta Protokolleri (POP3, IMAP, SMTP)",
+        "Web Tabanlı E-Posta Hesabı Açma ve Güvenlik Ayarları",
+        "E-Posta Arayüzü: Gelen Kutusu, Gönderilenler, Taslaklar, Çöp Kutusu",
+        "Yeni E-Posta Hazırlama: Kime (To), Bilgi (CC), Gizli (BCC) Alanları Kullanımı",
+        "E-Posta Metin Biçimlendirme, Dosya ve Belge Ekleme (Attachment) Kuralları",
+        "E-Postaları Yanıtlama (Reply/Reply All) ve İletme (Forward) Kuralları",
+        "E-Posta Yönetim Yazılımları (MS Outlook) Kurulumu ve Hesap Yapılandırması",
+        "E-Posta Filtreleme, Klasörleme, Kurallar Oluşturma ve İstenmeyen (Spam) Yönetimi",
+        "E-Posta İmzası Oluşturma ve Otomatik Yanıt (Tatil Bildirimi) Ayarlama"
+      ]
+    },
+    {
+      "id": "mod_blg150_3",
+      "number": 3,
+      "name": "Bilgi Güvenliği Bilinçlendirme Eğitimi",
+      "totalHours": 16,
+      "lessonHours": 14,
+      "examHours": 2,
+      "topics": [
+        "Bilgi Güvenliği Kavramı, Temel Prensipler (Gizlilik, Bütünlük, Erişilebilirlik)",
+        "Siber Tehditler ve Saldırı Türleri: Virüs, Truva Atı (Trojan), Solucan (Worm)",
+        "Casus Yazılımlar (Spyware), Fidye Yazılımları (Ransomware) ve Reklam Yazılımları (Adware)",
+        "Oltalama (Phishing), Sosyal Mühendislik ve Sahte Web Sitelerini Tanıma Yöntemleri",
+        "Güçlü Şifre Oluşturma Standartları ve Şifre Güvenliği Yönetimi",
+        "İki Adımlı Doğrulama (2FA) ve Çok Faktörlü Kimlik Doğrulama (MFA)",
+        "Antivirüs ve Güvenlik Yazılımları: Kurulum, Güncelleme ve Sistem Taraması",
+        "Güvenlik Duvarı (Firewall) Mantığı, Yapılandırması ve Port Güvenliği",
+        "Güvenli İnternet Kullanımı ve Halka Açık (Ortak) Wi-Fi Ağlarındaki Tehlikeler",
+        "Veri Yedekleme Stratejileri (Yerel ve Bulut Yedekleme) ve Veri Kurtarma İlkeleri",
+        "Mobil Cihaz Güvenliği: Uygulama İzinleri, Ekran Kilitleri ve Biyometrik Koruma",
+        "Mobil Cihazlarda Zararlı Yazılımlar ve Uzaktan Cihaz Kilitleme/Silme",
+        "Kişisel Verilerin Korunması Kanunu (KVKK) ve Temel Haklar",
+        "Dijital Ayak İzi, Çevrimiçi Mahremiyet ve Sosyal Medyada Gizlilik Ayarları"
+      ]
+    },
+    {
+      "id": "mod_blg150_4",
+      "number": 4,
+      "name": "Kelime İşlemci",
+      "totalHours": 20,
+      "lessonHours": 18,
+      "examHours": 2,
+      "topics": [
+        "Kelime İşlemci Programı (MS Word) Arayüzü, Şerit (Ribbon) ve Görünümler",
+        "Yeni Belge Oluşturma, Şablon Seçimi, Belge Kaydetme (DOCX, PDF) ve Farklı Kaydet",
+        "Metin Girişi, Seçim Yöntemleri, Kes-Kopyala-Yapıştır ve Biçim Boyacısı",
+        "Yazı Tipi Biçimlendirme: Font, Boyut, Renk, Vurgu, Kalın, İtalik, Altı Çizili",
+        "Paragraf Biçimlendirme: Hizalama, Girintiler, Satır ve Paragraf Aralıkları",
+        "Madde İmleri ve Numaralandırma, Çok Düzeyli Listeler Oluşturma",
+        "Kenarlıklar, Gölgelendirme ve Metin Kutusu Kullanımı",
+        "Belge Yazım ve Dilbilgisi Denetimi, Eşanlamlılar Sözlüğü ve Sözcük Sayımı",
+        "Bul ve Değiştir (Find and Replace) Özelliği İle Metin İyileştirme",
+        "Sayfa Yapısı: Kenar Boşlukları, Yönlendirme (Dikey/Yatay), Boyut ve Sütunlar",
+        "Sayfa Sonu, Bölüm Sonu (Section Break) ve Farklı Sayfa Düzenleri",
+        "Üstbilgi, Altbilgi ve Sayfa Numarası Ekleme ve Farklılaştırma",
+        "Belgeye Tablo Ekleme, Satır/Sütun Ekleme, Silme ve Boyutlandırma",
+        "Tablo Hücrelerini Birleştirme/Bölme, Hizalama ve Tablo Stilleri",
+        "Görsel ve Resim Ekleme, Boyutlandırma, Kırpma ve Metin Kaydırma Seçenekleri",
+        "Şekiller, Simgeler ve 3B Modeller Ekleme ve Düzenleme",
+        "SmartArt Grafikleri İle Süreç ve Hiyerarşi Şemaları Hazırlama",
+        "Başlık Stilleri (Heading 1, 2, 3) Kullanımı ve Otomatik İçindekiler Tablosu Oluşturma"
+      ]
+    },
+    {
+      "id": "mod_blg150_5",
+      "number": 5,
+      "name": "Elektronik Tablolama",
+      "totalHours": 34,
+      "lessonHours": 32,
+      "examHours": 2,
+      "topics": [
+        "Elektronik Tablolama Programı (MS Excel) Arayüzü, Çalışma Kitabı ve Sayfa Yapısı",
+        "Hücre, Satır, Sütun Kavramları, Hücre Adlandırma ve Aralık Seçimleri",
+        "Veri Türleri: Metin, Sayı, Tarih, Saat, Para Birimi ve Yüzde Girişi",
+        "Hücre Biçimlendirme: Yazı Tipi, Hizalama, Kenarlıklar ve Dolgu Renkleri",
+        "Sayı Biçimlendirme, Ondalık Basamak Ayarları ve Özel Biçimler",
+        "Metni Kaydır, Hücreleri Birleştir ve Ortala Seçenekleri",
+        "Satır Yüksekliği ve Sütun Genişliği Ayarları, Otomatik Sığdırma",
+        "Temel Otomatik Doldurma (AutoFill) ve Özel Seri Listeleri Kullanımı",
+        "Formül Mantığı, Operatörler (+, -, *, /, ^) ve İşlem Önceliği Kuralları",
+        "Temel Fonksiyonlar: TOPLA (SUM), ORTALAMA (AVERAGE), MAK (MAX), MİN (MIN)",
+        "SAY (COUNT), BAĞ_DEĞ_DOLU_SAY (COUNTA) Fonksiyonları",
+        "Göreli (Bağıl) ve Mutlak ($) Hücre Başvuruları, Sabitleme Mantığı",
+        "Mantıksal Fonksiyonlar: EĞER (IF) Fonksiyonu ve Temel Karar Yapıları",
+        "İç İçe EĞER (Nested IF) Kullanımı ve Çoklu Koşullar",
+        "VE (AND), VEYA (OR) Fonksiyonları İle Birleşik Koşullar",
+        "EĞERSAY (COUNTIF) ve ETOPLA (SUMIF) Koşullu Fonksiyonları",
+        "Metin Fonksiyonları: BİRLEŞTİR, BÜYÜKHARF, KÜÇÜKHARF, YAZIM.DÜZENİ, KIRP",
+        "Parça Al (MID), Soldan (LEFT), Sağdan (RIGHT) Metin Ayrıştırma",
+        "Tarih ve Saat Fonksiyonları: BUGÜN, ŞİMDİ, GÜN, AY, YIL, TARİH",
+        "DÜŞEYARA (VLOOKUP) Fonksiyonu: Tablodan Veri Arama ve Eşleştirme",
+        "YATAYARA (HLOOKUP) ve ÇAPRAZARA (XLOOKUP) Giriş",
+        "Koşullu Biçimlendirme (Conditional Formatting): Hücre Vurgulama, Veri Çubukları",
+        "Veri Sıralama (A-Z, Z-A, Özel Sıralama) ve Çok Düzeyli Sıralama",
+        "Veri Filtreleme (Otomatik Filtre, Metin ve Sayı Filtreleri)",
+        "Veri Doğrulama (Data Validation): Açılır Liste ve Hücre Kısıtlamaları",
+        "Grafik Türleri ve Amaca Uygun Grafik Seçimi (Sütun, Çubuk, Pasta, Çizgi)",
+        "Grafik Oluşturma, Veri Serilerini Düzenleme ve Eksen Ayarları",
+        "Grafik Başlığı, Gösterge (Legend), Veri Etiketleri ve Stil Biçimlendirme",
+        "Çalışma Sayfaları Yönetimi: Ekleme, Yeniden Adlandırma, Taşıma/Kopyalama, Sekme Rengi",
+        "Sayfalar Arası Formül Kullanımı ve Veri Bağlantıları",
+        "Sayfa Yapısı, Yazdırma Alanı Belirleme ve Başlıkları Yineleme",
+        "Sayfayı Bir Sayfaya Sığdırma, Kenar Boşlukları ve Çıktı Alma"
+      ]
+    },
+    {
+      "id": "mod_blg150_6",
+      "number": 6,
+      "name": "Sunu Hazırlama",
+      "totalHours": 14,
+      "lessonHours": 12,
+      "examHours": 2,
+      "topics": [
+        "Sunu Programı (MS PowerPoint) Arayüzü ve Sunum Tasarım İlkeleri",
+        "Yeni Sunu Oluşturma, Şablon ve Tema Seçimi, Slayt Boyutları (16:9, 4:3)",
+        "Slayt Düzenleri (Layouts), Yeni Slayt Ekleme, Çoğaltma ve Sıralama",
+        "Metin Kutuları Ekleme, Tipografi, Renk Uyumu ve Okunabilirlik Kuralları",
+        "Resim, İllüstrasyon ve Fotoğraf Ekleme, Kırpma ve Görsel Efektler",
+        "Şekiller, Simgeler ve SmartArt İle Diyagram ve Kavram Haritaları Oluşturma",
+        "Tablo ve Grafik Ekleyerek Verileri Sunumda Görselleştirme",
+        "Sunuma Ses ve Video Dosyaları Ekleme ve Oynatma Seçenekleri",
+        "Slayt Geçiş Efektleri (Transitions): Türler, Süre ve Ses Ayarları",
+        "Nesne Animasyonları (Giriş, Vurgu, Çıkış, Hareket Yolları) ve Zamanlama",
+        "Fotoğraf Albümü Oluşturma ve Gösteri Dosyası (.ppsx) Olarak Kaydetme",
+        "Konuşmacı Notları Ekleme, Prova Zamanlamaları ve Sunucu Görünümü Kullanımı"
+      ]
+    }
+  ],
+  "syllabus": [
+    {
+      "hour": 1,
+      "topic": "Bilgi Teknolojisinin Temel Kavramları ve Bilgisayarın Tarihsel Gelişimi",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 2,
+      "topic": "Donanım ve Yazılım Kavramları, Bilgisayar Çeşitleri",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 3,
+      "topic": "Kasa ve Temel Donanım Birimleri: Anakart, İşlemci (CPU), Bellek (RAM)",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 4,
+      "topic": "Dahili ve Harici Depolama Birimleri (HDD, SSD, Flash Bellek)",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 5,
+      "topic": "Giriş Birimleri: Klavye, Fare, Tarayıcı, Barkod Okuyucu",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 6,
+      "topic": "Çıkış Birimleri: Monitör, Yazıcı, Hoparlör, Projeksiyon",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 7,
+      "topic": "Portlar, Bağlantı Noktaları ve Kablolar (HDMI, VGA, USB, DVI)",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 8,
+      "topic": "Bilgisayar Çevre Birimlerinin Güvenli Bağlantısı ve Kurulumu",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 9,
+      "topic": "BIOS / UEFI Arayüzü ve Temel Ayarları",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 10,
+      "topic": "İlk Açılış (Boot) Seçenekleri ve Başlangıç Yapılandırması",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 11,
+      "topic": "İşletim Sistemi Kavramı ve İşletim Sistemi Türleri",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 12,
+      "topic": "Bilgisayar Sistemine Uygun İşletim Sistemi Seçimi ve Ön Gereksinimleri",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 13,
+      "topic": "Kurulum Ortamı Hazırlama (Önyüklenebilir USB Oluşturma)",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 14,
+      "topic": "Sabit Disk Bölümleme (Disk Partitioning) ve Biçimlendirme (Formatting)",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 15,
+      "topic": "İşletim Sistemi Kurulum Aşamaları ve Temel Ayarlar - 1",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 16,
+      "topic": "İşletim Sistemi Kurulum Aşamaları ve Temel Ayarlar - 2",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 17,
+      "topic": "Donanım Sürücüsü (Driver) Kavramı ve Sürücü Türleri",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 18,
+      "topic": "Aygıt Yöneticisi Tanıtımı ve Donanım Durumlarının İncelenmesi",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 19,
+      "topic": "Anakart, Ekran Kartı ve Ses Kartı Sürücülerinin Kurulumu",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 20,
+      "topic": "Ağ (Ethernet/Wi-Fi) ve Çevre Birimi Sürücülerinin Kurulumu",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 21,
+      "topic": "İşletim Sistemi Kullanıcı Arayüzü: Masaüstü, Görev Çubuğu ve Bildirim Alanı",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 22,
+      "topic": "Başlat Menüsü Yapılandırması ve Kişiselleştirme Ayarları",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 23,
+      "topic": "Dosya ve Klasör Hiyerarşisi, Dizin Yapısı Mantığı",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 24,
+      "topic": "Dosya Gezgini Kullanımı ve Navigasyon Teknikleri",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 25,
+      "topic": "Dosya ve Klasör İşlemleri: Oluşturma, Yeniden Adlandırma, Silme (Geri Dönüşüm)",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 26,
+      "topic": "Dosya Kopyalama, Taşıma, Kısayol Oluşturma Pratikleri",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 27,
+      "topic": "Dosya Uzantıları, Dosya Türleri ve Varsayılan Program Eşleştirmeleri",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 28,
+      "topic": "Dosya Arama, Filtreleme ve Hızlı Erişim Özellikleri",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 29,
+      "topic": "Dosya ve Klasör Öznitelikleri (Gizli, Salt Okunur vb.)",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 30,
+      "topic": "Denetim Masası / Ayarlar Menüsü Temel Yapısı",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 31,
+      "topic": "Ekran, Çözünürlük, Tema ve Kişiselleştirme Ayarları",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 32,
+      "topic": "Saat, Dil, Bölge ve Klavye Seçeneklerinin Düzenlenmesi",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 33,
+      "topic": "Güç Seçenekleri, Uyku Modu ve Enerji Tasarrufu Ayarları",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 34,
+      "topic": "Kullanıcı Hesapları Yönetimi: Yönetici ve Standart Hesap Tanımlama",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 35,
+      "topic": "Kullanıcı Şifresi Belirleme, Hesap Güvenliği ve Oturum Açma Seçenekleri",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 36,
+      "topic": "Program Ekle/Kaldır İşlemleri ve Uygulama Yönetimi",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 37,
+      "topic": "Yazıcı ve Tarayıcı Ekleme, Varsayılan Yazıcı Ayarları",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 38,
+      "topic": "Yazdırma Kuyruğu Yönetimi ve Yazdırma Sorunlarını Giderme",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 39,
+      "topic": "Arşivleme Yazılımları (WinRAR, 7-Zip): Dosya Sıkıştırma ve Açma",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 40,
+      "topic": "PDF Okuyucu ve Belge Görüntüleyici Yazılımların Kurulumu ve Kullanımı",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 41,
+      "topic": "Medya Oynatıcılar ve Kodek Yönetimi",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 42,
+      "topic": "Görev Yöneticisi Kullanımı: İşlemler, Performans ve Başlangıç Uygulamaları",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 43,
+      "topic": "Disk Temizleme ve Sürücü İyileştirme (Bölümleme/Birleştirme) Araçları",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 44,
+      "topic": "Sistem Geri Yükleme Noktası Oluşturma ve Geri Yükleme İşlemleri",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": false
+    },
+    {
+      "hour": 45,
+      "topic": "Bilgisayara Giriş - Modül Değerlendirme Sınavı (Uygulama)",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": true
+    },
+    {
+      "hour": 46,
+      "topic": "Bilgisayara Giriş - Modül Değerlendirme Sınavı (Teorik & Değerlendirme)",
+      "moduleNumber": 1,
+      "moduleName": "Bilgisayara Giriş",
+      "isExam": true
+    },
+    {
+      "hour": 47,
+      "topic": "İnternet Nedir? Tarihçesi, Çalışma Mantığı ve Ağ Türleri (LAN, WAN, WWW)",
+      "moduleNumber": 2,
+      "moduleName": "İnternet ve E-Posta Yönetimi",
+      "isExam": false
+    },
+    {
+      "hour": 48,
+      "topic": "İnternet Bağlantı Türleri (Fiber, ADSL, Mobil Veri, Wi-Fi)",
+      "moduleNumber": 2,
+      "moduleName": "İnternet ve E-Posta Yönetimi",
+      "isExam": false
+    },
+    {
+      "hour": 49,
+      "topic": "IP Adresi, DNS, Modulasyon ve Modem/Router Temel Kavramları",
+      "moduleNumber": 2,
+      "moduleName": "İnternet ve E-Posta Yönetimi",
+      "isExam": false
+    },
+    {
+      "hour": 50,
+      "topic": "Web Tarayıcı Programları (Chrome, Edge, Firefox) ve Kurulumları",
+      "moduleNumber": 2,
+      "moduleName": "İnternet ve E-Posta Yönetimi",
+      "isExam": false
+    },
+    {
+      "hour": 51,
+      "topic": "Tarayıcı Arayüzü: Adres Çubuğu, Sekmeler, Geçmiş ve İndirilenler",
+      "moduleNumber": 2,
+      "moduleName": "İnternet ve E-Posta Yönetimi",
+      "isExam": false
+    },
+    {
+      "hour": 52,
+      "topic": "Yer İmleri (Sık Kullanılanlar) Ekleme, Düzenleme ve Klasörleme",
+      "moduleNumber": 2,
+      "moduleName": "İnternet ve E-Posta Yönetimi",
+      "isExam": false
+    },
+    {
+      "hour": 53,
+      "topic": "Arama Motorları, Mantıksal Arama Operatörleri ve İleri Düzey Arama Teknikleri",
+      "moduleNumber": 2,
+      "moduleName": "İnternet ve E-Posta Yönetimi",
+      "isExam": false
+    },
+    {
+      "hour": 54,
+      "topic": "Güvenli İnternet Protokolleri (HTTP / HTTPS) ve SSL Sertifikası Doğrulama",
+      "moduleNumber": 2,
+      "moduleName": "İnternet ve E-Posta Yönetimi",
+      "isExam": false
+    },
+    {
+      "hour": 55,
+      "topic": "Tarayıcı Gizlilik Ayarları, Çerezler (Cookies) ve Önbellek Temizleme",
+      "moduleNumber": 2,
+      "moduleName": "İnternet ve E-Posta Yönetimi",
+      "isExam": false
+    },
+    {
+      "hour": 56,
+      "topic": "E-Posta (E-Mail) Kavramı, Çalışma Yapısı ve E-Posta Protokolleri (POP3, IMAP, SMTP)",
+      "moduleNumber": 2,
+      "moduleName": "İnternet ve E-Posta Yönetimi",
+      "isExam": false
+    },
+    {
+      "hour": 57,
+      "topic": "Web Tabanlı E-Posta Hesabı Açma ve Güvenlik Ayarları",
+      "moduleNumber": 2,
+      "moduleName": "İnternet ve E-Posta Yönetimi",
+      "isExam": false
+    },
+    {
+      "hour": 58,
+      "topic": "E-Posta Arayüzü: Gelen Kutusu, Gönderilenler, Taslaklar, Çöp Kutusu",
+      "moduleNumber": 2,
+      "moduleName": "İnternet ve E-Posta Yönetimi",
+      "isExam": false
+    },
+    {
+      "hour": 59,
+      "topic": "Yeni E-Posta Hazırlama: Kime (To), Bilgi (CC), Gizli (BCC) Alanları Kullanımı",
+      "moduleNumber": 2,
+      "moduleName": "İnternet ve E-Posta Yönetimi",
+      "isExam": false
+    },
+    {
+      "hour": 60,
+      "topic": "E-Posta Metin Biçimlendirme, Dosya ve Belge Ekleme (Attachment) Kuralları",
+      "moduleNumber": 2,
+      "moduleName": "İnternet ve E-Posta Yönetimi",
+      "isExam": false
+    },
+    {
+      "hour": 61,
+      "topic": "E-Postaları Yanıtlama (Reply/Reply All) ve İletme (Forward) Kuralları",
+      "moduleNumber": 2,
+      "moduleName": "İnternet ve E-Posta Yönetimi",
+      "isExam": false
+    },
+    {
+      "hour": 62,
+      "topic": "E-Posta Yönetim Yazılımları (MS Outlook) Kurulumu ve Hesap Yapılandırması",
+      "moduleNumber": 2,
+      "moduleName": "İnternet ve E-Posta Yönetimi",
+      "isExam": false
+    },
+    {
+      "hour": 63,
+      "topic": "E-Posta Filtreleme, Klasörleme, Kurallar Oluşturma ve İstenmeyen (Spam) Yönetimi",
+      "moduleNumber": 2,
+      "moduleName": "İnternet ve E-Posta Yönetimi",
+      "isExam": false
+    },
+    {
+      "hour": 64,
+      "topic": "E-Posta İmzası Oluşturma ve Otomatik Yanıt (Tatil Bildirimi) Ayarlama",
+      "moduleNumber": 2,
+      "moduleName": "İnternet ve E-Posta Yönetimi",
+      "isExam": false
+    },
+    {
+      "hour": 65,
+      "topic": "İnternet ve E-Posta Yönetimi - Modül Değerlendirme Sınavı (Uygulama)",
+      "moduleNumber": 2,
+      "moduleName": "İnternet ve E-Posta Yönetimi",
+      "isExam": true
+    },
+    {
+      "hour": 66,
+      "topic": "İnternet ve E-Posta Yönetimi - Modül Değerlendirme Sınavı (Teorik & Değerlendirme)",
+      "moduleNumber": 2,
+      "moduleName": "İnternet ve E-Posta Yönetimi",
+      "isExam": true
+    },
+    {
+      "hour": 67,
+      "topic": "Bilgi Güvenliği Kavramı, Temel Prensipler (Gizlilik, Bütünlük, Erişilebilirlik)",
+      "moduleNumber": 3,
+      "moduleName": "Bilgi Güvenliği Bilinçlendirme Eğitimi",
+      "isExam": false
+    },
+    {
+      "hour": 68,
+      "topic": "Siber Tehditler ve Saldırı Türleri: Virüs, Truva Atı (Trojan), Solucan (Worm)",
+      "moduleNumber": 3,
+      "moduleName": "Bilgi Güvenliği Bilinçlendirme Eğitimi",
+      "isExam": false
+    },
+    {
+      "hour": 69,
+      "topic": "Casus Yazılımlar (Spyware), Fidye Yazılımları (Ransomware) ve Reklam Yazılımları (Adware)",
+      "moduleNumber": 3,
+      "moduleName": "Bilgi Güvenliği Bilinçlendirme Eğitimi",
+      "isExam": false
+    },
+    {
+      "hour": 70,
+      "topic": "Oltalama (Phishing), Sosyal Mühendislik ve Sahte Web Sitelerini Tanıma Yöntemleri",
+      "moduleNumber": 3,
+      "moduleName": "Bilgi Güvenliği Bilinçlendirme Eğitimi",
+      "isExam": false
+    },
+    {
+      "hour": 71,
+      "topic": "Güçlü Şifre Oluşturma Standartları ve Şifre Güvenliği Yönetimi",
+      "moduleNumber": 3,
+      "moduleName": "Bilgi Güvenliği Bilinçlendirme Eğitimi",
+      "isExam": false
+    },
+    {
+      "hour": 72,
+      "topic": "İki Adımlı Doğrulama (2FA) ve Çok Faktörlü Kimlik Doğrulama (MFA)",
+      "moduleNumber": 3,
+      "moduleName": "Bilgi Güvenliği Bilinçlendirme Eğitimi",
+      "isExam": false
+    },
+    {
+      "hour": 73,
+      "topic": "Antivirüs ve Güvenlik Yazılımları: Kurulum, Güncelleme ve Sistem Taraması",
+      "moduleNumber": 3,
+      "moduleName": "Bilgi Güvenliği Bilinçlendirme Eğitimi",
+      "isExam": false
+    },
+    {
+      "hour": 74,
+      "topic": "Güvenlik Duvarı (Firewall) Mantığı, Yapılandırması ve Port Güvenliği",
+      "moduleNumber": 3,
+      "moduleName": "Bilgi Güvenliği Bilinçlendirme Eğitimi",
+      "isExam": false
+    },
+    {
+      "hour": 75,
+      "topic": "Güvenli İnternet Kullanımı ve Halka Açık (Ortak) Wi-Fi Ağlarındaki Tehlikeler",
+      "moduleNumber": 3,
+      "moduleName": "Bilgi Güvenliği Bilinçlendirme Eğitimi",
+      "isExam": false
+    },
+    {
+      "hour": 76,
+      "topic": "Veri Yedekleme Stratejileri (Yerel ve Bulut Yedekleme) ve Veri Kurtarma İlkeleri",
+      "moduleNumber": 3,
+      "moduleName": "Bilgi Güvenliği Bilinçlendirme Eğitimi",
+      "isExam": false
+    },
+    {
+      "hour": 77,
+      "topic": "Mobil Cihaz Güvenliği: Uygulama İzinleri, Ekran Kilitleri ve Biyometrik Koruma",
+      "moduleNumber": 3,
+      "moduleName": "Bilgi Güvenliği Bilinçlendirme Eğitimi",
+      "isExam": false
+    },
+    {
+      "hour": 78,
+      "topic": "Mobil Cihazlarda Zararlı Yazılımlar ve Uzaktan Cihaz Kilitleme/Silme",
+      "moduleNumber": 3,
+      "moduleName": "Bilgi Güvenliği Bilinçlendirme Eğitimi",
+      "isExam": false
+    },
+    {
+      "hour": 79,
+      "topic": "Kişisel Verilerin Korunması Kanunu (KVKK) ve Temel Haklar",
+      "moduleNumber": 3,
+      "moduleName": "Bilgi Güvenliği Bilinçlendirme Eğitimi",
+      "isExam": false
+    },
+    {
+      "hour": 80,
+      "topic": "Dijital Ayak İzi, Çevrimiçi Mahremiyet ve Sosyal Medyada Gizlilik Ayarları",
+      "moduleNumber": 3,
+      "moduleName": "Bilgi Güvenliği Bilinçlendirme Eğitimi",
+      "isExam": false
+    },
+    {
+      "hour": 81,
+      "topic": "Bilgi Güvenliği Bilinçlendirme Eğitimi - Modül Değerlendirme Sınavı (Uygulama)",
+      "moduleNumber": 3,
+      "moduleName": "Bilgi Güvenliği Bilinçlendirme Eğitimi",
+      "isExam": true
+    },
+    {
+      "hour": 82,
+      "topic": "Bilgi Güvenliği Bilinçlendirme Eğitimi - Modül Değerlendirme Sınavı (Teorik & Değerlendirme)",
+      "moduleNumber": 3,
+      "moduleName": "Bilgi Güvenliği Bilinçlendirme Eğitimi",
+      "isExam": true
+    },
+    {
+      "hour": 83,
+      "topic": "Kelime İşlemci Programı (MS Word) Arayüzü, Şerit (Ribbon) ve Görünümler",
+      "moduleNumber": 4,
+      "moduleName": "Kelime İşlemci",
+      "isExam": false
+    },
+    {
+      "hour": 84,
+      "topic": "Yeni Belge Oluşturma, Şablon Seçimi, Belge Kaydetme (DOCX, PDF) ve Farklı Kaydet",
+      "moduleNumber": 4,
+      "moduleName": "Kelime İşlemci",
+      "isExam": false
+    },
+    {
+      "hour": 85,
+      "topic": "Metin Girişi, Seçim Yöntemleri, Kes-Kopyala-Yapıştır ve Biçim Boyacısı",
+      "moduleNumber": 4,
+      "moduleName": "Kelime İşlemci",
+      "isExam": false
+    },
+    {
+      "hour": 86,
+      "topic": "Yazı Tipi Biçimlendirme: Font, Boyut, Renk, Vurgu, Kalın, İtalik, Altı Çizili",
+      "moduleNumber": 4,
+      "moduleName": "Kelime İşlemci",
+      "isExam": false
+    },
+    {
+      "hour": 87,
+      "topic": "Paragraf Biçimlendirme: Hizalama, Girintiler, Satır ve Paragraf Aralıkları",
+      "moduleNumber": 4,
+      "moduleName": "Kelime İşlemci",
+      "isExam": false
+    },
+    {
+      "hour": 88,
+      "topic": "Madde İmleri ve Numaralandırma, Çok Düzeyli Listeler Oluşturma",
+      "moduleNumber": 4,
+      "moduleName": "Kelime İşlemci",
+      "isExam": false
+    },
+    {
+      "hour": 89,
+      "topic": "Kenarlıklar, Gölgelendirme ve Metin Kutusu Kullanımı",
+      "moduleNumber": 4,
+      "moduleName": "Kelime İşlemci",
+      "isExam": false
+    },
+    {
+      "hour": 90,
+      "topic": "Belge Yazım ve Dilbilgisi Denetimi, Eşanlamlılar Sözlüğü ve Sözcük Sayımı",
+      "moduleNumber": 4,
+      "moduleName": "Kelime İşlemci",
+      "isExam": false
+    },
+    {
+      "hour": 91,
+      "topic": "Bul ve Değiştir (Find and Replace) Özelliği İle Metin İyileştirme",
+      "moduleNumber": 4,
+      "moduleName": "Kelime İşlemci",
+      "isExam": false
+    },
+    {
+      "hour": 92,
+      "topic": "Sayfa Yapısı: Kenar Boşlukları, Yönlendirme (Dikey/Yatay), Boyut ve Sütunlar",
+      "moduleNumber": 4,
+      "moduleName": "Kelime İşlemci",
+      "isExam": false
+    },
+    {
+      "hour": 93,
+      "topic": "Sayfa Sonu, Bölüm Sonu (Section Break) ve Farklı Sayfa Düzenleri",
+      "moduleNumber": 4,
+      "moduleName": "Kelime İşlemci",
+      "isExam": false
+    },
+    {
+      "hour": 94,
+      "topic": "Üstbilgi, Altbilgi ve Sayfa Numarası Ekleme ve Farklılaştırma",
+      "moduleNumber": 4,
+      "moduleName": "Kelime İşlemci",
+      "isExam": false
+    },
+    {
+      "hour": 95,
+      "topic": "Belgeye Tablo Ekleme, Satır/Sütun Ekleme, Silme ve Boyutlandırma",
+      "moduleNumber": 4,
+      "moduleName": "Kelime İşlemci",
+      "isExam": false
+    },
+    {
+      "hour": 96,
+      "topic": "Tablo Hücrelerini Birleştirme/Bölme, Hizalama ve Tablo Stilleri",
+      "moduleNumber": 4,
+      "moduleName": "Kelime İşlemci",
+      "isExam": false
+    },
+    {
+      "hour": 97,
+      "topic": "Görsel ve Resim Ekleme, Boyutlandırma, Kırpma ve Metin Kaydırma Seçenekleri",
+      "moduleNumber": 4,
+      "moduleName": "Kelime İşlemci",
+      "isExam": false
+    },
+    {
+      "hour": 98,
+      "topic": "Şekiller, Simgeler ve 3B Modeller Ekleme ve Düzenleme",
+      "moduleNumber": 4,
+      "moduleName": "Kelime İşlemci",
+      "isExam": false
+    },
+    {
+      "hour": 99,
+      "topic": "SmartArt Grafikleri İle Süreç ve Hiyerarşi Şemaları Hazırlama",
+      "moduleNumber": 4,
+      "moduleName": "Kelime İşlemci",
+      "isExam": false
+    },
+    {
+      "hour": 100,
+      "topic": "Başlık Stilleri (Heading 1, 2, 3) Kullanımı ve Otomatik İçindekiler Tablosu Oluşturma",
+      "moduleNumber": 4,
+      "moduleName": "Kelime İşlemci",
+      "isExam": false
+    },
+    {
+      "hour": 101,
+      "topic": "Kelime İşlemci - Modül Değerlendirme Sınavı (Uygulama)",
+      "moduleNumber": 4,
+      "moduleName": "Kelime İşlemci",
+      "isExam": true
+    },
+    {
+      "hour": 102,
+      "topic": "Kelime İşlemci - Modül Değerlendirme Sınavı (Teorik & Değerlendirme)",
+      "moduleNumber": 4,
+      "moduleName": "Kelime İşlemci",
+      "isExam": true
+    },
+    {
+      "hour": 103,
+      "topic": "Elektronik Tablolama Programı (MS Excel) Arayüzü, Çalışma Kitabı ve Sayfa Yapısı",
+      "moduleNumber": 5,
+      "moduleName": "Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 104,
+      "topic": "Hücre, Satır, Sütun Kavramları, Hücre Adlandırma ve Aralık Seçimleri",
+      "moduleNumber": 5,
+      "moduleName": "Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 105,
+      "topic": "Veri Türleri: Metin, Sayı, Tarih, Saat, Para Birimi ve Yüzde Girişi",
+      "moduleNumber": 5,
+      "moduleName": "Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 106,
+      "topic": "Hücre Biçimlendirme: Yazı Tipi, Hizalama, Kenarlıklar ve Dolgu Renkleri",
+      "moduleNumber": 5,
+      "moduleName": "Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 107,
+      "topic": "Sayı Biçimlendirme, Ondalık Basamak Ayarları ve Özel Biçimler",
+      "moduleNumber": 5,
+      "moduleName": "Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 108,
+      "topic": "Metni Kaydır, Hücreleri Birleştir ve Ortala Seçenekleri",
+      "moduleNumber": 5,
+      "moduleName": "Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 109,
+      "topic": "Satır Yüksekliği ve Sütun Genişliği Ayarları, Otomatik Sığdırma",
+      "moduleNumber": 5,
+      "moduleName": "Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 110,
+      "topic": "Temel Otomatik Doldurma (AutoFill) ve Özel Seri Listeleri Kullanımı",
+      "moduleNumber": 5,
+      "moduleName": "Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 111,
+      "topic": "Formül Mantığı, Operatörler (+, -, *, /, ^) ve İşlem Önceliği Kuralları",
+      "moduleNumber": 5,
+      "moduleName": "Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 112,
+      "topic": "Temel Fonksiyonlar: TOPLA (SUM), ORTALAMA (AVERAGE), MAK (MAX), MİN (MIN)",
+      "moduleNumber": 5,
+      "moduleName": "Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 113,
+      "topic": "SAY (COUNT), BAĞ_DEĞ_DOLU_SAY (COUNTA) Fonksiyonları",
+      "moduleNumber": 5,
+      "moduleName": "Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 114,
+      "topic": "Göreli (Bağıl) ve Mutlak ($) Hücre Başvuruları, Sabitleme Mantığı",
+      "moduleNumber": 5,
+      "moduleName": "Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 115,
+      "topic": "Mantıksal Fonksiyonlar: EĞER (IF) Fonksiyonu ve Temel Karar Yapıları",
+      "moduleNumber": 5,
+      "moduleName": "Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 116,
+      "topic": "İç İçe EĞER (Nested IF) Kullanımı ve Çoklu Koşullar",
+      "moduleNumber": 5,
+      "moduleName": "Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 117,
+      "topic": "VE (AND), VEYA (OR) Fonksiyonları İle Birleşik Koşullar",
+      "moduleNumber": 5,
+      "moduleName": "Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 118,
+      "topic": "EĞERSAY (COUNTIF) ve ETOPLA (SUMIF) Koşullu Fonksiyonları",
+      "moduleNumber": 5,
+      "moduleName": "Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 119,
+      "topic": "Metin Fonksiyonları: BİRLEŞTİR, BÜYÜKHARF, KÜÇÜKHARF, YAZIM.DÜZENİ, KIRP",
+      "moduleNumber": 5,
+      "moduleName": "Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 120,
+      "topic": "Parça Al (MID), Soldan (LEFT), Sağdan (RIGHT) Metin Ayrıştırma",
+      "moduleNumber": 5,
+      "moduleName": "Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 121,
+      "topic": "Tarih ve Saat Fonksiyonları: BUGÜN, ŞİMDİ, GÜN, AY, YIL, TARİH",
+      "moduleNumber": 5,
+      "moduleName": "Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 122,
+      "topic": "DÜŞEYARA (VLOOKUP) Fonksiyonu: Tablodan Veri Arama ve Eşleştirme",
+      "moduleNumber": 5,
+      "moduleName": "Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 123,
+      "topic": "YATAYARA (HLOOKUP) ve ÇAPRAZARA (XLOOKUP) Giriş",
+      "moduleNumber": 5,
+      "moduleName": "Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 124,
+      "topic": "Koşullu Biçimlendirme (Conditional Formatting): Hücre Vurgulama, Veri Çubukları",
+      "moduleNumber": 5,
+      "moduleName": "Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 125,
+      "topic": "Veri Sıralama (A-Z, Z-A, Özel Sıralama) ve Çok Düzeyli Sıralama",
+      "moduleNumber": 5,
+      "moduleName": "Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 126,
+      "topic": "Veri Filtreleme (Otomatik Filtre, Metin ve Sayı Filtreleri)",
+      "moduleNumber": 5,
+      "moduleName": "Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 127,
+      "topic": "Veri Doğrulama (Data Validation): Açılır Liste ve Hücre Kısıtlamaları",
+      "moduleNumber": 5,
+      "moduleName": "Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 128,
+      "topic": "Grafik Türleri ve Amaca Uygun Grafik Seçimi (Sütun, Çubuk, Pasta, Çizgi)",
+      "moduleNumber": 5,
+      "moduleName": "Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 129,
+      "topic": "Grafik Oluşturma, Veri Serilerini Düzenleme ve Eksen Ayarları",
+      "moduleNumber": 5,
+      "moduleName": "Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 130,
+      "topic": "Grafik Başlığı, Gösterge (Legend), Veri Etiketleri ve Stil Biçimlendirme",
+      "moduleNumber": 5,
+      "moduleName": "Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 131,
+      "topic": "Çalışma Sayfaları Yönetimi: Ekleme, Yeniden Adlandırma, Taşıma/Kopyalama, Sekme Rengi",
+      "moduleNumber": 5,
+      "moduleName": "Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 132,
+      "topic": "Sayfalar Arası Formül Kullanımı ve Veri Bağlantıları",
+      "moduleNumber": 5,
+      "moduleName": "Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 133,
+      "topic": "Sayfa Yapısı, Yazdırma Alanı Belirleme ve Başlıkları Yineleme",
+      "moduleNumber": 5,
+      "moduleName": "Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 134,
+      "topic": "Sayfayı Bir Sayfaya Sığdırma, Kenar Boşlukları ve Çıktı Alma",
+      "moduleNumber": 5,
+      "moduleName": "Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 135,
+      "topic": "Elektronik Tablolama - Modül Değerlendirme Sınavı (Uygulama)",
+      "moduleNumber": 5,
+      "moduleName": "Elektronik Tablolama",
+      "isExam": true
+    },
+    {
+      "hour": 136,
+      "topic": "Elektronik Tablolama - Modül Değerlendirme Sınavı (Teorik & Değerlendirme)",
+      "moduleNumber": 5,
+      "moduleName": "Elektronik Tablolama",
+      "isExam": true
+    },
+    {
+      "hour": 137,
+      "topic": "Sunu Programı (MS PowerPoint) Arayüzü ve Sunum Tasarım İlkeleri",
+      "moduleNumber": 6,
+      "moduleName": "Sunu Hazırlama",
+      "isExam": false
+    },
+    {
+      "hour": 138,
+      "topic": "Yeni Sunu Oluşturma, Şablon ve Tema Seçimi, Slayt Boyutları (16:9, 4:3)",
+      "moduleNumber": 6,
+      "moduleName": "Sunu Hazırlama",
+      "isExam": false
+    },
+    {
+      "hour": 139,
+      "topic": "Slayt Düzenleri (Layouts), Yeni Slayt Ekleme, Çoğaltma ve Sıralama",
+      "moduleNumber": 6,
+      "moduleName": "Sunu Hazırlama",
+      "isExam": false
+    },
+    {
+      "hour": 140,
+      "topic": "Metin Kutuları Ekleme, Tipografi, Renk Uyumu ve Okunabilirlik Kuralları",
+      "moduleNumber": 6,
+      "moduleName": "Sunu Hazırlama",
+      "isExam": false
+    },
+    {
+      "hour": 141,
+      "topic": "Resim, İllüstrasyon ve Fotoğraf Ekleme, Kırpma ve Görsel Efektler",
+      "moduleNumber": 6,
+      "moduleName": "Sunu Hazırlama",
+      "isExam": false
+    },
+    {
+      "hour": 142,
+      "topic": "Şekiller, Simgeler ve SmartArt İle Diyagram ve Kavram Haritaları Oluşturma",
+      "moduleNumber": 6,
+      "moduleName": "Sunu Hazırlama",
+      "isExam": false
+    },
+    {
+      "hour": 143,
+      "topic": "Tablo ve Grafik Ekleyerek Verileri Sunumda Görselleştirme",
+      "moduleNumber": 6,
+      "moduleName": "Sunu Hazırlama",
+      "isExam": false
+    },
+    {
+      "hour": 144,
+      "topic": "Sunuma Ses ve Video Dosyaları Ekleme ve Oynatma Seçenekleri",
+      "moduleNumber": 6,
+      "moduleName": "Sunu Hazırlama",
+      "isExam": false
+    },
+    {
+      "hour": 145,
+      "topic": "Slayt Geçiş Efektleri (Transitions): Türler, Süre ve Ses Ayarları",
+      "moduleNumber": 6,
+      "moduleName": "Sunu Hazırlama",
+      "isExam": false
+    },
+    {
+      "hour": 146,
+      "topic": "Nesne Animasyonları (Giriş, Vurgu, Çıkış, Hareket Yolları) ve Zamanlama",
+      "moduleNumber": 6,
+      "moduleName": "Sunu Hazırlama",
+      "isExam": false
+    },
+    {
+      "hour": 147,
+      "topic": "Fotoğraf Albümü Oluşturma ve Gösteri Dosyası (.ppsx) Olarak Kaydetme",
+      "moduleNumber": 6,
+      "moduleName": "Sunu Hazırlama",
+      "isExam": false
+    },
+    {
+      "hour": 148,
+      "topic": "Konuşmacı Notları Ekleme, Prova Zamanlamaları ve Sunucu Görünümü Kullanımı",
+      "moduleNumber": 6,
+      "moduleName": "Sunu Hazırlama",
+      "isExam": false
+    },
+    {
+      "hour": 149,
+      "topic": "Sunu Hazırlama - Modül Değerlendirme Sınavı (Uygulama)",
+      "moduleNumber": 6,
+      "moduleName": "Sunu Hazırlama",
+      "isExam": true
+    },
+    {
+      "hour": 150,
+      "topic": "Sunu Hazırlama - Modül Değerlendirme Sınavı (Teorik & Değerlendirme)",
+      "moduleNumber": 6,
+      "moduleName": "Sunu Hazırlama",
+      "isExam": true
+    }
+  ]
+},
+
   {
     id: "tmpl_canva_baslangic_duzey",
     name: "Canva İle Dijital Tasarım Eğitimi (Başlangıç Düzeyi)",
