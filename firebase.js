@@ -135,6 +135,221 @@ const DEFAULT_AREAS = [
 // Kurs ve Müfredat Şablonları (MEB Hayat Boyu Öğrenme Genel Müdürlüğü Onaylı)
 const DEFAULT_COURSE_TEMPLATES = [
 {
+  "id": "tmpl_yapay_zeka_prompt_24",
+  "name": "Yapay Zeka İle Prompt Uygulamaları Eğitimi",
+  "code": "YZ-PRM-24",
+  "category": "Bilişim Teknolojileri",
+  "area": "Bilişim Teknolojileri",
+  "totalHours": 24,
+  "moduleCount": 1,
+  "description": "İzmir Büyükşehir Belediyesi Meslek Fabrikası Şube Müdürlüğü - Yapay Zeka ile Prompt Uygulamaları Eğitimi (Tek Modül, 24 Ders Saati).",
+  "modules": [
+    {
+      "id": "mod_yz_prm_1",
+      "number": 1,
+      "name": "Yapay Zeka İle Prompt Uygulamaları Eğitimi",
+      "totalHours": 24,
+      "lessonHours": 22,
+      "examHours": 2,
+      "topics": [
+        "Yapay Zekâya Giriş, AI Zaman Çizelgesi ve Üretken Yapay Zekâ (GenAI) Temelleri",
+        "LLM Çalışma Mantığı: İnsan Dili vs. Makine Dili ve Olasılıksal Hesaplama",
+        "Komut Mühendisliğinin (Prompt Engineering) Temel İlkeleri ve Belirsizliği Azaltma",
+        "Algoritmik Düşünme ve Görevleri Parçalama (Decomposition) Stratejileri",
+        "Etkili Komut Mimarisi: Rol, Görev, Bağlam, Kısıt ve Çıktı Formatı Şablonları",
+        "Token Kavramı, Bağlam Penceresi (Context Window) Yönetimi ve Dil Dinamikleri",
+        "Veri Gizliliği, KVKK Uyumluluğu, Fikri Mülkiyet (FSEK) ve Telif Hakları",
+        "Halüsinasyon Doğrulama Yöntemleri ve Prompt Injection Güvenlik Riskleri",
+        "Google Gemini İle Çok Modlu (Multimodal) Analiz ve Özel Gems Asistanları",
+        "Google NotebookLM İle Kaynak Odaklı Doküman Analizi ve Podcast Üretimi",
+        "OpenAI ChatGPT (Canvas & Ses Modu) İle İçerik Geliştirme ve Veri Analizi",
+        "Anthropic Claude (Artifacts) İle Kodlama, Arayüz Tasarımı ve Mantıksal Akıl Yürütme",
+        "Gamma AI İle Yapay Zekâ Destekli Kart Tabanlı Sunum ve Doküman Tasarımı",
+        "Make.com İle Kodsuz AI Otomasyonu, Ajanlar ve Akıllı İş Akışı Senaryoları",
+        "Canva Magic Studio İle Yapay Zekâ Destekli Çoklu Görsel ve Tasarım Üretimi",
+        "Google AI Studio İle Sistem Promptları, Parametre Kontrolü ve API Prototipleme",
+        "HeyGen İle Dijital İkiz (Avatar), Çok Dilli Dudak Senkronizasyonu ve Video Üretimi",
+        "Google Antigravity İle Ajan Odaklı (Agent-First) Yazılım Geliştirme ve Görev Yönetimi",
+        "Görsel Promptunun 4 Yapı Taşı: Özne, Eylem, Çevre-Işık ve Stil-Medyum",
+        "DALL-E 3, Imagen 3, Ideogram ve Leonardo.AI İle Profesyonel Görsel Üretimi",
+        "Yapay Zekâ İle Video Üretimi: Kamera Hareketleri, Kling AI ve Pika Araçları",
+        "Kapsamlı Yapay Zekâ ve Prompt Uygulama Projesi (Yazılım, Tasarım & Otomasyon)"
+      ]
+    }
+  ],
+  "syllabus": [
+    {
+      "hour": 1,
+      "topic": "Yapay Zekâya Giriş, AI Zaman Çizelgesi ve Üretken Yapay Zekâ (GenAI) Temelleri",
+      "moduleNumber": 1,
+      "moduleName": "Yapay Zeka İle Prompt Uygulamaları Eğitimi",
+      "isExam": false
+    },
+    {
+      "hour": 2,
+      "topic": "LLM Çalışma Mantığı: İnsan Dili vs. Makine Dili ve Olasılıksal Hesaplama",
+      "moduleNumber": 1,
+      "moduleName": "Yapay Zeka İle Prompt Uygulamaları Eğitimi",
+      "isExam": false
+    },
+    {
+      "hour": 3,
+      "topic": "Komut Mühendisliğinin (Prompt Engineering) Temel İlkeleri ve Belirsizliği Azaltma",
+      "moduleNumber": 1,
+      "moduleName": "Yapay Zeka İle Prompt Uygulamaları Eğitimi",
+      "isExam": false
+    },
+    {
+      "hour": 4,
+      "topic": "Algoritmik Düşünme ve Görevleri Parçalama (Decomposition) Stratejileri",
+      "moduleNumber": 1,
+      "moduleName": "Yapay Zeka İle Prompt Uygulamaları Eğitimi",
+      "isExam": false
+    },
+    {
+      "hour": 5,
+      "topic": "Etkili Komut Mimarisi: Rol, Görev, Bağlam, Kısıt ve Çıktı Formatı Şablonları",
+      "moduleNumber": 1,
+      "moduleName": "Yapay Zeka İle Prompt Uygulamaları Eğitimi",
+      "isExam": false
+    },
+    {
+      "hour": 6,
+      "topic": "Token Kavramı, Bağlam Penceresi (Context Window) Yönetimi ve Dil Dinamikleri",
+      "moduleNumber": 1,
+      "moduleName": "Yapay Zeka İle Prompt Uygulamaları Eğitimi",
+      "isExam": false
+    },
+    {
+      "hour": 7,
+      "topic": "Veri Gizliliği, KVKK Uyumluluğu, Fikri Mülkiyet (FSEK) ve Telif Hakları",
+      "moduleNumber": 1,
+      "moduleName": "Yapay Zeka İle Prompt Uygulamaları Eğitimi",
+      "isExam": false
+    },
+    {
+      "hour": 8,
+      "topic": "Halüsinasyon Doğrulama Yöntemleri ve Prompt Injection Güvenlik Riskleri",
+      "moduleNumber": 1,
+      "moduleName": "Yapay Zeka İle Prompt Uygulamaları Eğitimi",
+      "isExam": false
+    },
+    {
+      "hour": 9,
+      "topic": "Google Gemini İle Çok Modlu (Multimodal) Analiz ve Özel Gems Asistanları",
+      "moduleNumber": 1,
+      "moduleName": "Yapay Zeka İle Prompt Uygulamaları Eğitimi",
+      "isExam": false
+    },
+    {
+      "hour": 10,
+      "topic": "Google NotebookLM İle Kaynak Odaklı Doküman Analizi ve Podcast Üretimi",
+      "moduleNumber": 1,
+      "moduleName": "Yapay Zeka İle Prompt Uygulamaları Eğitimi",
+      "isExam": false
+    },
+    {
+      "hour": 11,
+      "topic": "OpenAI ChatGPT (Canvas & Ses Modu) İle İçerik Geliştirme ve Veri Analizi",
+      "moduleNumber": 1,
+      "moduleName": "Yapay Zeka İle Prompt Uygulamaları Eğitimi",
+      "isExam": false
+    },
+    {
+      "hour": 12,
+      "topic": "Anthropic Claude (Artifacts) İle Kodlama, Arayüz Tasarımı ve Mantıksal Akıl Yürütme",
+      "moduleNumber": 1,
+      "moduleName": "Yapay Zeka İle Prompt Uygulamaları Eğitimi",
+      "isExam": false
+    },
+    {
+      "hour": 13,
+      "topic": "Gamma AI İle Yapay Zekâ Destekli Kart Tabanlı Sunum ve Doküman Tasarımı",
+      "moduleNumber": 1,
+      "moduleName": "Yapay Zeka İle Prompt Uygulamaları Eğitimi",
+      "isExam": false
+    },
+    {
+      "hour": 14,
+      "topic": "Make.com İle Kodsuz AI Otomasyonu, Ajanlar ve Akıllı İş Akışı Senaryoları",
+      "moduleNumber": 1,
+      "moduleName": "Yapay Zeka İle Prompt Uygulamaları Eğitimi",
+      "isExam": false
+    },
+    {
+      "hour": 15,
+      "topic": "Canva Magic Studio İle Yapay Zekâ Destekli Çoklu Görsel ve Tasarım Üretimi",
+      "moduleNumber": 1,
+      "moduleName": "Yapay Zeka İle Prompt Uygulamaları Eğitimi",
+      "isExam": false
+    },
+    {
+      "hour": 16,
+      "topic": "Google AI Studio İle Sistem Promptları, Parametre Kontrolü ve API Prototipleme",
+      "moduleNumber": 1,
+      "moduleName": "Yapay Zeka İle Prompt Uygulamaları Eğitimi",
+      "isExam": false
+    },
+    {
+      "hour": 17,
+      "topic": "HeyGen İle Dijital İkiz (Avatar), Çok Dilli Dudak Senkronizasyonu ve Video Üretimi",
+      "moduleNumber": 1,
+      "moduleName": "Yapay Zeka İle Prompt Uygulamaları Eğitimi",
+      "isExam": false
+    },
+    {
+      "hour": 18,
+      "topic": "Google Antigravity İle Ajan Odaklı (Agent-First) Yazılım Geliştirme ve Görev Yönetimi",
+      "moduleNumber": 1,
+      "moduleName": "Yapay Zeka İle Prompt Uygulamaları Eğitimi",
+      "isExam": false
+    },
+    {
+      "hour": 19,
+      "topic": "Görsel Promptunun 4 Yapı Taşı: Özne, Eylem, Çevre-Işık ve Stil-Medyum",
+      "moduleNumber": 1,
+      "moduleName": "Yapay Zeka İle Prompt Uygulamaları Eğitimi",
+      "isExam": false
+    },
+    {
+      "hour": 20,
+      "topic": "DALL-E 3, Imagen 3, Ideogram ve Leonardo.AI İle Profesyonel Görsel Üretimi",
+      "moduleNumber": 1,
+      "moduleName": "Yapay Zeka İle Prompt Uygulamaları Eğitimi",
+      "isExam": false
+    },
+    {
+      "hour": 21,
+      "topic": "Yapay Zekâ İle Video Üretimi: Kamera Hareketleri, Kling AI ve Pika Araçları",
+      "moduleNumber": 1,
+      "moduleName": "Yapay Zeka İle Prompt Uygulamaları Eğitimi",
+      "isExam": false
+    },
+    {
+      "hour": 22,
+      "topic": "Kapsamlı Yapay Zekâ ve Prompt Uygulama Projesi (Yazılım, Tasarım & Otomasyon)",
+      "moduleNumber": 1,
+      "moduleName": "Yapay Zeka İle Prompt Uygulamaları Eğitimi",
+      "isExam": false
+    },
+    {
+      "hour": 23,
+      "topic": "Yapay Zeka İle Prompt Uygulamaları Eğitimi - Modül Değerlendirme Sınavı (Uygulama)",
+      "moduleNumber": 1,
+      "moduleName": "Yapay Zeka İle Prompt Uygulamaları Eğitimi",
+      "isExam": true
+    },
+    {
+      "hour": 24,
+      "topic": "Yapay Zeka İle Prompt Uygulamaları Eğitimi - Modül Değerlendirme Sınavı (Teorik & Değerlendirme)",
+      "moduleNumber": 1,
+      "moduleName": "Yapay Zeka İle Prompt Uygulamaları Eğitimi",
+      "isExam": true
+    }
+  ]
+},
+
+{
   "id": "tmpl_bilgisayar_isletmenligi_163",
   "name": "Bilgisayar İşletmenliği (Operatörlüğü) - 163 Saat",
   "code": "BLG-163",
