@@ -325,8 +325,8 @@
         <div class="p-4 rounded-xl bg-black/30 border border-white/10 backdrop-blur-sm flex items-start gap-3">
           <i data-lucide="info" class="w-5 h-5 text-[#FFF3B0] shrink-0 mt-0.5"></i>
           <div class="text-xs text-slate-200 space-y-1">
-            <p class="font-semibold text-[#FFF3B0]">Hazır Deneme Hesapları:</p>
-            <p>Admin paneline erişmek için <strong>Admin Hesabını</strong>, öğretmen deneyimi için <strong>Eğitmen Hesaplarını</strong> tek tıkla kullanabilirsiniz.</p>
+            <p class="font-semibold text-[#FFF3B0]">Tanımlı Hızlı Giriş Hesapları:</p>
+            <p>Geliştiriciler (Özgür, Merve, Önder), Eğitmenler (Eğitmen 1, 2, 3), Zümre Başkanı ve Kurs Sorumlusu hesaplarını sağdaki panelden tek tıkla kullanabilirsiniz (Tüm şifreler: <strong>123</strong>).</p>
           </div>
         </div>
       </div>
@@ -416,70 +416,150 @@
           </form>
 
           <!-- Hazır Deneme Hesapları -->
-          <div class="mt-6 pt-5 border-t border-slate-100 dark:border-[#23353c] space-y-2.5">
+          <div class="mt-6 pt-5 border-t border-slate-100 dark:border-[#23353c] space-y-3">
             <div class="flex items-center justify-between">
               <span class="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
                 <i data-lucide="key" class="w-4 h-4 text-[#E09F3E]"></i>
-                Test İçin Tanımlı Hesaplar
+                Hızlı Giriş Hesapları
               </span>
-              <span class="text-[11px] text-slate-400">Tek tıkla giriş</span>
+              <span class="text-[11px] text-slate-400 font-mono">Tüm Şifreler: 123</span>
             </div>
 
-            <!-- Admin Kartı -->
-            <button
-              type="button"
-              id="quickLoginAdmin"
-              class="w-full p-3 text-left rounded-xl border border-[#540B0E]/30 bg-[#540B0E]/5 hover:bg-[#540B0E]/15 hover:border-[#540B0E] transition text-xs group cursor-pointer flex items-center justify-between"
-            >
-              <div>
-                <div class="flex items-center gap-2">
-                  <span class="font-bold text-[#540B0E] dark:text-[#FFF3B0]">Yönetici (Admin Paneli)</span>
-                  <span class="px-2 py-0.5 rounded bg-[#540B0E] text-white text-[10px] font-bold">Admin</span>
-                </div>
-                <div class="text-slate-600 dark:text-slate-400 text-[11px] mt-0.5">Kurs Merkezleri & Müfredat Konuları Yönetimi</div>
-              </div>
-              <div class="font-mono text-[11px] text-[#540B0E] dark:text-[#FFF3B0] bg-white dark:bg-[#10191b] px-2.5 py-1 rounded-lg border border-[#540B0E]/30 shadow-xs">
-                admin / 123
-              </div>
-            </button>
-
-
-
-            <!-- Geliştirici Ortak Çalışma Hesapları (Özgür & Önder) -->
-            <div class="pt-2.5 border-t border-slate-100 dark:border-[#23353c]">
+            <!-- Geliştiriciler (Özgür, Merve, Önder) -->
+            <div>
               <span class="text-[10px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider block mb-1.5 flex items-center gap-1">
                 <i data-lucide="code" class="w-3.5 h-3.5 text-amber-500"></i>
-                Proje Geliştiricileri (Todo & Tam Yetkili)
+                Geliştiriciler (Tam Yetkili &amp; To-Do)
               </span>
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
                 <button
                   type="button"
                   id="quickLoginOzgur"
-                  class="p-2.5 text-left rounded-xl border border-amber-300 dark:border-amber-700/60 bg-amber-50/60 dark:bg-amber-950/20 hover:bg-amber-100 dark:hover:bg-amber-950/40 hover:border-amber-500 transition text-xs group cursor-pointer"
+                  data-quick-user="ozgur"
+                  data-quick-pass="123"
+                  class="p-2 text-left rounded-xl border border-amber-300 dark:border-amber-700/60 bg-amber-50/60 dark:bg-amber-950/20 hover:bg-amber-100 dark:hover:bg-amber-950/40 hover:border-amber-500 transition text-xs group cursor-pointer"
                 >
                   <div class="flex items-center justify-between">
                     <span class="font-bold text-slate-800 dark:text-slate-100 group-hover:text-amber-700 dark:group-hover:text-[#FFF3B0]">Özgür</span>
                     <span class="text-[9px] px-1.5 py-0.5 rounded bg-amber-600 text-white font-bold">Dev</span>
                   </div>
-                  <div class="text-slate-500 text-[10px]">Geliştirici & Eğitmen</div>
-                  <div class="mt-1 font-mono text-[10px] text-amber-700 dark:text-amber-300 bg-white dark:bg-[#152125] px-1.5 py-0.5 rounded border border-amber-200 dark:border-amber-800 inline-block">
-                    ozgur / 123
+                  <div class="font-mono text-[10px] text-amber-700 dark:text-amber-300 mt-1">ozgur / 123</div>
+                </button>
+
+                <button
+                  type="button"
+                  id="quickLoginMerve"
+                  data-quick-user="merve"
+                  data-quick-pass="123"
+                  class="p-2 text-left rounded-xl border border-amber-300 dark:border-amber-700/60 bg-amber-50/60 dark:bg-amber-950/20 hover:bg-amber-100 dark:hover:bg-amber-950/40 hover:border-amber-500 transition text-xs group cursor-pointer"
+                >
+                  <div class="flex items-center justify-between">
+                    <span class="font-bold text-slate-800 dark:text-slate-100 group-hover:text-amber-700 dark:group-hover:text-[#FFF3B0]">Merve</span>
+                    <span class="text-[9px] px-1.5 py-0.5 rounded bg-amber-600 text-white font-bold">Dev</span>
                   </div>
+                  <div class="font-mono text-[10px] text-amber-700 dark:text-amber-300 mt-1">merve / 123</div>
                 </button>
 
                 <button
                   type="button"
                   id="quickLoginOnder"
-                  class="p-2.5 text-left rounded-xl border border-orange-300 dark:border-orange-700/60 bg-orange-50/60 dark:bg-orange-950/20 hover:bg-orange-100 dark:hover:bg-orange-950/40 hover:border-orange-500 transition text-xs group cursor-pointer"
+                  data-quick-user="onder"
+                  data-quick-pass="123"
+                  class="p-2 text-left rounded-xl border border-orange-300 dark:border-orange-700/60 bg-orange-50/60 dark:bg-orange-950/20 hover:bg-orange-100 dark:hover:bg-orange-950/40 hover:border-orange-500 transition text-xs group cursor-pointer"
                 >
                   <div class="flex items-center justify-between">
-                    <span class="font-bold text-slate-800 dark:text-slate-100 group-hover:text-orange-700 dark:group-hover:text-[#FFF3B0]">Önder Altıntaş</span>
+                    <span class="font-bold text-slate-800 dark:text-slate-100 group-hover:text-orange-700 dark:group-hover:text-[#FFF3B0]">Önder</span>
                     <span class="text-[9px] px-1.5 py-0.5 rounded bg-orange-600 text-white font-bold">Dev</span>
                   </div>
-                  <div class="text-slate-500 text-[10px]">Geliştirici & Eğitmen</div>
-                  <div class="mt-1 font-mono text-[10px] text-orange-700 dark:text-orange-300 bg-white dark:bg-[#152125] px-1.5 py-0.5 rounded border border-orange-200 dark:border-orange-800 inline-block">
-                    onder / 123
+                  <div class="font-mono text-[10px] text-orange-700 dark:text-orange-300 mt-1">onder / 123</div>
+                </button>
+              </div>
+            </div>
+
+            <!-- Eğitmenler (egitmen1, egitmen2, egitmen3) -->
+            <div class="pt-2 border-t border-slate-100 dark:border-[#23353c]">
+              <span class="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider block mb-1.5 flex items-center gap-1">
+                <i data-lucide="graduation-cap" class="w-3.5 h-3.5 text-emerald-500"></i>
+                Eğitmenler (Öğretici Paneli)
+              </span>
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                <button
+                  type="button"
+                  id="quickLoginEgitmen1"
+                  data-quick-user="egitmen1"
+                  data-quick-pass="123"
+                  class="p-2 text-left rounded-xl border border-emerald-300 dark:border-emerald-700/60 bg-emerald-50/60 dark:bg-emerald-950/20 hover:bg-emerald-100 dark:hover:bg-emerald-950/40 hover:border-emerald-500 transition text-xs group cursor-pointer"
+                >
+                  <div class="flex items-center justify-between">
+                    <span class="font-bold text-slate-800 dark:text-slate-100 group-hover:text-emerald-700 dark:group-hover:text-[#FFF3B0]">Eğitmen 1</span>
+                    <span class="text-[9px] px-1.5 py-0.5 rounded bg-emerald-600 text-white font-bold">Eğitmen</span>
                   </div>
+                  <div class="font-mono text-[10px] text-emerald-700 dark:text-emerald-300 mt-1">egitmen1 / 123</div>
+                </button>
+
+                <button
+                  type="button"
+                  id="quickLoginEgitmen2"
+                  data-quick-user="egitmen2"
+                  data-quick-pass="123"
+                  class="p-2 text-left rounded-xl border border-emerald-300 dark:border-emerald-700/60 bg-emerald-50/60 dark:bg-emerald-950/20 hover:bg-emerald-100 dark:hover:bg-emerald-950/40 hover:border-emerald-500 transition text-xs group cursor-pointer"
+                >
+                  <div class="flex items-center justify-between">
+                    <span class="font-bold text-slate-800 dark:text-slate-100 group-hover:text-emerald-700 dark:group-hover:text-[#FFF3B0]">Eğitmen 2</span>
+                    <span class="text-[9px] px-1.5 py-0.5 rounded bg-emerald-600 text-white font-bold">Eğitmen</span>
+                  </div>
+                  <div class="font-mono text-[10px] text-emerald-700 dark:text-emerald-300 mt-1">egitmen2 / 123</div>
+                </button>
+
+                <button
+                  type="button"
+                  id="quickLoginEgitmen3"
+                  data-quick-user="egitmen3"
+                  data-quick-pass="123"
+                  class="p-2 text-left rounded-xl border border-emerald-300 dark:border-emerald-700/60 bg-emerald-50/60 dark:bg-emerald-950/20 hover:bg-emerald-100 dark:hover:bg-emerald-950/40 hover:border-emerald-500 transition text-xs group cursor-pointer"
+                >
+                  <div class="flex items-center justify-between">
+                    <span class="font-bold text-slate-800 dark:text-slate-100 group-hover:text-emerald-700 dark:group-hover:text-[#FFF3B0]">Eğitmen 3</span>
+                    <span class="text-[9px] px-1.5 py-0.5 rounded bg-emerald-600 text-white font-bold">Eğitmen</span>
+                  </div>
+                  <div class="font-mono text-[10px] text-emerald-700 dark:text-emerald-300 mt-1">egitmen3 / 123</div>
+                </button>
+              </div>
+            </div>
+
+            <!-- Zümre Başkanı & Kurs Sorumlusu -->
+            <div class="pt-2 border-t border-slate-100 dark:border-[#23353c]">
+              <span class="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider block mb-1.5 flex items-center gap-1">
+                <i data-lucide="shield-check" class="w-3.5 h-3.5 text-indigo-500"></i>
+                Yönetim &amp; Sorumlu Hesapları
+              </span>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  id="quickLoginZumre"
+                  data-quick-user="zumrebaskani"
+                  data-quick-pass="123"
+                  class="p-2 text-left rounded-xl border border-indigo-300 dark:border-indigo-700/60 bg-indigo-50/60 dark:bg-indigo-950/20 hover:bg-indigo-100 dark:hover:bg-indigo-950/40 hover:border-indigo-500 transition text-xs group cursor-pointer"
+                >
+                  <div class="flex items-center justify-between">
+                    <span class="font-bold text-slate-800 dark:text-slate-100 group-hover:text-indigo-700 dark:group-hover:text-[#FFF3B0]">Zümre Başkanı</span>
+                    <span class="text-[9px] px-1.5 py-0.5 rounded bg-indigo-600 text-white font-bold">Zümre</span>
+                  </div>
+                  <div class="font-mono text-[10px] text-indigo-700 dark:text-indigo-300 mt-1">zumrebaskani / 123</div>
+                </button>
+
+                <button
+                  type="button"
+                  id="quickLoginKursSorumlusu"
+                  data-quick-user="kurssorumlusu"
+                  data-quick-pass="123"
+                  class="p-2 text-left rounded-xl border border-teal-300 dark:border-teal-700/60 bg-teal-50/60 dark:bg-teal-950/20 hover:bg-teal-100 dark:hover:bg-teal-950/40 hover:border-teal-500 transition text-xs group cursor-pointer"
+                >
+                  <div class="flex items-center justify-between">
+                    <span class="font-bold text-slate-800 dark:text-slate-100 group-hover:text-teal-700 dark:group-hover:text-[#FFF3B0]">Kurs Sorumlusu</span>
+                    <span class="text-[9px] px-1.5 py-0.5 rounded bg-teal-600 text-white font-bold">Sorumlu</span>
+                  </div>
+                  <div class="font-mono text-[10px] text-teal-700 dark:text-teal-300 mt-1">kurssorumlusu / 123</div>
                 </button>
               </div>
             </div>

@@ -606,11 +606,11 @@ function loadData() {
   currentTemplates = DataStore.getCourseTemplates();
   currentUsers = DataStore.getUsers();
 
-  // Eski yetkileri güncelle: Önder ve Özgür (ve admin) 'developer' olsun
+  // Eski yetkileri güncelle: Önder, Özgür, Merve (ve admin) 'developer' olsun
   let usersChanged = false;
   currentUsers.forEach(u => {
     const un = (u.username || '').toLowerCase();
-    if (un === 'ozgur' || un === 'onder' || un === 'admin' || u.role === 'admin') {
+    if (un === 'ozgur' || un === 'onder' || un === 'merve' || un === 'admin' || u.role === 'admin') {
       if (u.role !== 'developer') {
         u.role = 'developer';
         usersChanged = true;
@@ -623,7 +623,7 @@ function loadData() {
 
   if (currentUser) {
     const curUn = (currentUser.username || '').toLowerCase();
-    if (curUn === 'ozgur' || curUn === 'onder' || curUn === 'admin' || currentUser.role === 'admin') {
+    if (curUn === 'ozgur' || curUn === 'onder' || curUn === 'merve' || curUn === 'admin' || currentUser.role === 'admin') {
       if (currentUser.role !== 'developer') {
         currentUser.role = 'developer';
         DataStore.setActiveUser(currentUser);
@@ -1085,51 +1085,23 @@ function setupEventListeners() {
     refreshLucide();
   });
 
-  // Hızlı Giriş Butonları
-  quickLoginAdmin.addEventListener('click', () => {
-    const admin = DataStore.getUsers().find(u => u.role === 'admin' || u.role === 'developer' || u.username === 'admin');
-    if (admin) {
-      loginUsernameInput.value = admin.username;
-      loginPasswordInput.value = admin.password;
+  // Hızlı Giriş Butonları (Tüm Tanımlı Hesaplar)
+  document.querySelectorAll('[data-quick-user]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const uName = btn.getAttribute('data-quick-user');
+      const pass = btn.getAttribute('data-quick-pass') || '123';
+      loginUsernameInput.value = uName;
+      loginPasswordInput.value = pass;
       loginForm.dispatchEvent(new Event('submit'));
-    }
+    });
   });
 
-  const quickLoginOzgur = document.getElementById('quickLoginOzgur');
-  if (quickLoginOzgur) {
-    quickLoginOzgur.addEventListener('click', () => {
-      loginUsernameInput.value = 'ozgur';
-      loginPasswordInput.value = '123';
-      loginForm.dispatchEvent(new Event('submit'));
-    });
-  }
-
-  const quickLoginOnder = document.getElementById('quickLoginOnder');
-  if (quickLoginOnder) {
-    quickLoginOnder.addEventListener('click', () => {
-      loginUsernameInput.value = 'onder';
-      loginPasswordInput.value = '123';
-      loginForm.dispatchEvent(new Event('submit'));
-    });
-  }
-
-  if (quickLoginUser1) {
-    quickLoginUser1.addEventListener('click', () => {
-      const user = DataStore.getUsers().find(u => u.username === 'egitmen1');
-      if (user) {
-        loginUsernameInput.value = user.username;
-        loginPasswordInput.value = user.password;
-        loginForm.dispatchEvent(new Event('submit'));
-      }
-    });
-  }
-
-  if (quickLoginUser2) {
-    quickLoginUser2.addEventListener('click', () => {
-      const user = DataStore.getUsers().find(u => u.username === 'egitmen2');
-      if (user) {
-        loginUsernameInput.value = user.username;
-        loginPasswordInput.value = user.password;
+  if (quickLoginAdmin) {
+    quickLoginAdmin.addEventListener('click', () => {
+      const admin = DataStore.getUsers().find(u => u.role === 'admin' || u.role === 'developer' || u.username === 'admin');
+      if (admin) {
+        loginUsernameInput.value = admin.username;
+        loginPasswordInput.value = admin.password;
         loginForm.dispatchEvent(new Event('submit'));
       }
     });
@@ -8182,9 +8154,9 @@ function isDevUser(user) {
   if (!user) return false;
   if (user.role === 'admin') return true;
   const u = typeof normalizeUsername === 'function' ? normalizeUsername(user.username || '') : (user.username || '').toLowerCase().trim();
-  if (u === 'ozgur' || u === 'onder' || u === 'admin' || u.includes('ozgur') || u.includes('onder') || u.includes('dev') || u.includes('admin')) return true;
+  if (u === 'ozgur' || u === 'onder' || u === 'merve' || u === 'admin' || u.includes('ozgur') || u.includes('onder') || u.includes('merve') || u.includes('dev') || u.includes('admin')) return true;
   const fn = typeof normalizeUsername === 'function' ? normalizeUsername(user.fullName || '') : (user.fullName || '').toLowerCase().trim();
-  if (fn.includes('onder') || fn.includes('ozgur') || fn.includes('yonetici')) return true;
+  if (fn.includes('onder') || fn.includes('ozgur') || fn.includes('merve') || fn.includes('yonetici')) return true;
   const title = (user.title || '').toLowerCase();
   if (title.includes('geliştirici') || title.includes('gelistirici') || title.includes('developer') || title.includes('dev') || title.includes('yonetici')) return true;
   return false;

@@ -39,6 +39,18 @@ const DEFAULT_USERS = [
     avatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80"
   },
   {
+    id: "dev_merve",
+    username: "merve",
+    password: "123",
+    fullName: "Merve",
+    role: "developer",
+    title: "Geliştirici & Eğitmen",
+    area: "Bilişim Teknolojileri",
+    institution: "Meslek Fabrikası",
+    email: "merve@meslekfabrikasi.org",
+    avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80"
+  },
+  {
     id: "dev_onder",
     username: "onder",
     password: "123",
@@ -49,6 +61,66 @@ const DEFAULT_USERS = [
     institution: "İBB Meslek Fabrikası",
     email: "onder@meslekfabrikasi.org",
     avatar: "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=150&auto=format&fit=crop&q=80"
+  },
+  {
+    id: "teacher_1",
+    username: "egitmen1",
+    password: "123",
+    fullName: "Eğitmen 1",
+    role: "teacher",
+    title: "Eğitmen",
+    area: "Bilişim Teknolojileri",
+    institution: "Meslek Fabrikası",
+    email: "egitmen1@meslekfabrikasi.org",
+    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80"
+  },
+  {
+    id: "teacher_2",
+    username: "egitmen2",
+    password: "123",
+    fullName: "Eğitmen 2",
+    role: "teacher",
+    title: "Eğitmen",
+    area: "Bilişim Teknolojileri",
+    institution: "Meslek Fabrikası",
+    email: "egitmen2@meslekfabrikasi.org",
+    avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&auto=format&fit=crop&q=80"
+  },
+  {
+    id: "teacher_3",
+    username: "egitmen3",
+    password: "123",
+    fullName: "Eğitmen 3",
+    role: "teacher",
+    title: "Eğitmen",
+    area: "Bilişim Teknolojileri",
+    institution: "Meslek Fabrikası",
+    email: "egitmen3@meslekfabrikasi.org",
+    avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80"
+  },
+  {
+    id: "dept_head_1",
+    username: "zumrebaskani",
+    password: "123",
+    fullName: "Zümre Başkanı",
+    role: "department_head",
+    title: "Zümre Başkanı",
+    area: "Bilişim Teknolojileri",
+    institution: "Meslek Fabrikası",
+    email: "zumrebaskani@meslekfabrikasi.org",
+    avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&auto=format&fit=crop&q=80"
+  },
+  {
+    id: "sup_kurs_1",
+    username: "kurssorumlusu",
+    password: "123",
+    fullName: "Kurs Sorumlusu",
+    role: "supervisor",
+    title: "Kurs Sorumlusu",
+    area: "Yönetim & Koordinasyon",
+    institution: "Meslek Fabrikası",
+    email: "kurssorumlusu@meslekfabrikasi.org",
+    avatar: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=150&auto=format&fit=crop&q=80"
   }
 ];
 
@@ -141,7 +213,7 @@ const DataStore = {
       snapshot.forEach(doc => {
         const u = doc.data();
         const un = (u.username || '').toLowerCase();
-        if (un === 'ozgur' || un === 'onder' || un === 'admin' || u.role === 'admin') {
+        if (un === 'ozgur' || un === 'onder' || un === 'merve' || un === 'admin' || u.role === 'admin') {
           if (u.role !== 'developer') {
             u.role = 'developer';
             if (db) {
@@ -220,26 +292,29 @@ const DataStore = {
         localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(users));
         return users;
       }
-      // Tüm DEFAULT_USERS kayıtlarının (Özgür, Önder dahil) mevcut olduğundan emin ol
+      // Tüm DEFAULT_USERS kayıtlarının mevcut, şifrelerinin 123 ve rollerinin güncel olduğundan emin ol
       let updated = false;
       DEFAULT_USERS.forEach(defUser => {
         const found = users.find(u => normalizeUsername(u.username) === normalizeUsername(defUser.username));
         if (!found) {
           users.push(defUser);
           updated = true;
-        } else if (defUser.username === 'ozgur' || defUser.username === 'onder' || defUser.username === 'admin') {
+        } else {
           if (found.password !== defUser.password || found.role !== defUser.role || found.title !== defUser.title) {
             found.password = defUser.password;
             found.role = defUser.role;
             found.title = defUser.title;
+            if (defUser.fullName && (!found.fullName || found.fullName.includes('Kullanıcı'))) {
+              found.fullName = defUser.fullName;
+            }
             updated = true;
           }
         }
       });
-      // Eski admin rollerini developer olarak güncelle
+      // Geliştirici rollerini teyit et
       users.forEach(u => {
         const un = (u.username || '').toLowerCase();
-        if ((un === 'ozgur' || un === 'onder' || un === 'admin' || u.role === 'admin') && u.role !== 'developer') {
+        if ((un === 'ozgur' || un === 'onder' || un === 'merve' || un === 'admin' || u.role === 'admin') && u.role !== 'developer') {
           u.role = 'developer';
           updated = true;
         }
@@ -488,7 +563,7 @@ const DataStore = {
       const user = raw ? JSON.parse(raw) : null;
       if (user) {
         const un = (user.username || '').toLowerCase();
-        if (un === 'ozgur' || un === 'onder' || un === 'admin' || user.role === 'admin') {
+        if (un === 'ozgur' || un === 'onder' || un === 'merve' || un === 'admin' || user.role === 'admin') {
           const def = DEFAULT_USERS.find(u => u.username === user.username);
           let changed = false;
           if (def && user.title !== def.title) {
