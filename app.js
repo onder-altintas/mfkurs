@@ -642,29 +642,47 @@ function loadData() {
 }
  
 /**
- * Bir kursun oturum açmış kullanıcı ile ilgili olup olmadığını belirler.
- * Kullanıcı kimliği (userId), kullanıcı adı veya eğitmen adı eşleşmesini inceler.
+/**
+ * Bir kursun doğrudan bu eğitmene ait olup olmadığını (eğitmenin kendisi olup olmadığını) belirler.
  */
-function isCourseRelatedToUser(course, user) {
+function isCourseInstructor(course, user) {
   if (!course || !user) return false;
-
-  // 1. Doğrudan id veya username eşleşmesi
-  if (course.userId) {
-    if (course.userId === user.id || course.userId === user.username) return true;
-  }
-
-  // 2. Eğitmen kullanıcı adı eşleşmesi
-  if (course.instructorUsername && user.username) {
-    if (course.instructorUsername.toLowerCase() === user.username.toLowerCase()) return true;
-  }
-
-  // 3. Eğitmen tam adı eşleşmesi (Türkçe karakter duyarsız)
+  if (course.userId && (course.userId === user.id || course.userId === user.username)) return true;
+  if (course.instructorUsername && user.username && course.instructorUsername.toLowerCase() === user.username.toLowerCase()) return true;
   if (course.instructor && user.fullName) {
     const cInst = course.instructor.trim().toLowerCase();
     const uName = user.fullName.trim().toLowerCase();
     if (cInst === uName) return true;
-    if (typeof normalizeUsername === 'function') {
-      if (normalizeUsername(cInst) === normalizeUsername(uName)) return true;
+    if (typeof normalizeUsername === 'function' && normalizeUsername(cInst) === normalizeUsername(uName)) return true;
+  }
+  return false;
+}
+window.isCourseInstructor = isCourseInstructor;
+
+/**
+ * Bir kursun oturum açmış kullanıcı ile ilgili olup olmadığını (görüntüleme ve yönetim yetkisini) belirler.
+ * - Geliştiriciler: Tüm kurslar
+ * - Kursun kendi eğitmeni: İlgili kurs
+ * - Zümre Başkanı: Kendi branşındaki (veya yetkili olduğu branşlardaki) tüm mevcut/planlanan kurslar
+ */
+function isCourseRelatedToUser(course, user) {
+  if (!course || !user) return false;
+
+  // 1. Geliştirici kullanıcılar tüm kurslara tam yetkili erişebilir
+  if (isDeveloper(user)) return true;
+
+  // 2. Doğrudan bu eğitmene ait kurslar
+  if (isCourseInstructor(course, user)) return true;
+
+  // 3. Zümre Başkanı Yetkisi: Kendi branşındaki tüm mevcut/planlanan kursları görebilir ve düzenleyebilir
+  if (isDepartmentHead(user)) {
+    const userAreas = getUserAreas(user);
+    const tmpl = (typeof currentTemplates !== 'undefined' && Array.isArray(currentTemplates))
+      ? currentTemplates.find(t => t.id === course.templateId || t.name === course.name)
+      : null;
+    const courseArea = (course.category || course.area || (tmpl ? (tmpl.category || tmpl.area) : '') || '').trim();
+    if (!courseArea || userAreas.some(a => a.toLowerCase() === courseArea.toLowerCase())) {
+      return true;
     }
   }
 
@@ -677,8 +695,10 @@ function getCourseInstructorName(course) {
   let name = 'Kurs Eğitmeni';
   if (!course) {
     name = currentUser?.fullName || 'Kurs Eğitmeni';
-  } else if (currentUser && isCourseRelatedToUser(course, currentUser)) {
-    name = currentUser.fullName || course.instructor || 'Kurs Eğitmeni';
+  } else if (course.instructor && course.instructor.trim()) {
+    name = course.instructor;
+  } else if (currentUser && isCourseInstructor(course, currentUser)) {
+    name = currentUser.fullName || 'Kurs Eğitmeni';
   } else if (course.userId && Array.isArray(currentUsers)) {
     const owner = currentUsers.find(u => u.id === course.userId || u.username === course.userId);
     if (owner && owner.fullName) {
@@ -701,7 +721,7 @@ function getCourseInstitutionName(course) {
     inst = course.institution;
   } else if (course.centerName) {
     inst = course.centerName;
-  } else if (currentUser && isCourseRelatedToUser(course, currentUser) && currentUser.institution) {
+  } else if (currentUser && isCourseInstructor(course, currentUser) && currentUser.institution) {
     inst = currentUser.institution;
   }
   return toTurkishTitleCase(inst.trim());
@@ -710,11 +730,12 @@ function getCourseInstitutionName(course) {
 // Eğitmenin güncel profil adını ve kurumunu sadece kendine ait kurslarla senkronize eden fonksiyon
 function syncCoursesWithCurrentInstructor() {
   if (!currentUser) return;
+  if (isSupervisor(currentUser)) return;
   let updated = false;
 
   currentCourses = currentCourses.map(c => {
-    // Yalnızca aktif kullanıcıya ait kurslar
-    if (c && isCourseRelatedToUser(c, currentUser)) {
+    // Yalnızca aktif kullanıcının doğrudan kendi eğitmeni olduğu kurslar senkronize edilir
+    if (c && isCourseInstructor(c, currentUser)) {
       if (!c.userId) {
         c.userId = currentUser.id;
         updated = true;
@@ -739,7 +760,7 @@ function syncCoursesWithCurrentInstructor() {
     DataStore.saveCourses(currentCourses);
   }
 
-  if (activeCourseForDetail && isCourseRelatedToUser(activeCourseForDetail, currentUser)) {
+  if (activeCourseForDetail && isCourseInstructor(activeCourseForDetail, currentUser)) {
     if (currentUser.fullName) activeCourseForDetail.instructor = currentUser.fullName;
     if (currentUser.institution && (!activeCourseForDetail.institution || activeCourseForDetail.institution === 'Kadıköy Halk Eğitimi Merkezi')) {
       activeCourseForDetail.institution = currentUser.institution;
@@ -773,7 +794,10 @@ function isSupervisor(user = currentUser) {
 
 function isDepartmentHead(user = currentUser) {
   if (!user) return false;
-  return user.role === 'department_head';
+  if (user.role === 'department_head') return true;
+  const title = (user.title || '').toLowerCase();
+  if (title.includes('zümre') && (title.includes('başkan') || title.includes('sorumlu'))) return true;
+  return false;
 }
 
 function isTeacher(user = currentUser) {
@@ -2663,9 +2687,15 @@ function renderCourseList() {
           <h4 class="font-bold text-slate-800 dark:text-slate-100 text-base group-hover:text-[#335C67] dark:group-hover:text-[#FFF3B0] transition leading-snug">
             ${escapeHtml(course.name)}
           </h4>
-          <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 flex items-center gap-1">
-            <i data-lucide="building-2" class="w-3.5 h-3.5 text-slate-400 shrink-0"></i>
-            <span class="truncate">${escapeHtml(course.institution || '-')}</span>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 flex items-center justify-between gap-1 flex-wrap">
+            <span class="flex items-center gap-1 truncate">
+              <i data-lucide="building-2" class="w-3.5 h-3.5 text-slate-400 shrink-0"></i>
+              <span class="truncate">${escapeHtml(course.institution || '-')}</span>
+            </span>
+            <span class="flex items-center gap-1 text-[11px] font-semibold text-sky-800 dark:text-sky-300 bg-sky-50 dark:bg-sky-950/60 border border-sky-200/70 dark:border-sky-800/60 px-2 py-0.5 rounded-md shrink-0">
+              <i data-lucide="user" class="w-3 h-3 text-sky-600 dark:text-sky-400"></i>
+              <span>${escapeHtml(getCourseInstructorName(course))}</span>
+            </span>
           </p>
           ${course.supervisor ? `
           <p class="text-[11px] text-slate-600 dark:text-slate-400 mt-1 flex items-center gap-1 bg-slate-50 dark:bg-[#10191b] px-2 py-1 rounded border border-slate-100 dark:border-[#23353c]">
@@ -3110,7 +3140,10 @@ function handleSaveCourse(e) {
   const institution = toTurkishTitleCase(rawInstitution);
 
   const supervisor = toTurkishPersonName(courseFormSupervisor.value);
-  const instructor = toTurkishPersonName(currentUser?.fullName || courseFormInstructor.value || 'Kurs Eğitmeni');
+  const existingCourse = id ? currentCourses.find(c => c.id === id) : null;
+  const instructor = existingCourse
+    ? toTurkishPersonName(courseFormInstructor.value || existingCourse.instructor || currentUser?.fullName || 'Kurs Eğitmeni')
+    : toTurkishPersonName(currentUser?.fullName || courseFormInstructor.value || 'Kurs Eğitmeni');
   let code = courseFormCode.value.trim().toLowerCase();
   if (!code) {
     code = tmpl ? generateNextCourseCode(tmpl, id) : 'kurs0001';
