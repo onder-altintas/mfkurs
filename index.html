@@ -657,7 +657,7 @@
               <span class="font-bold text-slate-800 dark:text-slate-100 text-sm sm:text-base tracking-tight truncate">
                 Kurs Sonu Evrakları
               </span>
-              <span id="roleBadge" class="px-2 py-0.5 text-[9px] uppercase font-bold tracking-wider rounded-md bg-[#FFF3B0] text-[#540B0E] border border-[#E09F3E]/40 shrink-0">
+              <span id="roleBadge" class="hidden px-2 py-0.5 text-[9px] uppercase font-bold tracking-wider rounded-md bg-[#FFF3B0] text-[#540B0E] border border-[#E09F3E]/40 shrink-0">
                 Öğretici
               </span>
             </div>
@@ -999,17 +999,6 @@
             <i data-lucide="user-plus" class="w-4 h-4 text-[#FFF3B0]"></i>
             <span>Yeni Kullanıcı Ekle</span>
           </button>
-
-          <!-- Eğitim Sorumlusu Ekranına Doğrudan Geçiş Butonu -->
-          <button
-            type="button"
-            onclick="switchView('supervisor')"
-            class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold shadow-md shadow-indigo-600/30 flex items-center gap-2 transition cursor-pointer"
-            title="Eğitim Sorumlusu İstatistik ve Denetim Ekranını Görüntüle"
-          >
-            <i data-lucide="bar-chart-3" class="w-4 h-4 text-white"></i>
-            <span>Eğitim Sorumlusu Ekranı</span>
-          </button>
         </div>
       </div>
 
@@ -1058,18 +1047,6 @@
         >
           <i data-lucide="check-square" class="w-4 h-4 text-amber-600"></i>
           <span>Geliştirici Todo (<span id="adminDevTodoCount">0</span>)</span>
-        </button>
-
-        <!-- Eğitim Sorumlusu Ayrı Menü Sekmesi -->
-        <button
-          id="adminTabSupervisorBtn"
-          onclick="switchView('supervisor')"
-          class="flex items-center gap-2 px-5 py-3 text-xs sm:text-sm font-bold border-b-2 border-transparent text-indigo-700 dark:text-indigo-300 hover:text-indigo-900 transition cursor-pointer whitespace-nowrap bg-indigo-50/70 dark:bg-indigo-950/40 rounded-t-xl"
-          title="Eğitim Sorumlusu İstatistik ve Denetim Ekranına Geç"
-        >
-          <i data-lucide="bar-chart-3" class="w-4 h-4 text-indigo-600 dark:text-indigo-400"></i>
-          <span>Eğitim Sorumlusu Ekranı</span>
-          <span class="text-[9px] px-1.5 py-0.5 rounded-full bg-indigo-600 text-white font-extrabold uppercase">Ayrı Menü</span>
         </button>
       </div>
 

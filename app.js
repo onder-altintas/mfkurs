@@ -799,8 +799,8 @@ function showDashboard() {
   userInstitution.innerText = currentUser.institution;
 
   if (isDeveloper(currentUser)) {
-    roleBadge.innerText = 'Geliştirici (Tam Yetkili)';
-    roleBadge.className = 'px-2 py-0.5 text-[10px] uppercase font-bold tracking-wider rounded bg-[#540B0E] text-white border border-[#FFF3B0]/30 shadow-xs';
+    roleBadge.innerText = '';
+    roleBadge.className = 'hidden';
     navViewSwitcher.style.setProperty('display', 'flex', 'important');
     if (navSupervisorViewBtn) navSupervisorViewBtn.classList.remove('hidden');
     switchView('admin');
