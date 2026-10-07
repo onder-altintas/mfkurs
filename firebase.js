@@ -135,6 +135,620 @@ const DEFAULT_AREAS = [
 // Kurs ve Müfredat Şablonları (MEB Hayat Boyu Öğrenme Genel Müdürlüğü Onaylı)
 const DEFAULT_COURSE_TEMPLATES = [
 {
+  "id": "tmpl_ofis_programlari_72",
+  "name": "Ofis Programları Kullanımı",
+  "code": "BT-OFS-72",
+  "category": "Bilişim Teknolojileri",
+  "area": "Bilişim Teknolojileri",
+  "totalHours": 72,
+  "moduleCount": 3,
+  "description": "T.C. Millî Eğitim Bakanlığı Hayat Boyu Öğrenme Genel Müdürlüğü Bilişim Teknolojileri Alanı - Ofis Programları Kullanımı Kurs Programı (3 Modül, 72 Ders Saati).",
+  "modules": [
+    {
+      "id": "mod_ofis_1",
+      "number": 1,
+      "name": "Kelime İşlemci",
+      "totalHours": 24,
+      "lessonHours": 22,
+      "examHours": 2,
+      "topics": [
+        "Kelime İşlemci Arayüzü, Belge Görünümleri, Yakınlaştırma ve Cetvel Ayarları",
+        "Temel Belge İşlemleri: Yeni Belge, Kaydetme, Farklı Kaydetme ve Belge Açma",
+        "Temel Yazım İşlemleri: Metin Girme, Seçme, Taşıma, Kopyalama, Geri Alma ve Yineleme",
+        "Metin Arama ve Değiştirme (Bul ve Değiştir) İşlemleri",
+        "Metin Biçimlendirme: Yazı Tipi, Boyut, Renk, Efektler ve Gelişmiş Yazı Tipi Özellikleri",
+        "Paragraf Biçimlendirme: Hizalama, Girintiler, Paragraf ve Satır Aralıkları",
+        "Madde İşaretleri, Numaralandırma ve Çok Düzeyli Listeler ile Çalışma",
+        "Kenarlıklar, Gölgelendirme ve Biçim Boyacısı Kullanımı",
+        "Belge Biçimlendirme: Çoklu Sütunlar, Sekmeler (Tablar) ve Kesmeler (Sayfa/Bölüm)",
+        "Sayfa Yapısı: Kenar Boşlukları, Yönlendirme, Filigran ve Sayfa Rengi",
+        "Stillerle Çalışma: Yeni Stil Oluşturma, Stil Değiştirme ve Stil Yönetimi",
+        "Belge Denetimi: Yazım ve Dilbilgisi, Heceleme, Sözcük Sayımı ve Otomatik Düzelt",
+        "Belge İşbirliği ve Güvenlik: Açıklamalar, Değişiklikleri İzleme, Belge Karşılaştırma ve Belge Koruma",
+        "Sayfa Düzeni: Kapak Sayfası, Üstbilgi, Altbilgi ve Sayfa Numaralandırma",
+        "Tablo İşlemleri: Tablo Ekleme, Satır/Sütun Yönetimi, Hücre Birleştirme ve Bölme",
+        "Tablo Biçimlendirme: Tablo Stilleri, Kenarlıklar, Veri Hizalama ve Formül İşlemleri",
+        "Metni Tabloya ve Tabloyu Metne Dönüştürme, Tablo Başlıklarını Yineleme",
+        "Görsel ve Çizim Nesneleri: Resim, Şekil, SmartArt, Simge ve Denklem Ekleme",
+        "Metin Kutuları, WordArt ve Kuruluş Şeması (Organizasyon Şeması) Hazırlama",
+        "Başvurular: İçindekiler Tablosu, Dipnot/Sonnot, Şekiller Tablosu ve Kaynakça Oluşturma",
+        "Gelişmiş Belge Özellikleri: Zarflar, Etiketler, Adres Mektup Birleştirme ve Makrolar",
+        "Belgeyi Tamamlama: Baskı Önizleme, Yazdırma Seçenekleri, PDF Olarak Dışa Aktarma ve Şifreleme"
+      ]
+    },
+    {
+      "id": "mod_ofis_2",
+      "number": 2,
+      "name": "Elektronik Tablolama",
+      "totalHours": 24,
+      "lessonHours": 22,
+      "examHours": 2,
+      "topics": [
+        "Elektronik Tablolama Arayüzü, Çalışma Kitabı ve Çalışma Sayfası Kavramı",
+        "Temel Dosya ve Sayfa İşlemleri: Sayfa Ekleme, Yeniden Adlandırma, Taşıma, Kopyalama ve Gizleme",
+        "Veri Giriş Teknikleri, Seçim Yöntemleri, Satır/Sütun Boyutlandırma ve Düzenleme",
+        "Otomatik Doldurma, Doldurma Serileri, Özel Listeler ve Otomatik Tamamlama",
+        "Hücre Biçimlendirme: Sayı, Para Birimi, Tarih/Saat, Metin, Hizalama ve Yazı Tipi",
+        "Hücre Kenarlıkları, Dolgu Renkleri, Hücre Stilleri ve Tablo Biçimlendirme",
+        "Koşullu Biçimlendirme: İlk/Son Kuralları, Veri Çubukları, Renk Ölçekleri ve Simge Kümeleri",
+        "Sayfa Yapısı, Başlıkları Yazdırma, Yazdırma Alanı ve Sayfaya Sığdırma Ayarları",
+        "Pencere Yönetimi: Bölmeleri Dondurma/Bölme, Sayfa Görünümleri ve Yazdırma Seçenekleri",
+        "Formül Mantığı, Matematiksel Operatörler, Göreli ve Mutlak ($) Hücre Başvuruları",
+        "Hücre ve Aralık Adlandırma, Formüllerde Hata Denetimi ve Hata İletileri",
+        "Temel Matematiksel ve İstatistiksel Fonksiyonlar: TOPLA, ÇARPIM, ORTALAMA, MAK, MİN",
+        "Sayma ve Mantıksal Koşul Fonksiyonları: EĞERSAY, BAĞ_DEĞ_SAY, BAĞ_DEĞ_DOLU_SAY",
+        "Mantıksal Karar Fonksiyonları: EĞER, VE, VEYA İşlevleri ve İç İçe EĞER Kullanımı",
+        "Metin ve Tarih Fonksiyonları: BİRLEŞTİR, BÜYÜKHARF, KÜÇÜKHARF, SOLDAN, SAĞDAN, BUGÜN, ŞİMDİ",
+        "Arama ve Başvuru Fonksiyonları: DÜŞEYARA, YATAYARA Kullanımı ve Hata Yönetimi",
+        "Grafik İşlemleri: Sütun, Çubuk, Çizgi ve Pasta Grafiği Oluşturma ve Düzenleme",
+        "Grafik Öğelerini Biçimlendirme: Eksenler, Veri Etiketleri, Göstergeler ve Eğilim Çizgileri",
+        "Veri Analizi: Tek ve Çok Ölçütlü Sıralama, Otomatik ve Gelişmiş Filtreleme, Alt Toplamlar",
+        "Veri Doğrulama (Açılır Liste Oluşturma), Yinelenenleri Kaldırma ve Metni Sütunlara Dönüştürme",
+        "Özet Tablo (PivotTable) ve Özet Grafik (PivotChart) ile Veri Analizi ve Raporlama",
+        "Senaryolar, Hedef Arama, Temel Makro Kaydetme, Sayfa Koruma ve Çalışma Kitabını Şifreleme"
+      ]
+    },
+    {
+      "id": "mod_ofis_3",
+      "number": 3,
+      "name": "Sunu Hazırlama",
+      "totalHours": 24,
+      "lessonHours": 22,
+      "examHours": 2,
+      "topics": [
+        "Sunu Programı Arayüzü, Çalışma Alanı, Sunu Kavramı ve Sunu Görünümleri",
+        "Temel Sunu İşlemleri: Yeni Sunu Oluşturma, Şablonlar, Sunu Kaydetme, Açma ve Kapatma",
+        "Slayt İşlemleri: Yeni Slayt Ekleme, Düzen Seçimi, Slayt Çoğaltma, Silme ve Gizleme",
+        "Slaytları Bölümlere Ayırma ve Farklı Bir Sunudan Slayt Ekleme (Slaytları Yeniden Kullanma)",
+        "Sunu Tasarımı: Sayfa Yapısı, Tasarım Temaları, Renk ve Yazı Tipi Paletleri",
+        "Arka Plan Biçimlendirme (Düz/Gradyan/Doku) ve Fotoğraf Albümü Oluşturma",
+        "Asıl Slayt (Slide Master) Kullanımı, Şablon Düzenleme ve Kurumsal Kimlik Uyarlama",
+        "Metin Kutuları, Metin Biçimlendirme, Madde İşaretleri ve Numaralandırma",
+        "Şekil Ekleme, Şekilleri Boyutlandırma, Döndürme, Gruplandırma ve Biçimlendirme",
+        "Resim Ekleme, Kırpma, Arka Plan Kaldırma, Resim Stilleri ve Görsel Efektler",
+        "Sunuya Tablo Ekleme, Hücre Düzenleme ve Tablo Stilleri ile Biçimlendirme",
+        "Elektronik Tablo ve Veri Grafiği Ekleme, Grafik Türleri ve Veri Kaynağını Düzenleme",
+        "SmartArt Grafikleri Ekleme: Süreç, Döngü ve Hiyerarşi (Organizasyon) Şemaları",
+        "Medya Nesneleri: Ses Dosyası Ekleme, Arka Planda Çalma ve Ses Ayarları",
+        "Video Dosyası Ekleme, Kırpma, Başlangıç Seçenekleri ve Video Stilleri",
+        "Etkileşimli Sunum: Köprüler (Linkler), Yer İmleri ve Eylem (Action) Düğmeleri",
+        "Slayt Geçiş Efektleri: Geçiş Türleri, Geçiş Süresi, Ses ve Otomatik İlerleme Ayarları",
+        "Nesne Animasyonları: Giriş, Vurgu, Çıkış ve Hareket Yolları Animasyonları",
+        "Animasyon Bölmesi, Animasyon Sıralaması, Zamanlama ve Tetikleyiciler (Triggers)",
+        "Slayt Gösterisi Ayarları: Özel Gösteri Oluşturma, Prova Zamanlaması ve Sunucu Görünümü",
+        "Yazdırma Seçenekleri: Dinleyici Notları (Handouts), Slayt ve Not Sayfaları Yazdırma",
+        "Sunuyu Paketleme, Video/PDF Olarak Dışa Aktarma, Sunu Güvenliği ve Şifreleme"
+      ]
+    }
+  ],
+  "syllabus": [
+    {
+      "hour": 1,
+      "topic": "Kelime İşlemci Arayüzü, Belge Görünümleri, Yakınlaştırma ve Cetvel Ayarları",
+      "moduleNumber": 1,
+      "moduleName": "Kelime İşlemci",
+      "isExam": false
+    },
+    {
+      "hour": 2,
+      "topic": "Temel Belge İşlemleri: Yeni Belge, Kaydetme, Farklı Kaydetme ve Belge Açma",
+      "moduleNumber": 1,
+      "moduleName": "Kelime İşlemci",
+      "isExam": false
+    },
+    {
+      "hour": 3,
+      "topic": "Temel Yazım İşlemleri: Metin Girme, Seçme, Taşıma, Kopyalama, Geri Alma ve Yineleme",
+      "moduleNumber": 1,
+      "moduleName": "Kelime İşlemci",
+      "isExam": false
+    },
+    {
+      "hour": 4,
+      "topic": "Metin Arama ve Değiştirme (Bul ve Değiştir) İşlemleri",
+      "moduleNumber": 1,
+      "moduleName": "Kelime İşlemci",
+      "isExam": false
+    },
+    {
+      "hour": 5,
+      "topic": "Metin Biçimlendirme: Yazı Tipi, Boyut, Renk, Efektler ve Gelişmiş Yazı Tipi Özellikleri",
+      "moduleNumber": 1,
+      "moduleName": "Kelime İşlemci",
+      "isExam": false
+    },
+    {
+      "hour": 6,
+      "topic": "Paragraf Biçimlendirme: Hizalama, Girintiler, Paragraf ve Satır Aralıkları",
+      "moduleNumber": 1,
+      "moduleName": "Kelime İşlemci",
+      "isExam": false
+    },
+    {
+      "hour": 7,
+      "topic": "Madde İşaretleri, Numaralandırma ve Çok Düzeyli Listeler ile Çalışma",
+      "moduleNumber": 1,
+      "moduleName": "Kelime İşlemci",
+      "isExam": false
+    },
+    {
+      "hour": 8,
+      "topic": "Kenarlıklar, Gölgelendirme ve Biçim Boyacısı Kullanımı",
+      "moduleNumber": 1,
+      "moduleName": "Kelime İşlemci",
+      "isExam": false
+    },
+    {
+      "hour": 9,
+      "topic": "Belge Biçimlendirme: Çoklu Sütunlar, Sekmeler (Tablar) ve Kesmeler (Sayfa/Bölüm)",
+      "moduleNumber": 1,
+      "moduleName": "Kelime İşlemci",
+      "isExam": false
+    },
+    {
+      "hour": 10,
+      "topic": "Sayfa Yapısı: Kenar Boşlukları, Yönlendirme, Filigran ve Sayfa Rengi",
+      "moduleNumber": 1,
+      "moduleName": "Kelime İşlemci",
+      "isExam": false
+    },
+    {
+      "hour": 11,
+      "topic": "Stillerle Çalışma: Yeni Stil Oluşturma, Stil Değiştirme ve Stil Yönetimi",
+      "moduleNumber": 1,
+      "moduleName": "Kelime İşlemci",
+      "isExam": false
+    },
+    {
+      "hour": 12,
+      "topic": "Belge Denetimi: Yazım ve Dilbilgisi, Heceleme, Sözcük Sayımı ve Otomatik Düzelt",
+      "moduleNumber": 1,
+      "moduleName": "Kelime İşlemci",
+      "isExam": false
+    },
+    {
+      "hour": 13,
+      "topic": "Belge İşbirliği ve Güvenlik: Açıklamalar, Değişiklikleri İzleme, Belge Karşılaştırma ve Belge Koruma",
+      "moduleNumber": 1,
+      "moduleName": "Kelime İşlemci",
+      "isExam": false
+    },
+    {
+      "hour": 14,
+      "topic": "Sayfa Düzeni: Kapak Sayfası, Üstbilgi, Altbilgi ve Sayfa Numaralandırma",
+      "moduleNumber": 1,
+      "moduleName": "Kelime İşlemci",
+      "isExam": false
+    },
+    {
+      "hour": 15,
+      "topic": "Tablo İşlemleri: Tablo Ekleme, Satır/Sütun Yönetimi, Hücre Birleştirme ve Bölme",
+      "moduleNumber": 1,
+      "moduleName": "Kelime İşlemci",
+      "isExam": false
+    },
+    {
+      "hour": 16,
+      "topic": "Tablo Biçimlendirme: Tablo Stilleri, Kenarlıklar, Veri Hizalama ve Formül İşlemleri",
+      "moduleNumber": 1,
+      "moduleName": "Kelime İşlemci",
+      "isExam": false
+    },
+    {
+      "hour": 17,
+      "topic": "Metni Tabloya ve Tabloyu Metne Dönüştürme, Tablo Başlıklarını Yineleme",
+      "moduleNumber": 1,
+      "moduleName": "Kelime İşlemci",
+      "isExam": false
+    },
+    {
+      "hour": 18,
+      "topic": "Görsel ve Çizim Nesneleri: Resim, Şekil, SmartArt, Simge ve Denklem Ekleme",
+      "moduleNumber": 1,
+      "moduleName": "Kelime İşlemci",
+      "isExam": false
+    },
+    {
+      "hour": 19,
+      "topic": "Metin Kutuları, WordArt ve Kuruluş Şeması (Organizasyon Şeması) Hazırlama",
+      "moduleNumber": 1,
+      "moduleName": "Kelime İşlemci",
+      "isExam": false
+    },
+    {
+      "hour": 20,
+      "topic": "Başvurular: İçindekiler Tablosu, Dipnot/Sonnot, Şekiller Tablosu ve Kaynakça Oluşturma",
+      "moduleNumber": 1,
+      "moduleName": "Kelime İşlemci",
+      "isExam": false
+    },
+    {
+      "hour": 21,
+      "topic": "Gelişmiş Belge Özellikleri: Zarflar, Etiketler, Adres Mektup Birleştirme ve Makrolar",
+      "moduleNumber": 1,
+      "moduleName": "Kelime İşlemci",
+      "isExam": false
+    },
+    {
+      "hour": 22,
+      "topic": "Belgeyi Tamamlama: Baskı Önizleme, Yazdırma Seçenekleri, PDF Olarak Dışa Aktarma ve Şifreleme",
+      "moduleNumber": 1,
+      "moduleName": "Kelime İşlemci",
+      "isExam": false
+    },
+    {
+      "hour": 23,
+      "topic": "Kelime İşlemci - Modül Değerlendirme Sınavı (Uygulama)",
+      "moduleNumber": 1,
+      "moduleName": "Kelime İşlemci",
+      "isExam": true
+    },
+    {
+      "hour": 24,
+      "topic": "Kelime İşlemci - Modül Değerlendirme Sınavı (Teorik & Değerlendirme)",
+      "moduleNumber": 1,
+      "moduleName": "Kelime İşlemci",
+      "isExam": true
+    },
+    {
+      "hour": 25,
+      "topic": "Elektronik Tablolama Arayüzü, Çalışma Kitabı ve Çalışma Sayfası Kavramı",
+      "moduleNumber": 2,
+      "moduleName": "Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 26,
+      "topic": "Temel Dosya ve Sayfa İşlemleri: Sayfa Ekleme, Yeniden Adlandırma, Taşıma, Kopyalama ve Gizleme",
+      "moduleNumber": 2,
+      "moduleName": "Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 27,
+      "topic": "Veri Giriş Teknikleri, Seçim Yöntemleri, Satır/Sütun Boyutlandırma ve Düzenleme",
+      "moduleNumber": 2,
+      "moduleName": "Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 28,
+      "topic": "Otomatik Doldurma, Doldurma Serileri, Özel Listeler ve Otomatik Tamamlama",
+      "moduleNumber": 2,
+      "moduleName": "Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 29,
+      "topic": "Hücre Biçimlendirme: Sayı, Para Birimi, Tarih/Saat, Metin, Hizalama ve Yazı Tipi",
+      "moduleNumber": 2,
+      "moduleName": "Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 30,
+      "topic": "Hücre Kenarlıkları, Dolgu Renkleri, Hücre Stilleri ve Tablo Biçimlendirme",
+      "moduleNumber": 2,
+      "moduleName": "Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 31,
+      "topic": "Koşullu Biçimlendirme: İlk/Son Kuralları, Veri Çubukları, Renk Ölçekleri ve Simge Kümeleri",
+      "moduleNumber": 2,
+      "moduleName": "Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 32,
+      "topic": "Sayfa Yapısı, Başlıkları Yazdırma, Yazdırma Alanı ve Sayfaya Sığdırma Ayarları",
+      "moduleNumber": 2,
+      "moduleName": "Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 33,
+      "topic": "Pencere Yönetimi: Bölmeleri Dondurma/Bölme, Sayfa Görünümleri ve Yazdırma Seçenekleri",
+      "moduleNumber": 2,
+      "moduleName": "Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 34,
+      "topic": "Formül Mantığı, Matematiksel Operatörler, Göreli ve Mutlak ($) Hücre Başvuruları",
+      "moduleNumber": 2,
+      "moduleName": "Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 35,
+      "topic": "Hücre ve Aralık Adlandırma, Formüllerde Hata Denetimi ve Hata İletileri",
+      "moduleNumber": 2,
+      "moduleName": "Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 36,
+      "topic": "Temel Matematiksel ve İstatistiksel Fonksiyonlar: TOPLA, ÇARPIM, ORTALAMA, MAK, MİN",
+      "moduleNumber": 2,
+      "moduleName": "Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 37,
+      "topic": "Sayma ve Mantıksal Koşul Fonksiyonları: EĞERSAY, BAĞ_DEĞ_SAY, BAĞ_DEĞ_DOLU_SAY",
+      "moduleNumber": 2,
+      "moduleName": "Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 38,
+      "topic": "Mantıksal Karar Fonksiyonları: EĞER, VE, VEYA İşlevleri ve İç İçe EĞER Kullanımı",
+      "moduleNumber": 2,
+      "moduleName": "Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 39,
+      "topic": "Metin ve Tarih Fonksiyonları: BİRLEŞTİR, BÜYÜKHARF, KÜÇÜKHARF, SOLDAN, SAĞDAN, BUGÜN, ŞİMDİ",
+      "moduleNumber": 2,
+      "moduleName": "Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 40,
+      "topic": "Arama ve Başvuru Fonksiyonları: DÜŞEYARA, YATAYARA Kullanımı ve Hata Yönetimi",
+      "moduleNumber": 2,
+      "moduleName": "Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 41,
+      "topic": "Grafik İşlemleri: Sütun, Çubuk, Çizgi ve Pasta Grafiği Oluşturma ve Düzenleme",
+      "moduleNumber": 2,
+      "moduleName": "Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 42,
+      "topic": "Grafik Öğelerini Biçimlendirme: Eksenler, Veri Etiketleri, Göstergeler ve Eğilim Çizgileri",
+      "moduleNumber": 2,
+      "moduleName": "Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 43,
+      "topic": "Veri Analizi: Tek ve Çok Ölçütlü Sıralama, Otomatik ve Gelişmiş Filtreleme, Alt Toplamlar",
+      "moduleNumber": 2,
+      "moduleName": "Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 44,
+      "topic": "Veri Doğrulama (Açılır Liste Oluşturma), Yinelenenleri Kaldırma ve Metni Sütunlara Dönüştürme",
+      "moduleNumber": 2,
+      "moduleName": "Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 45,
+      "topic": "Özet Tablo (PivotTable) ve Özet Grafik (PivotChart) ile Veri Analizi ve Raporlama",
+      "moduleNumber": 2,
+      "moduleName": "Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 46,
+      "topic": "Senaryolar, Hedef Arama, Temel Makro Kaydetme, Sayfa Koruma ve Çalışma Kitabını Şifreleme",
+      "moduleNumber": 2,
+      "moduleName": "Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 47,
+      "topic": "Elektronik Tablolama - Modül Değerlendirme Sınavı (Uygulama)",
+      "moduleNumber": 2,
+      "moduleName": "Elektronik Tablolama",
+      "isExam": true
+    },
+    {
+      "hour": 48,
+      "topic": "Elektronik Tablolama - Modül Değerlendirme Sınavı (Teorik & Değerlendirme)",
+      "moduleNumber": 2,
+      "moduleName": "Elektronik Tablolama",
+      "isExam": true
+    },
+    {
+      "hour": 49,
+      "topic": "Sunu Programı Arayüzü, Çalışma Alanı, Sunu Kavramı ve Sunu Görünümleri",
+      "moduleNumber": 3,
+      "moduleName": "Sunu Hazırlama",
+      "isExam": false
+    },
+    {
+      "hour": 50,
+      "topic": "Temel Sunu İşlemleri: Yeni Sunu Oluşturma, Şablonlar, Sunu Kaydetme, Açma ve Kapatma",
+      "moduleNumber": 3,
+      "moduleName": "Sunu Hazırlama",
+      "isExam": false
+    },
+    {
+      "hour": 51,
+      "topic": "Slayt İşlemleri: Yeni Slayt Ekleme, Düzen Seçimi, Slayt Çoğaltma, Silme ve Gizleme",
+      "moduleNumber": 3,
+      "moduleName": "Sunu Hazırlama",
+      "isExam": false
+    },
+    {
+      "hour": 52,
+      "topic": "Slaytları Bölümlere Ayırma ve Farklı Bir Sunudan Slayt Ekleme (Slaytları Yeniden Kullanma)",
+      "moduleNumber": 3,
+      "moduleName": "Sunu Hazırlama",
+      "isExam": false
+    },
+    {
+      "hour": 53,
+      "topic": "Sunu Tasarımı: Sayfa Yapısı, Tasarım Temaları, Renk ve Yazı Tipi Paletleri",
+      "moduleNumber": 3,
+      "moduleName": "Sunu Hazırlama",
+      "isExam": false
+    },
+    {
+      "hour": 54,
+      "topic": "Arka Plan Biçimlendirme (Düz/Gradyan/Doku) ve Fotoğraf Albümü Oluşturma",
+      "moduleNumber": 3,
+      "moduleName": "Sunu Hazırlama",
+      "isExam": false
+    },
+    {
+      "hour": 55,
+      "topic": "Asıl Slayt (Slide Master) Kullanımı, Şablon Düzenleme ve Kurumsal Kimlik Uyarlama",
+      "moduleNumber": 3,
+      "moduleName": "Sunu Hazırlama",
+      "isExam": false
+    },
+    {
+      "hour": 56,
+      "topic": "Metin Kutuları, Metin Biçimlendirme, Madde İşaretleri ve Numaralandırma",
+      "moduleNumber": 3,
+      "moduleName": "Sunu Hazırlama",
+      "isExam": false
+    },
+    {
+      "hour": 57,
+      "topic": "Şekil Ekleme, Şekilleri Boyutlandırma, Döndürme, Gruplandırma ve Biçimlendirme",
+      "moduleNumber": 3,
+      "moduleName": "Sunu Hazırlama",
+      "isExam": false
+    },
+    {
+      "hour": 58,
+      "topic": "Resim Ekleme, Kırpma, Arka Plan Kaldırma, Resim Stilleri ve Görsel Efektler",
+      "moduleNumber": 3,
+      "moduleName": "Sunu Hazırlama",
+      "isExam": false
+    },
+    {
+      "hour": 59,
+      "topic": "Sunuya Tablo Ekleme, Hücre Düzenleme ve Tablo Stilleri ile Biçimlendirme",
+      "moduleNumber": 3,
+      "moduleName": "Sunu Hazırlama",
+      "isExam": false
+    },
+    {
+      "hour": 60,
+      "topic": "Elektronik Tablo ve Veri Grafiği Ekleme, Grafik Türleri ve Veri Kaynağını Düzenleme",
+      "moduleNumber": 3,
+      "moduleName": "Sunu Hazırlama",
+      "isExam": false
+    },
+    {
+      "hour": 61,
+      "topic": "SmartArt Grafikleri Ekleme: Süreç, Döngü ve Hiyerarşi (Organizasyon) Şemaları",
+      "moduleNumber": 3,
+      "moduleName": "Sunu Hazırlama",
+      "isExam": false
+    },
+    {
+      "hour": 62,
+      "topic": "Medya Nesneleri: Ses Dosyası Ekleme, Arka Planda Çalma ve Ses Ayarları",
+      "moduleNumber": 3,
+      "moduleName": "Sunu Hazırlama",
+      "isExam": false
+    },
+    {
+      "hour": 63,
+      "topic": "Video Dosyası Ekleme, Kırpma, Başlangıç Seçenekleri ve Video Stilleri",
+      "moduleNumber": 3,
+      "moduleName": "Sunu Hazırlama",
+      "isExam": false
+    },
+    {
+      "hour": 64,
+      "topic": "Etkileşimli Sunum: Köprüler (Linkler), Yer İmleri ve Eylem (Action) Düğmeleri",
+      "moduleNumber": 3,
+      "moduleName": "Sunu Hazırlama",
+      "isExam": false
+    },
+    {
+      "hour": 65,
+      "topic": "Slayt Geçiş Efektleri: Geçiş Türleri, Geçiş Süresi, Ses ve Otomatik İlerleme Ayarları",
+      "moduleNumber": 3,
+      "moduleName": "Sunu Hazırlama",
+      "isExam": false
+    },
+    {
+      "hour": 66,
+      "topic": "Nesne Animasyonları: Giriş, Vurgu, Çıkış ve Hareket Yolları Animasyonları",
+      "moduleNumber": 3,
+      "moduleName": "Sunu Hazırlama",
+      "isExam": false
+    },
+    {
+      "hour": 67,
+      "topic": "Animasyon Bölmesi, Animasyon Sıralaması, Zamanlama ve Tetikleyiciler (Triggers)",
+      "moduleNumber": 3,
+      "moduleName": "Sunu Hazırlama",
+      "isExam": false
+    },
+    {
+      "hour": 68,
+      "topic": "Slayt Gösterisi Ayarları: Özel Gösteri Oluşturma, Prova Zamanlaması ve Sunucu Görünümü",
+      "moduleNumber": 3,
+      "moduleName": "Sunu Hazırlama",
+      "isExam": false
+    },
+    {
+      "hour": 69,
+      "topic": "Yazdırma Seçenekleri: Dinleyici Notları (Handouts), Slayt ve Not Sayfaları Yazdırma",
+      "moduleNumber": 3,
+      "moduleName": "Sunu Hazırlama",
+      "isExam": false
+    },
+    {
+      "hour": 70,
+      "topic": "Sunuyu Paketleme, Video/PDF Olarak Dışa Aktarma, Sunu Güvenliği ve Şifreleme",
+      "moduleNumber": 3,
+      "moduleName": "Sunu Hazırlama",
+      "isExam": false
+    },
+    {
+      "hour": 71,
+      "topic": "Sunu Hazırlama - Modül Değerlendirme Sınavı (Uygulama)",
+      "moduleNumber": 3,
+      "moduleName": "Sunu Hazırlama",
+      "isExam": true
+    },
+    {
+      "hour": 72,
+      "topic": "Sunu Hazırlama - Modül Değerlendirme Sınavı (Teorik & Değerlendirme)",
+      "moduleNumber": 3,
+      "moduleName": "Sunu Hazırlama",
+      "isExam": true
+    }
+  ]
+},
+{
   "id": "tmpl_veri_giris_elemani_116",
   "name": "Veri Giriş Elemanı",
   "code": "VGE-116",
