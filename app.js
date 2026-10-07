@@ -592,8 +592,13 @@ window.onCloudSync = function(type, data) {
     if (typeof renderAdminAreas === 'function') renderAdminAreas();
     if (typeof populateAllAreaDropdowns === 'function') populateAllAreaDropdowns();
   } else if (type === 'templates') {
-    currentTemplates = data;
+    currentTemplates = (data || []).slice().sort((a, b) => (a.name || '').localeCompare(b.name || '', 'tr', { sensitivity: 'base' }));
+    if (typeof renderAdminTemplates === 'function') renderAdminTemplates();
     if (typeof renderTemplatesTable === 'function') renderTemplatesTable();
+    if (typeof populateCourseTemplatesDropdown === 'function') {
+      const areaFilter = document.getElementById('courseFormAreaFilter');
+      populateCourseTemplatesDropdown(areaFilter ? areaFilter.value : 'my_area');
+    }
   } else if (type === 'todos') {
     if (typeof renderDevTodos === 'function') renderDevTodos();
   }
@@ -604,6 +609,7 @@ function loadData() {
   currentCenters = DataStore.getCenters();
   currentAreas = DataStore.getAreas();
   currentTemplates = DataStore.getCourseTemplates();
+  currentTemplates.sort((a, b) => (a.name || '').localeCompare(b.name || '', 'tr', { sensitivity: 'base' }));
   currentUsers = DataStore.getUsers();
 
   // Eski yetkileri güncelle: Önder, Özgür, Merve (ve admin) 'developer' olsun
@@ -2057,6 +2063,8 @@ window.deleteArea = function(areaId) {
 // =================== KURS VE SAATLİK MÜFREDAT YÖNETİMİ ===================
 
 function renderAdminTemplates() {
+  // Kurs ve müfredat planlarını her zaman Türkçe alfabetik sıraya göre (A-Z) listele
+  currentTemplates.sort((a, b) => (a.name || '').localeCompare(b.name || '', 'tr', { sensitivity: 'base' }));
   adminTemplatesCount.innerText = currentTemplates.length;
   templatesGrid.innerHTML = '';
 
@@ -2518,9 +2526,10 @@ function handleSaveCourseTemplate(e) {
       modules: savedModules,
       syllabus: fullSyllabus
     };
-    currentTemplates.unshift(newTmpl);
+    currentTemplates.push(newTmpl);
   }
 
+  currentTemplates.sort((a, b) => (a.name || '').localeCompare(b.name || '', 'tr', { sensitivity: 'base' }));
   DataStore.saveCourseTemplates(currentTemplates);
   closeCourseTmplModal();
   renderAdminTemplates();
@@ -2534,6 +2543,7 @@ window.editCourseTemplate = function(tmplId) {
 window.deleteCourseTemplate = function(tmplId) {
   if (confirm('Bu kurs şablonunu ve müfredatını silmek istediğinize emin misiniz?')) {
     currentTemplates = currentTemplates.filter(t => t.id !== tmplId);
+    currentTemplates.sort((a, b) => (a.name || '').localeCompare(b.name || '', 'tr', { sensitivity: 'base' }));
     DataStore.saveCourseTemplates(currentTemplates);
     renderAdminTemplates();
   }
@@ -2935,6 +2945,9 @@ function populateCourseTemplatesDropdown(filterArea = 'my_area', selectedTmplId 
       filtered = currentTemplates.filter(t => userAreas.includes(t.category || t.area || 'Diğer'));
     }
   }
+
+  // Kursları açılır listede Türkçe alfabetik sıraya göre (A-Z) sırala
+  filtered = [...filtered].sort((a, b) => (a.name || '').localeCompare(b.name || '', 'tr', { sensitivity: 'base' }));
 
   let optionsHtml = `<option value="">-- Kurs Seçiniz (${filtered.length} Kurs Mevcut) --</option>`;
   optionsHtml += filtered.map(tmpl => `
