@@ -1432,7 +1432,7 @@ function renderAdminUsers() {
 
   currentUsers.forEach(user => {
     const tr = document.createElement('tr');
-    tr.className = 'hover:bg-slate-50/80 transition';
+    tr.className = 'border-b border-slate-100 dark:border-[#23353c]/70 transition-colors';
 
     const isCurrentActiveUser = (user.id === currentUser?.id);
     let roleBadgeHtml = '';
@@ -1666,7 +1666,7 @@ function renderAdminCenters() {
 
   currentCenters.forEach((center) => {
     const card = document.createElement('div');
-    card.className = 'bg-white rounded-2xl border border-slate-200 p-5 shadow-xs hover:border-indigo-300 hover:shadow-md transition flex items-center justify-between gap-4';
+    card.className = 'bg-white dark:bg-[#152125] rounded-2xl border border-slate-200 dark:border-[#23353c] p-5 shadow-xs hover:border-indigo-400 dark:hover:border-indigo-400 hover:bg-indigo-50/20 dark:hover:bg-[#1a2530] hover:shadow-md transition flex items-center justify-between gap-4';
 
     const supervisorInfo = center.supervisor
       ? `<div class="flex items-center gap-1.5 text-xs text-slate-600 mt-1 font-medium">
@@ -2062,23 +2062,23 @@ function renderAdminTemplates() {
 
   currentTemplates.forEach((tmpl) => {
     const card = document.createElement('div');
-    card.className = 'bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4 hover:border-sky-300 transition';
+    card.className = 'bg-white dark:bg-[#152125] rounded-2xl border border-slate-200 dark:border-[#23353c] p-5 shadow-xs space-y-4 hover:border-sky-400 dark:hover:border-sky-400 hover:bg-sky-50/15 dark:hover:bg-[#152730] transition';
 
     const syllabusCount = tmpl.syllabus?.length || 0;
 
     let syllabusPreviewHtml = '';
     if (syllabusCount > 0) {
       syllabusPreviewHtml = `
-        <details class="text-xs text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-200">
-          <summary class="font-bold text-sky-800 cursor-pointer select-none flex items-center justify-between">
+        <details class="text-xs text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-[#10191b] p-3 rounded-xl border border-slate-200 dark:border-[#23353c]">
+          <summary class="font-bold text-sky-800 dark:text-sky-300 cursor-pointer select-none flex items-center justify-between">
             <span>Saatlik Konu Planını Görüntüle (${syllabusCount} Saat Tanımlı)</span>
             <span class="text-[11px] text-slate-400">Genişlet / Daralt</span>
           </summary>
-          <div class="mt-3 grid grid-cols-1 md:grid-cols-2 gap-2 pt-2 border-t border-slate-200 max-h-56 overflow-y-auto">
+          <div class="mt-3 grid grid-cols-1 md:grid-cols-2 gap-2 pt-2 border-t border-slate-200 dark:border-[#23353c] max-h-56 overflow-y-auto">
             ${tmpl.syllabus.map(s => `
-              <div class="p-2 bg-white rounded-lg border border-slate-100 flex items-start gap-2">
-                <span class="px-1.5 py-0.5 rounded bg-sky-100 text-sky-800 text-[10px] font-bold shrink-0 mt-0.5">${s.hour}. Saat</span>
-                <span class="text-[11px] text-slate-700">${escapeHtml(s.topic)}</span>
+              <div class="p-2 bg-white dark:bg-[#152125] rounded-lg border border-slate-100 dark:border-[#23353c] flex items-start gap-2">
+                <span class="px-1.5 py-0.5 rounded bg-sky-100 text-sky-800 dark:bg-sky-950/70 dark:text-sky-300 text-[10px] font-bold shrink-0 mt-0.5">${s.hour}. Saat</span>
+                <span class="text-[11px] text-slate-700 dark:text-slate-200">${escapeHtml(s.topic)}</span>
               </div>
             `).join('')}
           </div>
@@ -2612,7 +2612,7 @@ function renderCourseList() {
 
   filtered.forEach(course => {
     const card = document.createElement('div');
-    card.className = 'rounded-2xl border border-slate-200 dark:border-[#23353c] bg-white dark:bg-[#152125] hover:border-[#335C67] dark:hover:border-[#E09F3E] hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 flex flex-col justify-between overflow-hidden group cursor-pointer';
+    card.className = 'rounded-2xl border border-slate-200 dark:border-[#23353c] bg-white dark:bg-[#152125] hover:border-[#335C67] dark:hover:border-[#E09F3E] hover:bg-slate-50/70 dark:hover:bg-[#1a2d33] hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 flex flex-col justify-between overflow-hidden group cursor-pointer';
     
     // Karta tıklandığında tam sayfa detay açılsın
     card.onclick = (e) => {
@@ -3462,7 +3462,7 @@ function renderStudentTable() {
 
   students.forEach((s, idx) => {
     const tr = document.createElement('tr');
-    tr.className = 'hover:bg-slate-50/80 transition';
+    tr.className = 'border-b border-slate-100 dark:border-[#23353c]/70 transition-colors';
 
     const isDevamsiz = (s.attendance === 'Devamsız') || (s.result === 'Devamsız');
     const isSuccess = (s.result || '').includes('Başarılı') || (s.result || '').includes('Belge');
@@ -3630,7 +3630,7 @@ function renderDetailSyllabus() {
 
   syllabus.forEach(item => {
     const tr = document.createElement('tr');
-    tr.className = 'hover:bg-slate-50 transition';
+    tr.className = 'border-b border-slate-100 dark:border-[#23353c]/70 transition-colors';
     tr.innerHTML = `
       <td class="px-4 py-2.5 font-bold text-sky-700">${item.hour}. Ders Saati</td>
       <td class="px-4 py-2.5 text-slate-700">${escapeHtml(item.topic)}</td>
@@ -3906,12 +3906,12 @@ function handleBulkStudentInput() {
     if (bulkParsedCount) bulkParsedCount.innerText = parsed.length;
     if (bulkStudentPreviewTbody) {
       bulkStudentPreviewTbody.innerHTML = parsed.map((s, idx) => `
-        <tr class="hover:bg-emerald-50/50 transition">
+        <tr class="border-b border-slate-100 dark:border-[#23353c] transition-colors">
           <td class="px-3 py-1.5 text-slate-400 font-mono text-[11px]">${idx + 1}</td>
-          <td class="px-3 py-1.5 font-bold text-slate-800">${escapeHtml(s.firstName)}</td>
-          <td class="px-3 py-1.5 text-slate-700">${escapeHtml(s.lastName || '-')}</td>
-          <td class="px-3 py-1.5 font-mono text-slate-600">${s.tcNo ? escapeHtml(s.tcNo) : '<span class="text-slate-300 italic">-</span>'}</td>
-          <td class="px-3 py-1.5 font-mono text-slate-600">${s.phone ? escapeHtml(s.phone) : '<span class="text-slate-300 italic">-</span>'}</td>
+          <td class="px-3 py-1.5 font-bold text-slate-800 dark:text-slate-100">${escapeHtml(s.firstName)}</td>
+          <td class="px-3 py-1.5 text-slate-700 dark:text-slate-200">${escapeHtml(s.lastName || '-')}</td>
+          <td class="px-3 py-1.5 font-mono text-slate-600 dark:text-slate-300">${s.tcNo ? escapeHtml(s.tcNo) : '<span class="text-slate-300 dark:text-slate-600 italic">-</span>'}</td>
+          <td class="px-3 py-1.5 font-mono text-slate-600 dark:text-slate-300">${s.phone ? escapeHtml(s.phone) : '<span class="text-slate-300 dark:text-slate-600 italic">-</span>'}</td>
         </tr>
       `).join('');
     }
@@ -5092,7 +5092,7 @@ function renderSingleAttDaysTable() {
   } else {
     currentModalDailyAbsences.forEach((d, idx) => {
       const tr = document.createElement('tr');
-      tr.className = 'hover:bg-slate-50 dark:hover:bg-[#10191b] transition border-b border-slate-100 dark:border-[#23353c]';
+      tr.className = 'border-b border-slate-100 dark:border-[#23353c] transition-colors';
       tr.innerHTML = `
         <td class="px-3 py-2 text-center text-slate-400 font-medium">${idx + 1}</td>
         <td class="px-3 py-2 font-semibold text-slate-800 dark:text-slate-200">
@@ -9246,7 +9246,7 @@ function renderSupervisorCoursesTable() {
     }
 
     const tr = document.createElement('tr');
-    tr.className = 'hover:bg-slate-50/80 dark:hover:bg-[#1a292f] transition';
+    tr.className = 'border-b border-slate-100 dark:border-[#23353c]/70 transition-colors';
     tr.innerHTML = `
       <td class="px-4 py-3">
         <div class="font-bold text-slate-800 dark:text-slate-100 text-xs">${escapeHtml(course.name)}</div>

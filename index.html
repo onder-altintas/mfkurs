@@ -127,74 +127,143 @@
       border-color: #23353c !important;
     }
 
-    html.dark tr:hover td {
-      background-color: #172428 !important;
+    /* =========================================================================
+       TABLO VE LİSTE SATIRLARI HOVER VE ODAKLANMA (AÇIK VE KOYU TEMA)
+       Satır zemininden belirgin şekilde ayrışan, göz yormayan üst seviye UI/UX vurgusu
+       ========================================================================= */
+
+    /* 1. Tüm Tablolar İçin Evrensel Geçiş ve Belirgin Hover */
+    table tbody tr {
+      transition: background-color 140ms cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    /* Resmi Evrak (Modül Değerlendirme Çizelgesi vb.) Önizleme Satır Hover Stili */
-    /* Beyaz A4 resmi evraklarda siyah hover yerine yumuşak, gözü yormayan sarı/amber vurgusu */
-    .not-cizelgesi-document tbody tr:hover > td,
-    #notCizelgesiPreviewContainer tbody tr:hover > td,
-    .not-cizelgesi-row:hover > td,
-    html.dark .not-cizelgesi-document tbody tr:hover > td,
-    html.dark #notCizelgesiPreviewContainer tbody tr:hover > td,
-    html.dark .not-cizelgesi-row:hover > td {
-      background-color: #fef3c7 !important; /* Yumuşak pastel sarı/amber vurgusu (siyah yerine) */
-      transition: background-color 100ms ease-in-out;
+    /* Açık Tema Evrensel Tablo Hover (Beyaz ve gri zeminlerden net ayrışır) */
+    table tbody tr:hover > td {
+      background-color: #e3eff3 !important;
     }
 
-    /* Diğer resmi evrak önizlemelerinde de (Karar Durumu, Sınav Tutanağı vb.) siyah hover oluşmasını önle */
-    .karar-durumu-document tbody tr:hover > td,
-    .sinav-tutanagi-document tbody tr:hover > td,
-    #imzaListesiPreviewContainer tbody tr:hover > td,
-    html.dark .karar-durumu-document tbody tr:hover > td,
-    html.dark .sinav-tutanagi-document tbody tr:hover > td,
-    html.dark #imzaListesiPreviewContainer tbody tr:hover > td {
-      background-color: #fef3c7 !important;
-      transition: background-color 100ms ease-in-out;
+    /* Koyu Tema Evrensel Tablo Hover (#152125 ve #10191b zeminlerinden canlı şekilde ayrışır) */
+    html.dark table tbody tr:hover > td {
+      background-color: #1e3e4a !important;
     }
 
-    /* Modül Sınavları & Not Giriş Ekranı Satır Hover ve Odaklanma (Focus-Within) */
+    /* 2. Kursiyer Listesi Tablosu (#studentTableBody) */
+    #studentTableBody tr:hover > td {
+      background-color: #deedf2 !important;
+    }
+    html.dark #studentTableBody tr:hover > td {
+      background-color: #1e404c !important;
+    }
+
+    /* 3. Devamsızlık Tablosu (#attendanceTableBody) - Amber Vurgusu */
+    #attendanceTableBody tr:hover > td,
+    #attendanceTableBody tr:focus-within > td {
+      background-color: #fef3c7 !important; /* amber-100 */
+    }
+    html.dark #attendanceTableBody tr:hover > td,
+    html.dark #attendanceTableBody tr:focus-within > td {
+      background-color: #3d2e11 !important; /* Canlı ve zengin koyu amber */
+    }
+    #attendanceTableBody tr:focus-within {
+      box-shadow: inset 4px 0 0 #E09F3E;
+    }
+    html.dark #attendanceTableBody tr:focus-within {
+      box-shadow: inset 4px 0 0 #f59e0b;
+    }
+
+    /* 4. Modül Sınavları & Not Giriş Tablosu (#examsMatrixTable) - Mor/Purple Vurgusu */
     #examsMatrixTable tbody tr:hover > td,
     #examsMatrixTable tbody tr:focus-within > td {
       background-color: #f3e8ff !important; /* purple-100 */
-      transition: background-color 150ms ease-in-out;
     }
     html.dark #examsMatrixTable tbody tr:hover > td,
     html.dark #examsMatrixTable tbody tr:focus-within > td {
-      background-color: #261b3d !important; /* koyu tema mor vurgusu */
-      transition: background-color 150ms ease-in-out;
+      background-color: #2e1a47 !important; /* Aydınlık koyu mor */
     }
     #examsMatrixTable tbody tr:focus-within {
-      box-shadow: inset 4px 0 0 #9333ea; /* Aktif not girilen satırın solunda belirgin mor bar */
+      box-shadow: inset 4px 0 0 #9333ea;
     }
     html.dark #examsMatrixTable tbody tr:focus-within {
       box-shadow: inset 4px 0 0 #c084fc;
     }
 
-    /* Devamsızlık Tablosu Satır Hover ve Odaklanma */
-    #attendanceTableBody tr:hover > td,
-    #attendanceTableBody tr:focus-within > td {
-      background-color: rgba(224, 159, 62, 0.18) !important; /* amber highlight */
-      transition: background-color 150ms ease-in-out;
+    /* 5. Yönetici Kullanıcılar Tablosu (#adminUsersTableBody) */
+    #adminUsersTableBody tr:hover > td {
+      background-color: #f1edff !important; /* Yumuşak leylak */
     }
-    html.dark #attendanceTableBody tr:hover > td,
-    html.dark #attendanceTableBody tr:focus-within > td {
-      background-color: rgba(224, 159, 62, 0.28) !important;
-      transition: background-color 150ms ease-in-out;
-    }
-    #attendanceTableBody tr:focus-within {
-      box-shadow: inset 4px 0 0 #E09F3E;
+    html.dark #adminUsersTableBody tr:hover > td {
+      background-color: #281f44 !important;
     }
 
-    /* Kursiyer Listesi Satır Hover */
-    #studentTableBody tr:hover > td {
-      background-color: #f1f5f9 !important; /* slate-100 */
-      transition: background-color 150ms ease-in-out;
+    /* 6. Eğitim / Kurs Sorumlusu Kurs Tablosu (#supCoursesTableBody) */
+    #supCoursesTableBody tr:hover > td {
+      background-color: #e2f0f5 !important;
     }
-    html.dark #studentTableBody tr:hover > td {
-      background-color: #172428 !important;
-      transition: background-color 150ms ease-in-out;
+    html.dark #supCoursesTableBody tr:hover > td {
+      background-color: #1c3d4a !important;
+    }
+
+    /* 7. Ders Defteri ve Müfredat Konuları Tablosu (#detailSyllabusTableBody) */
+    #detailSyllabusTableBody tr:hover > td {
+      background-color: #e8f5ec !important; /* Yumuşak zümrüt yeşili */
+    }
+    html.dark #detailSyllabusTableBody tr:hover > td {
+      background-color: #183827 !important;
+    }
+
+    /* 8. Toplu Kursiyer Ekleme Önizleme Tablosu (#bulkStudentPreviewTbody) */
+    #bulkStudentPreviewTbody tr:hover > td {
+      background-color: #eafaf1 !important;
+    }
+    html.dark #bulkStudentPreviewTbody tr:hover > td {
+      background-color: #183928 !important;
+    }
+
+    /* 9. Tek Kursiyer Günlük Devamsızlık Tablosu (#singleAttDaysTableBody) */
+    #singleAttDaysTableBody tr:hover > td {
+      background-color: #fef9c3 !important;
+    }
+    html.dark #singleAttDaysTableBody tr:hover > td {
+      background-color: #3b2e12 !important;
+    }
+
+    /* 10. Resmi Evrak (Modül Değerlendirme Çizelgesi vb.) Önizleme Satır Hover Stili */
+    .not-cizelgesi-document tbody tr:hover > td,
+    #notCizelgesiPreviewContainer tbody tr:hover > td,
+    .not-cizelgesi-row:hover > td,
+    .karar-durumu-document tbody tr:hover > td,
+    .sinav-tutanagi-document tbody tr:hover > td,
+    #imzaListesiPreviewContainer tbody tr:hover > td,
+    html.dark .not-cizelgesi-document tbody tr:hover > td,
+    html.dark #notCizelgesiPreviewContainer tbody tr:hover > td,
+    html.dark .not-cizelgesi-row:hover > td,
+    html.dark .karar-durumu-document tbody tr:hover > td,
+    html.dark .sinav-tutanagi-document tbody tr:hover > td,
+    html.dark #imzaListesiPreviewContainer tbody tr:hover > td {
+      background-color: #fef3c7 !important; /* Yumuşak pastel sarı/amber vurgusu (asla siyah olmaz) */
+      transition: background-color 100ms ease-in-out;
+    }
+
+    /* Mobil ve Masaüstü Şık İnce Kaydırma Çubukları (Custom Scrollbars) */
+    ::-webkit-scrollbar {
+      width: 7px;
+      height: 7px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
+    html.dark ::-webkit-scrollbar-thumb {
+      background: #283e46;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+    html.dark ::-webkit-scrollbar-thumb:hover {
+      background: #395762;
     }
 
     /* PrintArea Ekranda Kesinlikle Gizli Olmalıdır */
@@ -1067,9 +1136,9 @@
           </div>
 
           <!-- Kullanıcı Tablosu -->
-          <div class="overflow-x-auto border border-slate-200 rounded-xl">
-            <table class="w-full text-left text-xs text-slate-600">
-              <thead class="bg-slate-50 text-slate-700 uppercase font-semibold border-b border-slate-200">
+          <div class="overflow-x-auto border border-slate-200 dark:border-[#23353c] rounded-xl shadow-2xs">
+            <table class="w-full text-left text-xs text-slate-600 dark:text-slate-300">
+              <thead class="bg-slate-50 dark:bg-[#10191b] text-slate-700 dark:text-slate-300 uppercase font-semibold border-b border-slate-200 dark:border-[#23353c]">
                 <tr>
                   <th class="px-4 py-3">Kullanıcı</th>
                   <th class="px-4 py-3">Kullanıcı Adı</th>
@@ -1078,7 +1147,7 @@
                   <th class="px-4 py-3 text-right">İşlemler</th>
                 </tr>
               </thead>
-              <tbody id="adminUsersTableBody" class="divide-y divide-slate-100">
+              <tbody id="adminUsersTableBody" class="divide-y divide-slate-100 dark:divide-[#23353c]">
                 <!-- JS ile render edilecek -->
               </tbody>
             </table>
@@ -1088,25 +1157,25 @@
 
       <!-- Admin Sekme 4: Geliştirici Todo Listesi -->
       <div id="adminTabTodosContent" class="hidden space-y-4">
-        <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4">
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100">
+        <div class="bg-white dark:bg-[#152125] rounded-2xl border border-slate-200 dark:border-[#23353c] p-5 shadow-xs space-y-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100 dark:border-[#23353c]">
             <div>
               <div class="flex items-center gap-2">
-                <h3 class="font-bold text-slate-800 text-base flex items-center gap-2">
+                <h3 class="font-bold text-slate-800 dark:text-slate-100 text-base flex items-center gap-2">
                   <i data-lucide="list-todo" class="w-5 h-5 text-amber-600"></i>
                   <span>Görev ve Todo Listesi</span>
                 </h3>
               </div>
-              <p class="text-xs text-slate-500 mt-0.5">
+              <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                 Proje geliştirme sürecindeki görevleri takip edin, yeni görev ekleyin ve durumunu güncelleyin.
               </p>
             </div>
             <div class="flex items-center gap-2">
-              <span id="adminTodoStatsText" class="text-xs font-semibold text-slate-600">0 görev</span>
+              <span id="adminTodoStatsText" class="text-xs font-semibold text-slate-600 dark:text-slate-400">0 görev</span>
               <button
                 type="button"
                 id="adminTodoClearCompletedBtn"
-                class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition cursor-pointer"
+                class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-[#1f2d31] dark:hover:bg-[#283b40] text-slate-700 dark:text-slate-200 rounded-xl text-xs font-semibold transition cursor-pointer"
               >
                 Tamamlananları Temizle
               </button>
@@ -1114,7 +1183,7 @@
           </div>
 
           <!-- Yeni Görev Ekleme Formu -->
-          <form id="adminDevTodoForm" class="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-3">
+          <form id="adminDevTodoForm" class="p-4 bg-slate-50 dark:bg-[#10191b] rounded-xl border border-slate-200 dark:border-[#23353c] space-y-3">
             <div class="flex flex-col sm:flex-row gap-2">
               <div class="relative flex-1">
                 <input
@@ -1122,13 +1191,13 @@
                   id="adminDevTodoInput"
                   placeholder="Yeni yapılacak görev yazın..."
                   required
-                  class="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#335C67] transition"
+                  class="w-full px-3.5 py-2.5 bg-white dark:bg-[#152125] border border-slate-200 dark:border-[#2b3e45] rounded-xl text-xs sm:text-sm text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#335C67] transition"
                 />
               </div>
               <div class="flex items-center gap-2">
                 <select
                   id="adminDevTodoPriority"
-                  class="px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-xs text-slate-700 focus:outline-none"
+                  class="px-3 py-2.5 bg-white dark:bg-[#152125] border border-slate-200 dark:border-[#2b3e45] rounded-xl text-xs text-slate-700 dark:text-slate-200 focus:outline-none"
                 >
                   <option value="urgent">🔥 Acil</option>
                   <option value="high">⚡ Yüksek</option>
@@ -1147,7 +1216,7 @@
           </form>
 
           <!-- Filtreleme & Sıralama & Arama Alanı -->
-          <div class="p-3.5 bg-slate-50/80 rounded-xl border border-slate-200/80 space-y-2.5">
+          <div class="p-3.5 bg-slate-50/80 dark:bg-[#10191b] rounded-xl border border-slate-200/80 dark:border-[#23353c] space-y-2.5">
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-2.5">
               <!-- Arama Input'u -->
               <div class="relative flex-1 min-w-[200px]">
@@ -1156,7 +1225,7 @@
                   type="text"
                   id="adminTodoSearchInput"
                   placeholder="Görev metninde ara..."
-                  class="w-full pl-9 pr-8 py-1.5 bg-white border border-slate-200 rounded-lg text-xs text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-[#335C67] transition"
+                  class="w-full pl-9 pr-8 py-1.5 bg-white dark:bg-[#152125] border border-slate-200 dark:border-[#2b3e45] rounded-lg text-xs text-slate-700 dark:text-slate-200 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-[#335C67] transition"
                 />
                 <button
                   type="button"
@@ -2743,9 +2812,9 @@
               </span>
               <span class="text-[10px] text-slate-500">Lütfen listeyi onaylamadan önce kontrol ediniz</span>
             </div>
-            <div class="max-h-48 overflow-y-auto border border-emerald-100 rounded-lg bg-white shadow-2xs">
-              <table class="w-full text-left text-xs">
-                <thead class="bg-emerald-50 text-[11px] font-bold text-emerald-900 border-b border-emerald-100 sticky top-0">
+            <div class="max-h-48 overflow-y-auto border border-emerald-100 dark:border-[#23353c] rounded-lg bg-white dark:bg-[#152125] shadow-2xs">
+              <table class="w-full text-left text-xs text-slate-600 dark:text-slate-300">
+                <thead class="bg-emerald-50 dark:bg-[#10191b] text-[11px] font-bold text-emerald-900 dark:text-emerald-300 border-b border-emerald-100 dark:border-[#23353c] sticky top-0">
                   <tr>
                     <th class="px-3 py-1.5 w-10">#</th>
                     <th class="px-3 py-1.5">Adı</th>
@@ -2754,7 +2823,7 @@
                     <th class="px-3 py-1.5 font-mono">Telefon</th>
                   </tr>
                 </thead>
-                <tbody id="bulkStudentPreviewTbody" class="divide-y divide-slate-100">
+                <tbody id="bulkStudentPreviewTbody" class="divide-y divide-slate-100 dark:divide-[#23353c]">
                 </tbody>
               </table>
             </div>
@@ -2813,9 +2882,9 @@
           </div>
         </div>
 
-        <div class="overflow-x-auto border border-slate-200 rounded-xl shadow-2xs">
-          <table class="w-full text-left text-xs text-slate-600">
-            <thead class="bg-slate-50 text-slate-700 uppercase font-semibold border-b border-slate-200">
+        <div class="overflow-x-auto border border-slate-200 dark:border-[#23353c] rounded-xl shadow-2xs">
+          <table class="w-full text-left text-xs text-slate-600 dark:text-slate-300">
+            <thead class="bg-slate-50 dark:bg-[#10191b] text-slate-700 dark:text-slate-300 uppercase font-semibold border-b border-slate-200 dark:border-[#23353c]">
               <tr>
                 <th class="px-4 py-3">#</th>
                 <th class="px-4 py-3">
@@ -2834,7 +2903,7 @@
                 <th class="px-4 py-3 text-right">İşlemler</th>
               </tr>
             </thead>
-            <tbody id="studentTableBody" class="divide-y divide-slate-100"></tbody>
+            <tbody id="studentTableBody" class="divide-y divide-slate-100 dark:divide-[#23353c]"></tbody>
           </table>
         </div>
       </div>
@@ -2981,12 +3050,12 @@
         </div>
 
         <!-- Modül Sınavları Tablosu -->
-        <div class="overflow-x-auto border border-slate-200 rounded-xl shadow-2xs">
-          <table class="w-full text-left text-xs text-slate-600" id="examsMatrixTable">
-            <thead class="bg-slate-50 text-slate-700 uppercase font-semibold border-b border-slate-200" id="examsMatrixThead">
+        <div class="overflow-x-auto border border-slate-200 dark:border-[#23353c] rounded-xl shadow-2xs">
+          <table class="w-full text-left text-xs text-slate-600 dark:text-slate-300" id="examsMatrixTable">
+            <thead class="bg-slate-50 dark:bg-[#10191b] text-slate-700 dark:text-slate-300 uppercase font-semibold border-b border-slate-200 dark:border-[#23353c]" id="examsMatrixThead">
               <!-- JS ile dinamik modül sütunları oluşturulacak -->
             </thead>
-            <tbody id="examsMatrixTbody" class="divide-y divide-slate-100 bg-white">
+            <tbody id="examsMatrixTbody" class="divide-y divide-slate-100 dark:divide-[#23353c] bg-white dark:bg-[#152125]">
               <!-- JS ile kursiyer satırları doldurulacak -->
             </tbody>
           </table>
@@ -3025,15 +3094,15 @@
 
         <div id="detailOffDaysContainer"></div>
 
-        <div class="border border-slate-200 rounded-xl overflow-hidden">
-          <table class="w-full text-left text-xs text-slate-600">
-            <thead class="bg-slate-50 text-slate-700 uppercase font-semibold border-b border-slate-200">
+        <div class="border border-slate-200 dark:border-[#23353c] rounded-xl overflow-hidden">
+          <table class="w-full text-left text-xs text-slate-600 dark:text-slate-300">
+            <thead class="bg-slate-50 dark:bg-[#10191b] text-slate-700 dark:text-slate-300 uppercase font-semibold border-b border-slate-200 dark:border-[#23353c]">
               <tr>
                 <th class="px-4 py-2.5 w-24">Ders Saati</th>
                 <th class="px-4 py-2.5">Anlatılan Konu / Faaliyet</th>
               </tr>
             </thead>
-            <tbody id="detailSyllabusTableBody" class="divide-y divide-slate-100"></tbody>
+            <tbody id="detailSyllabusTableBody" class="divide-y divide-slate-100 dark:divide-[#23353c]"></tbody>
           </table>
         </div>
       </div>
