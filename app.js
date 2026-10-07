@@ -596,8 +596,8 @@ window.onCloudSync = function(type, data) {
     if (typeof renderAdminTemplates === 'function') renderAdminTemplates();
     if (typeof renderTemplatesTable === 'function') renderTemplatesTable();
     if (typeof populateCourseTemplatesDropdown === 'function') {
-      const areaFilter = document.getElementById('courseFormAreaFilter');
-      populateCourseTemplatesDropdown(areaFilter ? areaFilter.value : 'my_area');
+      const areaFilter = document.getElementById('courseFormCategoryFilter');
+      populateCourseTemplatesDropdown(areaFilter ? areaFilter.value : '');
     }
   } else if (type === 'todos') {
     if (typeof renderDevTodos === 'function') renderDevTodos();
@@ -1845,56 +1845,55 @@ function populateAllAreaDropdowns() {
 window.populateAllAreaDropdowns = populateAllAreaDropdowns;
 
 /**
- * Kurs modalındaki Alan/Branş filtresini kullanıcının yetkisine göre dinamik oluşturur.
- * - Geliştiriciler (developer/admin): "Tüm Alanlar" + sistemdeki tüm alanları görebilir.
- * - Eğitmenler / Zümre Başkanları: YALNIZCA kendi tanımlı 1. ve varsa 2. branşını seçebilir.
+ * Kurs modalındaki Alan/Branş filtresini kullanıcının tanımlı branşlarına göre dinamik oluşturur.
+ * - Sadece kendi branşıyla ilgili kursları görebilir.
+ * - Tek bir branşı varsa: Sadece o branş seçilidir ve o branşa ait kurslar listelenir.
+ * - Birden fazla branşı varsa: Açılır kutuda sadece kendi branşları listelenir, hangisini seçerse o branşa ait kurslar listelenir.
  */
 function populateCourseAreaFilterDropdown(selectedVal = '') {
   if (!courseFormCategoryFilter) return;
 
   const userAreas = getUserAreas(currentUser);
-  const areas = (currentAreas && currentAreas.length > 0)
-    ? currentAreas.map(a => typeof a === 'string' ? a : a.name).filter(Boolean)
-    : [];
+  let activeArea = userAreas[0] || 'Bilişim Teknolojileri';
+
+  if (selectedVal && userAreas.some(a => a.toLowerCase() === selectedVal.toLowerCase())) {
+    activeArea = userAreas.find(a => a.toLowerCase() === selectedVal.toLowerCase());
+  }
 
   let html = '';
 
-  if (isDeveloper(currentUser)) {
-    // Geliştirici tam yetkili
-    html += `<option value="my_area">⭐ Kendi Branşım (${escapeHtml(userAreas[0] || 'Genel')})</option>`;
-    html += `<option value="all">🌐 Tüm Alanlar (Tüm Kursları Göster)</option>`;
-    areas.forEach(a => {
-      html += `<option value="${escapeHtml(a)}">${escapeHtml(a)}</option>`;
-    });
-
+  if (userAreas.length <= 1) {
+    // Tek branşı varsa: Sadece kendi branşı gösterilir
+    html = `<option value="${escapeHtml(userAreas[0])}">⭐ ${escapeHtml(userAreas[0])}</option>`;
+    courseFormCategoryFilter.disabled = true;
     if (courseFormCategoryFilterHint) {
-      courseFormCategoryFilterHint.innerText = 'Geliştirici yetkisi: Tüm branşlardaki kurs şablonlarını listeleyip kurs açabilirsiniz.';
+      courseFormCategoryFilterHint.innerText = `Branşınız: ${userAreas[0]}. Yalnızca kendi branşınızdaki kursları görebilir ve açabilirsiniz.`;
     }
   } else {
-    // Eğitmen / Zümre Başkanı: Sadece yetkili olduğu branşlar!
-    if (userAreas.length === 1) {
-      html += `<option value="${escapeHtml(userAreas[0])}">⭐ ${escapeHtml(userAreas[0])}</option>`;
-    } else {
-      userAreas.forEach((a, idx) => {
-        html += `<option value="${escapeHtml(a)}">⭐ ${idx + 1}. Branşım (${escapeHtml(a)})</option>`;
-      });
-    }
-
+    // Birden fazla branşı varsa: SADECE kendi branşları listelenir
+    userAreas.forEach((a, idx) => {
+      const isSelected = (a.toLowerCase() === activeArea.toLowerCase()) ? 'selected' : '';
+      html += `<option value="${escapeHtml(a)}" ${isSelected}>⭐ ${idx + 1}. Branşınız: ${escapeHtml(a)}</option>`;
+    });
+    courseFormCategoryFilter.disabled = false;
     if (courseFormCategoryFilterHint) {
-      const branchesText = userAreas.join(' ve ');
-      courseFormCategoryFilterHint.innerText = `Yalnızca yetkili olduğunuz branş(lar) (${branchesText}) kapsamındaki kursları açabilirsiniz.`;
+      courseFormCategoryFilterHint.innerText = 'Birden fazla branşınız tanımlıdır. Seçtiğiniz branşa ait kurslar listelenecektir.';
     }
   }
 
   courseFormCategoryFilter.innerHTML = html;
+  courseFormCategoryFilter.value = activeArea;
 
-  // Seçili değeri ayarla
-  if (selectedVal && Array.from(courseFormCategoryFilter.options).some(o => o.value === selectedVal)) {
-    courseFormCategoryFilter.value = selectedVal;
-  } else if (!isDeveloper(currentUser) && userAreas.length > 0) {
-    courseFormCategoryFilter.value = userAreas[0];
-  } else {
-    courseFormCategoryFilter.value = 'my_area';
+  if (courseFormAreaBadge) {
+    if (userAreas.length > 1) {
+      courseFormAreaBadge.innerText = `Yetkili Branşlarınız: ${userAreas.join(' • ')}`;
+    } else {
+      courseFormAreaBadge.innerText = `Branşınız: ${userAreas[0] || 'Genel'}`;
+    }
+  }
+
+  if (courseFormCategory) {
+    courseFormCategory.value = activeArea;
   }
 }
 window.populateCourseAreaFilterDropdown = populateCourseAreaFilterDropdown;
@@ -2920,45 +2919,46 @@ function generateNextCourseCode(tmpl, excludeCourseId = null) {
 }
 window.generateNextCourseCode = generateNextCourseCode;
 
-// Eğitmenin alanına veya seçilen alana göre kurs şablonlarını açılır listeye doldurur
-function populateCourseTemplatesDropdown(filterArea = 'my_area', selectedTmplId = '') {
+// Kullanıcının yetkili branşına veya birden fazla branşı varsa seçtiği branşa göre kurs şablonlarını doldurur
+function populateCourseTemplatesDropdown(filterArea = '', selectedTmplId = '') {
   const userAreas = getUserAreas(currentUser);
-  const isDev = isDeveloper(currentUser);
-  let filtered = currentTemplates;
 
-  if (isDev) {
-    if (filterArea === 'my_area') {
-      const primary = userAreas[0] || 'Bilişim Teknolojileri';
-      filtered = currentTemplates.filter(t => (t.category || t.area || 'Diğer') === primary);
-      if (filtered.length === 0) filtered = currentTemplates;
-    } else if (filterArea !== 'all') {
-      filtered = currentTemplates.filter(t => (t.category || t.area || 'Diğer') === filterArea);
-    }
+  // Hedef branşı belirle (kullanıcının kendi branşlarından biri olmalı)
+  let targetArea = '';
+  if (filterArea && userAreas.some(a => a.toLowerCase() === filterArea.toLowerCase())) {
+    targetArea = userAreas.find(a => a.toLowerCase() === filterArea.toLowerCase());
   } else {
-    // Normal eğitmen / Zümre başkanı: Sadece yetkili olduğu branşlar içindeki şablonlar!
-    if (filterArea === 'my_area') {
-      filtered = currentTemplates.filter(t => userAreas.includes(t.category || t.area || 'Diğer'));
-    } else if (userAreas.includes(filterArea)) {
-      filtered = currentTemplates.filter(t => (t.category || t.area || 'Diğer') === filterArea);
-    } else {
-      // Yetkisi olmayan bir alan seçildiyse kullanıcının alanlarına zorla
-      filtered = currentTemplates.filter(t => userAreas.includes(t.category || t.area || 'Diğer'));
-    }
+    targetArea = userAreas[0] || 'Bilişim Teknolojileri';
   }
+
+  // SADECE seçilen/kendi branşına ait kurs şablonlarını filtrele (başka branş kursları ASLA gösterilmez)
+  let filtered = currentTemplates.filter(t => {
+    const cat = (t.category || t.area || '').trim().toLowerCase();
+    return cat === targetArea.trim().toLowerCase();
+  });
 
   // Kursları açılır listede Türkçe alfabetik sıraya göre (A-Z) sırala
   filtered = [...filtered].sort((a, b) => (a.name || '').localeCompare(b.name || '', 'tr', { sensitivity: 'base' }));
 
-  let optionsHtml = `<option value="">-- Kurs Seçiniz (${filtered.length} Kurs Mevcut) --</option>`;
-  optionsHtml += filtered.map(tmpl => `
-    <option value="${tmpl.id}">${escapeHtml(tmpl.name)} (${tmpl.totalHours} Saat / ${tmpl.moduleCount || 1} Modül)</option>
-  `).join('');
+  let optionsHtml = '';
+  if (filtered.length === 0) {
+    optionsHtml = `<option value="">-- ${escapeHtml(targetArea)} Branşında Henüz Kurs Şablonu Bulunmuyor --</option>`;
+  } else {
+    optionsHtml = `<option value="">-- Kurs Seçiniz (${filtered.length} Kurs Mevcut) --</option>`;
+    optionsHtml += filtered.map(tmpl => `
+      <option value="${tmpl.id}">${escapeHtml(tmpl.name)} (${tmpl.totalHours} Saat / ${tmpl.moduleCount || 1} Modül)</option>
+    `).join('');
+  }
 
   if (courseFormTemplateSelect) {
     courseFormTemplateSelect.innerHTML = optionsHtml;
     if (selectedTmplId) {
       courseFormTemplateSelect.value = selectedTmplId;
     }
+  }
+
+  if (courseFormCategory) {
+    courseFormCategory.value = targetArea;
   }
 }
 window.populateCourseTemplatesDropdown = populateCourseTemplatesDropdown;
@@ -2967,13 +2967,10 @@ function openCourseModal(courseToEdit = null) {
   courseModal.classList.remove('hidden');
 
   const userAreas = getUserAreas(currentUser);
-  const isDev = isDeveloper(currentUser);
 
   if (courseFormAreaBadge) {
-    if (isDev) {
-      courseFormAreaBadge.innerText = 'Yetki: Tüm Branşlar (Geliştirici)';
-    } else if (userAreas.length > 1) {
-      courseFormAreaBadge.innerText = `Yetkili Branşlarınız: ${userAreas[0]} + ${userAreas[1]}`;
+    if (userAreas.length > 1) {
+      courseFormAreaBadge.innerText = `Yetkili Branşlarınız: ${userAreas.join(' • ')}`;
     } else {
       courseFormAreaBadge.innerText = `Branşınız: ${userAreas[0] || 'Genel'}`;
     }
@@ -2994,9 +2991,9 @@ function openCourseModal(courseToEdit = null) {
     let matchedTmpl = currentTemplates.find(t => t.id === courseToEdit.templateId) ||
                       currentTemplates.find(t => t.name === courseToEdit.name);
 
-    let filterVal = courseToEdit.category || userAreas[0] || 'my_area';
-    if (!isDev && !userAreas.includes(filterVal)) {
-      filterVal = userAreas[0] || 'my_area';
+    let filterVal = courseToEdit.category || userAreas[0];
+    if (!userAreas.some(a => a.toLowerCase() === filterVal.toLowerCase())) {
+      filterVal = userAreas[0];
     }
 
     populateCourseAreaFilterDropdown(filterVal);
@@ -3129,13 +3126,11 @@ function handleSaveCourse(e) {
 
   const category = tmpl ? (tmpl.category || tmpl.area || 'Genel') : (courseFormCategory.value || 'Genel');
 
-  // GÜVENLİK / YETKİ KONTROLÜ: Geliştirici olmayan kullanıcılar sadece tanımlı branşlarında kurs açabilir!
-  if (!isDeveloper(currentUser)) {
-    const userAreas = getUserAreas(currentUser);
-    if (!userAreas.includes(category)) {
-      alert(`Yetki Hatası: Bu kursun alanı "${category}". Siz yalnızca tanımlı branş(lar)ınız (${userAreas.join(', ')}) kapsamında kurs açabilirsiniz!`);
-      return;
-    }
+  // GÜVENLİK / YETKİ KONTROLÜ: Kullanıcılar yalnızca tanımlı branşlarında kurs açabilir!
+  const userAreas = getUserAreas(currentUser);
+  if (!userAreas.some(a => a.trim().toLowerCase() === category.trim().toLowerCase())) {
+    alert(`Yetki Hatası: Bu kursun alanı "${category}". Siz yalnızca yetkili olduğunuz branş(lar)ınız (${userAreas.join(', ')}) kapsamında kurs açabilirsiniz!`);
+    return;
   }
   const startDate = courseFormStartDate.value;
   const endDate = courseFormEndDate.value;
