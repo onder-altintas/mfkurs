@@ -135,6 +135,957 @@ const DEFAULT_AREAS = [
 // Kurs ve Müfredat Şablonları (MEB Hayat Boyu Öğrenme Genel Müdürlüğü Onaylı)
 const DEFAULT_COURSE_TEMPLATES = [
 {
+  "id": "tmpl_veri_giris_elemani_116",
+  "name": "Veri Giriş Elemanı",
+  "code": "VGE-116",
+  "category": "Bilişim Teknolojileri",
+  "area": "Bilişim Teknolojileri",
+  "totalHours": 116,
+  "moduleCount": 1,
+  "description": "Bilişim Teknolojileri Alanı - Veri Giriş Elemanı Kurs Programı. Temel veri kavramları, Excel, Makro/VBA, SQL Veri Tabanı ve Power BI iş zekası uygulamalarını kapsar (Tek Modül, 116 Ders Saati).",
+  "modules": [
+    {
+      "id": "mod_vge_1",
+      "number": 1,
+      "name": "Veri Giriş Elemanı",
+      "totalHours": 116,
+      "lessonHours": 114,
+      "examHours": 2,
+      "topics": [
+        "Veri Nedir ve Temel Kavramlar",
+        "Veri Ne İşe Yarar ve Kullanım Alanları",
+        "Verinin Saklama Yolları ve Depolama Birimleri",
+        "Yapısal Veri Mantığı ve Veri Türleri",
+        "Yapılandırılmış Veri Özellikleri ve Standartları",
+        "İlişkisel Öznitelikler ve Veri Bütünlüğü",
+        "Form ve Cloud Yapıları: Çevrimiçi Veri Toplama",
+        "Form ve Cloud Yapıları: Bulut Veri Depolama ve Paylaşım",
+        "İnternet ve Araştırma Yöntemleri",
+        "Güvenilir Veri Kaynakları ve Teyit Yöntemleri",
+        "Güvenilmez Kaynakları Ayırt Etme ve Veri Doğrulama",
+        "KVKK Veri Güvenliği, Mahremiyet ve Yasal Sorumluluklar",
+        "Veri Giriş İşlemleri, Standartları ve Hata Önleme",
+        "Excel Açılış Sayfası ve Çalışma Kitabı Arayüzü",
+        "Excel Sayfa Yapısı, Görünümler ve Yakınlaştırma",
+        "Satır ve Sütun İle Çalışma: Ekleme, Silme ve Boyutlandırma",
+        "Satır ve Sütunları Gizleme, Sabitleme ve Çözme",
+        "Excel Menüler ve Şerit (Ribbon) Arayüzü Kullanımı",
+        "Hızlı Erişim Araç Çubuğu ve Kısayollar",
+        "Otomatik Tamamlama (AutoFill) ve Otomatik Doldurma",
+        "Özel Doldurma Serileri ve Hızlı Doldurma (Flash Fill)",
+        "Hücre Biçimlendirme İşlemleri: Sayı, Metin ve Tarih Formatları",
+        "Hizalama, Kenarlıklar, Dolgu ve Hücre Stilleri",
+        "Koşullu Biçimlendirme: Hücre Kuralları ve Renk Ölçekleri",
+        "Koşullu Biçimlendirme: Formülle Kural Tanımlama",
+        "Temel Fonksiyon Kullanımı: TOPLA, ORTALAMA, MAK, MİN",
+        "SAY, BAĞ_DEĞ_DOLU_SAY ve Basit İstatistik Fonksiyonları",
+        "İç İçe Fonksiyon Kullanımı: EĞER ve VE / VEYA Fonksiyonları",
+        "Çoklu Koşullu İç İçe Fonksiyon Uygulamaları",
+        "Arama ve Başvuru Fonksiyonları: DÜŞEYARA (VLOOKUP) Kullanımı",
+        "YATAYARA ve ÇAPRAZARA (XLOOKUP) İle Veri Eşleştirme",
+        "Grafik Oluşturma: Sütun, Çubuk ve Çizgi Grafikler",
+        "Grafik Biçimlendirme, Veri Etiketleri ve Göstergeler",
+        "Hedef Ara (Goal Seek) Aracı ve Senaryo Analizi - 1",
+        "Hedef Ara (Goal Seek) Aracı İle Değer Optimizasyonu - 2",
+        "Veri Analizi: Sıralama ve Özel Filtreleme Yöntemleri",
+        "Metni Sütunlara Dönüştürme ve Yinelenenleri Kaldırma",
+        "Pivot Tablo (Özet Tablo) Oluşturma ve Alan Seçimi",
+        "Pivot Tabloda Gruplandırma, Dilimleyici ve Özet Grafikler",
+        "Makro İşlemleri ve Geliştirici Sekmesi Yönetimi",
+        "Makroların Çalışma Mantığı ve Güvenlik Seviyeleri",
+        "Makro Kaydetme (Macro Recorder) İle Rutin İşleri Otomatikleştirme - 1",
+        "Makro Kaydetme ve Butona Makro Atama - 2",
+        "VBA Kod Editörüne Giriş ve Makro Yazma Temelleri",
+        "Basit VBA Prosedürleri (Sub) ve Range Nesnesi İşlemleri",
+        "Makro Güvenliği, Güvenilen Konumlar ve Dijital İmzalar - 1",
+        "Makro İçeren Çalışma Kitabı (.xlsm) Kaydetme ve Güvenlik Ayarları - 2",
+        "VBA Değişken ve Sabit Tanımlama (Dim, Const)",
+        "Değişkenlerin Kapsamı (Scope) ve İsimlendirme Kuralları",
+        "VBA Veri Tipleri: Integer, Long, String, Double, Boolean",
+        "Variant Veri Tipi ve Veri Tipi Dönüşümleri",
+        "Aritmetik ve Karşılaştırma Operatörleri",
+        "Mantıksal Operatörler (And, Or, Not)",
+        "If...Then...Else Karar Kontrol Yapısı Kullanımı",
+        "Çoklu Koşullu ElseIf ve Select Case Yapıları",
+        "For...Next Döngüsü İle Tekrarlayan İşlemler",
+        "Do While ve Do Until Döngüleri İle Veri Tarama",
+        "Form Denetimi Öğeleri: Düğme, Onay Kutusu ve Seçenek Düğmesi",
+        "Açılır Liste (ComboBox) ve Liste Kutusu Form Denetimleri",
+        "Etkili İletişim: İş Ortamında Profesyonel Yazışma Kuralları",
+        "Etkili İletişim: Rapor Sunumu ve Ekip İçi Koordinasyon",
+        "Etkili İletişim: Veri Girişinde Geri Bildirim ve İtiraz Yönetimi",
+        "Veri Tabanı Kavramı ve Veritabanı Mimarisi Temelleri",
+        "Veri Tabanı İhtiyacı ve Dosya Sistemlerinden Farkları",
+        "Veri Tabanı Yönetim Sistemi (VTYS / DBMS) Nedir?",
+        "Popüler VTYS Türleri (SQL Server, MySQL, PostgreSQL, Access)",
+        "İlişkisel Veri Tabanı (RDBMS) Mantığı ve Tablo Yapısı",
+        "Birincil Anahtar (Primary Key) ve Yabancı Anahtar (Foreign Key)",
+        "SQL Veri Tipleri: Sayısal, Metinsel (VARCHAR, CHAR) ve Tarih Tipleri",
+        "SQL Veri Tiplerinde Kısıtlamalar (Constraints: NOT NULL, UNIQUE)",
+        "SELECT Komutu: Tablodan Veri Sorgulama Temelleri",
+        "SELECT Komutu İle Belirli Sütunları Listeleme ve Takma Ad (AS)",
+        "INSERT Komutu İle Tabloya Yeni Kayıt Ekleme - 1",
+        "INSERT Komutu İle Çoklu Veri Ekleme Yöntemleri - 2",
+        "UPDATE Komutu İle Mevcut Verileri Güncelleme - 1",
+        "UPDATE Komutunda Koşul Belirleme ve Veri Bütünlüğü - 2",
+        "DELETE Komutu İle Tablodan Kayıt Silme İşlemleri - 1",
+        "DELETE ve TRUNCATE Farkı ve Güvenli Silme Kuralları - 2",
+        "WHERE Komutu İle Şartlı Veri Filtreleme - 1",
+        "WHERE İle Karşılaştırma, Mantıksal ve Aralık (BETWEEN, IN, LIKE) Filtreleri - 2",
+        "DISTINCT Komutu İle Yinelenen Kayıtları Ayıklama - 1",
+        "DISTINCT Kullanımı ve Benzersiz Değer Analizi - 2",
+        "ORDER BY Komutu İle Artan (ASC) ve Azalan (DESC) Sıralama",
+        "ORDER BY İle Çoklu Sütuna Göre Sıralama İşlemleri",
+        "TOP Komutu (LIMIT) İle İlk N Sayıda Kaydı Getirme",
+        "Aggregate Fonksiyonlar: COUNT ve SUM İle Sayma ve Toplama",
+        "Aggregate Fonksiyonlar: AVG İle Ortalama Hesaplama",
+        "Aggregate Fonksiyonlar: MIN ve MAX İle Uç Değerleri Bulma",
+        "GROUP BY Komutu İle Verileri Gruplama Mantığı - 1",
+        "GROUP BY İle Kategori Bazlı Özet Raporlar Üretme - 2",
+        "HAVING Komutu İle Gruplanmış Verilerde Şart Belirleme - 1",
+        "HAVING ve WHERE Komutları Arasındaki Farklar ve Kullanımı - 2",
+        "JOIN İşlemleri: INNER JOIN İle İki Tabloyu Birleştirme - 1",
+        "LEFT JOIN, RIGHT JOIN ve FULL JOIN Mantığı - 2",
+        "Power BI Genel Bilgi: İş Zekası (BI) Kavramı ve Arayüz Tanıtımı",
+        "Power BI Desktop Kurulumu ve Temel Çalışma Alanı",
+        "Power BI'a Veri Aktarma (Excel, CSV, Web, SQL) - 1",
+        "Power Query İle Veri Temizleme ve Dönüştürme - 2",
+        "Görsel Öğeler: Kartlar, Tablo ve Matris Görselleri",
+        "Görsel Öğeler: Sütun, Çubuk ve Pasta Grafikleri",
+        "Görsel Öğeler: Çizgi Grafik ve Alan Grafikleri İle Trend Takibi",
+        "Görsel Öğeler: Dilimleyiciler (Slicers) ve Etkileşimli Filtreler",
+        "İlişkisel Veri Kullanımı ve Tablolar Arası İlişkiler (1-to-Many)",
+        "Veri Modeli (Data Model) Tasarımı ve Şema Yapısı",
+        "Yeni Sütun Oluşturma (Calculated Columns) Mantığı - 1",
+        "DAX Fonksiyonları İle Yeni Hesaplanmış Sütun Yazma - 2",
+        "Yeni Tablo Oluşturma (Calculated Tables) Mantığı - 1",
+        "DAX Fonksiyonları İle Tarih ve Özet Tabloları Üretme - 2",
+        "FILTER Formülü Kullanma ve Koşullu Tablo Filtreleme - 1",
+        "DAX FILTER İle Dinamik Veri Setleri Oluşturma - 2",
+        "CALCULATE Formülü Kullanma: Bağlam Değiştirme Mantığı - 1",
+        "CALCULATE Formülü İle İleri Düzey Ölçü (Measure) Hesaplamaları - 2",
+        "Düğme, Resim ve Şekil Ekleme İle Etkileşimli Rapor Tasarımı - 1",
+        "Sayfa Gezinme Düğmeleri, Yer İmleri (Bookmarks) ve Dashboard Bitirme - 2"
+      ]
+    }
+  ],
+  "syllabus": [
+    {
+      "hour": 1,
+      "topic": "Veri Nedir ve Temel Kavramlar",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 2,
+      "topic": "Veri Ne İşe Yarar ve Kullanım Alanları",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 3,
+      "topic": "Verinin Saklama Yolları ve Depolama Birimleri",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 4,
+      "topic": "Yapısal Veri Mantığı ve Veri Türleri",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 5,
+      "topic": "Yapılandırılmış Veri Özellikleri ve Standartları",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 6,
+      "topic": "İlişkisel Öznitelikler ve Veri Bütünlüğü",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 7,
+      "topic": "Form ve Cloud Yapıları: Çevrimiçi Veri Toplama",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 8,
+      "topic": "Form ve Cloud Yapıları: Bulut Veri Depolama ve Paylaşım",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 9,
+      "topic": "İnternet ve Araştırma Yöntemleri",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 10,
+      "topic": "Güvenilir Veri Kaynakları ve Teyit Yöntemleri",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 11,
+      "topic": "Güvenilmez Kaynakları Ayırt Etme ve Veri Doğrulama",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 12,
+      "topic": "KVKK Veri Güvenliği, Mahremiyet ve Yasal Sorumluluklar",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 13,
+      "topic": "Veri Giriş İşlemleri, Standartları ve Hata Önleme",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 14,
+      "topic": "Excel Açılış Sayfası ve Çalışma Kitabı Arayüzü",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 15,
+      "topic": "Excel Sayfa Yapısı, Görünümler ve Yakınlaştırma",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 16,
+      "topic": "Satır ve Sütun İle Çalışma: Ekleme, Silme ve Boyutlandırma",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 17,
+      "topic": "Satır ve Sütunları Gizleme, Sabitleme ve Çözme",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 18,
+      "topic": "Excel Menüler ve Şerit (Ribbon) Arayüzü Kullanımı",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 19,
+      "topic": "Hızlı Erişim Araç Çubuğu ve Kısayollar",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 20,
+      "topic": "Otomatik Tamamlama (AutoFill) ve Otomatik Doldurma",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 21,
+      "topic": "Özel Doldurma Serileri ve Hızlı Doldurma (Flash Fill)",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 22,
+      "topic": "Hücre Biçimlendirme İşlemleri: Sayı, Metin ve Tarih Formatları",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 23,
+      "topic": "Hizalama, Kenarlıklar, Dolgu ve Hücre Stilleri",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 24,
+      "topic": "Koşullu Biçimlendirme: Hücre Kuralları ve Renk Ölçekleri",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 25,
+      "topic": "Koşullu Biçimlendirme: Formülle Kural Tanımlama",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 26,
+      "topic": "Temel Fonksiyon Kullanımı: TOPLA, ORTALAMA, MAK, MİN",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 27,
+      "topic": "SAY, BAĞ_DEĞ_DOLU_SAY ve Basit İstatistik Fonksiyonları",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 28,
+      "topic": "İç İçe Fonksiyon Kullanımı: EĞER ve VE / VEYA Fonksiyonları",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 29,
+      "topic": "Çoklu Koşullu İç İçe Fonksiyon Uygulamaları",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 30,
+      "topic": "Arama ve Başvuru Fonksiyonları: DÜŞEYARA (VLOOKUP) Kullanımı",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 31,
+      "topic": "YATAYARA ve ÇAPRAZARA (XLOOKUP) İle Veri Eşleştirme",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 32,
+      "topic": "Grafik Oluşturma: Sütun, Çubuk ve Çizgi Grafikler",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 33,
+      "topic": "Grafik Biçimlendirme, Veri Etiketleri ve Göstergeler",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 34,
+      "topic": "Hedef Ara (Goal Seek) Aracı ve Senaryo Analizi - 1",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 35,
+      "topic": "Hedef Ara (Goal Seek) Aracı İle Değer Optimizasyonu - 2",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 36,
+      "topic": "Veri Analizi: Sıralama ve Özel Filtreleme Yöntemleri",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 37,
+      "topic": "Metni Sütunlara Dönüştürme ve Yinelenenleri Kaldırma",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 38,
+      "topic": "Pivot Tablo (Özet Tablo) Oluşturma ve Alan Seçimi",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 39,
+      "topic": "Pivot Tabloda Gruplandırma, Dilimleyici ve Özet Grafikler",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 40,
+      "topic": "Makro İşlemleri ve Geliştirici Sekmesi Yönetimi",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 41,
+      "topic": "Makroların Çalışma Mantığı ve Güvenlik Seviyeleri",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 42,
+      "topic": "Makro Kaydetme (Macro Recorder) İle Rutin İşleri Otomatikleştirme - 1",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 43,
+      "topic": "Makro Kaydetme ve Butona Makro Atama - 2",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 44,
+      "topic": "VBA Kod Editörüne Giriş ve Makro Yazma Temelleri",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 45,
+      "topic": "Basit VBA Prosedürleri (Sub) ve Range Nesnesi İşlemleri",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 46,
+      "topic": "Makro Güvenliği, Güvenilen Konumlar ve Dijital İmzalar - 1",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 47,
+      "topic": "Makro İçeren Çalışma Kitabı (.xlsm) Kaydetme ve Güvenlik Ayarları - 2",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 48,
+      "topic": "VBA Değişken ve Sabit Tanımlama (Dim, Const)",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 49,
+      "topic": "Değişkenlerin Kapsamı (Scope) ve İsimlendirme Kuralları",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 50,
+      "topic": "VBA Veri Tipleri: Integer, Long, String, Double, Boolean",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 51,
+      "topic": "Variant Veri Tipi ve Veri Tipi Dönüşümleri",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 52,
+      "topic": "Aritmetik ve Karşılaştırma Operatörleri",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 53,
+      "topic": "Mantıksal Operatörler (And, Or, Not)",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 54,
+      "topic": "If...Then...Else Karar Kontrol Yapısı Kullanımı",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 55,
+      "topic": "Çoklu Koşullu ElseIf ve Select Case Yapıları",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 56,
+      "topic": "For...Next Döngüsü İle Tekrarlayan İşlemler",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 57,
+      "topic": "Do While ve Do Until Döngüleri İle Veri Tarama",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 58,
+      "topic": "Form Denetimi Öğeleri: Düğme, Onay Kutusu ve Seçenek Düğmesi",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 59,
+      "topic": "Açılır Liste (ComboBox) ve Liste Kutusu Form Denetimleri",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 60,
+      "topic": "Etkili İletişim: İş Ortamında Profesyonel Yazışma Kuralları",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 61,
+      "topic": "Etkili İletişim: Rapor Sunumu ve Ekip İçi Koordinasyon",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 62,
+      "topic": "Etkili İletişim: Veri Girişinde Geri Bildirim ve İtiraz Yönetimi",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 63,
+      "topic": "Veri Tabanı Kavramı ve Veritabanı Mimarisi Temelleri",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 64,
+      "topic": "Veri Tabanı İhtiyacı ve Dosya Sistemlerinden Farkları",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 65,
+      "topic": "Veri Tabanı Yönetim Sistemi (VTYS / DBMS) Nedir?",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 66,
+      "topic": "Popüler VTYS Türleri (SQL Server, MySQL, PostgreSQL, Access)",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 67,
+      "topic": "İlişkisel Veri Tabanı (RDBMS) Mantığı ve Tablo Yapısı",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 68,
+      "topic": "Birincil Anahtar (Primary Key) ve Yabancı Anahtar (Foreign Key)",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 69,
+      "topic": "SQL Veri Tipleri: Sayısal, Metinsel (VARCHAR, CHAR) ve Tarih Tipleri",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 70,
+      "topic": "SQL Veri Tiplerinde Kısıtlamalar (Constraints: NOT NULL, UNIQUE)",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 71,
+      "topic": "SELECT Komutu: Tablodan Veri Sorgulama Temelleri",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 72,
+      "topic": "SELECT Komutu İle Belirli Sütunları Listeleme ve Takma Ad (AS)",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 73,
+      "topic": "INSERT Komutu İle Tabloya Yeni Kayıt Ekleme - 1",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 74,
+      "topic": "INSERT Komutu İle Çoklu Veri Ekleme Yöntemleri - 2",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 75,
+      "topic": "UPDATE Komutu İle Mevcut Verileri Güncelleme - 1",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 76,
+      "topic": "UPDATE Komutunda Koşul Belirleme ve Veri Bütünlüğü - 2",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 77,
+      "topic": "DELETE Komutu İle Tablodan Kayıt Silme İşlemleri - 1",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 78,
+      "topic": "DELETE ve TRUNCATE Farkı ve Güvenli Silme Kuralları - 2",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 79,
+      "topic": "WHERE Komutu İle Şartlı Veri Filtreleme - 1",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 80,
+      "topic": "WHERE İle Karşılaştırma, Mantıksal ve Aralık (BETWEEN, IN, LIKE) Filtreleri - 2",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 81,
+      "topic": "DISTINCT Komutu İle Yinelenen Kayıtları Ayıklama - 1",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 82,
+      "topic": "DISTINCT Kullanımı ve Benzersiz Değer Analizi - 2",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 83,
+      "topic": "ORDER BY Komutu İle Artan (ASC) ve Azalan (DESC) Sıralama",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 84,
+      "topic": "ORDER BY İle Çoklu Sütuna Göre Sıralama İşlemleri",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 85,
+      "topic": "TOP Komutu (LIMIT) İle İlk N Sayıda Kaydı Getirme",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 86,
+      "topic": "Aggregate Fonksiyonlar: COUNT ve SUM İle Sayma ve Toplama",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 87,
+      "topic": "Aggregate Fonksiyonlar: AVG İle Ortalama Hesaplama",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 88,
+      "topic": "Aggregate Fonksiyonlar: MIN ve MAX İle Uç Değerleri Bulma",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 89,
+      "topic": "GROUP BY Komutu İle Verileri Gruplama Mantığı - 1",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 90,
+      "topic": "GROUP BY İle Kategori Bazlı Özet Raporlar Üretme - 2",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 91,
+      "topic": "HAVING Komutu İle Gruplanmış Verilerde Şart Belirleme - 1",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 92,
+      "topic": "HAVING ve WHERE Komutları Arasındaki Farklar ve Kullanımı - 2",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 93,
+      "topic": "JOIN İşlemleri: INNER JOIN İle İki Tabloyu Birleştirme - 1",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 94,
+      "topic": "LEFT JOIN, RIGHT JOIN ve FULL JOIN Mantığı - 2",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 95,
+      "topic": "Power BI Genel Bilgi: İş Zekası (BI) Kavramı ve Arayüz Tanıtımı",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 96,
+      "topic": "Power BI Desktop Kurulumu ve Temel Çalışma Alanı",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 97,
+      "topic": "Power BI'a Veri Aktarma (Excel, CSV, Web, SQL) - 1",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 98,
+      "topic": "Power Query İle Veri Temizleme ve Dönüştürme - 2",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 99,
+      "topic": "Görsel Öğeler: Kartlar, Tablo ve Matris Görselleri",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 100,
+      "topic": "Görsel Öğeler: Sütun, Çubuk ve Pasta Grafikleri",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 101,
+      "topic": "Görsel Öğeler: Çizgi Grafik ve Alan Grafikleri İle Trend Takibi",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 102,
+      "topic": "Görsel Öğeler: Dilimleyiciler (Slicers) ve Etkileşimli Filtreler",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 103,
+      "topic": "İlişkisel Veri Kullanımı ve Tablolar Arası İlişkiler (1-to-Many)",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 104,
+      "topic": "Veri Modeli (Data Model) Tasarımı ve Şema Yapısı",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 105,
+      "topic": "Yeni Sütun Oluşturma (Calculated Columns) Mantığı - 1",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 106,
+      "topic": "DAX Fonksiyonları İle Yeni Hesaplanmış Sütun Yazma - 2",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 107,
+      "topic": "Yeni Tablo Oluşturma (Calculated Tables) Mantığı - 1",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 108,
+      "topic": "DAX Fonksiyonları İle Tarih ve Özet Tabloları Üretme - 2",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 109,
+      "topic": "FILTER Formülü Kullanma ve Koşullu Tablo Filtreleme - 1",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 110,
+      "topic": "DAX FILTER İle Dinamik Veri Setleri Oluşturma - 2",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 111,
+      "topic": "CALCULATE Formülü Kullanma: Bağlam Değiştirme Mantığı - 1",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 112,
+      "topic": "CALCULATE Formülü İle İleri Düzey Ölçü (Measure) Hesaplamaları - 2",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 113,
+      "topic": "Düğme, Resim ve Şekil Ekleme İle Etkileşimli Rapor Tasarımı - 1",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 114,
+      "topic": "Sayfa Gezinme Düğmeleri, Yer İmleri (Bookmarks) ve Dashboard Bitirme - 2",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": false
+    },
+    {
+      "hour": 115,
+      "topic": "Veri Giriş Elemanı - Modül Değerlendirme Sınavı (Uygulama)",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": true
+    },
+    {
+      "hour": 116,
+      "topic": "Veri Giriş Elemanı - Modül Değerlendirme Sınavı (Teorik & Değerlendirme)",
+      "moduleNumber": 1,
+      "moduleName": "Veri Giriş Elemanı",
+      "isExam": true
+    }
+  ]
+},
+
+{
   "id": "tmpl_ileri_excel_56",
   "name": "İleri Excel Geliştirme ve Uyum Eğitimi",
   "code": "BT-EXC-56",
