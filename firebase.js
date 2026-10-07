@@ -135,6 +135,485 @@ const DEFAULT_AREAS = [
 // Kurs ve Müfredat Şablonları (MEB Hayat Boyu Öğrenme Genel Müdürlüğü Onaylı)
 const DEFAULT_COURSE_TEMPLATES = [
 {
+  "id": "tmpl_ileri_excel_56",
+  "name": "İleri Excel Geliştirme ve Uyum Eğitimi",
+  "code": "BT-EXC-56",
+  "category": "Bilişim Teknolojileri",
+  "area": "Bilişim Teknolojileri",
+  "totalHours": 56,
+  "moduleCount": 2,
+  "description": "T.C. Millî Eğitim Bakanlığı Hayat Boyu Öğrenme Genel Müdürlüğü Bilişim Teknolojileri Alanı - İleri Excel Geliştirme ve Uyum Eğitimi Kurs Programı (2 Modül, 56 Ders Saati).",
+  "modules": [
+    {
+      "id": "mod_ileri_excel_1",
+      "number": 1,
+      "name": "Excel İle Elektronik Tablolama",
+      "totalHours": 24,
+      "lessonHours": 22,
+      "examHours": 2,
+      "topics": [
+        "İleri Düzey Veri Türleri, Özel Biçimlendirme ve Veri Giriş Standartları",
+        "İleri Düzey Koşullu Biçimlendirme: Formülle Kural Tanımlama ve Dinamik Vurgular",
+        "Veri Doğrulama (Data Validation): Dinamik Açılır Listeler ve Hata Uyarıları",
+        "İleri Düzey Mantıksal Fonksiyonlar: VE, VEYA, ÇOKEĞER (IFS) ve HATA.AYIKLA",
+        "İleri Düzey Arama ve Başvuru Fonksiyonları: DÜŞEYARA, YATAYARA ve İNDİS / KAÇINCI",
+        "Yeni Nesil Arama Fonksiyonları: ÇAPRAZARA (XLOOKUP) ve ÇAPRAZEŞLEŞTİR (XMATCH)",
+        "İleri Düzey Metin Fonksiyonları ve Dinamik Dizi Metin İşleme (METNEÇEVİR, BİRLEŞTİR)",
+        "Tarih ve Saat Fonksiyonları İle İş Günü ve Süre Hesaplamaları (İŞGÜNÜ, TAMİŞGÜNÜ)",
+        "İleri Düzey Matematik ve İstatistik Fonksiyonları: ÇOKETOPLA, ÇOKSAY, ÇOKORTALAMA",
+        "Dinamik Dizi Fonksiyonları: FİLTRE (FILTER), BENZERSİZ (UNIQUE) ve SIRALA (SORT)",
+        "Veri Sıralama ve Gelişmiş Filtreleme (Advanced Filter) Teknikleri",
+        "Hızlı Doldurma (Flash Fill) ve Metni Sütunlara Dönüştürme Araçları",
+        "Veri Birleştirme (Consolidation) ve Çoklu Tablo Entegrasyonu",
+        "İleri Düzey Grafik İşlemleri: Birleşik Grafikler, İkincil Eksen ve Dinamik Göstergeler",
+        "Kıvılcım Grafikler (Sparklines) ve Mini Trend Göstergeleri Oluşturma",
+        "Özet Tablo (Pivot Table) Temelleri: Alan Yapılandırması ve Veri Özetleme",
+        "Özet Tabloda Gruplandırma, Hesaplanan Alan (Calculated Field) ve Dilimleyiciler",
+        "Özet Grafik (Pivot Chart) Tasarımı ve Dinamik Yönetici Raporları (Dashboard)",
+        "Durum Çözümlemesi (What-If Analysis): Hedef Arama (Goal Seek) ve Senaryo Yöneticisi",
+        "Veri Tablosu (Data Table) ve Solver (Çözücü) Eklentisi İle Optimizasyon",
+        "Giriş Seviyesi Makro İşlemleri: Geliştirici Sekmesi ve Makro Kaydedici (Macro Recorder)",
+        "Göreli Başvurularla Makro Kaydetme, Butona Makro Atama ve Güvenlik Ayarları"
+      ]
+    },
+    {
+      "id": "mod_ileri_excel_2",
+      "number": 2,
+      "name": "Excel İle VBA Programlama",
+      "totalHours": 32,
+      "lessonHours": 30,
+      "examHours": 2,
+      "topics": [
+        "VBA (Visual Basic for Applications) Geliştirme Ortamı (VBE) ve Bileşenleri",
+        "Proje Gezgini (Project Explorer), Özellikler Penceresi ve Kod Modülleri",
+        "VBA Prosedür Türleri: Sub (Alt Yordam) ve Function (Kullanıcı Tanımlı Fonksiyon)",
+        "Değişken Kavramı, Veri Tipleri (Integer, Long, Double, String, Boolean, Variant)",
+        "Değişken Bildirimi (Dim), Kapsam (Scope) ve Sabit Tanımlama (Const)",
+        "Option Explicit Kullanımı ve Değişken Hata Yönetimi",
+        "Aritmetik, Karşılaştırma ve Mantıksal Operatörlerin Kullanımı",
+        "Excel Nesne Modeli: Application, Workbook, Worksheet ve Range Nesneleri",
+        "Range ve Cells Nesneleri İle Hücrelere Değer Yazma, Okuma ve Biçimlendirme",
+        "Karar Kontrol Deyimleri: If...Then...Else Yapısı ve Çoklu Koşullar",
+        "Select Case Karar Kontrol Yapısı ve Çoklu Durum Yönetimi",
+        "Döngü Deyimlerine Giriş: For...Next Sayıcı Döngüsü",
+        "For Each...Next Döngüsü İle Koleksiyonlar ve Hücre Aralıklarında Gezinme",
+        "Do While...Loop ve Do Until...Loop Koşullu Döngü Yapıları",
+        "Döngüler İle Veri Tarama, Koşullu Temizleme ve Veri Aktarımı",
+        "Hata Yakalama ve Yönetimi: On Error GoTo, Resume Next",
+        "Kullanıcı İletişim Pencereleri: MsgBox ve InputBox Fonksiyonları",
+        "Kullanıcı Tanımlı Excel Fonksiyonları (UDF) Yazma ve Çalışma Sayfasında Kullanma",
+        "Çalışma Kitabı ve Sayfa Olayları (Events): Workbook_Open, Worksheet_Change",
+        "UserForm (Kullanıcı Formu) Oluşturma ve Form Tasarım İlkeleri",
+        "Form Denetimleri: Label, TextBox, CommandButton Kullanımı ve Olayları",
+        "Form Denetimleri: ComboBox ve ListBox Kullanımı, Dinamik Veri Yükleme",
+        "Form Denetimleri: CheckBox, OptionButton ve Frame Kullanımı",
+        "UserForm Üzerinden Çalışma Sayfasına Veri Kaydetme ve Yeni Kayıt Ekleme",
+        "UserForm İle Kayıt Arama, Listeleme ve Form Üzerinde Gösterme",
+        "UserForm İle Mevcut Kaydı Güncelleme ve Silme İşlemleri",
+        "Form Doğrulama (Validation) ve Kullanıcı Hata Kontrolleri",
+        "Raporlama ve Dış Veri İşlemleri: Excel Sayfasını PDF / CSV Olarak Dışa Aktarma",
+        "Kapsamlı Excel VBA Otomasyon ve Veri Yönetim Sistemi Projesi - 1",
+        "Kapsamlı Excel VBA Otomasyon ve Veri Yönetim Sistemi Projesi - 2"
+      ]
+    }
+  ],
+  "syllabus": [
+    {
+      "hour": 1,
+      "topic": "İleri Düzey Veri Türleri, Özel Biçimlendirme ve Veri Giriş Standartları",
+      "moduleNumber": 1,
+      "moduleName": "Excel İle Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 2,
+      "topic": "İleri Düzey Koşullu Biçimlendirme: Formülle Kural Tanımlama ve Dinamik Vurgular",
+      "moduleNumber": 1,
+      "moduleName": "Excel İle Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 3,
+      "topic": "Veri Doğrulama (Data Validation): Dinamik Açılır Listeler ve Hata Uyarıları",
+      "moduleNumber": 1,
+      "moduleName": "Excel İle Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 4,
+      "topic": "İleri Düzey Mantıksal Fonksiyonlar: VE, VEYA, ÇOKEĞER (IFS) ve HATA.AYIKLA",
+      "moduleNumber": 1,
+      "moduleName": "Excel İle Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 5,
+      "topic": "İleri Düzey Arama ve Başvuru Fonksiyonları: DÜŞEYARA, YATAYARA ve İNDİS / KAÇINCI",
+      "moduleNumber": 1,
+      "moduleName": "Excel İle Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 6,
+      "topic": "Yeni Nesil Arama Fonksiyonları: ÇAPRAZARA (XLOOKUP) ve ÇAPRAZEŞLEŞTİR (XMATCH)",
+      "moduleNumber": 1,
+      "moduleName": "Excel İle Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 7,
+      "topic": "İleri Düzey Metin Fonksiyonları ve Dinamik Dizi Metin İşleme (METNEÇEVİR, BİRLEŞTİR)",
+      "moduleNumber": 1,
+      "moduleName": "Excel İle Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 8,
+      "topic": "Tarih ve Saat Fonksiyonları İle İş Günü ve Süre Hesaplamaları (İŞGÜNÜ, TAMİŞGÜNÜ)",
+      "moduleNumber": 1,
+      "moduleName": "Excel İle Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 9,
+      "topic": "İleri Düzey Matematik ve İstatistik Fonksiyonları: ÇOKETOPLA, ÇOKSAY, ÇOKORTALAMA",
+      "moduleNumber": 1,
+      "moduleName": "Excel İle Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 10,
+      "topic": "Dinamik Dizi Fonksiyonları: FİLTRE (FILTER), BENZERSİZ (UNIQUE) ve SIRALA (SORT)",
+      "moduleNumber": 1,
+      "moduleName": "Excel İle Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 11,
+      "topic": "Veri Sıralama ve Gelişmiş Filtreleme (Advanced Filter) Teknikleri",
+      "moduleNumber": 1,
+      "moduleName": "Excel İle Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 12,
+      "topic": "Hızlı Doldurma (Flash Fill) ve Metni Sütunlara Dönüştürme Araçları",
+      "moduleNumber": 1,
+      "moduleName": "Excel İle Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 13,
+      "topic": "Veri Birleştirme (Consolidation) ve Çoklu Tablo Entegrasyonu",
+      "moduleNumber": 1,
+      "moduleName": "Excel İle Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 14,
+      "topic": "İleri Düzey Grafik İşlemleri: Birleşik Grafikler, İkincil Eksen ve Dinamik Göstergeler",
+      "moduleNumber": 1,
+      "moduleName": "Excel İle Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 15,
+      "topic": "Kıvılcım Grafikler (Sparklines) ve Mini Trend Göstergeleri Oluşturma",
+      "moduleNumber": 1,
+      "moduleName": "Excel İle Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 16,
+      "topic": "Özet Tablo (Pivot Table) Temelleri: Alan Yapılandırması ve Veri Özetleme",
+      "moduleNumber": 1,
+      "moduleName": "Excel İle Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 17,
+      "topic": "Özet Tabloda Gruplandırma, Hesaplanan Alan (Calculated Field) ve Dilimleyiciler",
+      "moduleNumber": 1,
+      "moduleName": "Excel İle Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 18,
+      "topic": "Özet Grafik (Pivot Chart) Tasarımı ve Dinamik Yönetici Raporları (Dashboard)",
+      "moduleNumber": 1,
+      "moduleName": "Excel İle Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 19,
+      "topic": "Durum Çözümlemesi (What-If Analysis): Hedef Arama (Goal Seek) ve Senaryo Yöneticisi",
+      "moduleNumber": 1,
+      "moduleName": "Excel İle Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 20,
+      "topic": "Veri Tablosu (Data Table) ve Solver (Çözücü) Eklentisi İle Optimizasyon",
+      "moduleNumber": 1,
+      "moduleName": "Excel İle Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 21,
+      "topic": "Giriş Seviyesi Makro İşlemleri: Geliştirici Sekmesi ve Makro Kaydedici (Macro Recorder)",
+      "moduleNumber": 1,
+      "moduleName": "Excel İle Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 22,
+      "topic": "Göreli Başvurularla Makro Kaydetme, Butona Makro Atama ve Güvenlik Ayarları",
+      "moduleNumber": 1,
+      "moduleName": "Excel İle Elektronik Tablolama",
+      "isExam": false
+    },
+    {
+      "hour": 23,
+      "topic": "Excel İle Elektronik Tablolama - Modül Değerlendirme Sınavı (Uygulama)",
+      "moduleNumber": 1,
+      "moduleName": "Excel İle Elektronik Tablolama",
+      "isExam": true
+    },
+    {
+      "hour": 24,
+      "topic": "Excel İle Elektronik Tablolama - Modül Değerlendirme Sınavı (Teorik & Değerlendirme)",
+      "moduleNumber": 1,
+      "moduleName": "Excel İle Elektronik Tablolama",
+      "isExam": true
+    },
+    {
+      "hour": 25,
+      "topic": "VBA (Visual Basic for Applications) Geliştirme Ortamı (VBE) ve Bileşenleri",
+      "moduleNumber": 2,
+      "moduleName": "Excel İle VBA Programlama",
+      "isExam": false
+    },
+    {
+      "hour": 26,
+      "topic": "Proje Gezgini (Project Explorer), Özellikler Penceresi ve Kod Modülleri",
+      "moduleNumber": 2,
+      "moduleName": "Excel İle VBA Programlama",
+      "isExam": false
+    },
+    {
+      "hour": 27,
+      "topic": "VBA Prosedür Türleri: Sub (Alt Yordam) ve Function (Kullanıcı Tanımlı Fonksiyon)",
+      "moduleNumber": 2,
+      "moduleName": "Excel İle VBA Programlama",
+      "isExam": false
+    },
+    {
+      "hour": 28,
+      "topic": "Değişken Kavramı, Veri Tipleri (Integer, Long, Double, String, Boolean, Variant)",
+      "moduleNumber": 2,
+      "moduleName": "Excel İle VBA Programlama",
+      "isExam": false
+    },
+    {
+      "hour": 29,
+      "topic": "Değişken Bildirimi (Dim), Kapsam (Scope) ve Sabit Tanımlama (Const)",
+      "moduleNumber": 2,
+      "moduleName": "Excel İle VBA Programlama",
+      "isExam": false
+    },
+    {
+      "hour": 30,
+      "topic": "Option Explicit Kullanımı ve Değişken Hata Yönetimi",
+      "moduleNumber": 2,
+      "moduleName": "Excel İle VBA Programlama",
+      "isExam": false
+    },
+    {
+      "hour": 31,
+      "topic": "Aritmetik, Karşılaştırma ve Mantıksal Operatörlerin Kullanımı",
+      "moduleNumber": 2,
+      "moduleName": "Excel İle VBA Programlama",
+      "isExam": false
+    },
+    {
+      "hour": 32,
+      "topic": "Excel Nesne Modeli: Application, Workbook, Worksheet ve Range Nesneleri",
+      "moduleNumber": 2,
+      "moduleName": "Excel İle VBA Programlama",
+      "isExam": false
+    },
+    {
+      "hour": 33,
+      "topic": "Range ve Cells Nesneleri İle Hücrelere Değer Yazma, Okuma ve Biçimlendirme",
+      "moduleNumber": 2,
+      "moduleName": "Excel İle VBA Programlama",
+      "isExam": false
+    },
+    {
+      "hour": 34,
+      "topic": "Karar Kontrol Deyimleri: If...Then...Else Yapısı ve Çoklu Koşullar",
+      "moduleNumber": 2,
+      "moduleName": "Excel İle VBA Programlama",
+      "isExam": false
+    },
+    {
+      "hour": 35,
+      "topic": "Select Case Karar Kontrol Yapısı ve Çoklu Durum Yönetimi",
+      "moduleNumber": 2,
+      "moduleName": "Excel İle VBA Programlama",
+      "isExam": false
+    },
+    {
+      "hour": 36,
+      "topic": "Döngü Deyimlerine Giriş: For...Next Sayıcı Döngüsü",
+      "moduleNumber": 2,
+      "moduleName": "Excel İle VBA Programlama",
+      "isExam": false
+    },
+    {
+      "hour": 37,
+      "topic": "For Each...Next Döngüsü İle Koleksiyonlar ve Hücre Aralıklarında Gezinme",
+      "moduleNumber": 2,
+      "moduleName": "Excel İle VBA Programlama",
+      "isExam": false
+    },
+    {
+      "hour": 38,
+      "topic": "Do While...Loop ve Do Until...Loop Koşullu Döngü Yapıları",
+      "moduleNumber": 2,
+      "moduleName": "Excel İle VBA Programlama",
+      "isExam": false
+    },
+    {
+      "hour": 39,
+      "topic": "Döngüler İle Veri Tarama, Koşullu Temizleme ve Veri Aktarımı",
+      "moduleNumber": 2,
+      "moduleName": "Excel İle VBA Programlama",
+      "isExam": false
+    },
+    {
+      "hour": 40,
+      "topic": "Hata Yakalama ve Yönetimi: On Error GoTo, Resume Next",
+      "moduleNumber": 2,
+      "moduleName": "Excel İle VBA Programlama",
+      "isExam": false
+    },
+    {
+      "hour": 41,
+      "topic": "Kullanıcı İletişim Pencereleri: MsgBox ve InputBox Fonksiyonları",
+      "moduleNumber": 2,
+      "moduleName": "Excel İle VBA Programlama",
+      "isExam": false
+    },
+    {
+      "hour": 42,
+      "topic": "Kullanıcı Tanımlı Excel Fonksiyonları (UDF) Yazma ve Çalışma Sayfasında Kullanma",
+      "moduleNumber": 2,
+      "moduleName": "Excel İle VBA Programlama",
+      "isExam": false
+    },
+    {
+      "hour": 43,
+      "topic": "Çalışma Kitabı ve Sayfa Olayları (Events): Workbook_Open, Worksheet_Change",
+      "moduleNumber": 2,
+      "moduleName": "Excel İle VBA Programlama",
+      "isExam": false
+    },
+    {
+      "hour": 44,
+      "topic": "UserForm (Kullanıcı Formu) Oluşturma ve Form Tasarım İlkeleri",
+      "moduleNumber": 2,
+      "moduleName": "Excel İle VBA Programlama",
+      "isExam": false
+    },
+    {
+      "hour": 45,
+      "topic": "Form Denetimleri: Label, TextBox, CommandButton Kullanımı ve Olayları",
+      "moduleNumber": 2,
+      "moduleName": "Excel İle VBA Programlama",
+      "isExam": false
+    },
+    {
+      "hour": 46,
+      "topic": "Form Denetimleri: ComboBox ve ListBox Kullanımı, Dinamik Veri Yükleme",
+      "moduleNumber": 2,
+      "moduleName": "Excel İle VBA Programlama",
+      "isExam": false
+    },
+    {
+      "hour": 47,
+      "topic": "Form Denetimleri: CheckBox, OptionButton ve Frame Kullanımı",
+      "moduleNumber": 2,
+      "moduleName": "Excel İle VBA Programlama",
+      "isExam": false
+    },
+    {
+      "hour": 48,
+      "topic": "UserForm Üzerinden Çalışma Sayfasına Veri Kaydetme ve Yeni Kayıt Ekleme",
+      "moduleNumber": 2,
+      "moduleName": "Excel İle VBA Programlama",
+      "isExam": false
+    },
+    {
+      "hour": 49,
+      "topic": "UserForm İle Kayıt Arama, Listeleme ve Form Üzerinde Gösterme",
+      "moduleNumber": 2,
+      "moduleName": "Excel İle VBA Programlama",
+      "isExam": false
+    },
+    {
+      "hour": 50,
+      "topic": "UserForm İle Mevcut Kaydı Güncelleme ve Silme İşlemleri",
+      "moduleNumber": 2,
+      "moduleName": "Excel İle VBA Programlama",
+      "isExam": false
+    },
+    {
+      "hour": 51,
+      "topic": "Form Doğrulama (Validation) ve Kullanıcı Hata Kontrolleri",
+      "moduleNumber": 2,
+      "moduleName": "Excel İle VBA Programlama",
+      "isExam": false
+    },
+    {
+      "hour": 52,
+      "topic": "Raporlama ve Dış Veri İşlemleri: Excel Sayfasını PDF / CSV Olarak Dışa Aktarma",
+      "moduleNumber": 2,
+      "moduleName": "Excel İle VBA Programlama",
+      "isExam": false
+    },
+    {
+      "hour": 53,
+      "topic": "Kapsamlı Excel VBA Otomasyon ve Veri Yönetim Sistemi Projesi - 1",
+      "moduleNumber": 2,
+      "moduleName": "Excel İle VBA Programlama",
+      "isExam": false
+    },
+    {
+      "hour": 54,
+      "topic": "Kapsamlı Excel VBA Otomasyon ve Veri Yönetim Sistemi Projesi - 2",
+      "moduleNumber": 2,
+      "moduleName": "Excel İle VBA Programlama",
+      "isExam": false
+    },
+    {
+      "hour": 55,
+      "topic": "Excel İle VBA Programlama - Modül Değerlendirme Sınavı (Uygulama)",
+      "moduleNumber": 2,
+      "moduleName": "Excel İle VBA Programlama",
+      "isExam": true
+    },
+    {
+      "hour": 56,
+      "topic": "Excel İle VBA Programlama - Modül Değerlendirme Sınavı (Teorik & Değerlendirme)",
+      "moduleNumber": 2,
+      "moduleName": "Excel İle VBA Programlama",
+      "isExam": true
+    }
+  ]
+},
+
+{
   "id": "tmpl_yapay_zeka_prompt_24",
   "name": "Yapay Zeka İle Prompt Uygulamaları Eğitimi",
   "code": "YZ-PRM-24",
