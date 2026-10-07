@@ -275,37 +275,7 @@ const DataStore = {
     try {
       const raw = localStorage.getItem(STORAGE_KEYS.TODOS);
       if (!raw) {
-        const initialTodos = [
-          {
-            id: 'todo_1',
-            text: 'Kurs sonu evraklarının MEB standartlarına uygunluğunu kontrol et',
-            assignee: 'Önder',
-            priority: 'normal',
-            completed: true,
-            createdAt: new Date().toISOString(),
-            createdBy: 'Önder'
-          },
-          {
-            id: 'todo_2',
-            text: 'Modül değerlendirme çizelgesi tek sayfa baskı çıktısını test et',
-            assignee: 'Özgür',
-            priority: 'urgent',
-            completed: true,
-            createdAt: new Date().toISOString(),
-            createdBy: 'Özgür'
-          },
-          {
-            id: 'todo_3',
-            text: 'Yeni modül ve sınav alanlarının eklenmesini gözden geçir',
-            assignee: 'Ortak',
-            priority: 'normal',
-            completed: false,
-            createdAt: new Date().toISOString(),
-            createdBy: 'Önder'
-          }
-        ];
-        localStorage.setItem(STORAGE_KEYS.TODOS, JSON.stringify(initialTodos));
-        return initialTodos;
+        return [];
       }
       const parsed = JSON.parse(raw);
       if (Array.isArray(parsed)) return parsed;
