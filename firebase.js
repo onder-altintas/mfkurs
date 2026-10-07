@@ -127,11 +127,187 @@ const DEFAULT_USERS = [
 // Kurs Merkezleri Tanımları (Boş başlangıç - Kullanıcı kendisi ekler)
 const DEFAULT_CENTERS = [];
 
-// Kurs Alanları / Branş Tanımları (Boş başlangıç - Kullanıcı kendisi ekler)
-const DEFAULT_AREAS = [];
+// Kurs Alanları / Branş Tanımları
+const DEFAULT_AREAS = [
+  { id: "area_bilisim", name: "Bilişim Teknolojileri" }
+];
 
-// Kurs ve Müfredat Şablonları (Boş başlangıç - Kullanıcı kendisi ekler)
-const DEFAULT_COURSE_TEMPLATES = [];
+// Kurs ve Müfredat Şablonları (MEB Hayat Boyu Öğrenme Genel Müdürlüğü Onaylı)
+const DEFAULT_COURSE_TEMPLATES = [
+  {
+    id: "tmpl_canva_ileri_duzey",
+    name: "Canva İle Dijital Tasarım Eğitimi (İleri Düzey)",
+    code: "BT-CANVA-60",
+    category: "Bilişim Teknolojileri",
+    area: "Bilişim Teknolojileri",
+    totalHours: 60,
+    moduleCount: 4,
+    description: "T.C. Millî Eğitim Bakanlığı Hayat Boyu Öğrenme Genel Müdürlüğü Bilişim Teknolojileri Alanı - Canva İle Dijital Tasarım Eğitimi (İleri Düzey) Kurs Programı. Günde en fazla 4 ders saati uygulanır.",
+    modules: [
+      {
+        id: "mod_canva_1",
+        number: 1,
+        name: "Canva’da Yapay Zekâ Uygulamaları",
+        totalHours: 15,
+        lessonHours: 13,
+        examHours: 2,
+        topics: [
+          "Magic Write (Sihirli Yazı) İle Metin Yazma ve Prompt Teknikleri",
+          "Metinden Görsel Oluşturma (AI Görsel Üretim Araçları)",
+          "AI İle Otomatik Tasarım ve Şablon Oluşturma",
+          "İstenmeyen Objeleri Kaldırma (Magic Eraser)",
+          "Obje Değiştirme (Magic Replace Teknikleri)",
+          "Fotoğraflardan Yazı ve Nesne Ayırt Etme (OCR Teknolojisi)",
+          "Fotoğraflarda Nesne Algılama ve Seçim Araçları",
+          "Yapay Zekâ Destekli Animasyon Geçişleri",
+          "Sunumlarda AI İle Hareket Efektleri Kullanımı",
+          "Canva’da AI İle Video Senaryosu Yazma",
+          "Yapay Zekâ İle Senaryo Üzerinden Video Oluşturma",
+          "Yapay Zekâ Destekli Tasarım ve Görsel Proje Uygulaması",
+          "Yapay Zekâ Destekli Video Kurgusu ve İçerik Üretimi Pratiği"
+        ]
+      },
+      {
+        id: "mod_canva_2",
+        number: 2,
+        name: "İleri Seviye Canva Araçları",
+        totalHours: 15,
+        lessonHours: 13,
+        examHours: 2,
+        topics: [
+          "Görsel Yerleştirme ve Profesyonel Sunum Örnekleri (Mockups)",
+          "Kurumsal Marka Kiti Oluşturma (Yazı Tipi, Renk Paleti, Logo Ekleme)",
+          "Marka Kiti Standartlarının Tasarımlara Uygulanması",
+          "Canva İle Etkili ve Etkileşimli Sunum Hazırlama",
+          "Canva Planlayıcı Aracı İle Sosyal Medya Takvimi Hazırlama",
+          "Tasarım İçeriğini Dil Bazlı Dönüştürme (Çeviri Aracı)",
+          "Konuya ve Hedef Kitleye Göre Metin Oluşturma (Magic Write)",
+          "Görseldeki Unsurları Değiştirme (Magic Edit İleri Teknikleri)",
+          "Objeleri Silme ve Kusursuz Temizleme (Magic Eraser)",
+          "Fotoğraflarda Hassas Nesne Seçme ve Arka Plan Ayrıştırma",
+          "AI Destekli Sunum Tasarımı (Magic Presentation)",
+          "Sosyal Medya ve Dijital İçerik Kiti Hazırlama Uygulaması",
+          "İleri Seviye Canva Araçlarıyla Kapsamlı Tasarım Projesi"
+        ]
+      },
+      {
+        id: "mod_canva_3",
+        number: 3,
+        name: "İleri Seviye Canva Uygulamaları",
+        totalHours: 20,
+        lessonHours: 18,
+        examHours: 2,
+        topics: [
+          "Video Efekti Uygulamaları ve Paint Smoke Efektine Giriş",
+          "Video Tasarımlarında Özel Boya ve Duman Efektleri Geliştirme",
+          "Video Sahne Geçişleri ve Zaman Çizelgesi (Timeline) Yönetimi",
+          "Çok Katmanlı Video Kurgusu ve Ses Efekti Senkronizasyonu",
+          "Katmanlı Sunum Tasarımı Mantığı ve Derinlik Efektleri",
+          "İleri Katman Yönetimi ve Katman Sıralama İpuçları",
+          "Metin İçine Katmanlı Görsel Ekleme Teknikleri (Text Masking)",
+          "Tipografi Odaklı Katmanlı Görsel Kompozisyonları",
+          "Çift Pozlama ve Tipografik Katman Tasarımları",
+          "Görselleri Vektörel Tasarıma Hazırlama Süreçleri",
+          "Görselleri Vektör Logo Tasarımına Dönüştürme (SVG Formatı)",
+          "Şeffaf Arka Planlı Kurumsal Vektör Logo Üretimi",
+          "Dijital Reklam ve Sosyal Medya İçin Hareketli Afiş Tasarımı",
+          "Dinamik İnfografik ve Veri Görselleştirme Tasarımları",
+          "Web ve Mobil İçin Duyarlı (Responsive) Tasarım Varyasyonları",
+          "İleri Seviye Tasarım ve Video Proje Uygulaması - 1",
+          "İleri Seviye Tasarım ve Video Proje Uygulaması - 2",
+          "İleri Seviye Tasarım ve Video Proje Uygulaması - 3"
+        ]
+      },
+      {
+        id: "mod_canva_4",
+        number: 4,
+        name: "İş Birliği ve Proje Paylaşımı",
+        totalHours: 10,
+        lessonHours: 8,
+        examHours: 2,
+        topics: [
+          "Canva'da Takım Oluşturma ve Üye Yönetimi",
+          "Kurumsal Marka Kitini Takımla Paylaşma ve Eşzamanlı Kullanım",
+          "Bağlantı İle Paylaşma, Görüntüleme ve Düzenleme Yetkileri",
+          "Gerçek Zamanlı Ortak Çalışma ve Canlı Yorumlama Pratiği",
+          "Sunumlara, Afişlere ve Formlara Bağlantı Ekleme (Dinamik QR Kod Üretme)",
+          "Baskı ve Dijital İçin Proje Çıktısı Standartları (Baskı PDF, Yüksek Çözünürlüklü PNG/JPEG)",
+          "Video ve Vektörel Dışa Aktarma (MP4 Video, Şeffaf SVG Vektör Çıktısı)",
+          "Ortak Takım Projesi Sonuç Sunumu ve Kalite Değerlendirmesi"
+        ]
+      }
+    ],
+    syllabus: [
+      // 1. Modül: Canva’da Yapay Zekâ Uygulamaları (15 Saat)
+      { hour: 1, topic: "Magic Write (Sihirli Yazı) İle Metin Yazma ve Prompt Teknikleri", moduleNumber: 1, moduleName: "Canva’da Yapay Zekâ Uygulamaları", isExam: false },
+      { hour: 2, topic: "Metinden Görsel Oluşturma (AI Görsel Üretim Araçları)", moduleNumber: 1, moduleName: "Canva’da Yapay Zekâ Uygulamaları", isExam: false },
+      { hour: 3, topic: "AI İle Otomatik Tasarım ve Şablon Oluşturma", moduleNumber: 1, moduleName: "Canva’da Yapay Zekâ Uygulamaları", isExam: false },
+      { hour: 4, topic: "İstenmeyen Objeleri Kaldırma (Magic Eraser)", moduleNumber: 1, moduleName: "Canva’da Yapay Zekâ Uygulamaları", isExam: false },
+      { hour: 5, topic: "Obje Değiştirme (Magic Replace Teknikleri)", moduleNumber: 1, moduleName: "Canva’da Yapay Zekâ Uygulamaları", isExam: false },
+      { hour: 6, topic: "Fotoğraflardan Yazı ve Nesne Ayırt Etme (OCR Teknolojisi)", moduleNumber: 1, moduleName: "Canva’da Yapay Zekâ Uygulamaları", isExam: false },
+      { hour: 7, topic: "Fotoğraflarda Nesne Algılama ve Seçim Araçları", moduleNumber: 1, moduleName: "Canva’da Yapay Zekâ Uygulamaları", isExam: false },
+      { hour: 8, topic: "Yapay Zekâ Destekli Animasyon Geçişleri", moduleNumber: 1, moduleName: "Canva’da Yapay Zekâ Uygulamaları", isExam: false },
+      { hour: 9, topic: "Sunumlarda AI İle Hareket Efektleri Kullanımı", moduleNumber: 1, moduleName: "Canva’da Yapay Zekâ Uygulamaları", isExam: false },
+      { hour: 10, topic: "Canva’da AI İle Video Senaryosu Yazma", moduleNumber: 1, moduleName: "Canva’da Yapay Zekâ Uygulamaları", isExam: false },
+      { hour: 11, topic: "Yapay Zekâ İle Senaryo Üzerinden Video Oluşturma", moduleNumber: 1, moduleName: "Canva’da Yapay Zekâ Uygulamaları", isExam: false },
+      { hour: 12, topic: "Yapay Zekâ Destekli Tasarım ve Görsel Proje Uygulaması", moduleNumber: 1, moduleName: "Canva’da Yapay Zekâ Uygulamaları", isExam: false },
+      { hour: 13, topic: "Yapay Zekâ Destekli Video Kurgusu ve İçerik Üretimi Pratiği", moduleNumber: 1, moduleName: "Canva’da Yapay Zekâ Uygulamaları", isExam: false },
+      { hour: 14, topic: "Canva’da Yapay Zekâ Uygulamaları - Modül Değerlendirme Sınavı (Uygulama)", moduleNumber: 1, moduleName: "Canva’da Yapay Zekâ Uygulamaları", isExam: true },
+      { hour: 15, topic: "Canva’da Yapay Zekâ Uygulamaları - Modül Değerlendirme Sınavı (Teorik & Değerlendirme)", moduleNumber: 1, moduleName: "Canva’da Yapay Zekâ Uygulamaları", isExam: true },
+
+      // 2. Modül: İleri Seviye Canva Araçları (15 Saat)
+      { hour: 16, topic: "Görsel Yerleştirme ve Profesyonel Sunum Örnekleri (Mockups)", moduleNumber: 2, moduleName: "İleri Seviye Canva Araçları", isExam: false },
+      { hour: 17, topic: "Kurumsal Marka Kiti Oluşturma (Yazı Tipi, Renk Paleti, Logo Ekleme)", moduleNumber: 2, moduleName: "İleri Seviye Canva Araçları", isExam: false },
+      { hour: 18, topic: "Marka Kiti Standartlarının Tasarımlara Uygulanması", moduleNumber: 2, moduleName: "İleri Seviye Canva Araçları", isExam: false },
+      { hour: 19, topic: "Canva İle Etkili ve Etkileşimli Sunum Hazırlama", moduleNumber: 2, moduleName: "İleri Seviye Canva Araçları", isExam: false },
+      { hour: 20, topic: "Canva Planlayıcı Aracı İle Sosyal Medya Takvimi Hazırlama", moduleNumber: 2, moduleName: "İleri Seviye Canva Araçları", isExam: false },
+      { hour: 21, topic: "Tasarım İçeriğini Dil Bazlı Dönüştürme (Çeviri Aracı)", moduleNumber: 2, moduleName: "İleri Seviye Canva Araçları", isExam: false },
+      { hour: 22, topic: "Konuya ve Hedef Kitleye Göre Metin Oluşturma (Magic Write)", moduleNumber: 2, moduleName: "İleri Seviye Canva Araçları", isExam: false },
+      { hour: 23, topic: "Görseldeki Unsurları Değiştirme (Magic Edit İleri Teknikleri)", moduleNumber: 2, moduleName: "İleri Seviye Canva Araçları", isExam: false },
+      { hour: 24, topic: "Objeleri Silme ve Kusursuz Temizleme (Magic Eraser)", moduleNumber: 2, moduleName: "İleri Seviye Canva Araçları", isExam: false },
+      { hour: 25, topic: "Fotoğraflarda Hassas Nesne Seçme ve Arka Plan Ayrıştırma", moduleNumber: 2, moduleName: "İleri Seviye Canva Araçları", isExam: false },
+      { hour: 26, topic: "AI Destekli Sunum Tasarımı (Magic Presentation)", moduleNumber: 2, moduleName: "İleri Seviye Canva Araçları", isExam: false },
+      { hour: 27, topic: "Sosyal Medya ve Dijital İçerik Kiti Hazırlama Uygulaması", moduleNumber: 2, moduleName: "İleri Seviye Canva Araçları", isExam: false },
+      { hour: 28, topic: "İleri Seviye Canva Araçlarıyla Kapsamlı Tasarım Projesi", moduleNumber: 2, moduleName: "İleri Seviye Canva Araçları", isExam: false },
+      { hour: 29, topic: "İleri Seviye Canva Araçları - Modül Değerlendirme Sınavı (Uygulama)", moduleNumber: 2, moduleName: "İleri Seviye Canva Araçları", isExam: true },
+      { hour: 30, topic: "İleri Seviye Canva Araçları - Modül Değerlendirme Sınavı (Teorik & Değerlendirme)", moduleNumber: 2, moduleName: "İleri Seviye Canva Araçları", isExam: true },
+
+      // 3. Modül: İleri Seviye Canva Uygulamaları (20 Saat)
+      { hour: 31, topic: "Video Efekti Uygulamaları ve Paint Smoke Efektine Giriş", moduleNumber: 3, moduleName: "İleri Seviye Canva Uygulamaları", isExam: false },
+      { hour: 32, topic: "Video Tasarımlarında Özel Boya ve Duman Efektleri Geliştirme", moduleNumber: 3, moduleName: "İleri Seviye Canva Uygulamaları", isExam: false },
+      { hour: 33, topic: "Video Sahne Geçişleri ve Zaman Çizelgesi (Timeline) Yönetimi", moduleNumber: 3, moduleName: "İleri Seviye Canva Uygulamaları", isExam: false },
+      { hour: 34, topic: "Çok Katmanlı Video Kurgusu ve Ses Efekti Senkronizasyonu", moduleNumber: 3, moduleName: "İleri Seviye Canva Uygulamaları", isExam: false },
+      { hour: 35, topic: "Katmanlı Sunum Tasarımı Mantığı ve Derinlik Efektleri", moduleNumber: 3, moduleName: "İleri Seviye Canva Uygulamaları", isExam: false },
+      { hour: 36, topic: "İleri Katman Yönetimi ve Katman Sıralama İpuçları", moduleNumber: 3, moduleName: "İleri Seviye Canva Uygulamaları", isExam: false },
+      { hour: 37, topic: "Metin İçine Katmanlı Görsel Ekleme Teknikleri (Text Masking)", moduleNumber: 3, moduleName: "İleri Seviye Canva Uygulamaları", isExam: false },
+      { hour: 38, topic: "Tipografi Odaklı Katmanlı Görsel Kompozisyonları", moduleNumber: 3, moduleName: "İleri Seviye Canva Uygulamaları", isExam: false },
+      { hour: 39, topic: "Çift Pozlama ve Tipografik Katman Tasarımları", moduleNumber: 3, moduleName: "İleri Seviye Canva Uygulamaları", isExam: false },
+      { hour: 40, topic: "Görselleri Vektörel Tasarıma Hazırlama Süreçleri", moduleNumber: 3, moduleName: "İleri Seviye Canva Uygulamaları", isExam: false },
+      { hour: 41, topic: "Görselleri Vektör Logo Tasarımına Dönüştürme (SVG Formatı)", moduleNumber: 3, moduleName: "İleri Seviye Canva Uygulamaları", isExam: false },
+      { hour: 42, topic: "Şeffaf Arka Planlı Kurumsal Vektör Logo Üretimi", moduleNumber: 3, moduleName: "İleri Seviye Canva Uygulamaları", isExam: false },
+      { hour: 43, topic: "Dijital Reklam ve Sosyal Medya İçin Hareketli Afiş Tasarımı", moduleNumber: 3, moduleName: "İleri Seviye Canva Uygulamaları", isExam: false },
+      { hour: 44, topic: "Dinamik İnfografik ve Veri Görselleştirme Tasarımları", moduleNumber: 3, moduleName: "İleri Seviye Canva Uygulamaları", isExam: false },
+      { hour: 45, topic: "Web ve Mobil İçin Duyarlı (Responsive) Tasarım Varyasyonları", moduleNumber: 3, moduleName: "İleri Seviye Canva Uygulamaları", isExam: false },
+      { hour: 46, topic: "İleri Seviye Tasarım ve Video Proje Uygulaması - 1", moduleNumber: 3, moduleName: "İleri Seviye Canva Uygulamaları", isExam: false },
+      { hour: 47, topic: "İleri Seviye Tasarım ve Video Proje Uygulaması - 2", moduleNumber: 3, moduleName: "İleri Seviye Canva Uygulamaları", isExam: false },
+      { hour: 48, topic: "İleri Seviye Tasarım ve Video Proje Uygulaması - 3", moduleNumber: 3, moduleName: "İleri Seviye Canva Uygulamaları", isExam: false },
+      { hour: 49, topic: "İleri Seviye Canva Uygulamaları - Modül Değerlendirme Sınavı (Uygulama)", moduleNumber: 3, moduleName: "İleri Seviye Canva Uygulamaları", isExam: true },
+      { hour: 50, topic: "İleri Seviye Canva Uygulamaları - Modül Değerlendirme Sınavı (Teorik & Değerlendirme)", moduleNumber: 3, moduleName: "İleri Seviye Canva Uygulamaları", isExam: true },
+
+      // 4. Modül: İş Birliği ve Proje Paylaşımı (10 Saat)
+      { hour: 51, topic: "Canva'da Takım Oluşturma ve Üye Yönetimi", moduleNumber: 4, moduleName: "İş Birliği ve Proje Paylaşımı", isExam: false },
+      { hour: 52, topic: "Kurumsal Marka Kitini Takımla Paylaşma ve Eşzamanlı Kullanım", moduleNumber: 4, moduleName: "İş Birliği ve Proje Paylaşımı", isExam: false },
+      { hour: 53, topic: "Bağlantı İle Paylaşma, Görüntüleme ve Düzenleme Yetkileri", moduleNumber: 4, moduleName: "İş Birliği ve Proje Paylaşımı", isExam: false },
+      { hour: 54, topic: "Gerçek Zamanlı Ortak Çalışma ve Canlı Yorumlama Pratiği", moduleNumber: 4, moduleName: "İş Birliği ve Proje Paylaşımı", isExam: false },
+      { hour: 55, topic: "Sunumlara, Afişlere ve Formlara Bağlantı Ekleme (Dinamik QR Kod Üretme)", moduleNumber: 4, moduleName: "İş Birliği ve Proje Paylaşımı", isExam: false },
+      { hour: 56, topic: "Baskı ve Dijital İçin Proje Çıktısı Standartları (Baskı PDF, Yüksek Çözünürlüklü PNG/JPEG)", moduleNumber: 4, moduleName: "İş Birliği ve Proje Paylaşımı", isExam: false },
+      { hour: 57, topic: "Video ve Vektörel Dışa Aktarma (MP4 Video, Şeffaf SVG Vektör Çıktısı)", moduleNumber: 4, moduleName: "İş Birliği ve Proje Paylaşımı", isExam: false },
+      { hour: 58, topic: "Ortak Takım Projesi Sonuç Sunumu ve Kalite Değerlendirmesi", moduleNumber: 4, moduleName: "İş Birliği ve Proje Paylaşımı", isExam: false },
+      { hour: 59, topic: "İş Birliği ve Proje Paylaşımı - Modül Değerlendirme Sınavı (Uygulama)", moduleNumber: 4, moduleName: "İş Birliği ve Proje Paylaşımı", isExam: true },
+      { hour: 60, topic: "İş Birliği ve Proje Paylaşımı - Modül Değerlendirme Sınavı (Teorik & Değerlendirme)", moduleNumber: 4, moduleName: "İş Birliği ve Proje Paylaşımı", isExam: true }
+    ]
+  }
+];
 
 // Başlangıç kursları temizlendi - Kullanıcı kurallara uygun yeni kursları kendisi açacaktır
 const INITIAL_COURSES = [];
@@ -245,8 +421,20 @@ const DataStore = {
 
     // 4. Şablonları Buluttan Dinle
     db.collection('settings').doc('templates').onSnapshot((doc) => {
-      if (!doc.exists) return;
-      const list = doc.data()?.list || [];
+      let list = doc.exists ? (doc.data()?.list || []) : [];
+      let updated = false;
+      if (DEFAULT_COURSE_TEMPLATES && DEFAULT_COURSE_TEMPLATES.length > 0) {
+        DEFAULT_COURSE_TEMPLATES.forEach(defTmpl => {
+          const exists = list.some(t => t.id === defTmpl.id || (t.code && defTmpl.code && t.code.toUpperCase() === defTmpl.code.toUpperCase()));
+          if (!exists) {
+            list.unshift(defTmpl);
+            updated = true;
+          }
+        });
+        if (updated && db) {
+          db.collection('settings').doc('templates').set({ list }).catch(e => console.error("Firestore şablon kayıt:", e));
+        }
+      }
       localStorage.setItem(STORAGE_KEYS.TEMPLATES, JSON.stringify(list));
       if (typeof window.onCloudSync === 'function') {
         window.onCloudSync('templates', list);
@@ -271,9 +459,22 @@ const DataStore = {
 
     // 6. Alanları Buluttan Dinle
     db.collection('settings').doc('areas').onSnapshot((doc) => {
-      if (!doc.exists) return;
-      const data = doc.data();
-      const list = (data && Array.isArray(data.list)) ? data.list : [];
+      const data = doc.exists ? doc.data() : null;
+      let list = (data && Array.isArray(data.list)) ? data.list : [];
+      let updated = false;
+      if (DEFAULT_AREAS && DEFAULT_AREAS.length > 0) {
+        DEFAULT_AREAS.forEach(defA => {
+          const defName = typeof defA === 'string' ? defA : defA.name;
+          const exists = list.some(a => (typeof a === 'string' ? a : a.name).toLowerCase() === defName.toLowerCase());
+          if (!exists) {
+            list.push(defA);
+            updated = true;
+          }
+        });
+        if (updated && db) {
+          db.collection('settings').doc('areas').set({ list }).catch(e => console.error("Firestore alan kayıt:", e));
+        }
+      }
       localStorage.setItem(STORAGE_KEYS.AREAS, JSON.stringify(list));
       if (typeof window.onCloudSync === 'function') {
         window.onCloudSync('areas', list);
@@ -502,15 +703,30 @@ const DataStore = {
   getAreas() {
     try {
       const raw = localStorage.getItem(STORAGE_KEYS.AREAS);
-      if (raw === null || raw === undefined) {
-        return [];
+      let parsed = [];
+      if (raw !== null && raw !== undefined) {
+        try { parsed = JSON.parse(raw); } catch (e) {}
       }
-      const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed)) return parsed;
-      return [];
+      if (!Array.isArray(parsed)) parsed = [];
+
+      let updated = false;
+      if (DEFAULT_AREAS && DEFAULT_AREAS.length > 0) {
+        DEFAULT_AREAS.forEach(defA => {
+          const defName = typeof defA === 'string' ? defA : defA.name;
+          const exists = parsed.some(a => (typeof a === 'string' ? a : a.name).toLowerCase() === defName.toLowerCase());
+          if (!exists) {
+            parsed.push(defA);
+            updated = true;
+          }
+        });
+      }
+      if (updated || raw === null || raw === undefined) {
+        localStorage.setItem(STORAGE_KEYS.AREAS, JSON.stringify(parsed));
+      }
+      return parsed;
     } catch (e) {
       console.error("LocalStorage alan okuma hatası:", e);
-      return [];
+      return DEFAULT_AREAS || [];
     }
   },
 
@@ -530,19 +746,34 @@ const DataStore = {
       let raw = localStorage.getItem(STORAGE_KEYS.TEMPLATES);
       if (!raw) {
         raw = localStorage.getItem('kurs_sonu_templates_v3') || localStorage.getItem('kurs_sonu_templates_v4') || localStorage.getItem('kurs_sonu_templates_v5');
-        if (!raw) {
-          return [];
-        }
       }
-      const parsed = JSON.parse(raw);
-      if (!Array.isArray(parsed)) return [];
+      let parsed = [];
+      if (raw) {
+        try { parsed = JSON.parse(raw); } catch (e) {}
+      }
+      if (!Array.isArray(parsed)) parsed = [];
+
+      let updated = false;
+      if (DEFAULT_COURSE_TEMPLATES && DEFAULT_COURSE_TEMPLATES.length > 0) {
+        DEFAULT_COURSE_TEMPLATES.forEach(defTmpl => {
+          const exists = parsed.some(t => t.id === defTmpl.id || (t.code && defTmpl.code && t.code.toUpperCase() === defTmpl.code.toUpperCase()));
+          if (!exists) {
+            parsed.unshift(defTmpl);
+            updated = true;
+          }
+        });
+      }
+      if (updated || !raw) {
+        localStorage.setItem(STORAGE_KEYS.TEMPLATES, JSON.stringify(parsed));
+      }
+
       return parsed.map(t => ({
         moduleCount: t.moduleCount ? Math.max(1, Number(t.moduleCount)) : 1,
         ...t
       }));
     } catch (e) {
       console.error("LocalStorage şablon okuma hatası:", e);
-      return [];
+      return DEFAULT_COURSE_TEMPLATES || [];
     }
   },
 
