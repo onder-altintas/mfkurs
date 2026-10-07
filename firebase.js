@@ -141,170 +141,139 @@ const DEFAULT_COURSE_TEMPLATES = [
     category: "Bilişim Teknolojileri",
     area: "Bilişim Teknolojileri",
     totalHours: 60,
-    moduleCount: 4,
-    description: "T.C. Millî Eğitim Bakanlığı Hayat Boyu Öğrenme Genel Müdürlüğü Bilişim Teknolojileri Alanı - Canva İle Dijital Tasarım Eğitimi (İleri Düzey) Kurs Programı. Günde en fazla 4 ders saati uygulanır.",
+    moduleCount: 1,
+    description: "T.C. Millî Eğitim Bakanlığı Hayat Boyu Öğrenme Genel Müdürlüğü Bilişim Teknolojileri Alanı - Canva İle Dijital Tasarım Eğitimi (İleri Düzey) Kurs Programı. Tek modül olarak 60 ders saatinde uygulanır.",
     modules: [
       {
         id: "mod_canva_1",
         number: 1,
-        name: "Canva’da Yapay Zekâ Uygulamaları",
-        totalHours: 15,
-        lessonHours: 13,
+        name: "Canva İle Dijital Tasarım Eğitimi (İleri Düzey)",
+        totalHours: 60,
+        lessonHours: 58,
         examHours: 2,
         topics: [
-          "Magic Write (Sihirli Yazı) İle Metin Yazma ve Prompt Teknikleri",
-          "Metinden Görsel Oluşturma (AI Görsel Üretim Araçları)",
-          "AI İle Otomatik Tasarım ve Şablon Oluşturma",
-          "İstenmeyen Objeleri Kaldırma (Magic Eraser)",
-          "Obje Değiştirme (Magic Replace Teknikleri)",
-          "Fotoğraflardan Yazı ve Nesne Ayırt Etme (OCR Teknolojisi)",
-          "Fotoğraflarda Nesne Algılama ve Seçim Araçları",
-          "Yapay Zekâ Destekli Animasyon Geçişleri",
-          "Sunumlarda AI İle Hareket Efektleri Kullanımı",
-          "Canva’da AI İle Video Senaryosu Yazma",
-          "Yapay Zekâ İle Senaryo Üzerinden Video Oluşturma",
-          "Yapay Zekâ Destekli Tasarım ve Görsel Proje Uygulaması",
-          "Yapay Zekâ Destekli Video Kurgusu ve İçerik Üretimi Pratiği"
-        ]
-      },
-      {
-        id: "mod_canva_2",
-        number: 2,
-        name: "İleri Seviye Canva Araçları",
-        totalHours: 15,
-        lessonHours: 13,
-        examHours: 2,
-        topics: [
+          "Magic Write (Sihirli Yazı) İle Metin Yazma ve Prompt Tasarım İlkeleri",
+          "Metinden Görsel Oluşturma (AI Görsel Üretim Modelleri)",
+          "AI İle Otomatik Şablon ve Sayfa Düzeni Oluşturma",
+          "İstenmeyen Objeleri ve Arka Plan Unsurlarını Kaldırma (Magic Eraser)",
+          "Obje Değiştirme ve Yeniden Üretim Teknikleri (Magic Replace)",
+          "Fotoğraflardan Yazı ve Karakter Ayıklama (OCR Teknolojisi)",
+          "Fotoğraflarda Nesne Algılama ve Akıllı Seçim Araçları",
+          "Yapay Zekâ Destekli Akıllı Animasyon ve Geçiş Efektleri",
+          "Sunumlarda AI İle Dinamik Hareket Efektleri Kullanımı",
+          "Canva’da AI İle Video Senaryosu ve Hikaye Panosu (Storyboard) Yazma",
+          "Yapay Zekâ Destekli Metinden Video ve Sahne Oluşturma",
+          "AI Araçlarıyla Çoklu Görsel Üretimi ve Kompozisyon Tasarımı",
+          "Yapay Zekâ Tabanlı Ses ve Altyazı Ekleme Uygulamaları",
+          "Yapay Zekâ Destekli Tasarım ve Görsel Proje Atölyesi - 1",
+          "Yapay Zekâ Destekli Tasarım ve Görsel Proje Atölyesi - 2",
           "Görsel Yerleştirme ve Profesyonel Sunum Örnekleri (Mockups)",
-          "Kurumsal Marka Kiti Oluşturma (Yazı Tipi, Renk Paleti, Logo Ekleme)",
-          "Marka Kiti Standartlarının Tasarımlara Uygulanması",
-          "Canva İle Etkili ve Etkileşimli Sunum Hazırlama",
-          "Canva Planlayıcı Aracı İle Sosyal Medya Takvimi Hazırlama",
-          "Tasarım İçeriğini Dil Bazlı Dönüştürme (Çeviri Aracı)",
-          "Konuya ve Hedef Kitleye Göre Metin Oluşturma (Magic Write)",
-          "Görseldeki Unsurları Değiştirme (Magic Edit İleri Teknikleri)",
-          "Objeleri Silme ve Kusursuz Temizleme (Magic Eraser)",
-          "Fotoğraflarda Hassas Nesne Seçme ve Arka Plan Ayrıştırma",
-          "AI Destekli Sunum Tasarımı (Magic Presentation)",
-          "Sosyal Medya ve Dijital İçerik Kiti Hazırlama Uygulaması",
-          "İleri Seviye Canva Araçlarıyla Kapsamlı Tasarım Projesi"
-        ]
-      },
-      {
-        id: "mod_canva_3",
-        number: 3,
-        name: "İleri Seviye Canva Uygulamaları",
-        totalHours: 20,
-        lessonHours: 18,
-        examHours: 2,
-        topics: [
+          "Kurumsal Marka Kiti Oluşturma (Özel Yazı Tipi, Renk Paleti ve Logo Ekleme)",
+          "Marka Kiti Kurallarının Tasarım Şablonlarına Otomatik Entegrasyonu",
+          "Canva İle Etkileşimli, Canlı ve Etkili Sunum Teknikleri",
+          "Canva İçerik Planlayıcı (Content Planner) Aracı İle Sosyal Medya Takvimi Hazırlama",
+          "Tasarım İçeriğini Dil Bazlı Dönüştürme ve Çok Dilli Çeviri Aracı Kullanımı",
+          "Konuya ve Hedef Kitleye Göre Dinamik Metin Üretimi (Magic Write)",
+          "Görseldeki Unsurları Seçici Olarak Değiştirme (Magic Edit İleri Teknikleri)",
+          "Gelişmiş Obje Silme ve Görsel Restorasyon Uygulamaları",
+          "Fotoğraflarda Hassas Çoklu Nesne Seçme ve Katmanlama",
+          "Yapay Zekâ Destekli Otomatik Sunum Tasarımı (Magic Presentation)",
+          "Sosyal Medya ve Dijital İçerik Kiti Hazırlama Pratiği",
+          "Çoklu Sayfa Tasarımı ve Veri Bağlama (Toplu İçerik Üretimi - Bulk Create)",
+          "İleri Seviye Canva Araçlarıyla Kapsamlı Tasarım Çalışması - 1",
+          "İleri Seviye Canva Araçlarıyla Kapsamlı Tasarım Çalışması - 2",
           "Video Efekti Uygulamaları ve Paint Smoke Efektine Giriş",
-          "Video Tasarımlarında Özel Boya ve Duman Efektleri Geliştirme",
-          "Video Sahne Geçişleri ve Zaman Çizelgesi (Timeline) Yönetimi",
-          "Çok Katmanlı Video Kurgusu ve Ses Efekti Senkronizasyonu",
-          "Katmanlı Sunum Tasarımı Mantığı ve Derinlik Efektleri",
-          "İleri Katman Yönetimi ve Katman Sıralama İpuçları",
-          "Metin İçine Katmanlı Görsel Ekleme Teknikleri (Text Masking)",
+          "Video Tasarımlarında Özel Boya, Duman ve Parçacık Efektleri Geliştirme",
+          "Video Sahne Geçişleri ve Zaman Çizelgesi (Timeline) Hassas Düzenlemesi",
+          "Çok Katmanlı Video Kurgusu ve Çok Kanallı Ses Efekti Senkronizasyonu",
+          "Katmanlı Sunum Tasarımı Mantığı ve 3D Derinlik Efektleri",
+          "İleri Düzey Katman Sıralaması, Saydamlık ve Karıştırma Modları",
+          "Metin İçine Katmanlı Görsel Maskeleme Teknikleri (Text Masking)",
           "Tipografi Odaklı Katmanlı Görsel Kompozisyonları",
-          "Çift Pozlama ve Tipografik Katman Tasarımları",
-          "Görselleri Vektörel Tasarıma Hazırlama Süreçleri",
-          "Görselleri Vektör Logo Tasarımına Dönüştürme (SVG Formatı)",
-          "Şeffaf Arka Planlı Kurumsal Vektör Logo Üretimi",
-          "Dijital Reklam ve Sosyal Medya İçin Hareketli Afiş Tasarımı",
-          "Dinamik İnfografik ve Veri Görselleştirme Tasarımları",
-          "Web ve Mobil İçin Duyarlı (Responsive) Tasarım Varyasyonları",
+          "Çift Pozlama (Double Exposure) ve Tipografik Görsel Tasarımları",
+          "Görselleri Vektörel Tasarıma Hazırlama Süreçleri ve Standartları",
+          "Görselleri Vektör Logo Tasarımına Dönüştürme (SVG Formatı İle Çalışma)",
+          "Şeffaf Arka Planlı Kurumsal Vektör Logo Üretimi ve İkon Seti Tasarımı",
+          "Dijital Reklam ve Sosyal Medya İçin Hareketli Afiş (Motion Poster) Tasarımı",
+          "Dinamik İnfografik, Grafik ve İnteraktif Veri Görselleştirme Tasarımları",
+          "Web, Mobil ve Baskı İçin Duyarlı (Responsive) Boyutlandırma (Magic Switch)",
+          "İleri Seviye Dijital İllüstrasyon ve Grafik Sanat Uygulamaları",
           "İleri Seviye Tasarım ve Video Proje Uygulaması - 1",
           "İleri Seviye Tasarım ve Video Proje Uygulaması - 2",
-          "İleri Seviye Tasarım ve Video Proje Uygulaması - 3"
-        ]
-      },
-      {
-        id: "mod_canva_4",
-        number: 4,
-        name: "İş Birliği ve Proje Paylaşımı",
-        totalHours: 10,
-        lessonHours: 8,
-        examHours: 2,
-        topics: [
-          "Canva'da Takım Oluşturma ve Üye Yönetimi",
-          "Kurumsal Marka Kitini Takımla Paylaşma ve Eşzamanlı Kullanım",
-          "Bağlantı İle Paylaşma, Görüntüleme ve Düzenleme Yetkileri",
-          "Gerçek Zamanlı Ortak Çalışma ve Canlı Yorumlama Pratiği",
-          "Sunumlara, Afişlere ve Formlara Bağlantı Ekleme (Dinamik QR Kod Üretme)",
-          "Baskı ve Dijital İçin Proje Çıktısı Standartları (Baskı PDF, Yüksek Çözünürlüklü PNG/JPEG)",
-          "Video ve Vektörel Dışa Aktarma (MP4 Video, Şeffaf SVG Vektör Çıktısı)",
-          "Ortak Takım Projesi Sonuç Sunumu ve Kalite Değerlendirmesi"
+          "İleri Seviye Tasarım ve Video Proje Uygulaması - 3",
+          "Canva'da Takım ve Çalışma Alanı Oluşturma, Rol ve Üye Yönetimi",
+          "Kurumsal Marka Kitini Takımla Paylaşma ve Ortak Şablon Kütüphanesi Oluşturma",
+          "Tasarımları Bağlantı İle Paylaşma, Görüntüleme ve Düzenleme Yetkileri Belirleme",
+          "Gerçek Zamanlı Ortak Çalışma, Eşzamanlı Düzenleme ve Canlı Yorumlama",
+          "Sunumlara, Afişlere ve Formlara Bağlantı Ekleme ve Dinamik QR Kod Üretimi",
+          "Baskı Standartlarında Profesyonel Çıktı Alma (Taşma Paylı PDF Baskı Formatı)",
+          "Dijital Medya İçin Yüksek Çözünürlüklü Dışa Aktarma (PNG/JPEG ve MP4 Video)",
+          "Profesyonel Vektörel Dışa Aktarma (Şeffaf SVG) ve Arşivleme Standartları",
+          "Takım Ortak Projesi Sunumu, Portfolyo Düzenleme ve Kalite Değerlendirmesi"
         ]
       }
     ],
     syllabus: [
-      // 1. Modül: Canva’da Yapay Zekâ Uygulamaları (15 Saat)
-      { hour: 1, topic: "Magic Write (Sihirli Yazı) İle Metin Yazma ve Prompt Teknikleri", moduleNumber: 1, moduleName: "Canva’da Yapay Zekâ Uygulamaları", isExam: false },
-      { hour: 2, topic: "Metinden Görsel Oluşturma (AI Görsel Üretim Araçları)", moduleNumber: 1, moduleName: "Canva’da Yapay Zekâ Uygulamaları", isExam: false },
-      { hour: 3, topic: "AI İle Otomatik Tasarım ve Şablon Oluşturma", moduleNumber: 1, moduleName: "Canva’da Yapay Zekâ Uygulamaları", isExam: false },
-      { hour: 4, topic: "İstenmeyen Objeleri Kaldırma (Magic Eraser)", moduleNumber: 1, moduleName: "Canva’da Yapay Zekâ Uygulamaları", isExam: false },
-      { hour: 5, topic: "Obje Değiştirme (Magic Replace Teknikleri)", moduleNumber: 1, moduleName: "Canva’da Yapay Zekâ Uygulamaları", isExam: false },
-      { hour: 6, topic: "Fotoğraflardan Yazı ve Nesne Ayırt Etme (OCR Teknolojisi)", moduleNumber: 1, moduleName: "Canva’da Yapay Zekâ Uygulamaları", isExam: false },
-      { hour: 7, topic: "Fotoğraflarda Nesne Algılama ve Seçim Araçları", moduleNumber: 1, moduleName: "Canva’da Yapay Zekâ Uygulamaları", isExam: false },
-      { hour: 8, topic: "Yapay Zekâ Destekli Animasyon Geçişleri", moduleNumber: 1, moduleName: "Canva’da Yapay Zekâ Uygulamaları", isExam: false },
-      { hour: 9, topic: "Sunumlarda AI İle Hareket Efektleri Kullanımı", moduleNumber: 1, moduleName: "Canva’da Yapay Zekâ Uygulamaları", isExam: false },
-      { hour: 10, topic: "Canva’da AI İle Video Senaryosu Yazma", moduleNumber: 1, moduleName: "Canva’da Yapay Zekâ Uygulamaları", isExam: false },
-      { hour: 11, topic: "Yapay Zekâ İle Senaryo Üzerinden Video Oluşturma", moduleNumber: 1, moduleName: "Canva’da Yapay Zekâ Uygulamaları", isExam: false },
-      { hour: 12, topic: "Yapay Zekâ Destekli Tasarım ve Görsel Proje Uygulaması", moduleNumber: 1, moduleName: "Canva’da Yapay Zekâ Uygulamaları", isExam: false },
-      { hour: 13, topic: "Yapay Zekâ Destekli Video Kurgusu ve İçerik Üretimi Pratiği", moduleNumber: 1, moduleName: "Canva’da Yapay Zekâ Uygulamaları", isExam: false },
-      { hour: 14, topic: "Canva’da Yapay Zekâ Uygulamaları - Modül Değerlendirme Sınavı (Uygulama)", moduleNumber: 1, moduleName: "Canva’da Yapay Zekâ Uygulamaları", isExam: true },
-      { hour: 15, topic: "Canva’da Yapay Zekâ Uygulamaları - Modül Değerlendirme Sınavı (Teorik & Değerlendirme)", moduleNumber: 1, moduleName: "Canva’da Yapay Zekâ Uygulamaları", isExam: true },
-
-      // 2. Modül: İleri Seviye Canva Araçları (15 Saat)
-      { hour: 16, topic: "Görsel Yerleştirme ve Profesyonel Sunum Örnekleri (Mockups)", moduleNumber: 2, moduleName: "İleri Seviye Canva Araçları", isExam: false },
-      { hour: 17, topic: "Kurumsal Marka Kiti Oluşturma (Yazı Tipi, Renk Paleti, Logo Ekleme)", moduleNumber: 2, moduleName: "İleri Seviye Canva Araçları", isExam: false },
-      { hour: 18, topic: "Marka Kiti Standartlarının Tasarımlara Uygulanması", moduleNumber: 2, moduleName: "İleri Seviye Canva Araçları", isExam: false },
-      { hour: 19, topic: "Canva İle Etkili ve Etkileşimli Sunum Hazırlama", moduleNumber: 2, moduleName: "İleri Seviye Canva Araçları", isExam: false },
-      { hour: 20, topic: "Canva Planlayıcı Aracı İle Sosyal Medya Takvimi Hazırlama", moduleNumber: 2, moduleName: "İleri Seviye Canva Araçları", isExam: false },
-      { hour: 21, topic: "Tasarım İçeriğini Dil Bazlı Dönüştürme (Çeviri Aracı)", moduleNumber: 2, moduleName: "İleri Seviye Canva Araçları", isExam: false },
-      { hour: 22, topic: "Konuya ve Hedef Kitleye Göre Metin Oluşturma (Magic Write)", moduleNumber: 2, moduleName: "İleri Seviye Canva Araçları", isExam: false },
-      { hour: 23, topic: "Görseldeki Unsurları Değiştirme (Magic Edit İleri Teknikleri)", moduleNumber: 2, moduleName: "İleri Seviye Canva Araçları", isExam: false },
-      { hour: 24, topic: "Objeleri Silme ve Kusursuz Temizleme (Magic Eraser)", moduleNumber: 2, moduleName: "İleri Seviye Canva Araçları", isExam: false },
-      { hour: 25, topic: "Fotoğraflarda Hassas Nesne Seçme ve Arka Plan Ayrıştırma", moduleNumber: 2, moduleName: "İleri Seviye Canva Araçları", isExam: false },
-      { hour: 26, topic: "AI Destekli Sunum Tasarımı (Magic Presentation)", moduleNumber: 2, moduleName: "İleri Seviye Canva Araçları", isExam: false },
-      { hour: 27, topic: "Sosyal Medya ve Dijital İçerik Kiti Hazırlama Uygulaması", moduleNumber: 2, moduleName: "İleri Seviye Canva Araçları", isExam: false },
-      { hour: 28, topic: "İleri Seviye Canva Araçlarıyla Kapsamlı Tasarım Projesi", moduleNumber: 2, moduleName: "İleri Seviye Canva Araçları", isExam: false },
-      { hour: 29, topic: "İleri Seviye Canva Araçları - Modül Değerlendirme Sınavı (Uygulama)", moduleNumber: 2, moduleName: "İleri Seviye Canva Araçları", isExam: true },
-      { hour: 30, topic: "İleri Seviye Canva Araçları - Modül Değerlendirme Sınavı (Teorik & Değerlendirme)", moduleNumber: 2, moduleName: "İleri Seviye Canva Araçları", isExam: true },
-
-      // 3. Modül: İleri Seviye Canva Uygulamaları (20 Saat)
-      { hour: 31, topic: "Video Efekti Uygulamaları ve Paint Smoke Efektine Giriş", moduleNumber: 3, moduleName: "İleri Seviye Canva Uygulamaları", isExam: false },
-      { hour: 32, topic: "Video Tasarımlarında Özel Boya ve Duman Efektleri Geliştirme", moduleNumber: 3, moduleName: "İleri Seviye Canva Uygulamaları", isExam: false },
-      { hour: 33, topic: "Video Sahne Geçişleri ve Zaman Çizelgesi (Timeline) Yönetimi", moduleNumber: 3, moduleName: "İleri Seviye Canva Uygulamaları", isExam: false },
-      { hour: 34, topic: "Çok Katmanlı Video Kurgusu ve Ses Efekti Senkronizasyonu", moduleNumber: 3, moduleName: "İleri Seviye Canva Uygulamaları", isExam: false },
-      { hour: 35, topic: "Katmanlı Sunum Tasarımı Mantığı ve Derinlik Efektleri", moduleNumber: 3, moduleName: "İleri Seviye Canva Uygulamaları", isExam: false },
-      { hour: 36, topic: "İleri Katman Yönetimi ve Katman Sıralama İpuçları", moduleNumber: 3, moduleName: "İleri Seviye Canva Uygulamaları", isExam: false },
-      { hour: 37, topic: "Metin İçine Katmanlı Görsel Ekleme Teknikleri (Text Masking)", moduleNumber: 3, moduleName: "İleri Seviye Canva Uygulamaları", isExam: false },
-      { hour: 38, topic: "Tipografi Odaklı Katmanlı Görsel Kompozisyonları", moduleNumber: 3, moduleName: "İleri Seviye Canva Uygulamaları", isExam: false },
-      { hour: 39, topic: "Çift Pozlama ve Tipografik Katman Tasarımları", moduleNumber: 3, moduleName: "İleri Seviye Canva Uygulamaları", isExam: false },
-      { hour: 40, topic: "Görselleri Vektörel Tasarıma Hazırlama Süreçleri", moduleNumber: 3, moduleName: "İleri Seviye Canva Uygulamaları", isExam: false },
-      { hour: 41, topic: "Görselleri Vektör Logo Tasarımına Dönüştürme (SVG Formatı)", moduleNumber: 3, moduleName: "İleri Seviye Canva Uygulamaları", isExam: false },
-      { hour: 42, topic: "Şeffaf Arka Planlı Kurumsal Vektör Logo Üretimi", moduleNumber: 3, moduleName: "İleri Seviye Canva Uygulamaları", isExam: false },
-      { hour: 43, topic: "Dijital Reklam ve Sosyal Medya İçin Hareketli Afiş Tasarımı", moduleNumber: 3, moduleName: "İleri Seviye Canva Uygulamaları", isExam: false },
-      { hour: 44, topic: "Dinamik İnfografik ve Veri Görselleştirme Tasarımları", moduleNumber: 3, moduleName: "İleri Seviye Canva Uygulamaları", isExam: false },
-      { hour: 45, topic: "Web ve Mobil İçin Duyarlı (Responsive) Tasarım Varyasyonları", moduleNumber: 3, moduleName: "İleri Seviye Canva Uygulamaları", isExam: false },
-      { hour: 46, topic: "İleri Seviye Tasarım ve Video Proje Uygulaması - 1", moduleNumber: 3, moduleName: "İleri Seviye Canva Uygulamaları", isExam: false },
-      { hour: 47, topic: "İleri Seviye Tasarım ve Video Proje Uygulaması - 2", moduleNumber: 3, moduleName: "İleri Seviye Canva Uygulamaları", isExam: false },
-      { hour: 48, topic: "İleri Seviye Tasarım ve Video Proje Uygulaması - 3", moduleNumber: 3, moduleName: "İleri Seviye Canva Uygulamaları", isExam: false },
-      { hour: 49, topic: "İleri Seviye Canva Uygulamaları - Modül Değerlendirme Sınavı (Uygulama)", moduleNumber: 3, moduleName: "İleri Seviye Canva Uygulamaları", isExam: true },
-      { hour: 50, topic: "İleri Seviye Canva Uygulamaları - Modül Değerlendirme Sınavı (Teorik & Değerlendirme)", moduleNumber: 3, moduleName: "İleri Seviye Canva Uygulamaları", isExam: true },
-
-      // 4. Modül: İş Birliği ve Proje Paylaşımı (10 Saat)
-      { hour: 51, topic: "Canva'da Takım Oluşturma ve Üye Yönetimi", moduleNumber: 4, moduleName: "İş Birliği ve Proje Paylaşımı", isExam: false },
-      { hour: 52, topic: "Kurumsal Marka Kitini Takımla Paylaşma ve Eşzamanlı Kullanım", moduleNumber: 4, moduleName: "İş Birliği ve Proje Paylaşımı", isExam: false },
-      { hour: 53, topic: "Bağlantı İle Paylaşma, Görüntüleme ve Düzenleme Yetkileri", moduleNumber: 4, moduleName: "İş Birliği ve Proje Paylaşımı", isExam: false },
-      { hour: 54, topic: "Gerçek Zamanlı Ortak Çalışma ve Canlı Yorumlama Pratiği", moduleNumber: 4, moduleName: "İş Birliği ve Proje Paylaşımı", isExam: false },
-      { hour: 55, topic: "Sunumlara, Afişlere ve Formlara Bağlantı Ekleme (Dinamik QR Kod Üretme)", moduleNumber: 4, moduleName: "İş Birliği ve Proje Paylaşımı", isExam: false },
-      { hour: 56, topic: "Baskı ve Dijital İçin Proje Çıktısı Standartları (Baskı PDF, Yüksek Çözünürlüklü PNG/JPEG)", moduleNumber: 4, moduleName: "İş Birliği ve Proje Paylaşımı", isExam: false },
-      { hour: 57, topic: "Video ve Vektörel Dışa Aktarma (MP4 Video, Şeffaf SVG Vektör Çıktısı)", moduleNumber: 4, moduleName: "İş Birliği ve Proje Paylaşımı", isExam: false },
-      { hour: 58, topic: "Ortak Takım Projesi Sonuç Sunumu ve Kalite Değerlendirmesi", moduleNumber: 4, moduleName: "İş Birliği ve Proje Paylaşımı", isExam: false },
-      { hour: 59, topic: "İş Birliği ve Proje Paylaşımı - Modül Değerlendirme Sınavı (Uygulama)", moduleNumber: 4, moduleName: "İş Birliği ve Proje Paylaşımı", isExam: true },
-      { hour: 60, topic: "İş Birliği ve Proje Paylaşımı - Modül Değerlendirme Sınavı (Teorik & Değerlendirme)", moduleNumber: 4, moduleName: "İş Birliği ve Proje Paylaşımı", isExam: true }
+      { hour: 1, topic: "Magic Write (Sihirli Yazı) İle Metin Yazma ve Prompt Tasarım İlkeleri", moduleNumber: 1, moduleName: "Canva İle Dijital Tasarım Eğitimi (İleri Düzey)", isExam: false },
+      { hour: 2, topic: "Metinden Görsel Oluşturma (AI Görsel Üretim Modelleri)", moduleNumber: 1, moduleName: "Canva İle Dijital Tasarım Eğitimi (İleri Düzey)", isExam: false },
+      { hour: 3, topic: "AI İle Otomatik Şablon ve Sayfa Düzeni Oluşturma", moduleNumber: 1, moduleName: "Canva İle Dijital Tasarım Eğitimi (İleri Düzey)", isExam: false },
+      { hour: 4, topic: "İstenmeyen Objeleri ve Arka Plan Unsurlarını Kaldırma (Magic Eraser)", moduleNumber: 1, moduleName: "Canva İle Dijital Tasarım Eğitimi (İleri Düzey)", isExam: false },
+      { hour: 5, topic: "Obje Değiştirme ve Yeniden Üretim Teknikleri (Magic Replace)", moduleNumber: 1, moduleName: "Canva İle Dijital Tasarım Eğitimi (İleri Düzey)", isExam: false },
+      { hour: 6, topic: "Fotoğraflardan Yazı ve Karakter Ayıklama (OCR Teknolojisi)", moduleNumber: 1, moduleName: "Canva İle Dijital Tasarım Eğitimi (İleri Düzey)", isExam: false },
+      { hour: 7, topic: "Fotoğraflarda Nesne Algılama ve Akıllı Seçim Araçları", moduleNumber: 1, moduleName: "Canva İle Dijital Tasarım Eğitimi (İleri Düzey)", isExam: false },
+      { hour: 8, topic: "Yapay Zekâ Destekli Akıllı Animasyon ve Geçiş Efektleri", moduleNumber: 1, moduleName: "Canva İle Dijital Tasarım Eğitimi (İleri Düzey)", isExam: false },
+      { hour: 9, topic: "Sunumlarda AI İle Dinamik Hareket Efektleri Kullanımı", moduleNumber: 1, moduleName: "Canva İle Dijital Tasarım Eğitimi (İleri Düzey)", isExam: false },
+      { hour: 10, topic: "Canva’da AI İle Video Senaryosu ve Hikaye Panosu (Storyboard) Yazma", moduleNumber: 1, moduleName: "Canva İle Dijital Tasarım Eğitimi (İleri Düzey)", isExam: false },
+      { hour: 11, topic: "Yapay Zekâ Destekli Metinden Video ve Sahne Oluşturma", moduleNumber: 1, moduleName: "Canva İle Dijital Tasarım Eğitimi (İleri Düzey)", isExam: false },
+      { hour: 12, topic: "AI Araçlarıyla Çoklu Görsel Üretimi ve Kompozisyon Tasarımı", moduleNumber: 1, moduleName: "Canva İle Dijital Tasarım Eğitimi (İleri Düzey)", isExam: false },
+      { hour: 13, topic: "Yapay Zekâ Tabanlı Ses ve Altyazı Ekleme Uygulamaları", moduleNumber: 1, moduleName: "Canva İle Dijital Tasarım Eğitimi (İleri Düzey)", isExam: false },
+      { hour: 14, topic: "Yapay Zekâ Destekli Tasarım ve Görsel Proje Atölyesi - 1", moduleNumber: 1, moduleName: "Canva İle Dijital Tasarım Eğitimi (İleri Düzey)", isExam: false },
+      { hour: 15, topic: "Yapay Zekâ Destekli Tasarım ve Görsel Proje Atölyesi - 2", moduleNumber: 1, moduleName: "Canva İle Dijital Tasarım Eğitimi (İleri Düzey)", isExam: false },
+      { hour: 16, topic: "Görsel Yerleştirme ve Profesyonel Sunum Örnekleri (Mockups)", moduleNumber: 1, moduleName: "Canva İle Dijital Tasarım Eğitimi (İleri Düzey)", isExam: false },
+      { hour: 17, topic: "Kurumsal Marka Kiti Oluşturma (Özel Yazı Tipi, Renk Paleti ve Logo Ekleme)", moduleNumber: 1, moduleName: "Canva İle Dijital Tasarım Eğitimi (İleri Düzey)", isExam: false },
+      { hour: 18, topic: "Marka Kiti Kurallarının Tasarım Şablonlarına Otomatik Entegrasyonu", moduleNumber: 1, moduleName: "Canva İle Dijital Tasarım Eğitimi (İleri Düzey)", isExam: false },
+      { hour: 19, topic: "Canva İle Etkileşimli, Canlı ve Etkili Sunum Teknikleri", moduleNumber: 1, moduleName: "Canva İle Dijital Tasarım Eğitimi (İleri Düzey)", isExam: false },
+      { hour: 20, topic: "Canva İçerik Planlayıcı (Content Planner) Aracı İle Sosyal Medya Takvimi Hazırlama", moduleNumber: 1, moduleName: "Canva İle Dijital Tasarım Eğitimi (İleri Düzey)", isExam: false },
+      { hour: 21, topic: "Tasarım İçeriğini Dil Bazlı Dönüştürme ve Çok Dilli Çeviri Aracı Kullanımı", moduleNumber: 1, moduleName: "Canva İle Dijital Tasarım Eğitimi (İleri Düzey)", isExam: false },
+      { hour: 22, topic: "Konuya ve Hedef Kitleye Göre Dinamik Metin Üretimi (Magic Write)", moduleNumber: 1, moduleName: "Canva İle Dijital Tasarım Eğitimi (İleri Düzey)", isExam: false },
+      { hour: 23, topic: "Görseldeki Unsurları Seçici Olarak Değiştirme (Magic Edit İleri Teknikleri)", moduleNumber: 1, moduleName: "Canva İle Dijital Tasarım Eğitimi (İleri Düzey)", isExam: false },
+      { hour: 24, topic: "Gelişmiş Obje Silme ve Görsel Restorasyon Uygulamaları", moduleNumber: 1, moduleName: "Canva İle Dijital Tasarım Eğitimi (İleri Düzey)", isExam: false },
+      { hour: 25, topic: "Fotoğraflarda Hassas Çoklu Nesne Seçme ve Katmanlama", moduleNumber: 1, moduleName: "Canva İle Dijital Tasarım Eğitimi (İleri Düzey)", isExam: false },
+      { hour: 26, topic: "Yapay Zekâ Destekli Otomatik Sunum Tasarımı (Magic Presentation)", moduleNumber: 1, moduleName: "Canva İle Dijital Tasarım Eğitimi (İleri Düzey)", isExam: false },
+      { hour: 27, topic: "Sosyal Medya ve Dijital İçerik Kiti Hazırlama Pratiği", moduleNumber: 1, moduleName: "Canva İle Dijital Tasarım Eğitimi (İleri Düzey)", isExam: false },
+      { hour: 28, topic: "Çoklu Sayfa Tasarımı ve Veri Bağlama (Toplu İçerik Üretimi - Bulk Create)", moduleNumber: 1, moduleName: "Canva İle Dijital Tasarım Eğitimi (İleri Düzey)", isExam: false },
+      { hour: 29, topic: "İleri Seviye Canva Araçlarıyla Kapsamlı Tasarım Çalışması - 1", moduleNumber: 1, moduleName: "Canva İle Dijital Tasarım Eğitimi (İleri Düzey)", isExam: false },
+      { hour: 30, topic: "İleri Seviye Canva Araçlarıyla Kapsamlı Tasarım Çalışması - 2", moduleNumber: 1, moduleName: "Canva İle Dijital Tasarım Eğitimi (İleri Düzey)", isExam: false },
+      { hour: 31, topic: "Video Efekti Uygulamaları ve Paint Smoke Efektine Giriş", moduleNumber: 1, moduleName: "Canva İle Dijital Tasarım Eğitimi (İleri Düzey)", isExam: false },
+      { hour: 32, topic: "Video Tasarımlarında Özel Boya, Duman ve Parçacık Efektleri Geliştirme", moduleNumber: 1, moduleName: "Canva İle Dijital Tasarım Eğitimi (İleri Düzey)", isExam: false },
+      { hour: 33, topic: "Video Sahne Geçişleri ve Zaman Çizelgesi (Timeline) Hassas Düzenlemesi", moduleNumber: 1, moduleName: "Canva İle Dijital Tasarım Eğitimi (İleri Düzey)", isExam: false },
+      { hour: 34, topic: "Çok Katmanlı Video Kurgusu ve Çok Kanallı Ses Efekti Senkronizasyonu", moduleNumber: 1, moduleName: "Canva İle Dijital Tasarım Eğitimi (İleri Düzey)", isExam: false },
+      { hour: 35, topic: "Katmanlı Sunum Tasarımı Mantığı ve 3D Derinlik Efektleri", moduleNumber: 1, moduleName: "Canva İle Dijital Tasarım Eğitimi (İleri Düzey)", isExam: false },
+      { hour: 36, topic: "İleri Düzey Katman Sıralaması, Saydamlık ve Karıştırma Modları", moduleNumber: 1, moduleName: "Canva İle Dijital Tasarım Eğitimi (İleri Düzey)", isExam: false },
+      { hour: 37, topic: "Metin İçine Katmanlı Görsel Maskeleme Teknikleri (Text Masking)", moduleNumber: 1, moduleName: "Canva İle Dijital Tasarım Eğitimi (İleri Düzey)", isExam: false },
+      { hour: 38, topic: "Tipografi Odaklı Katmanlı Görsel Kompozisyonları", moduleNumber: 1, moduleName: "Canva İle Dijital Tasarım Eğitimi (İleri Düzey)", isExam: false },
+      { hour: 39, topic: "Çift Pozlama (Double Exposure) ve Tipografik Görsel Tasarımları", moduleNumber: 1, moduleName: "Canva İle Dijital Tasarım Eğitimi (İleri Düzey)", isExam: false },
+      { hour: 40, topic: "Görselleri Vektörel Tasarıma Hazırlama Süreçleri ve Standartları", moduleNumber: 1, moduleName: "Canva İle Dijital Tasarım Eğitimi (İleri Düzey)", isExam: false },
+      { hour: 41, topic: "Görselleri Vektör Logo Tasarımına Dönüştürme (SVG Formatı İle Çalışma)", moduleNumber: 1, moduleName: "Canva İle Dijital Tasarım Eğitimi (İleri Düzey)", isExam: false },
+      { hour: 42, topic: "Şeffaf Arka Planlı Kurumsal Vektör Logo Üretimi ve İkon Seti Tasarımı", moduleNumber: 1, moduleName: "Canva İle Dijital Tasarım Eğitimi (İleri Düzey)", isExam: false },
+      { hour: 43, topic: "Dijital Reklam ve Sosyal Medya İçin Hareketli Afiş (Motion Poster) Tasarımı", moduleNumber: 1, moduleName: "Canva İle Dijital Tasarım Eğitimi (İleri Düzey)", isExam: false },
+      { hour: 44, topic: "Dinamik İnfografik, Grafik ve İnteraktif Veri Görselleştirme Tasarımları", moduleNumber: 1, moduleName: "Canva İle Dijital Tasarım Eğitimi (İleri Düzey)", isExam: false },
+      { hour: 45, topic: "Web, Mobil ve Baskı İçin Duyarlı (Responsive) Boyutlandırma (Magic Switch)", moduleNumber: 1, moduleName: "Canva İle Dijital Tasarım Eğitimi (İleri Düzey)", isExam: false },
+      { hour: 46, topic: "İleri Seviye Dijital İllüstrasyon ve Grafik Sanat Uygulamaları", moduleNumber: 1, moduleName: "Canva İle Dijital Tasarım Eğitimi (İleri Düzey)", isExam: false },
+      { hour: 47, topic: "İleri Seviye Tasarım ve Video Proje Uygulaması - 1", moduleNumber: 1, moduleName: "Canva İle Dijital Tasarım Eğitimi (İleri Düzey)", isExam: false },
+      { hour: 48, topic: "İleri Seviye Tasarım ve Video Proje Uygulaması - 2", moduleNumber: 1, moduleName: "Canva İle Dijital Tasarım Eğitimi (İleri Düzey)", isExam: false },
+      { hour: 49, topic: "İleri Seviye Tasarım ve Video Proje Uygulaması - 3", moduleNumber: 1, moduleName: "Canva İle Dijital Tasarım Eğitimi (İleri Düzey)", isExam: false },
+      { hour: 50, topic: "Canva'da Takım ve Çalışma Alanı Oluşturma, Rol ve Üye Yönetimi", moduleNumber: 1, moduleName: "Canva İle Dijital Tasarım Eğitimi (İleri Düzey)", isExam: false },
+      { hour: 51, topic: "Kurumsal Marka Kitini Takımla Paylaşma ve Ortak Şablon Kütüphanesi Oluşturma", moduleNumber: 1, moduleName: "Canva İle Dijital Tasarım Eğitimi (İleri Düzey)", isExam: false },
+      { hour: 52, topic: "Tasarımları Bağlantı İle Paylaşma, Görüntüleme ve Düzenleme Yetkileri Belirleme", moduleNumber: 1, moduleName: "Canva İle Dijital Tasarım Eğitimi (İleri Düzey)", isExam: false },
+      { hour: 53, topic: "Gerçek Zamanlı Ortak Çalışma, Eşzamanlı Düzenleme ve Canlı Yorumlama", moduleNumber: 1, moduleName: "Canva İle Dijital Tasarım Eğitimi (İleri Düzey)", isExam: false },
+      { hour: 54, topic: "Sunumlara, Afişlere ve Formlara Bağlantı Ekleme ve Dinamik QR Kod Üretimi", moduleNumber: 1, moduleName: "Canva İle Dijital Tasarım Eğitimi (İleri Düzey)", isExam: false },
+      { hour: 55, topic: "Baskı Standartlarında Profesyonel Çıktı Alma (Taşma Paylı PDF Baskı Formatı)", moduleNumber: 1, moduleName: "Canva İle Dijital Tasarım Eğitimi (İleri Düzey)", isExam: false },
+      { hour: 56, topic: "Dijital Medya İçin Yüksek Çözünürlüklü Dışa Aktarma (PNG/JPEG ve MP4 Video)", moduleNumber: 1, moduleName: "Canva İle Dijital Tasarım Eğitimi (İleri Düzey)", isExam: false },
+      { hour: 57, topic: "Profesyonel Vektörel Dışa Aktarma (Şeffaf SVG) ve Arşivleme Standartları", moduleNumber: 1, moduleName: "Canva İle Dijital Tasarım Eğitimi (İleri Düzey)", isExam: false },
+      { hour: 58, topic: "Takım Ortak Projesi Sunumu, Portfolyo Düzenleme ve Kalite Değerlendirmesi", moduleNumber: 1, moduleName: "Canva İle Dijital Tasarım Eğitimi (İleri Düzey)", isExam: false },
+      { hour: 59, topic: "Canva İle Dijital Tasarım Eğitimi (İleri Düzey) - Modül Değerlendirme Sınavı (Uygulama)", moduleNumber: 1, moduleName: "Canva İle Dijital Tasarım Eğitimi (İleri Düzey)", isExam: true },
+      { hour: 60, topic: "Canva İle Dijital Tasarım Eğitimi (İleri Düzey) - Modül Değerlendirme Sınavı (Teorik & Değerlendirme)", moduleNumber: 1, moduleName: "Canva İle Dijital Tasarım Eğitimi (İleri Düzey)", isExam: true }
     ]
   }
 ];
@@ -425,10 +394,15 @@ const DataStore = {
       let updated = false;
       if (DEFAULT_COURSE_TEMPLATES && DEFAULT_COURSE_TEMPLATES.length > 0) {
         DEFAULT_COURSE_TEMPLATES.forEach(defTmpl => {
-          const exists = list.some(t => t.id === defTmpl.id || (t.code && defTmpl.code && t.code.toUpperCase() === defTmpl.code.toUpperCase()));
-          if (!exists) {
+          const idx = list.findIndex(t => t.id === defTmpl.id || (t.code && defTmpl.code && t.code.toUpperCase() === defTmpl.code.toUpperCase()));
+          if (idx === -1) {
             list.unshift(defTmpl);
             updated = true;
+          } else {
+            if (list[idx].moduleCount !== defTmpl.moduleCount || (list[idx].modules && list[idx].modules.length !== defTmpl.modules.length)) {
+              list[idx] = { ...list[idx], ...defTmpl };
+              updated = true;
+            }
           }
         });
         if (updated && db) {
@@ -756,10 +730,15 @@ const DataStore = {
       let updated = false;
       if (DEFAULT_COURSE_TEMPLATES && DEFAULT_COURSE_TEMPLATES.length > 0) {
         DEFAULT_COURSE_TEMPLATES.forEach(defTmpl => {
-          const exists = parsed.some(t => t.id === defTmpl.id || (t.code && defTmpl.code && t.code.toUpperCase() === defTmpl.code.toUpperCase()));
-          if (!exists) {
+          const idx = parsed.findIndex(t => t.id === defTmpl.id || (t.code && defTmpl.code && t.code.toUpperCase() === defTmpl.code.toUpperCase()));
+          if (idx === -1) {
             parsed.unshift(defTmpl);
             updated = true;
+          } else {
+            if (parsed[idx].moduleCount !== defTmpl.moduleCount || (parsed[idx].modules && parsed[idx].modules.length !== defTmpl.modules.length)) {
+              parsed[idx] = { ...parsed[idx], ...defTmpl };
+              updated = true;
+            }
           }
         });
       }
