@@ -671,20 +671,8 @@ function isCourseRelatedToUser(course, user) {
   // 1. Geliştirici kullanıcılar tüm kurslara tam yetkili erişebilir
   if (isDeveloper(user)) return true;
 
-  // 2. Doğrudan bu eğitmene ait kurslar
+  // 2. Doğrudan bu eğitmene ait kurslar (Zümre başkanları da dahil eğitmenler sadece kendi açtıkları kursları yönetir)
   if (isCourseInstructor(course, user)) return true;
-
-  // 3. Zümre Başkanı Yetkisi: Kendi branşındaki tüm mevcut/planlanan kursları görebilir ve düzenleyebilir
-  if (isDepartmentHead(user)) {
-    const userAreas = getUserAreas(user);
-    const tmpl = (typeof currentTemplates !== 'undefined' && Array.isArray(currentTemplates))
-      ? currentTemplates.find(t => t.id === course.templateId || t.name === course.name)
-      : null;
-    const courseArea = (course.category || course.area || (tmpl ? (tmpl.category || tmpl.area) : '') || '').trim();
-    if (!courseArea || userAreas.some(a => a.toLowerCase() === courseArea.toLowerCase())) {
-      return true;
-    }
-  }
 
   return false;
 }
@@ -832,6 +820,10 @@ function showDashboard() {
     roleBadge.innerText = '';
     roleBadge.className = 'hidden';
     navViewSwitcher.style.setProperty('display', 'flex', 'important');
+    if (navAdminViewBtn) {
+      navAdminViewBtn.title = 'Geliştirici Yönetim Paneli';
+      navAdminViewBtn.innerHTML = '<i data-lucide="settings" class="w-3.5 h-3.5 text-[#540B0E]"></i><span class="hidden md:inline">Geliştirici Paneli</span>';
+    }
     if (navSupervisorViewBtn) navSupervisorViewBtn.classList.remove('hidden');
     switchView('admin');
   } else if (isSupervisor(currentUser)) {
@@ -842,7 +834,12 @@ function showDashboard() {
   } else if (isDepartmentHead(currentUser)) {
     roleBadge.innerText = 'Zümre Başkanı';
     roleBadge.className = 'px-2 py-0.5 text-[10px] uppercase font-bold tracking-wider rounded bg-teal-700 text-white border border-teal-300/30 shadow-xs';
-    navViewSwitcher.style.setProperty('display', 'none', 'important');
+    navViewSwitcher.style.setProperty('display', 'flex', 'important');
+    if (navAdminViewBtn) {
+      navAdminViewBtn.title = 'Kurs ve Müfredat Planları Yönetimi';
+      navAdminViewBtn.innerHTML = '<i data-lucide="layers" class="w-3.5 h-3.5 text-teal-600"></i><span class="hidden md:inline">Müfredat Planları</span>';
+    }
+    if (navSupervisorViewBtn) navSupervisorViewBtn.classList.add('hidden');
     switchView('teacher');
   } else {
     roleBadge.innerText = 'Öğretici Paneli';
@@ -863,8 +860,13 @@ function switchView(view) {
   if (isSupervisor(currentUser)) {
     // Eğitim sorumlusu sadece kendilerine özel dashboard'u görebilir
     view = 'supervisor';
+  } else if (isDepartmentHead(currentUser)) {
+    // Zümre başkanı sadece kendi öğretmenlik ekranını veya müfredat yönetim ekranını (admin) görebilir
+    if (view === 'supervisor') {
+      view = 'teacher';
+    }
   } else if (!isDeveloper(currentUser)) {
-    // Zümre başkanı veya standart eğitmen admin veya supervisor ekranlarına asla geçemez
+    // Standart eğitmen admin veya supervisor ekranlarına asla geçemez
     if (view === 'admin' || view === 'supervisor') {
       view = 'teacher';
     }
@@ -890,6 +892,9 @@ function switchView(view) {
       navAdminViewBtn.className = 'px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-white dark:bg-[#152125] text-[#540B0E] dark:text-[#FFF3B0] shadow-xs cursor-pointer flex items-center gap-1.5 transition border border-[#540B0E]/20';
     }
     renderAdminPanel();
+    if (isDepartmentHead(currentUser)) {
+      switchAdminTab('templates');
+    }
   } else if (view === 'supervisor') {
     if (supSection) supSection.classList.remove('hidden');
     if (navSupervisorViewBtn) {
@@ -1169,8 +1174,11 @@ function setupEventListeners() {
   navAdminViewBtn?.addEventListener('click', () => switchView('admin'));
   navSupervisorViewBtn?.addEventListener('click', () => switchView('supervisor'));
 
-  // Zümre Başkanı & Geliştirici: Müfredat Tanımlama Butonu
-  deptHeadNewTmplBtn?.addEventListener('click', () => openCourseTmplModal());
+  // Zümre Başkanı & Geliştirici: Müfredat Yönetim / Tanımlama Butonu
+  deptHeadNewTmplBtn?.addEventListener('click', () => {
+    switchView('admin');
+    switchAdminTab('templates');
+  });
 
   // Admin Alt Sekmeleri
   adminTabCentersBtn?.addEventListener('click', () => switchAdminTab('centers'));
@@ -1448,6 +1456,46 @@ window.switchAdminTab = switchAdminTab;
 
 function renderAdminPanel() {
   loadData();
+
+  const isHead = isDepartmentHead(currentUser);
+  const isDev = isDeveloper(currentUser);
+
+  // Zümre Başkanı ise sadece Müfredat Planları sekmesini ve yeni müfredat ekleme butonunu göster
+  if (isHead && !isDev) {
+    if (openAddCenterModalBtn) openAddCenterModalBtn.classList.add('hidden');
+    if (openAddAreaModalBtn) openAddAreaModalBtn.classList.add('hidden');
+    if (openAddUserModalBtn) openAddUserModalBtn.classList.add('hidden');
+    if (openAddCourseTmplModalBtn) openAddCourseTmplModalBtn.classList.remove('hidden');
+
+    if (adminTabCentersBtn) adminTabCentersBtn.classList.add('hidden');
+    if (adminTabAreasBtn) adminTabAreasBtn.classList.add('hidden');
+    if (adminTabUsersBtn) adminTabUsersBtn.classList.add('hidden');
+    if (adminTabTodosBtn) adminTabTodosBtn.classList.add('hidden');
+    if (adminTabTemplatesBtn) adminTabTemplatesBtn.classList.remove('hidden');
+
+    // Başlık ve açıklama
+    const adminBannerTitle = document.querySelector('#adminSection h2');
+    const adminBannerDesc = document.querySelector('#adminSection p');
+    if (adminBannerTitle) adminBannerTitle.innerText = 'Kurs ve Müfredat Planları Yönetimi';
+    if (adminBannerDesc) adminBannerDesc.innerText = 'Tüm kurs müfredatlarını ve saatlik konu dağılımlarını inceleyebilir, yeni müfredat ekleyebilir veya mevcut planları güncelleyebilirsiniz.';
+  } else {
+    if (openAddCenterModalBtn) openAddCenterModalBtn.classList.remove('hidden');
+    if (openAddAreaModalBtn) openAddAreaModalBtn.classList.remove('hidden');
+    if (openAddUserModalBtn) openAddUserModalBtn.classList.remove('hidden');
+    if (openAddCourseTmplModalBtn) openAddCourseTmplModalBtn.classList.remove('hidden');
+
+    if (adminTabCentersBtn) adminTabCentersBtn.classList.remove('hidden');
+    if (adminTabAreasBtn) adminTabAreasBtn.classList.remove('hidden');
+    if (adminTabUsersBtn) adminTabUsersBtn.classList.remove('hidden');
+    if (adminTabTodosBtn) adminTabTodosBtn.classList.remove('hidden');
+    if (adminTabTemplatesBtn) adminTabTemplatesBtn.classList.remove('hidden');
+
+    const adminBannerTitle = document.querySelector('#adminSection h2');
+    const adminBannerDesc = document.querySelector('#adminSection p');
+    if (adminBannerTitle) adminBannerTitle.innerText = 'Admin Yönetim Paneli';
+    if (adminBannerDesc) adminBannerDesc.innerText = 'Kurs merkezlerini tanımlayın, yeni kurslar ekleyin ve her saat için anlatılacak resmi müfredat ve konu dağılım planlarını hazırlayın.';
+  }
+
   renderAdminCenters();
   renderAdminAreas();
   renderAdminTemplates();
