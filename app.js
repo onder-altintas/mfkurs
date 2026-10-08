@@ -5686,6 +5686,50 @@ function getStudentKararDurumu(student, course) {
 
 // =================== RESMİ EVRAK: MODÜLER KURS ÇERÇEVE VE ÇALIŞMA PLANI (KURS PLANI) ===================
 
+const KURS_PLANI_OPTIONS = {
+  methods: [
+    { id: 'gosterip_yaptirma', label: 'Gösterip Yaptırma', isDefault: true },
+    { id: 'anlatim', label: 'Anlatım (Takrir)', isDefault: true },
+    { id: 'soru_cevap', label: 'Soru - Cevap', isDefault: true },
+    { id: 'uygulama', label: 'Uygulama / Pratik Çalışma', isDefault: true },
+    { id: 'problem_cozme', label: 'Problem Çözme', isDefault: false },
+    { id: 'ornek_olay', label: 'Örnek Olay İncelemesi', isDefault: false },
+    { id: 'beyin_firtinasi', label: 'Beyin Fırtınası', isDefault: false },
+    { id: 'grup_calismasi', label: 'Grup / İşbirlikli Çalışma', isDefault: false },
+    { id: 'bireysel_calisma', label: 'Bireysel Çalışma', isDefault: false },
+    { id: 'simulasyon', label: 'Benzetim (Simülasyon)', isDefault: false },
+    { id: 'proje_tabanli', label: 'Proje Tabanlı Öğretim', isDefault: false },
+    { id: 'tartisma', label: 'Tartışma ve Münazara', isDefault: false },
+    { id: 'atolye', label: 'Atölye Çalışması (Workshop)', isDefault: false },
+    { id: 'rol_oynama', label: 'Rol Oynama / Canlandırma', isDefault: false }
+  ],
+  tools: [
+    { id: 'ders_notlari', label: 'Ders Notları ve Modül Kitapçığı', isDefault: true },
+    { id: 'bilgisayar', label: 'Bilgisayar / Akıllı Tahta', isDefault: true },
+    { id: 'temrin_malzemeleri', label: 'Temrin Malzemeleri ve Sarf Gereçler', isDefault: true },
+    { id: 'projeksiyon', label: 'Projeksiyon / Ekran', isDefault: false },
+    { id: 'atolye_makine', label: 'Atölye Makine ve Ekipmanları', isDefault: false },
+    { id: 'yazilim', label: 'Yazılım ve Dijital Uygulamalar', isDefault: false },
+    { id: 'olcme_aletleri', label: 'Teknik Ölçüm ve El Aletleri', isDefault: false },
+    { id: 'numuneler', label: 'Numune ve Ürün Örnekleri', isDefault: false },
+    { id: 'internet', label: 'İnternet ve Dijital Kaynaklar', isDefault: false },
+    { id: 'is_guvenligi', label: 'İş Güvenliği Ekipmanları (KKD)', isDefault: false },
+    { id: 'gorsel_isitsel', label: 'Görsel / İşitsel Materyaller', isDefault: false },
+    { id: 'laboratuvar', label: 'Laboratuvar Donanımı', isDefault: false }
+  ],
+  evaluation: [
+    { id: 'uygulama_surec', label: 'Uygulama ve Süreç Takibi', isDefault: true },
+    { id: 'yazili_sinav', label: 'Yazılı Modül / Ara Sınav', isDefault: true },
+    { id: 'beceri_sinavi', label: 'Uygulama / Beceri Sınavı', isDefault: true },
+    { id: 'gozlem_formu', label: 'Gözlem Formu ve Kontrol Listesi', isDefault: false },
+    { id: 'proje_odev', label: 'Proje ve Ödev Değerlendirme', isDefault: false },
+    { id: 'bitirme_sinavi', label: 'Dönem Sonu Bitirme Sınavı', isDefault: false },
+    { id: 'portfolyo', label: 'Ürün Dosyası (Portfolyo)', isDefault: false },
+    { id: 'performans', label: 'Bireysel Performans Değerlendirmesi', isDefault: false },
+    { id: 'sozlu', label: 'Sözlü Değerlendirme / Soru-Cevap', isDefault: false }
+  ]
+};
+
 function generateKursPlaniHtml(course) {
   if (!course) return '<p class="p-6 text-center text-slate-500">Kurs bilgisi bulunamadı.</p>';
 
@@ -5724,6 +5768,36 @@ function generateKursPlaniHtml(course) {
   const courseTimeText = (course.startTime && course.endTime)
     ? `${course.startTime} - ${course.endTime}`
     : `${dailyHours} Ders Saati`;
+
+  // Eğitmenin seçtiği yöntemler, araç-gereçler ve ölçme-değerlendirme yöntemleri
+  const planSettings = course.planSettings || {};
+
+  let selectedMethods = Array.isArray(planSettings.methods) && planSettings.methods.length > 0
+    ? [...planSettings.methods]
+    : ['Gösterip Yaptırma', 'Anlatım', 'Soru - Cevap', 'Uygulama'];
+  if (planSettings.customMethods && planSettings.customMethods.trim()) {
+    const customMList = planSettings.customMethods.split(/[,;\n]+/).map(s => s.trim()).filter(Boolean);
+    selectedMethods.push(...customMList);
+  }
+  const methodsText = selectedMethods.join(', ');
+
+  let selectedTools = Array.isArray(planSettings.tools) && planSettings.tools.length > 0
+    ? [...planSettings.tools]
+    : ['Ders Notları', 'Bilgisayar', 'Temrin Malzemeleri'];
+  if (planSettings.customTools && planSettings.customTools.trim()) {
+    const customTList = planSettings.customTools.split(/[,;\n]+/).map(s => s.trim()).filter(Boolean);
+    selectedTools.push(...customTList);
+  }
+  const toolsText = selectedTools.join(', ');
+
+  let selectedEval = Array.isArray(planSettings.evaluation) && planSettings.evaluation.length > 0
+    ? [...planSettings.evaluation]
+    : ['Uygulama ve Süreç Takibi'];
+  if (planSettings.customEvaluation && planSettings.customEvaluation.trim()) {
+    const customEList = planSettings.customEvaluation.split(/[,;\n]+/).map(s => s.trim()).filter(Boolean);
+    selectedEval.push(...customEList);
+  }
+  const baseEvalText = selectedEval.join(', ');
 
   // Kurumsal Makam, Üst Başlık, İnceleyen ve Onaylayan Yetkili Tanımlamaları
   let headerHtml = '';
@@ -5942,9 +6016,9 @@ function generateKursPlaniHtml(course) {
       topicsText = `${escapeHtml(courseName)} modüler kazanımları, mesleki bilgi, beceri ve temrin uygulamaları`;
     }
 
-    let olcmeText = 'Gözlem, Uygulama ve Süreç Değerlendirmesi';
+    let olcmeText = escapeHtml(baseEvalText);
     if (examsInWeek.length > 0) {
-      olcmeText = examsInWeek.map(e => `<strong>${escapeHtml(e.name)} Sınavı (${e.examDate})</strong>`).join('<br>') + '<br><span style="font-size: 6.5pt; color: #555;">Uygulama ve Süreç Takibi</span>';
+      olcmeText = examsInWeek.map(e => `<strong>${escapeHtml(e.name)} Sınavı (${e.examDate})</strong>`).join('<br>') + `<br><span style="font-size: 6.5pt; color: #555;">${escapeHtml(baseEvalText)}</span>`;
     }
 
     let aciklamaText = '&nbsp;';
@@ -5959,8 +6033,8 @@ function generateKursPlaniHtml(course) {
         <td style="border: 1px solid black; text-align: center; font-weight: bold; padding: 2px;">${weekLessonHours} Sa.</td>
         <td style="border: 1px solid black; padding: 2px 4px; font-weight: 500; font-size: 6.8pt; line-height: 1.2;">${moduleNamesInWeek}</td>
         <td style="border: 1px solid black; padding: 2px 5px; text-align: left; font-size: 6.8pt; line-height: 1.2;">${topicsText}</td>
-        <td style="border: 1px solid black; text-align: center; font-size: 6.5pt; padding: 2px 3px;">Anlatım, Gösterip Yaptırma, Soru-Cevap, Uygulama</td>
-        <td style="border: 1px solid black; text-align: center; font-size: 6.5pt; padding: 2px 3px;">Ders Notları, Bilgisayar, Temrin Malzemeleri</td>
+        <td style="border: 1px solid black; text-align: center; font-size: 6.5pt; padding: 2px 3px;">${escapeHtml(methodsText)}</td>
+        <td style="border: 1px solid black; text-align: center; font-size: 6.5pt; padding: 2px 3px;">${escapeHtml(toolsText)}</td>
         <td style="border: 1px solid black; text-align: center; font-size: 6.8pt; padding: 2px 4px; line-height: 1.2;">${olcmeText}</td>
         <td style="border: 1px solid black; text-align: center; font-size: 6.5pt; padding: 2px 2px;">${aciklamaText}</td>
       </tr>
@@ -6037,6 +6111,24 @@ function generateKursPlaniHtml(course) {
         <span>II. BÖLÜM: HAFTALIK DERS ÇALIŞMA VE UYGULAMA PLANI</span>
         <span style="font-weight: normal; font-size: 7pt; text-transform: none; color: #444;">Dönemlik hafta dağılımı, konular ve yöntemler</span>
       </div>
+
+      <!-- Kurs Eğitimi Pedagojik Yöntem, Araç ve Ölçme Özeti -->
+      <table style="width: 100%; border-collapse: collapse; border: 1.5px solid black; font-size: 7.2pt; margin-bottom: 6px; background: #fafafa;">
+        <tbody>
+          <tr>
+            <td style="border: 1px solid black; padding: 2.5px 5px; font-weight: bold; width: 22%; background: #f1f5f9;">Öğretim Yöntem ve Teknikleri</td>
+            <td style="border: 1px solid black; padding: 2.5px 5px; width: 78%; font-weight: 500;">${escapeHtml(methodsText)}</td>
+          </tr>
+          <tr>
+            <td style="border: 1px solid black; padding: 2.5px 5px; font-weight: bold; background: #f1f5f9;">Eğitim Araç ve Gereçleri</td>
+            <td style="border: 1px solid black; padding: 2.5px 5px; font-weight: 500;">${escapeHtml(toolsText)}</td>
+          </tr>
+          <tr>
+            <td style="border: 1px solid black; padding: 2.5px 5px; font-weight: bold; background: #f1f5f9;">Ölçme ve Değerlendirme Esasları</td>
+            <td style="border: 1px solid black; padding: 2.5px 5px; font-weight: 500;">${escapeHtml(baseEvalText)}</td>
+          </tr>
+        </tbody>
+      </table>
       <table style="width: 100%; border-collapse: collapse; border: 1.5px solid black; font-size: 7pt; margin-bottom: 10px;">
         <thead>
           <tr style="background: #f1f5f9; text-align: center; font-weight: bold;">
@@ -6498,6 +6590,249 @@ function renderDocumentsTab() {
     console.error('Error rendering imzaListesiStatsBar:', err);
   }
 }
+
+// =================== KURS PLANI YAPILANDIRMA VE OLUŞTURMA İŞLEMLERİ ===================
+
+function renderPlanOptionCheckboxes(containerId, options, selectedValues, nameAttr) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+
+  const selList = (Array.isArray(selectedValues) ? selectedValues : []).map(v => String(v).trim().toLowerCase());
+
+  const html = options.map(opt => {
+    const isChecked = selList.includes(opt.label.toLowerCase()) || selList.includes(opt.id.toLowerCase());
+    const activeClass = isChecked ? 'border-teal-500 bg-teal-50/50 dark:bg-teal-950/40 dark:border-teal-600 text-teal-900 dark:text-teal-200' : 'border-slate-200 dark:border-[#23353c] bg-white dark:bg-[#152125] text-slate-700 dark:text-slate-200';
+    return `
+      <label class="plan-option-label flex items-start gap-2 p-2.5 rounded-xl border transition cursor-pointer text-xs select-none hover:border-teal-400 hover:bg-teal-50/30 dark:hover:bg-teal-950/20 ${activeClass}">
+        <input
+          type="checkbox"
+          name="${nameAttr}"
+          value="${escapeHtml(opt.label)}"
+          ${isChecked ? 'checked' : ''}
+          onchange="onPlanOptionCheckboxChange(this)"
+          class="mt-0.5 rounded border-slate-300 text-teal-600 focus:ring-teal-500 w-4 h-4 cursor-pointer"
+        />
+        <span class="font-medium leading-snug">${escapeHtml(opt.label)}</span>
+      </label>
+    `;
+  }).join('');
+
+  container.innerHTML = html;
+}
+
+window.onPlanOptionCheckboxChange = function(input) {
+  const label = input.closest('label');
+  if (label) {
+    if (input.checked) {
+      label.classList.add('border-teal-500', 'bg-teal-50/50', 'dark:bg-teal-950/40', 'dark:border-teal-600', 'text-teal-900', 'dark:text-teal-200');
+      label.classList.remove('border-slate-200', 'dark:border-[#23353c]', 'bg-white', 'dark:bg-[#152125]', 'text-slate-700', 'dark:text-slate-200');
+    } else {
+      label.classList.remove('border-teal-500', 'bg-teal-50/50', 'dark:bg-teal-950/40', 'dark:border-teal-600', 'text-teal-900', 'dark:text-teal-200');
+      label.classList.add('border-slate-200', 'dark:border-[#23353c]', 'bg-white', 'dark:bg-[#152125]', 'text-slate-700', 'dark:text-slate-200');
+    }
+  }
+  updatePlanConfigCounts();
+};
+
+window.updatePlanConfigCounts = function() {
+  const methodInputs = document.querySelectorAll('input[name="kp_method"]:checked');
+  const toolInputs = document.querySelectorAll('input[name="kp_tool"]:checked');
+  const evalInputs = document.querySelectorAll('input[name="kp_eval"]:checked');
+
+  const customMethod = (document.getElementById('kpCustomMethodsInput')?.value || '').trim();
+  const customTool = (document.getElementById('kpCustomToolsInput')?.value || '').trim();
+  const customEval = (document.getElementById('kpCustomEvalInput')?.value || '').trim();
+
+  const methodCount = methodInputs.length + (customMethod ? 1 : 0);
+  const toolCount = toolInputs.length + (customTool ? 1 : 0);
+  const evalCount = evalInputs.length + (customEval ? 1 : 0);
+
+  const mBadge = document.getElementById('kpSelectedMethodsCountBadge');
+  if (mBadge) mBadge.textContent = `${methodCount} seçildi`;
+
+  const tBadge = document.getElementById('kpSelectedToolsCountBadge');
+  if (tBadge) tBadge.textContent = `${toolCount} seçildi`;
+
+  const eBadge = document.getElementById('kpSelectedEvalCountBadge');
+  if (eBadge) eBadge.textContent = `${evalCount} seçildi`;
+};
+
+window.applyDefaultPlanConfig = function() {
+  const defaultMethods = KURS_PLANI_OPTIONS.methods.filter(m => m.isDefault).map(m => m.label);
+  const defaultTools = KURS_PLANI_OPTIONS.tools.filter(t => t.isDefault).map(t => t.label);
+  const defaultEval = KURS_PLANI_OPTIONS.evaluation.filter(e => e.isDefault).map(e => e.label);
+
+  renderPlanOptionCheckboxes('kpMethodsGrid', KURS_PLANI_OPTIONS.methods, defaultMethods, 'kp_method');
+  renderPlanOptionCheckboxes('kpToolsGrid', KURS_PLANI_OPTIONS.tools, defaultTools, 'kp_tool');
+  renderPlanOptionCheckboxes('kpEvalGrid', KURS_PLANI_OPTIONS.evaluation, defaultEval, 'kp_eval');
+
+  const cm = document.getElementById('kpCustomMethodsInput');
+  if (cm) cm.value = '';
+  const ct = document.getElementById('kpCustomToolsInput');
+  if (ct) ct.value = '';
+  const ce = document.getElementById('kpCustomEvalInput');
+  if (ce) ce.value = '';
+
+  updatePlanConfigCounts();
+};
+
+window.clearPlanConfigSelection = function() {
+  renderPlanOptionCheckboxes('kpMethodsGrid', KURS_PLANI_OPTIONS.methods, [], 'kp_method');
+  renderPlanOptionCheckboxes('kpToolsGrid', KURS_PLANI_OPTIONS.tools, [], 'kp_tool');
+  renderPlanOptionCheckboxes('kpEvalGrid', KURS_PLANI_OPTIONS.evaluation, [], 'kp_eval');
+
+  const cm = document.getElementById('kpCustomMethodsInput');
+  if (cm) cm.value = '';
+  const ct = document.getElementById('kpCustomToolsInput');
+  if (ct) ct.value = '';
+  const ce = document.getElementById('kpCustomEvalInput');
+  if (ce) ce.value = '';
+
+  updatePlanConfigCounts();
+};
+
+window.openKursPlaniConfigModal = function() {
+  if (!activeCourseForDetail) {
+    alert('Lütfen önce bir kurs seçiniz.');
+    return;
+  }
+
+  const course = activeCourseForDetail;
+
+  // Başlık ve Kurs Bilgilerini Doldur
+  const titleEl = document.getElementById('kpConfigCourseTitle');
+  const metaEl = document.getElementById('kpConfigCourseMeta');
+  const infoEl = document.getElementById('kpConfigCourseInfo');
+
+  if (titleEl) {
+    titleEl.textContent = toTurkishTitleCase(course.name || course.title || 'Kurs');
+  }
+  if (metaEl) {
+    const code = course.code || course.id || '-';
+    const hours = course.totalHours || 0;
+    const inst = toTurkishPersonName(getCourseInstructorName(course));
+    metaEl.textContent = `Kod: ${code} • ${hours} Saat • Eğitmen: ${inst}`;
+  }
+  if (infoEl) {
+    infoEl.textContent = `${toTurkishTitleCase(course.name || 'Kurs')} için uygulanacak yöntem, araç-gereç ve ölçme yöntemlerini belirleyiniz.`;
+  }
+
+  // Kursun önceden kaydedilmiş plan ayarları varsa yükle, yoksa önerilen varsayılanları seç
+  const planSettings = course.planSettings || {};
+
+  let currentMethods = [];
+  if (Array.isArray(planSettings.methods) && planSettings.methods.length > 0) {
+    currentMethods = [...planSettings.methods];
+  } else {
+    currentMethods = KURS_PLANI_OPTIONS.methods.filter(m => m.isDefault).map(m => m.label);
+  }
+
+  let currentTools = [];
+  if (Array.isArray(planSettings.tools) && planSettings.tools.length > 0) {
+    currentTools = [...planSettings.tools];
+  } else {
+    currentTools = KURS_PLANI_OPTIONS.tools.filter(t => t.isDefault).map(t => t.label);
+  }
+
+  let currentEval = [];
+  if (Array.isArray(planSettings.evaluation) && planSettings.evaluation.length > 0) {
+    currentEval = [...planSettings.evaluation];
+  } else {
+    currentEval = KURS_PLANI_OPTIONS.evaluation.filter(e => e.isDefault).map(e => e.label);
+  }
+
+  renderPlanOptionCheckboxes('kpMethodsGrid', KURS_PLANI_OPTIONS.methods, currentMethods, 'kp_method');
+  renderPlanOptionCheckboxes('kpToolsGrid', KURS_PLANI_OPTIONS.tools, currentTools, 'kp_tool');
+  renderPlanOptionCheckboxes('kpEvalGrid', KURS_PLANI_OPTIONS.evaluation, currentEval, 'kp_eval');
+
+  const cm = document.getElementById('kpCustomMethodsInput');
+  if (cm) {
+    cm.value = planSettings.customMethods || '';
+    cm.oninput = updatePlanConfigCounts;
+  }
+  const ct = document.getElementById('kpCustomToolsInput');
+  if (ct) {
+    ct.value = planSettings.customTools || '';
+    ct.oninput = updatePlanConfigCounts;
+  }
+  const ce = document.getElementById('kpCustomEvalInput');
+  if (ce) {
+    ce.value = planSettings.customEvaluation || '';
+    ce.oninput = updatePlanConfigCounts;
+  }
+
+  updatePlanConfigCounts();
+
+  const modal = document.getElementById('kursPlaniConfigModal');
+  if (modal) {
+    modal.classList.remove('hidden');
+  }
+  refreshLucide();
+};
+
+window.closeKursPlaniConfigModal = function() {
+  const modal = document.getElementById('kursPlaniConfigModal');
+  if (modal) {
+    modal.classList.add('hidden');
+  }
+};
+
+window.submitPlanConfigAndGenerate = function() {
+  if (!activeCourseForDetail) {
+    alert('Lütfen önce bir kurs seçiniz.');
+    return;
+  }
+
+  const selectedMethods = Array.from(document.querySelectorAll('input[name="kp_method"]:checked')).map(el => el.value);
+  const customMethods = (document.getElementById('kpCustomMethodsInput')?.value || '').trim();
+
+  const selectedTools = Array.from(document.querySelectorAll('input[name="kp_tool"]:checked')).map(el => el.value);
+  const customTools = (document.getElementById('kpCustomToolsInput')?.value || '').trim();
+
+  const selectedEval = Array.from(document.querySelectorAll('input[name="kp_eval"]:checked')).map(el => el.value);
+  const customEval = (document.getElementById('kpCustomEvalInput')?.value || '').trim();
+
+  if (selectedMethods.length === 0 && !customMethods) {
+    alert('Lütfen kursta kullanılacak en az bir öğretim yöntem ve tekniği seçiniz veya yazınız.');
+    return;
+  }
+  if (selectedTools.length === 0 && !customTools) {
+    alert('Lütfen kursta kullanılacak en az bir eğitim araç ve gereci seçiniz veya yazınız.');
+    return;
+  }
+  if (selectedEval.length === 0 && !customEval) {
+    alert('Lütfen kursta uygulanacak en az bir ölçme ve değerlendirme yöntemi seçiniz veya yazınız.');
+    return;
+  }
+
+  const planSettings = {
+    methods: selectedMethods,
+    customMethods: customMethods,
+    tools: selectedTools,
+    customTools: customTools,
+    evaluation: selectedEval,
+    customEvaluation: customEval,
+    updatedAt: new Date().toISOString()
+  };
+
+  // Aktif kursa ve dizideki kursa ata
+  activeCourseForDetail.planSettings = planSettings;
+  const idx = currentCourses.findIndex(c => c.id === activeCourseForDetail.id);
+  if (idx !== -1) {
+    currentCourses[idx].planSettings = planSettings;
+  }
+
+  // Veritabanına kaydet (boş veri tohumlamadan, sadece mevcut kursu günceller)
+  if (typeof DataStore !== 'undefined' && DataStore.saveCourses) {
+    DataStore.saveCourses(currentCourses);
+  }
+
+  // Yapılandırma modalını kapat
+  closeKursPlaniConfigModal();
+
+  // Önizlemeyi doğrudan oluşturulmuş yeni plan verileriyle aç
+  openKursPlaniPreview();
+};
 
 window.openKursPlaniPreview = function() {
   if (!activeCourseForDetail) {
