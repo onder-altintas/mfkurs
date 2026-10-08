@@ -3643,13 +3643,24 @@ function renderStudentTable() {
     const tr = document.createElement('tr');
     tr.className = 'border-b border-slate-100 dark:border-[#23353c]/70 transition-colors';
 
-    const isDevamsiz = (s.attendance === 'Devamsız') || (s.result === 'Devamsız');
-    const isSuccess = (s.result || '').includes('Başarılı') || (s.result || '').includes('Belge');
+    const totalHours = Number(activeCourseForDetail.totalHours) || 0;
+    const isHicGelmedi = (s.attendance === 'Hiç Gelmedi') || 
+                         (s.result === 'Hiç Gelmedi') || 
+                         (typeof s.attendanceNote === 'string' && s.attendanceNote.toLowerCase().includes('hiç gelme')) ||
+                         (totalHours > 0 && Number(s.absentHours || 0) >= totalHours);
+
+    const isDevamsiz = !isHicGelmedi && ((s.attendance === 'Devamsız') || (s.result === 'Devamsız') || (totalHours > 0 && Number(s.absentHours || 0) > maxAllowed));
+    const isSuccess = !isHicGelmedi && !isDevamsiz && ((s.result || '').includes('Başarılı') || (s.result || '').includes('Belge'));
     let resultBadgeClass = 'bg-slate-100 text-slate-700';
-    if (isDevamsiz) {
-      resultBadgeClass = 'bg-rose-50 text-rose-700 border border-rose-200';
+    let resultText = s.result || 'Devam Ediyor';
+    if (isHicGelmedi) {
+      resultBadgeClass = 'bg-rose-100 text-rose-800 border border-rose-300 font-bold';
+      resultText = 'Hiç Gelmedi';
+    } else if (isDevamsiz) {
+      resultBadgeClass = 'bg-rose-50 text-rose-700 border border-rose-200 font-bold';
+      resultText = 'Devamsız';
     } else if (isSuccess) {
-      resultBadgeClass = 'bg-emerald-50 text-emerald-700 border border-emerald-200';
+      resultBadgeClass = 'bg-emerald-50 text-emerald-700 border border-emerald-200 font-bold';
     } else if ((s.result || '').includes('Başarısız')) {
       resultBadgeClass = 'bg-amber-50 text-amber-700 border border-amber-200';
     }
@@ -3681,14 +3692,13 @@ function renderStudentTable() {
 
     // Devamsızlık Sütunu
     const absentHours = Number(s.absentHours) || 0;
-    const maxAllowed = Math.floor((activeCourseForDetail.totalHours || 0) / 5);
-    const isExceeded = (absentHours > maxAllowed) || (s.attendance === 'Devamsız');
+    const isExceeded = (absentHours > maxAllowed) || (s.attendance === 'Devamsız') || isHicGelmedi;
 
     const attendanceHtml = `
       <div>
-        <div class="font-bold ${isExceeded ? 'text-rose-700' : 'text-slate-800'}">${absentHours} Saat</div>
-        <div class="text-[10px] ${isExceeded ? 'text-rose-600 font-bold' : 'text-slate-400'}">
-          ${escapeHtml(s.attendance || 'Devamlı')}
+        <div class="font-bold ${isHicGelmedi || isExceeded ? 'text-rose-700' : 'text-slate-800'}">${absentHours} Saat</div>
+        <div class="text-[10px] ${isHicGelmedi ? 'text-rose-700 font-bold' : (isExceeded ? 'text-rose-600 font-bold' : 'text-slate-400')}">
+          ${escapeHtml(isHicGelmedi ? 'Hiç Gelmedi' : (s.attendance || 'Devamlı'))}
         </div>
       </div>
     `;
@@ -3711,11 +3721,19 @@ function renderStudentTable() {
       </td>
       <td class="px-4 py-3">
         <span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold ${resultBadgeClass}">
-          ${escapeHtml(s.result || 'Devam Ediyor')}
+          ${escapeHtml(resultText)}
         </span>
       </td>
       <td class="px-4 py-3 text-right">
         <div class="flex items-center justify-end gap-1.5">
+          <button
+            onclick="markStudentNeverAttended('${s.id}')"
+            class="p-1.5 ${isHicGelmedi ? 'text-rose-700 bg-rose-100 border border-rose-300' : 'text-slate-400 hover:text-rose-600 hover:bg-rose-50'} rounded-lg transition cursor-pointer"
+            title="${isHicGelmedi ? 'Kursiyer \"Hiç Gelmedi\" olarak işaretli (Kaldırmak için tıklayınız)' : 'Kursiyeri \"Hiç Gelmedi\" olarak işaretle'}"
+          >
+            <i data-lucide="user-x" class="w-4 h-4"></i>
+          </button>
+
           <button
             onclick="editStudent('${s.id}')"
             class="p-1.5 text-slate-500 hover:text-[#E09F3E] hover:bg-[#E09F3E]/10 rounded-lg transition cursor-pointer"
@@ -4578,6 +4596,27 @@ function renderAttendanceTab() {
         </button>
       `;
 
+    const isStudentNeverAttended = (s.attendance === 'Hiç Gelmedi') || 
+                                   (s.result === 'Hiç Gelmedi') || 
+                                   (typeof s.attendanceNote === 'string' && s.attendanceNote.toLowerCase().includes('hiç gelme')) ||
+                                   (totalHours > 0 && Number(s.absentHours || 0) >= totalHours);
+
+    const neverAttendedBtnHtml = `
+      <button
+        type="button"
+        onclick="markStudentNeverAttended('${s.id}')"
+        class="px-2 py-0.5 text-[10px] font-bold rounded ${
+          isStudentNeverAttended
+            ? 'bg-rose-600 hover:bg-rose-700 text-white border border-rose-700 shadow-2xs'
+            : 'bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 text-rose-800 dark:text-rose-300 border border-rose-200 dark:border-rose-700'
+        } transition cursor-pointer flex items-center gap-1 shadow-2xs whitespace-nowrap ml-1"
+        title="${isStudentNeverAttended ? 'Kursiyer \"Hiç Gelmedi\" olarak kayıtlıdır. Kaldırmak için tıklayınız.' : 'Kursa hiç gelmeyen kursiyer için tek tıkla tüm günleri devamsız yaz ve Karar Durumunda \"Hiç Gelmedi\" olarak işle'}"
+      >
+        <i data-lucide="user-x" class="w-3 h-3 ${isStudentNeverAttended ? 'text-white' : 'text-rose-600'}"></i>
+        <span>${isStudentNeverAttended ? '✓ Hiç Gelmedi' : 'Hiç Gelmedi'}</span>
+      </button>
+    `;
+
     const isEven = (idx % 2 === 0);
     const rowBgClass = isEven 
       ? 'bg-white dark:bg-[#152125]' 
@@ -4635,6 +4674,7 @@ function renderAttendanceTab() {
           </button>
 
           ${dropBtnHtml}
+          ${neverAttendedBtnHtml}
         </div>
       </td>
 
@@ -4863,12 +4903,16 @@ window.markStudentAbsentFromDateOnwards = function(studentId) {
   const totalHours = activeCourseForDetail.totalHours || 0;
   const maxAllowed = Math.floor(totalHours / 5);
 
-  if (totalAbsent > maxAllowed) {
+  if (!allAlreadyAbsent && currentAttendanceDateIndex === 0) {
+    std.attendance = 'Hiç Gelmedi';
+    std.result = 'Hiç Gelmedi';
+    std.attendanceNote = 'Kursa hiç gelmedi';
+  } else if (totalAbsent > maxAllowed) {
     std.attendance = 'Devamsız';
     std.result = 'Devamsız';
   } else {
     std.attendance = totalAbsent > 0 ? 'Devamlı' : 'Devamlı';
-    if (std.result === 'Devamsız') {
+    if (std.result === 'Devamsız' || std.result === 'Hiç Gelmedi') {
       std.result = (std.examScore !== null && std.examScore >= 50) ? 'Başarılı' : (std.examScore !== null ? 'Başarısız' : 'Devam Ediyor');
     }
   }
@@ -4882,6 +4926,74 @@ window.markStudentAbsentFromDateOnwards = function(studentId) {
   renderTeacherDashboard();
 
   showAutoSaveToast(allAlreadyAbsent ? 'Kalan günlerin devamsızlığı temizlendi' : `${remainingDates.length} ders gününe devamsızlık işlendi`);
+};
+
+// Kursa Hiç Gelmeyen Kursiyer İçin Tek Tıkla Tüm Kursu Devamsız Yazma ve "Hiç Gelmedi" Olarak İşleme
+window.markStudentNeverAttended = function(studentId) {
+  if (!activeCourseForDetail) return;
+  const std = (activeCourseForDetail.students || []).find(s => s.id === studentId);
+  if (!std) return;
+
+  const totalHours = Number(activeCourseForDetail.totalHours) || 0;
+  const dailyHours = Number(activeCourseForDetail.dailyHours) || 4;
+  const validDates = getValidCourseDates(activeCourseForDetail);
+
+  const currentlyHicGelmedi = (std.attendance === 'Hiç Gelmedi') || 
+                              (std.result === 'Hiç Gelmedi') || 
+                              (typeof std.attendanceNote === 'string' && std.attendanceNote.toLowerCase().includes('hiç gelme')) ||
+                              (totalHours > 0 && Number(std.absentHours || 0) >= totalHours);
+
+  if (currentlyHicGelmedi) {
+    if (!confirm(`"${std.fullName}" için "Hiç Gelmedi" durumunu kaldırıp devamsızlık kayıtlarını sıfırlamak istiyor musunuz?`)) {
+      return;
+    }
+    std.dailyAbsences = [];
+    std.absentHours = 0;
+    std.attendance = 'Devamlı';
+    std.attendanceNote = '';
+    std.result = (std.examScore !== null && Number(std.examScore) >= 50) ? 'Başarılı' : (std.examScore !== null ? 'Başarısız' : 'Devam Ediyor');
+  } else {
+    if (!confirm(`⚠️ DİKKAT: Kursa Hiç Gelmeyen Kursiyer İşlemi\n\n` +
+      `Kursiyer: ${std.fullName}\n\n` +
+      `Bu kursiyer kursa hiç gelmediği için;\n` +
+      `• Kursun tüm ders günlerine (${validDates.length} gün, toplam ${totalHours} saat) tam devamsızlık işlenecektir.\n` +
+      `• Kursiyer Karar Durumu resmi evrakında doğrudan "Hiç Gelmedi" olarak yer alacaktır.\n\n` +
+      `Onaylıyor musunuz?`)) {
+      return;
+    }
+
+    std.dailyAbsences = validDates.map((dateStr, idx) => ({
+      id: `att_never_${Date.now()}_${idx}`,
+      date: dateStr,
+      hours: dailyHours,
+      note: 'Kursa hiç gelmedi'
+    }));
+
+    std.absentHours = totalHours;
+    std.attendance = 'Hiç Gelmedi';
+    std.attendanceNote = 'Kursa hiç gelmedi';
+    std.result = 'Hiç Gelmedi';
+  }
+
+  // Kaydet
+  currentCourses = currentCourses.map(c => c.id === activeCourseForDetail.id ? activeCourseForDetail : c);
+  if (typeof DataStore !== 'undefined' && DataStore.saveCourses) {
+    DataStore.saveCourses(currentCourses);
+  }
+
+  renderStudentTable();
+  if (typeof renderAttendanceTab === 'function') renderAttendanceTab();
+  if (typeof renderTeacherDashboard === 'function') renderTeacherDashboard();
+  if (typeof renderDocumentsTab === 'function') renderDocumentsTab();
+
+  showAutoSaveToast(currentlyHicGelmedi ? 'Hiç Gelmedi durumu kaldırıldı' : 'Kursiyer "Hiç Gelmedi" olarak işlendi');
+};
+
+window.markCurrentModalStudentNeverAttended = function() {
+  const stdId = singleAttStudentId?.value;
+  if (!stdId) return;
+  markStudentNeverAttended(stdId);
+  closeSingleAttModal();
 };
 
 // Seçili Ders Günü İçin Tüm Kursiyerleri "Geldi (0 Saat)" Yap
@@ -5668,7 +5780,30 @@ function getStudentKararDurumu(student, course) {
   const absentHours = Number(student.absentHours || 0);
   const docType = (course && course.documentType) ? course.documentType : 'Sertifika';
 
-  // Devamsızlık kontrolü: Devamsız ise veya yasal 1/5 devamsızlık sınırını aştıysa doğrudan "Devamsız"
+  // 1. Hiç Gelmedi Kontrolü: Kursa kaydolmuş fakat hiç gelmeyenler "Hiç Gelmedi" olarak işlenir
+  const attLower = String(student.attendance || '').trim().toLocaleLowerCase('tr-TR');
+  const resLower = String(student.result || '').trim().toLocaleLowerCase('tr-TR');
+  const noteLower = String(student.attendanceNote || '').trim().toLocaleLowerCase('tr-TR');
+
+  const isExplicitlyHicGelmedi = attLower.includes('hiç gelme') ||
+                                 resLower.includes('hiç gelme') ||
+                                 noteLower.includes('hiç gelme');
+
+  // Kursun toplam ders saati kadar devamsızlık yapılmışsa (yani tüm kurs boyunca hiç gelinmemişse)
+  const isAllHoursAbsent = (totalHours > 0 && absentHours >= totalHours);
+
+  // Kursun ders günlerinin tamamında devamsızlık yapılmış ve hiç gelinmemişse
+  const lessonDates = (typeof getValidCourseDates === 'function' && course) ? getValidCourseDates(course) : [];
+  const isAllDaysAbsent = lessonDates.length > 0 && Array.isArray(student.dailyAbsences) && lessonDates.every(d => {
+    const rec = student.dailyAbsences.find(a => a.date === d);
+    return rec && Number(rec.hours) > 0;
+  });
+
+  if (isExplicitlyHicGelmedi || isAllHoursAbsent || isAllDaysAbsent) {
+    return 'Hiç Gelmedi';
+  }
+
+  // 2. Devamsızlık kontrolü: Devamsız ise veya yasal 1/5 devamsızlık sınırını aştıysa doğrudan "Devamsız"
   const isDevamsiz = (student.attendance === 'Devamsız') || 
                      (student.result === 'Devamsız') ||
                      (totalHours > 0 && absentHours > maxAllowed);
@@ -6258,6 +6393,7 @@ function generateKararDurumuHtml(course) {
   let successCount = 0;
   let transcriptCount = 0;
   let failedCount = 0;
+  let neverAttendedCount = 0;
 
   const totalRows = Math.max(25, students.length);
   let rowsHtml = '';
@@ -6269,6 +6405,7 @@ function generateKararDurumuHtml(course) {
       if (dec === docType) successCount++;
       else if (dec === 'Transkript') transcriptCount++;
       else if (dec === 'Devamsız') failedCount++;
+      else if (dec === 'Hiç Gelmedi') neverAttendedCount++;
 
       const sFullName = toTurkishStudentName(s.fullName || `${s.firstName || ''} ${s.lastName || ''}`);
 
@@ -6356,7 +6493,7 @@ function generateKararDurumuHtml(course) {
       <!-- Tablo Altı Özet Metin -->
       <div style="margin-top: 8px; font-size: 8.5pt; line-height: 1.35;">
         <p style="margin: 0; text-align: justify;">
-          <strong>${escapeHtml(courseName)}</strong> Kursuna (<strong>${totalCount}</strong>) kursiyer kayıt olmuş, bu kursta (<strong>${successCount}</strong>) Kursiyer <strong>${escapeHtml(docType)}</strong>, (<strong>${transcriptCount}</strong>) Kursiyer transkript, (<strong>${failedCount}</strong>) Kursiyer başarısız olmuştur.
+          <strong>${escapeHtml(courseName)}</strong> Kursuna (<strong>${totalCount}</strong>) kursiyer kayıt olmuş, bu kursta (<strong>${successCount}</strong>) Kursiyer <strong>${escapeHtml(docType)}</strong>${transcriptCount > 0 ? `, (<strong>${transcriptCount}</strong>) Kursiyer transkript` : ''}${neverAttendedCount > 0 ? `, (<strong>${neverAttendedCount}</strong>) Kursiyer hiç gelmedi` : ''}${failedCount > 0 ? `, (<strong>${failedCount}</strong>) Kursiyer başarısız` : ''} olmuştur.
         </p>
       </div>
 
@@ -6438,12 +6575,14 @@ function renderDocumentsTab() {
       let successCount = 0;
       let transcriptCount = 0;
       let failedCount = 0;
+      let neverAttendedCount = 0;
 
       students.forEach(s => {
         const dec = getStudentKararDurumu(s, activeCourseForDetail);
         if (dec === docType) successCount++;
         else if (dec === 'Transkript') transcriptCount++;
         else if (dec === 'Devamsız') failedCount++;
+        else if (dec === 'Hiç Gelmedi') neverAttendedCount++;
       });
 
       statsBar.innerHTML = `
@@ -6462,6 +6601,11 @@ function renderDocumentsTab() {
             <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-rose-50 dark:bg-rose-950/40 text-rose-800 dark:text-rose-300 border border-rose-200 dark:border-rose-800 rounded-lg font-bold">
               <span>Devamsız:</span> <strong>${failedCount}</strong>
             </span>
+            ${neverAttendedCount > 0 ? `
+              <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-red-100 dark:bg-red-950/50 text-red-800 dark:text-red-200 border border-red-300 dark:border-red-800 rounded-lg font-bold">
+                <span>Hiç Gelmedi:</span> <strong>${neverAttendedCount}</strong>
+              </span>
+            ` : ''}
           </div>
           <div class="text-[11px] text-slate-400">
             ${students.length <= 25 ? 'Resmi Tek Sayfa Karar Belgesi Çıktısı' : 'Resmi Karar Belgesi Çıktısı'}
