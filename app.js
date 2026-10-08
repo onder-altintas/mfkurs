@@ -629,10 +629,12 @@ function loadData() {
 
   if (currentUser) {
     const curUn = (currentUser.username || '').toLowerCase();
-    if (curUn === 'ozgur' || curUn === 'onder' || curUn === 'merve' || curUn === 'admin' || currentUser.role === 'admin') {
-      if (currentUser.role !== 'developer') {
-        currentUser.role = 'developer';
-        DataStore.setActiveUser(currentUser);
+    if (currentUser.role !== 'department_head' && currentUser.role !== 'supervisor' && currentUser.role !== 'teacher') {
+      if (curUn === 'ozgur' || curUn === 'onder' || curUn === 'merve' || curUn === 'admin' || currentUser.role === 'admin') {
+        if (currentUser.role !== 'developer') {
+          currentUser.role = 'developer';
+          DataStore.setActiveUser(currentUser);
+        }
       }
     }
   }
@@ -770,6 +772,10 @@ function updateCurrentDate() {
 // ==================== YETKİLENDİRME VE ROL YARDIMCILARI ====================
 function isDeveloper(user = currentUser) {
   if (!user) return false;
+  // Zümre Başkanı, Eğitim Sorumlusu ve Eğitmen rolleri kesinlikle geliştirici değildir
+  if (user.role === 'department_head' || user.role === 'supervisor' || user.role === 'teacher') {
+    return false;
+  }
   if (user.role === 'developer' || user.role === 'admin') return true;
   if (typeof isDevUser === 'function' && isDevUser(user)) return true;
   return false;
@@ -1418,31 +1424,63 @@ function setupEventListeners() {
 // =================== ADMIN YÖNETİM PANELİ İŞLEMLERİ ===================
 
 function switchAdminTab(tab) {
-  const allBtns = [adminTabCentersBtn, adminTabAreasBtn, adminTabTemplatesBtn, adminTabUsersBtn, adminTabTodosBtn].filter(Boolean);
-  allBtns.forEach(btn => {
-    btn.className = 'flex items-center gap-2 px-5 py-3 text-xs sm:text-sm font-bold border-b-2 border-transparent text-slate-600 hover:text-slate-900 transition cursor-pointer whitespace-nowrap';
-  });
+  const isHead = isDepartmentHead(currentUser);
+  const isDev = isDeveloper(currentUser);
+
+  // Güvenlik & Yetki: Zümre Başkanı SADECE 'templates' sekmesine geçebilir
+  if (isHead && !isDev) {
+    tab = 'templates';
+  } else if (!isDev) {
+    return;
+  }
+
+  // Tüm içerik alanlarını gizle
   if (adminTabCentersContent) adminTabCentersContent.classList.add('hidden');
   if (adminTabAreasContent) adminTabAreasContent.classList.add('hidden');
   if (adminTabTemplatesContent) adminTabTemplatesContent.classList.add('hidden');
   if (adminTabUsersContent) adminTabUsersContent.classList.add('hidden');
   if (adminTabTodosContent) adminTabTodosContent.classList.add('hidden');
 
-  if (tab === 'centers') {
+  // Sekme butonlarını pasif yap (Zümre başkanı için diğer butonları gizli tut!)
+  const inactiveBtnClass = 'flex items-center gap-2 px-5 py-3 text-xs sm:text-sm font-bold border-b-2 border-transparent text-slate-600 hover:text-slate-900 transition cursor-pointer whitespace-nowrap';
+
+  if (adminTabCentersBtn) {
+    adminTabCentersBtn.className = inactiveBtnClass;
+    if (isHead && !isDev) adminTabCentersBtn.classList.add('hidden');
+  }
+  if (adminTabAreasBtn) {
+    adminTabAreasBtn.className = inactiveBtnClass;
+    if (isHead && !isDev) adminTabAreasBtn.classList.add('hidden');
+  }
+  if (adminTabUsersBtn) {
+    adminTabUsersBtn.className = inactiveBtnClass;
+    if (isHead && !isDev) adminTabUsersBtn.classList.add('hidden');
+  }
+  if (adminTabTodosBtn) {
+    adminTabTodosBtn.className = inactiveBtnClass;
+    if (isHead && !isDev) adminTabTodosBtn.classList.add('hidden');
+  }
+  if (adminTabTemplatesBtn) {
+    adminTabTemplatesBtn.className = inactiveBtnClass;
+  }
+
+  if (tab === 'centers' && isDev) {
     if (adminTabCentersBtn) adminTabCentersBtn.className = 'flex items-center gap-2 px-5 py-3 text-xs sm:text-sm font-bold border-b-2 border-indigo-600 text-indigo-700 transition cursor-pointer whitespace-nowrap';
     if (adminTabCentersContent) adminTabCentersContent.classList.remove('hidden');
-  } else if (tab === 'areas') {
+    renderAdminCenters();
+  } else if (tab === 'areas' && isDev) {
     if (adminTabAreasBtn) adminTabAreasBtn.className = 'flex items-center gap-2 px-5 py-3 text-xs sm:text-sm font-bold border-b-2 border-teal-600 text-teal-700 transition cursor-pointer whitespace-nowrap';
     if (adminTabAreasContent) adminTabAreasContent.classList.remove('hidden');
     renderAdminAreas();
   } else if (tab === 'templates') {
     if (adminTabTemplatesBtn) adminTabTemplatesBtn.className = 'flex items-center gap-2 px-5 py-3 text-xs sm:text-sm font-bold border-b-2 border-sky-600 text-sky-700 transition cursor-pointer whitespace-nowrap';
     if (adminTabTemplatesContent) adminTabTemplatesContent.classList.remove('hidden');
-  } else if (tab === 'users') {
+    renderAdminTemplates();
+  } else if (tab === 'users' && isDev) {
     if (adminTabUsersBtn) adminTabUsersBtn.className = 'flex items-center gap-2 px-5 py-3 text-xs sm:text-sm font-bold border-b-2 border-purple-600 text-purple-700 transition cursor-pointer whitespace-nowrap';
     if (adminTabUsersContent) adminTabUsersContent.classList.remove('hidden');
     renderAdminUsers();
-  } else if (tab === 'todos') {
+  } else if (tab === 'todos' && isDev) {
     if (adminTabTodosBtn) {
       adminTabTodosBtn.className = 'flex items-center gap-2 px-5 py-3 text-xs sm:text-sm font-bold border-b-2 border-amber-600 text-amber-800 transition cursor-pointer whitespace-nowrap';
     }
@@ -1478,7 +1516,9 @@ function renderAdminPanel() {
     const adminBannerDesc = document.querySelector('#adminSection p');
     if (adminBannerTitle) adminBannerTitle.innerText = 'Kurs ve Müfredat Planları Yönetimi';
     if (adminBannerDesc) adminBannerDesc.innerText = 'Tüm kurs müfredatlarını ve saatlik konu dağılımlarını inceleyebilir, yeni müfredat ekleyebilir veya mevcut planları güncelleyebilirsiniz.';
-  } else {
+
+    switchAdminTab('templates');
+  } else if (isDev) {
     if (openAddCenterModalBtn) openAddCenterModalBtn.classList.remove('hidden');
     if (openAddAreaModalBtn) openAddAreaModalBtn.classList.remove('hidden');
     if (openAddUserModalBtn) openAddUserModalBtn.classList.remove('hidden');
@@ -1494,12 +1534,12 @@ function renderAdminPanel() {
     const adminBannerDesc = document.querySelector('#adminSection p');
     if (adminBannerTitle) adminBannerTitle.innerText = 'Admin Yönetim Paneli';
     if (adminBannerDesc) adminBannerDesc.innerText = 'Kurs merkezlerini tanımlayın, yeni kurslar ekleyin ve her saat için anlatılacak resmi müfredat ve konu dağılım planlarını hazırlayın.';
-  }
 
-  renderAdminCenters();
-  renderAdminAreas();
-  renderAdminTemplates();
-  renderAdminUsers();
+    renderAdminCenters();
+    renderAdminAreas();
+    renderAdminTemplates();
+    renderAdminUsers();
+  }
 }
 
 // =================== KULLANICI YÖNETİMİ FONKSİYONLARI ===================
@@ -1590,6 +1630,10 @@ function renderAdminUsers() {
 }
 
 function openUserModal(userToEdit = null) {
+  if (!isDeveloper(currentUser)) {
+    alert('Kullanıcı hesabı oluşturma ve düzenleme yetkisi yalnızca sistem geliştiricisine aittir.');
+    return;
+  }
   userModal.classList.remove('hidden');
 
   if (userToEdit) {
@@ -1630,6 +1674,10 @@ function closeUserModal() {
 
 function handleSaveUser(e) {
   e.preventDefault();
+  if (!isDeveloper(currentUser)) {
+    alert('Kullanıcı hesabı kaydetme yetkisi yalnızca sistem geliştiricisine aittir.');
+    return;
+  }
   const id = userFormId.value;
   const fullName = toTurkishPersonName(userFormFullName.value);
   const username = userFormUsername.value.trim().toLowerCase();
@@ -1723,6 +1771,10 @@ window.toggleUserAdminRole = function(userId) {
 };
 
 window.deleteUserAccount = function(userId) {
+  if (!isDeveloper(currentUser)) {
+    alert('Kullanıcı hesabı silme yetkisi yalnızca sistem geliştiricisine aittir.');
+    return;
+  }
   if (userId === currentUser?.id) {
     alert('Kendi hesabınızı silemezsiniz.');
     return;
@@ -1793,6 +1845,10 @@ function renderAdminCenters() {
 }
 
 function openCenterModal(centerToEdit = null) {
+  if (!isDeveloper(currentUser)) {
+    alert('Kurs merkezi yönetimi yetkisi yalnızca sistem geliştiricisine aittir.');
+    return;
+  }
   centerModal.classList.remove('hidden');
 
   if (centerToEdit) {
@@ -1816,6 +1872,10 @@ function closeCenterModal() {
 
 function handleSaveCenter(e) {
   e.preventDefault();
+  if (!isDeveloper(currentUser)) {
+    alert('Kurs merkezi kaydetme yetkisi yalnızca sistem geliştiricisine aittir.');
+    return;
+  }
   const id = centerFormId.value;
   const name = toTurkishTitleCase(centerFormName.value);
   const supervisor = centerFormSupervisor ? toTurkishPersonName(centerFormSupervisor.value) : '';
@@ -1843,6 +1903,10 @@ window.editCenter = function(centerId) {
 };
 
 window.deleteCenter = function(centerId) {
+  if (!isDeveloper(currentUser)) {
+    alert('Kurs merkezi silme yetkisi yalnızca sistem geliştiricisine aittir.');
+    return;
+  }
   if (confirm('Bu kurs merkezini silmek istediğinize emin misiniz?')) {
     currentCenters = currentCenters.filter(c => c.id !== centerId);
     DataStore.saveCenters(currentCenters);
@@ -2041,6 +2105,10 @@ function renderAdminAreas() {
 window.renderAdminAreas = renderAdminAreas;
 
 function openAreaModal(areaToEdit = null) {
+  if (!isDeveloper(currentUser)) {
+    alert('Kurs alanı yönetimi yetkisi yalnızca sistem geliştiricisine aittir.');
+    return;
+  }
   if (!areaModal) return;
   areaModal.classList.remove('hidden');
 
@@ -2068,6 +2136,10 @@ window.closeAreaModal = closeAreaModal;
 
 function handleSaveArea(e) {
   e.preventDefault();
+  if (!isDeveloper(currentUser)) {
+    alert('Kurs alanı kaydetme yetkisi yalnızca sistem geliştiricisine aittir.');
+    return;
+  }
   const id = areaFormId ? areaFormId.value : '';
   const rawName = areaFormName ? areaFormName.value.trim() : '';
   if (!rawName) return;
@@ -2120,6 +2192,10 @@ window.editArea = function(areaId) {
 };
 
 window.deleteArea = function(areaId) {
+  if (!isDeveloper(currentUser)) {
+    alert('Kurs alanı silme yetkisi yalnızca sistem geliştiricisine aittir.');
+    return;
+  }
   const found = currentAreas.find(a => (typeof a === 'string' ? a : a.id) === areaId);
   const areaName = found ? (typeof found === 'string' ? found : found.name) : '';
 
@@ -2204,6 +2280,7 @@ function renderAdminTemplates() {
             <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
             <span>Düzenle</span>
           </button>
+          ${isDeveloper(currentUser) ? `
           <button
             onclick="deleteCourseTemplate('${tmpl.id}')"
             class="px-3 py-1.5 text-xs font-semibold text-rose-600 bg-rose-50 hover:bg-rose-100 rounded-lg transition flex items-center gap-1 cursor-pointer"
@@ -2211,6 +2288,7 @@ function renderAdminTemplates() {
             <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
             <span>Sil</span>
           </button>
+          ` : ''}
         </div>
       </div>
 
@@ -2404,6 +2482,10 @@ function updateTmplLiveSummary() {
 }
 
 function openCourseTmplModal(tmplToEdit = null) {
+  if (!isDeveloper(currentUser) && !isDepartmentHead(currentUser)) {
+    alert('Müfredat planı ekleme ve düzenleme yetkisi yalnızca Zümre Başkanı ve Geliştiricilere aittir.');
+    return;
+  }
   courseTmplModal.classList.remove('hidden');
 
   if (tmplToEdit) {
@@ -2470,6 +2552,10 @@ function closeCourseTmplModal() {
 
 function handleSaveCourseTemplate(e) {
   e.preventDefault();
+  if (!isDeveloper(currentUser) && !isDepartmentHead(currentUser)) {
+    alert('Yetkisiz işlem! Yalnızca Geliştirici ve Zümre Başkanları müfredat tanımlayabilir veya düzenleyebilir.');
+    return;
+  }
   const id = tmplFormId.value;
   const name = toTurkishTitleCase(tmplFormName.value);
   const code = toTurkishUpper(tmplFormCode.value);
@@ -2612,6 +2698,10 @@ window.editCourseTemplate = function(tmplId) {
 };
 
 window.deleteCourseTemplate = function(tmplId) {
+  if (!isDeveloper(currentUser)) {
+    alert('Müfredat planlarını silme yetkisi yalnızca sistem geliştiricisine aittir. Zümre başkanı olarak mevcut planları inceleyebilir veya düzenleyebilirsiniz.');
+    return;
+  }
   if (confirm('Bu kurs şablonunu ve müfredatını silmek istediğinize emin misiniz?')) {
     currentTemplates = currentTemplates.filter(t => t.id !== tmplId);
     currentTemplates.sort((a, b) => (a.name || '').localeCompare(b.name || '', 'tr', { sensitivity: 'base' }));
@@ -3207,9 +3297,9 @@ function handleSaveCourse(e) {
 
   const category = tmpl ? (tmpl.category || tmpl.area || 'Genel') : (courseFormCategory.value || 'Genel');
 
-  // GÜVENLİK / YETKİ KONTROLÜ: Kullanıcılar yalnızca tanımlı branşlarında kurs açabilir!
+  // GÜVENLİK / YETKİ KONTROLÜ: Kullanıcılar yalnızca tanımlı branşlarında kurs açabilir (Geliştirici hariç)!
   const userAreas = getUserAreas(currentUser);
-  if (!userAreas.some(a => a.trim().toLowerCase() === category.trim().toLowerCase())) {
+  if (!isDeveloper(currentUser) && !userAreas.some(a => a.trim().toLowerCase() === category.trim().toLowerCase())) {
     alert(`Yetki Hatası: Bu kursun alanı "${category}". Siz yalnızca yetkili olduğunuz branş(lar)ınız (${userAreas.join(', ')}) kapsamında kurs açabilirsiniz!`);
     return;
   }
@@ -8241,13 +8331,15 @@ function handleImportSystemBackupJson(e) {
 
 function isDevUser(user) {
   if (!user) return false;
-  if (user.role === 'admin') return true;
+  // Zümre Başkanı, Eğitim Sorumlusu ve Eğitmen rolleri kesinlikle dev/todo yetkilisi sayılmaz
+  if (user.role === 'department_head' || user.role === 'supervisor' || user.role === 'teacher') return false;
+  if (user.role === 'admin' || user.role === 'developer') return true;
   const u = typeof normalizeUsername === 'function' ? normalizeUsername(user.username || '') : (user.username || '').toLowerCase().trim();
-  if (u === 'ozgur' || u === 'onder' || u === 'merve' || u === 'admin' || u.includes('ozgur') || u.includes('onder') || u.includes('merve') || u.includes('dev') || u.includes('admin')) return true;
+  if (u === 'ozgur' || u === 'onder' || u === 'merve' || u === 'admin') return true;
   const fn = typeof normalizeUsername === 'function' ? normalizeUsername(user.fullName || '') : (user.fullName || '').toLowerCase().trim();
-  if (fn.includes('onder') || fn.includes('ozgur') || fn.includes('merve') || fn.includes('yonetici')) return true;
+  if (fn === 'ozgur' || fn === 'onder' || fn === 'merve' || fn.includes('onder altıntas') || fn.includes('onder altintas')) return true;
   const title = (user.title || '').toLowerCase();
-  if (title.includes('geliştirici') || title.includes('gelistirici') || title.includes('developer') || title.includes('dev') || title.includes('yonetici')) return true;
+  if (title.includes('geliştirici') || title.includes('gelistirici') || title.includes('developer')) return true;
   return false;
 }
 
@@ -8263,7 +8355,7 @@ function checkDevTodoList() {
   const navbarBtn = document.getElementById('navbarDevTodoBtn');
   const adminTabBtn = document.getElementById('adminTabTodosBtn');
 
-  if (isDevUser(currentUser)) {
+  if (isDeveloper(currentUser) && isDevUser(currentUser)) {
     if (wrapper) wrapper.classList.remove('hidden');
     if (navbarBtn) navbarBtn.classList.remove('hidden');
     if (adminTabBtn) adminTabBtn.classList.remove('hidden');
@@ -8288,6 +8380,9 @@ function hideDevTodoList() {
 
 function openDevTodoModal(e) {
   if (e && typeof e.preventDefault === 'function') e.preventDefault();
+  if (!isDeveloper(currentUser) || !isDevUser(currentUser)) {
+    return;
+  }
   const modal = document.getElementById('devTodoModal') || document.getElementById('devTodoDrawer');
   if (modal) {
     modal.style.removeProperty('display');

@@ -6187,9 +6187,11 @@ const DataStore = {
       // Geliştirici rollerini teyit et
       users.forEach(u => {
         const un = (u.username || '').toLowerCase();
-        if ((un === 'ozgur' || un === 'onder' || un === 'merve' || un === 'admin' || u.role === 'admin') && u.role !== 'developer') {
-          u.role = 'developer';
-          updated = true;
+        if (u.role !== 'department_head' && u.role !== 'supervisor' && u.role !== 'teacher') {
+          if ((un === 'ozgur' || un === 'onder' || un === 'merve' || un === 'admin' || u.role === 'admin') && u.role !== 'developer') {
+            u.role = 'developer';
+            updated = true;
+          }
         }
       });
       if (updated) {
