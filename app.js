@@ -8868,7 +8868,7 @@ function generateBlankKursPlaniHtml() {
             <td style="border: 1px solid black; padding: 3px 5px; font-weight: bold; background: #f8fafc;">Alan / Branş</td>
             <td style="border: 1px solid black; padding: 3px 5px;">................................................................................</td>
             <td style="border: 1px solid black; padding: 3px 5px; font-weight: bold; background: #f8fafc;">Verilecek Belge Türü</td>
-            <td style="border: 1px solid black; padding: 3px 5px;">[ &nbsp; ] Sertifika &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [ &nbsp; ] Kurs Katılım Belgesi</td>
+            <td style="border: 1px solid black; padding: 3px 5px;">&nbsp;</td>
           </tr>
           <tr>
             <td style="border: 1px solid black; padding: 3px 5px; font-weight: bold; background: #f8fafc;">Başlama / Bitiş Tarihi</td>
@@ -8976,9 +8976,7 @@ function generateBlankKararDurumuHtml() {
         <td style="border: 1px solid black; text-align: center; font-weight: bold; font-size: 8.5pt; padding: 1px 2px;">${i}</td>
         <td style="border: 1px solid black; padding: 1px 6px; font-size: 8pt; text-align: center; font-family: monospace;">&nbsp;</td>
         <td style="border: 1px solid black; padding: 1px 8px; font-size: 8.5pt; text-align: left;">&nbsp;</td>
-        <td style="border: 1px solid black; text-align: center; font-size: 7.5pt; padding: 1px 4px; color: #444;">
-          [ &nbsp; ] Belge Aldı &nbsp;&nbsp;&nbsp; [ &nbsp; ] Devamsız &nbsp;&nbsp;&nbsp; [ &nbsp; ] Başarısız &nbsp;&nbsp;&nbsp; [ &nbsp; ] Hiç Gelmedi
-        </td>
+        <td style="border: 1px solid black; padding: 1px 6px; font-size: 8pt; text-align: center;">&nbsp;</td>
       </tr>
     `;
   }
@@ -9031,7 +9029,7 @@ function generateBlankKararDurumuHtml() {
             <th style="border: 1px solid black; width: 6%; text-align: center; padding: 2px;">Sıra</th>
             <th style="border: 1px solid black; width: 22%; text-align: center; padding: 2px;">T.C. Kimlik No</th>
             <th style="border: 1px solid black; width: 34%; text-align: left; padding: 2px 8px;">Kursiyerin Adı ve Soyadı</th>
-            <th style="border: 1px solid black; width: 38%; text-align: center; padding: 2px;">Karar Durumu (İşaretleyiniz)</th>
+            <th style="border: 1px solid black; width: 38%; text-align: center; padding: 2px;">Karar Durumu</th>
           </tr>
         </thead>
         <tbody>
@@ -9429,7 +9427,7 @@ function generateBlankSinavTutanagiHtml() {
             <td style="border: 1px solid black; padding: 3px 6px; font-weight: bold; background: #f8fafc;">Sınav Salonu / Derslik</td>
             <td style="border: 1px solid black; padding: 3px 6px;">................................................................</td>
             <td style="border: 1px solid black; padding: 3px 6px; font-weight: bold; background: #f8fafc;">Sınav Türü</td>
-            <td style="border: 1px solid black; padding: 3px 6px;">[ &nbsp; ] Yazılı &nbsp;&nbsp; [ &nbsp; ] Uygulama</td>
+            <td style="border: 1px solid black; padding: 3px 6px;">&nbsp;</td>
           </tr>
         </tbody>
       </table>
