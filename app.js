@@ -1570,7 +1570,7 @@ function renderAdminPanel() {
     const adminBannerTitle = document.querySelector('#adminSection h2');
     const adminBannerDesc = document.querySelector('#adminSection p');
     if (adminBannerTitle) adminBannerTitle.innerText = 'Kurs ve Müfredat Planları Yönetimi';
-    if (adminBannerDesc) adminBannerDesc.innerText = 'Tüm kurs müfredatlarını ve saatlik konu dağılımlarını inceleyebilir, yeni müfredat ekleyebilir veya mevcut planları güncelleyebilirsiniz.';
+    if (adminBannerDesc) adminBannerDesc.innerText = 'Müfredat ve ders planı yönetimi.';
 
     switchAdminTab('templates');
   } else if (isDev) {
@@ -1588,7 +1588,7 @@ function renderAdminPanel() {
     const adminBannerTitle = document.querySelector('#adminSection h2');
     const adminBannerDesc = document.querySelector('#adminSection p');
     if (adminBannerTitle) adminBannerTitle.innerText = 'Admin Yönetim Paneli';
-    if (adminBannerDesc) adminBannerDesc.innerText = 'Kurs merkezlerini tanımlayın, yeni kurslar ekleyin ve her saat için anlatılacak resmi müfredat ve konu dağılım planlarını hazırlayın.';
+    if (adminBannerDesc) adminBannerDesc.innerText = 'Kurum, merkez, alan ve müfredat yönetimi.';
 
     renderAdminCenters();
     renderAdminAreas();
