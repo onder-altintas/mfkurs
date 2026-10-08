@@ -890,38 +890,6 @@
         </div>
       </div>
 
-      <!-- Boş / Matbu Resmi Evrak İndirme Alanı (Elle Doldurmak İsteyenler İçin) -->
-      <div class="bg-gradient-to-r from-amber-50 via-amber-100/40 to-orange-50 dark:from-[#1a2327] dark:via-[#1f2c31] dark:to-[#1a2327] border border-amber-200 dark:border-amber-900/40 rounded-2xl p-4 sm:p-5 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-4 transition-colors">
-        <div class="flex items-start gap-3.5">
-          <div class="p-3 bg-amber-500/15 text-amber-700 dark:text-amber-400 rounded-xl shrink-0 border border-amber-300/40 dark:border-amber-700/40">
-            <i data-lucide="file-edit" class="w-6 h-6"></i>
-          </div>
-          <div>
-            <div class="flex items-center gap-2 flex-wrap">
-              <h3 class="text-sm sm:text-base font-bold text-slate-800 dark:text-slate-100">
-                Boş Resmi Evrak İndirme Alanı (Matbu Şablonlar)
-              </h3>
-              <span class="px-2 py-0.5 text-[10px] font-bold rounded-md bg-amber-200/80 dark:bg-amber-900/60 text-amber-900 dark:text-amber-300 border border-amber-300/60 dark:border-amber-800">
-                Elle Doldurma İçin
-              </span>
-            </div>
-            <p class="text-xs text-slate-600 dark:text-slate-300 mt-1 max-w-2xl leading-relaxed">
-              Evraklarını bilgisayardan bağımsız olarak kendi elleriyle doldurmak isteyen eğitmenlerimiz için hazırlanmıştır. Bu evrakların içerisinde kullanıcı, eğitmen veya kursiyer ile ilgili <strong>hiçbir veri yer almaz</strong>; tüm resmi kurs sonu evraklarının boş hallerini tek tıkla toplu olarak veya tek tek indirebilir ve yazdırabilirsiniz.
-            </p>
-          </div>
-        </div>
-        <div class="flex items-center gap-2.5 shrink-0 w-full md:w-auto">
-          <button
-            type="button"
-            onclick="openBlankDocumentsModal()"
-            class="w-full md:w-auto px-4 py-2.5 bg-gradient-to-r from-[#540B0E] to-[#9E2A2B] hover:from-[#3D080A] hover:to-[#7A1F21] text-white font-bold text-xs sm:text-sm rounded-xl shadow-md transition flex items-center justify-center gap-2 cursor-pointer group"
-          >
-            <i data-lucide="file-down" class="w-4 h-4 text-[#FFF3B0] group-hover:-translate-y-0.5 transition-transform"></i>
-            <span>Boş Evrakları İndir &amp; Yazdır</span>
-          </button>
-        </div>
-      </div>
-
       <!-- Kurslar Listesi & Arama & Filtreleme -->
       <div class="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 shadow-xs space-y-6">
         
@@ -4006,6 +3974,8 @@
           <!-- JS tarafından enjekte edilecek -->
         </div>
       </div>
+    </div>
+  </div>
 
   <!-- ================= MODAL: KURS SONU EVRAKLARINI TOPLU KAYDET ================= -->
   <div id="saveAllDocumentsModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-slate-900/75 backdrop-blur-sm">

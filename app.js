@@ -1447,6 +1447,33 @@ function setupEventListeners() {
   if (typeof initSupervisorDashboard === 'function') {
     initSupervisorDashboard();
   }
+
+  // Boş Resmi Evrak İndirme Butonu & Modalları
+  const openBlankDocsBtnTop = document.getElementById('openBlankDocsBtnTop');
+  openBlankDocsBtnTop?.addEventListener('click', (e) => {
+    e.preventDefault();
+    if (typeof openBlankDocumentsModal === 'function') {
+      openBlankDocumentsModal();
+    }
+  });
+
+  const blankDocsModal = document.getElementById('blankDocsModal');
+  blankDocsModal?.addEventListener('click', (e) => {
+    if (e.target === blankDocsModal) {
+      if (typeof closeBlankDocumentsModal === 'function') {
+        closeBlankDocumentsModal();
+      }
+    }
+  });
+
+  const blankDocPreviewModal = document.getElementById('blankDocPreviewModal');
+  blankDocPreviewModal?.addEventListener('click', (e) => {
+    if (e.target === blankDocPreviewModal) {
+      if (typeof closeBlankDocPreviewModal === 'function') {
+        closeBlankDocPreviewModal();
+      }
+    }
+  });
 }
 
 // =================== ADMIN YÖNETİM PANELİ İŞLEMLERİ ===================
@@ -9592,16 +9619,22 @@ function generateMergedAllBlankDocumentsHtml() {
 
 // =================== BOŞ EVRAK MODAL VE İNDİRME / YAZDIRMA YÖNETİMİ ===================
 
-window.openBlankDocumentsModal = function() {
+function openBlankDocumentsModal() {
   const modal = document.getElementById('blankDocsModal');
-  modal?.classList.remove('hidden');
-  refreshLucide();
-};
+  if (modal) {
+    modal.classList.remove('hidden');
+    refreshLucide();
+  }
+}
+window.openBlankDocumentsModal = openBlankDocumentsModal;
 
-window.closeBlankDocumentsModal = function() {
+function closeBlankDocumentsModal() {
   const modal = document.getElementById('blankDocsModal');
-  modal?.classList.add('hidden');
-};
+  if (modal) {
+    modal.classList.add('hidden');
+  }
+}
+window.closeBlankDocumentsModal = closeBlankDocumentsModal;
 
 function getBlankDocMeta(docType) {
   switch (docType) {
