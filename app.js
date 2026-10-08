@@ -3855,6 +3855,30 @@ function handleAddStudent(e) {
   const lastName = toTurkishUpper(rawLastName);
   const fullName = toTurkishStudentName(`${firstName} ${lastName}`);
 
+  // Aynı İsim ve TC Kimlik Kontrolü (Mükerrer Kaydı Engelleme)
+  const existingSameName = (activeCourseForDetail.students || []).find(s => {
+    if (editId && s.id === editId) return false;
+    const existingFull = (s.fullName || `${s.firstName || ''} ${s.lastName || ''}`).trim().toLocaleLowerCase('tr-TR');
+    return existingFull === fullName.trim().toLocaleLowerCase('tr-TR');
+  });
+
+  if (existingSameName) {
+    alert(`⚠️ Kayıt Engellendi:\n\n"${fullName}" adında bir kursiyer bu kursta zaten kayıtlı bulunmaktadır!\nAynı isimde mükerrer kursiyer eklenemez.`);
+    return;
+  }
+
+  if (tcNo) {
+    const existingSameTc = (activeCourseForDetail.students || []).find(s => {
+      if (editId && s.id === editId) return false;
+      return s.tcNo && s.tcNo.trim() === tcNo.trim();
+    });
+
+    if (existingSameTc) {
+      alert(`⚠️ Kayıt Engellendi:\n\n${tcNo} T.C. Kimlik numaralı kursiyer (${existingSameTc.fullName}) bu kursta zaten kayıtlıdır!`);
+      return;
+    }
+  }
+
   if (editId) {
     // Kursiyer Güncelleme
     const existing = (activeCourseForDetail.students || []).find(s => s.id === editId);
@@ -3866,11 +3890,6 @@ function handleAddStudent(e) {
       existing.phone = phone;
     }
   } else {
-    // Aynı isim kontrolü (İsim benzerliği uyarısı)
-    const isDuplicateName = (activeCourseForDetail.students || []).some(s => 
-      (s.fullName || `${s.firstName || ''} ${s.lastName || ''}`).trim().toLocaleLowerCase('tr-TR') === fullName.trim().toLocaleLowerCase('tr-TR')
-    );
-
     // Yeni Kursiyer Ekleme
     const moduleCount = activeCourseForDetail.moduleCount ? Math.max(1, Number(activeCourseForDetail.moduleCount)) : 1;
     const initialModuleScores = {};
@@ -3896,10 +3915,6 @@ function handleAddStudent(e) {
 
     activeCourseForDetail.students = activeCourseForDetail.students || [];
     activeCourseForDetail.students.push(newStudent);
-
-    if (isDuplicateName) {
-      alert(`⚠️ Dikkat: "${fullName}" adında bir kursiyer bu sınıfta zaten kayıtlı bulunuyor.\n\nİsim benzerliği olabileceği için yeni kayıt başarıyla eklendi.`);
-    }
   }
 
   // Kursiyerleri alfabetik sırala (A-Z)
@@ -4134,13 +4149,30 @@ function handleSaveBulkStudents() {
   activeCourseForDetail.students = activeCourseForDetail.students || [];
 
   const duplicateNames = [];
+  const addedStudents = [];
+
   parsed.forEach(s => {
     const sFullName = (s.fullName || `${s.firstName || ''} ${s.lastName || ''}`).trim();
-    const isDup = activeCourseForDetail.students.some(existing => 
-      (existing.fullName || `${existing.firstName || ''} ${existing.lastName || ''}`).trim().toLocaleLowerCase('tr-TR') === sFullName.toLocaleLowerCase('tr-TR')
-    );
-    if (isDup && !duplicateNames.includes(sFullName)) {
-      duplicateNames.push(sFullName);
+    const sNormName = sFullName.toLocaleLowerCase('tr-TR');
+
+    // Mevcut veya bu partide önceden eklenenlerle mükerrerlik kontrolü (İsim veya TC çakışması)
+    const isDup = activeCourseForDetail.students.some(existing => {
+      const exName = (existing.fullName || `${existing.firstName || ''} ${existing.lastName || ''}`).trim().toLocaleLowerCase('tr-TR');
+      if (exName === sNormName) return true;
+      if (s.tcNo && existing.tcNo && existing.tcNo.trim() === s.tcNo.trim()) return true;
+      return false;
+    }) || addedStudents.some(added => {
+      const adName = (added.fullName || `${added.firstName || ''} ${added.lastName || ''}`).trim().toLocaleLowerCase('tr-TR');
+      if (adName === sNormName) return true;
+      if (s.tcNo && added.tcNo && added.tcNo.trim() === s.tcNo.trim()) return true;
+      return false;
+    });
+
+    if (isDup) {
+      if (!duplicateNames.includes(sFullName)) {
+        duplicateNames.push(sFullName);
+      }
+      return; // Mükerrer kursiyeri kesinlikle EKLEME, ATLA!
     }
 
     const initialModuleScores = {};
@@ -4164,8 +4196,14 @@ function handleSaveBulkStudents() {
       result: 'Devam Ediyor'
     };
 
+    addedStudents.push(newStudent);
     activeCourseForDetail.students.push(newStudent);
   });
+
+  if (addedStudents.length === 0) {
+    alert(`⚠️ Hiçbir yeni kursiyer eklenmedi!\n\nBelirtilen kursiyerlerin tümü (${duplicateNames.join(', ')}) bu sınıfta zaten kayıtlı bulunmaktadır.`);
+    return;
+  }
 
   // Kursiyerleri alfabetik sırala (A-Z)
   sortStudentsAlphabetically(activeCourseForDetail.students);
@@ -4188,15 +4226,15 @@ function handleSaveBulkStudents() {
   if (studentAddedNotice) {
     const noticeSpan = studentAddedNotice.querySelector('span');
     if (noticeSpan) {
-      noticeSpan.innerText = `${parsed.length} kursiyer başarıyla kaydedildi! Şimdi devamsızlık veya modül sınavı girebilirsiniz:`;
+      noticeSpan.innerText = `${addedStudents.length} kursiyer başarıyla kaydedildi! Şimdi devamsızlık veya modül sınavı girebilirsiniz:`;
     }
     studentAddedNotice.classList.remove('hidden');
   }
 
   if (duplicateNames.length > 0) {
-    alert(`⚠️ Dikkat: Aşağıdaki kursiyer isimleri sınıfta zaten kayıtlı bulunuyor:\n\n• ${duplicateNames.join('\n• ')}\n\nİsim benzerliği olabileceği için kayıtlar başarıyla eklendi.`);
+    alert(`✓ ${addedStudents.length} yeni kursiyer başarıyla eklendi.\n\n⚠️ Aşağıdaki mükerrer kursiyerler zaten kayıtlı olduğu için atlandı ve eklenmedi:\n• ${duplicateNames.join('\n• ')}`);
   } else {
-    alert(`${parsed.length} kursiyer başarıyla kursa eklendi!`);
+    alert(`${addedStudents.length} kursiyer başarıyla kursa eklendi!`);
   }
 }
 
