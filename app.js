@@ -8744,6 +8744,952 @@ window.triggerPrintImzaListesi = function() {
   safePrint(generateImzaListesiHtml(activeCourseForDetail), true, title);
 };
 
+// =================== BOŞ RESMİ EVRAKLAR (MATBU ŞABLONLAR - ELLE DOLDURMA İÇİN) ===================
+
+// 1. Boş Kurs Çerçeve ve Çalışma Planı (A4 Yatay)
+function generateBlankKursPlaniHtml() {
+  let moduleRows = '';
+  for (let m = 1; m <= 8; m++) {
+    moduleRows += `
+      <tr style="height: 24px;">
+        <td style="border: 1px solid black; text-align: center; font-weight: bold; padding: 2px;">${m}</td>
+        <td style="border: 1px solid black; padding: 2px 6px;">&nbsp;</td>
+        <td style="border: 1px solid black; text-align: center; padding: 2px;">........ Saat</td>
+        <td style="border: 1px solid black; text-align: center; padding: 2px;">..../..../20...</td>
+        <td style="border: 1px solid black; text-align: center; padding: 2px;">..../..../20...</td>
+        <td style="border: 1px solid black; text-align: center; padding: 2px;">..../..../20...</td>
+      </tr>
+    `;
+  }
+
+  let weeklyRows = '';
+  for (let w = 1; w <= 14; w++) {
+    weeklyRows += `
+      <tr style="height: 26px;">
+        <td style="border: 1px solid black; text-align: center; font-weight: bold; padding: 2px;">${w}</td>
+        <td style="border: 1px solid black; text-align: center; font-size: 7pt; padding: 2px;">..../.... - ..../....</td>
+        <td style="border: 1px solid black; text-align: center; font-weight: 600; padding: 2px;">...... Sa.</td>
+        <td style="border: 1px solid black; padding: 2px 4px; font-size: 7pt;">&nbsp;</td>
+        <td style="border: 1px solid black; padding: 2px 4px; font-size: 7pt;">&nbsp;</td>
+        <td style="border: 1px solid black; text-align: center; font-size: 6.5pt; padding: 2px;">Anlatım, Uygulama, Gösterip Yaptırma</td>
+        <td style="border: 1px solid black; text-align: center; font-size: 6.5pt; padding: 2px;">Ders Notları, Temrin Malzemeleri</td>
+        <td style="border: 1px solid black; text-align: center; font-size: 6.5pt; padding: 2px;">Süreç Değerlendirme</td>
+        <td style="border: 1px solid black; text-align: center; font-size: 6.5pt; padding: 2px;">&nbsp;</td>
+      </tr>
+    `;
+  }
+
+  return `
+    <div class="kurs-plani-document" style="font-family: Arial, Helvetica, sans-serif; color: #000; line-height: 1.2; width: 100%; max-width: 1050px; margin: 0 auto; background: #fff; box-sizing: border-box; padding: 6px;">
+      
+      <!-- Başlık (Boş Matbu Şablon) -->
+      <div style="text-align: center; margin-bottom: 8px;">
+        <div style="font-size: 10pt; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">T.C.</div>
+        <div style="font-size: 10.5pt; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 1px;">
+          ................................................................................................................................................
+        </div>
+        <div style="font-size: 9pt; font-weight: bold; text-transform: uppercase; margin-top: 2px;">
+          20... - 20... EĞİTİM VE ÖĞRETİM YILI
+        </div>
+        <div style="font-size: 11pt; font-weight: 800; margin-top: 3px; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #000; display: inline-block; padding-bottom: 2px;">
+          .................................................................................................... KURSU ÇERÇEVE VE ÇALIŞMA PLANI
+        </div>
+      </div>
+
+      <!-- Kurs Üst / Kimlik Bilgileri Tablosu -->
+      <table style="width: 100%; border-collapse: collapse; border: 1.5px solid black; font-size: 7.5pt; margin-bottom: 8px;">
+        <tbody>
+          <tr>
+            <td style="border: 1px solid black; padding: 3px 5px; font-weight: bold; width: 16%; background: #f8fafc;">Kursun Adı</td>
+            <td style="border: 1px solid black; padding: 3px 5px; width: 34%; font-weight: 600;">................................................................................</td>
+            <td style="border: 1px solid black; padding: 3px 5px; font-weight: bold; width: 16%; background: #f8fafc;">Kursun Onay / Kod No</td>
+            <td style="border: 1px solid black; padding: 3px 5px; width: 34%; font-family: monospace;">................................................................</td>
+          </tr>
+          <tr>
+            <td style="border: 1px solid black; padding: 3px 5px; font-weight: bold; background: #f8fafc;">Alan / Branş</td>
+            <td style="border: 1px solid black; padding: 3px 5px;">................................................................................</td>
+            <td style="border: 1px solid black; padding: 3px 5px; font-weight: bold; background: #f8fafc;">Verilecek Belge Türü</td>
+            <td style="border: 1px solid black; padding: 3px 5px;">[ &nbsp; ] Sertifika &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [ &nbsp; ] Kurs Katılım Belgesi</td>
+          </tr>
+          <tr>
+            <td style="border: 1px solid black; padding: 3px 5px; font-weight: bold; background: #f8fafc;">Başlama / Bitiş Tarihi</td>
+            <td style="border: 1px solid black; padding: 3px 5px;">..... / ..... / 20... &nbsp;&mdash;&nbsp; ..... / ..... / 20...</td>
+            <td style="border: 1px solid black; padding: 3px 5px; font-weight: bold; background: #f8fafc;">Toplam Ders Saati</td>
+            <td style="border: 1px solid black; padding: 3px 5px;">........... Saat (&nbsp;....... Ders Günü&nbsp;)</td>
+          </tr>
+          <tr>
+            <td style="border: 1px solid black; padding: 3px 5px; font-weight: bold; background: #f8fafc;">Ders Günleri ve Saatleri</td>
+            <td style="border: 1px solid black; padding: 3px 5px;">................................................................................</td>
+            <td style="border: 1px solid black; padding: 3px 5px; font-weight: bold; background: #f8fafc;">Günlük Ders Saati</td>
+            <td style="border: 1px solid black; padding: 3px 5px;">........... Saat</td>
+          </tr>
+          <tr>
+            <td style="border: 1px solid black; padding: 3px 5px; font-weight: bold; background: #f8fafc;">Uygulama Yeri / Derslik</td>
+            <td style="border: 1px solid black; padding: 3px 5px;">................................................................................</td>
+            <td style="border: 1px solid black; padding: 3px 5px; font-weight: bold; background: #f8fafc;">Eğitim Kurumu / Merkez</td>
+            <td style="border: 1px solid black; padding: 3px 5px;">................................................................</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- 1. MODÜL VE DERS SAATİ DAĞILIMI -->
+      <div style="font-size: 8pt; font-weight: bold; margin: 4px 0 2px 0; text-transform: uppercase;">
+        1. MODÜL VE DERS SAATİ DAĞILIM TABLOSU
+      </div>
+      <table style="width: 100%; border-collapse: collapse; border: 1.5px solid black; font-size: 7.2pt; margin-bottom: 8px;">
+        <thead>
+          <tr style="background: #f1f5f9; height: 22px;">
+            <th style="border: 1px solid black; width: 5%; text-align: center; padding: 2px;">Sıra</th>
+            <th style="border: 1px solid black; width: 45%; text-align: left; padding: 2px 6px;">Modülün Adı</th>
+            <th style="border: 1px solid black; width: 14%; text-align: center; padding: 2px;">Süresi (Saat)</th>
+            <th style="border: 1px solid black; width: 12%; text-align: center; padding: 2px;">Başlama Tarihi</th>
+            <th style="border: 1px solid black; width: 12%; text-align: center; padding: 2px;">Bitiş Tarihi</th>
+            <th style="border: 1px solid black; width: 12%; text-align: center; padding: 2px;">Sınav Tarihi</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${moduleRows}
+        </tbody>
+      </table>
+
+      <!-- 2. HAFTALIK KONU VE UYGULAMA DAĞILIM PLANI -->
+      <div style="font-size: 8pt; font-weight: bold; margin: 4px 0 2px 0; text-transform: uppercase;">
+        2. HAFTALIK ÇALIŞMA, KONU VE UYGULAMA PLANI
+      </div>
+      <table style="width: 100%; border-collapse: collapse; border: 1.5px solid black; font-size: 6.8pt; margin-bottom: 8px;">
+        <thead>
+          <tr style="background: #f1f5f9; height: 22px;">
+            <th style="border: 1px solid black; width: 4%; text-align: center; padding: 2px;">Hafta</th>
+            <th style="border: 1px solid black; width: 10%; text-align: center; padding: 2px;">Tarih Aralığı</th>
+            <th style="border: 1px solid black; width: 5%; text-align: center; padding: 2px;">Süre</th>
+            <th style="border: 1px solid black; width: 14%; text-align: left; padding: 2px 4px;">İşlenen Modül</th>
+            <th style="border: 1px solid black; width: 27%; text-align: left; padding: 2px 4px;">Konular ve Temrin / Atölye Uygulamaları</th>
+            <th style="border: 1px solid black; width: 12%; text-align: center; padding: 2px;">Öğretim Yöntemleri</th>
+            <th style="border: 1px solid black; width: 11%; text-align: center; padding: 2px;">Araç ve Gereçler</th>
+            <th style="border: 1px solid black; width: 9%; text-align: center; padding: 2px;">Ölçme ve Değ.</th>
+            <th style="border: 1px solid black; width: 8%; text-align: center; padding: 2px;">Açıklamalar</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${weeklyRows}
+        </tbody>
+      </table>
+
+      <!-- Alt İmza Bloğu -->
+      <table style="width: 100%; border-collapse: collapse; border: none; font-size: 7.5pt; margin-top: 14px;">
+        <tbody>
+          <tr>
+            <td style="width: 33%; text-align: center; vertical-align: top; border: none; padding: 4px;">
+              <div style="font-weight: bold;">HAZIRLAYAN</div>
+              <div style="margin-top: 2px; font-weight: 500;">Kurs Öğretmeni / Usta Öğretici</div>
+              <div style="margin-top: 14px; font-weight: 600;">Adı Soyadı: ................................................</div>
+              <div style="margin-top: 6px;">İmza: .......................................</div>
+              <div style="margin-top: 4px; font-size: 6.8pt; color: #555;">Tarih: ..... / ..... / 20...</div>
+            </td>
+            <td style="width: 34%; text-align: center; vertical-align: top; border: none; padding: 4px;">
+              <div style="font-weight: bold;">İNCELEYEN</div>
+              <div style="margin-top: 2px; font-weight: 500;">Müdür Yardımcısı / Sorumlu</div>
+              <div style="margin-top: 14px; font-weight: 600;">Adı Soyadı: ................................................</div>
+              <div style="margin-top: 6px;">İmza: .......................................</div>
+              <div style="margin-top: 4px; font-size: 6.8pt; color: #555;">Tarih: ..... / ..... / 20...</div>
+            </td>
+            <td style="width: 33%; text-align: center; vertical-align: top; border: none; padding: 4px;">
+              <div style="font-weight: bold;">UYGUNDUR / ONAY</div>
+              <div style="margin-top: 2px; font-weight: 500;">Kurum Müdürü</div>
+              <div style="margin-top: 14px; font-weight: 600;">Adı Soyadı: ................................................</div>
+              <div style="margin-top: 6px;">İmza &amp; Mühür: .......................................</div>
+              <div style="margin-top: 4px; font-size: 6.8pt; color: #555;">Tarih: ..... / ..... / 20...</div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+    </div>
+  `;
+}
+
+// 2. Boş Kursiyer Karar Durumu Çizelgesi (A4 Dikey)
+function generateBlankKararDurumuHtml() {
+  let rows = '';
+  for (let i = 1; i <= 30; i++) {
+    rows += `
+      <tr style="height: 22px;">
+        <td style="border: 1px solid black; text-align: center; font-weight: bold; font-size: 8.5pt; padding: 1px 2px;">${i}</td>
+        <td style="border: 1px solid black; padding: 1px 6px; font-size: 8pt; text-align: center; font-family: monospace;">&nbsp;</td>
+        <td style="border: 1px solid black; padding: 1px 8px; font-size: 8.5pt; text-align: left;">&nbsp;</td>
+        <td style="border: 1px solid black; text-align: center; font-size: 7.5pt; padding: 1px 4px; color: #444;">
+          [ &nbsp; ] Belge Aldı &nbsp;&nbsp;&nbsp; [ &nbsp; ] Devamsız &nbsp;&nbsp;&nbsp; [ &nbsp; ] Başarısız &nbsp;&nbsp;&nbsp; [ &nbsp; ] Hiç Gelmedi
+        </td>
+      </tr>
+    `;
+  }
+
+  return `
+    <div class="karar-durumu-document" style="font-family: Arial, Helvetica, sans-serif; color: #000; line-height: 1.3; width: 100%; max-width: 800px; margin: 0 auto; background: #fff; box-sizing: border-box; padding: 8px;">
+      
+      <!-- Başlık (Boş Matbu Şablon) -->
+      <div style="text-align: center; margin-bottom: 10px;">
+        <div style="font-size: 10.5pt; font-weight: bold; text-transform: uppercase;">T.C.</div>
+        <div style="font-size: 11pt; font-weight: 800; text-transform: uppercase; margin-top: 1px;">
+          ................................................................................................................................................
+        </div>
+        <div style="font-size: 9.5pt; font-weight: bold; text-transform: uppercase; margin-top: 2px;">
+          20... - 20... EĞİTİM VE ÖĞRETİM YILI
+        </div>
+        <div style="font-size: 12pt; font-weight: 800; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #000; display: inline-block; padding-bottom: 2px;">
+          KURSİYER KARAR DURUMU ÇİZELGESİ
+        </div>
+      </div>
+
+      <!-- Kurs Üst Bilgileri Tablosu -->
+      <table style="width: 100%; border-collapse: collapse; border: 1.5px solid black; font-size: 8pt; margin-bottom: 8px;">
+        <tbody>
+          <tr>
+            <td style="border: 1px solid black; padding: 3px 6px; font-weight: bold; width: 18%; background: #f8fafc;">Kursun Adı</td>
+            <td style="border: 1px solid black; padding: 3px 6px; width: 42%;">................................................................................</td>
+            <td style="border: 1px solid black; padding: 3px 6px; font-weight: bold; width: 18%; background: #f8fafc;">Kurs Kodu / Onay No</td>
+            <td style="border: 1px solid black; padding: 3px 6px; width: 22%;">................................................</td>
+          </tr>
+          <tr>
+            <td style="border: 1px solid black; padding: 3px 6px; font-weight: bold; background: #f8fafc;">Kurs Öğretmeni</td>
+            <td style="border: 1px solid black; padding: 3px 6px;">................................................................................</td>
+            <td style="border: 1px solid black; padding: 3px 6px; font-weight: bold; background: #f8fafc;">Toplam Kurs Saati</td>
+            <td style="border: 1px solid black; padding: 3px 6px;">........... Saat</td>
+          </tr>
+          <tr>
+            <td style="border: 1px solid black; padding: 3px 6px; font-weight: bold; background: #f8fafc;">Başlama - Bitiş Tarihi</td>
+            <td style="border: 1px solid black; padding: 3px 6px;">..... / ..... / 20... &nbsp;&mdash;&nbsp; ..... / ..... / 20...</td>
+            <td style="border: 1px solid black; padding: 3px 6px; font-weight: bold; background: #f8fafc;">Ders Günleri</td>
+            <td style="border: 1px solid black; padding: 3px 6px;">................................................</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Kursiyer Karar Durumu Tablosu (30 Boş Satır) -->
+      <table style="width: 100%; border-collapse: collapse; border: 1.5px solid black; font-size: 8pt; margin-bottom: 10px;">
+        <thead>
+          <tr style="background: #f1f5f9; height: 24px;">
+            <th style="border: 1px solid black; width: 6%; text-align: center; padding: 2px;">Sıra</th>
+            <th style="border: 1px solid black; width: 22%; text-align: center; padding: 2px;">T.C. Kimlik No</th>
+            <th style="border: 1px solid black; width: 34%; text-align: left; padding: 2px 8px;">Kursiyerin Adı ve Soyadı</th>
+            <th style="border: 1px solid black; width: 38%; text-align: center; padding: 2px;">Karar Durumu (İşaretleyiniz)</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rows}
+        </tbody>
+      </table>
+
+      <!-- Kurs Sonu İstatistik Özeti -->
+      <table style="width: 100%; border-collapse: collapse; border: 1px solid black; font-size: 7.5pt; margin-bottom: 12px; background: #f8fafc;">
+        <tbody>
+          <tr>
+            <td style="border: 1px solid black; padding: 3px 6px; font-weight: bold; width: 20%;">Toplam Kayıtlı Kursiyer:</td>
+            <td style="border: 1px solid black; padding: 3px 6px; width: 13%; font-weight: bold; text-align: center;">..........</td>
+            <td style="border: 1px solid black; padding: 3px 6px; width: 20%;">Belge Alan Kursiyer:</td>
+            <td style="border: 1px solid black; padding: 3px 6px; width: 13%; font-weight: bold; text-align: center; color: #15803d;">..........</td>
+            <td style="border: 1px solid black; padding: 3px 6px; width: 20%;">Devamsızlıktan Kalan:</td>
+            <td style="border: 1px solid black; padding: 3px 6px; width: 14%; font-weight: bold; text-align: center; color: #b91c1c;">..........</td>
+          </tr>
+          <tr>
+            <td style="border: 1px solid black; padding: 3px 6px; font-weight: bold;">Başarısızlıktan Kalan:</td>
+            <td style="border: 1px solid black; padding: 3px 6px; width: 13%; font-weight: bold; text-align: center; color: #b91c1c;">..........</td>
+            <td style="border: 1px solid black; padding: 3px 6px; font-weight: bold;">Hiç Gelmeyen:</td>
+            <td style="border: 1px solid black; padding: 3px 6px; width: 13%; font-weight: bold; text-align: center;">..........</td>
+            <td style="border: 1px solid black; padding: 3px 6px; font-weight: bold;">Kurs Başarı Oranı:</td>
+            <td style="border: 1px solid black; padding: 3px 6px; width: 14%; font-weight: bold; text-align: center;">% ......</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- İmza Bloğu -->
+      <table style="width: 100%; border-collapse: collapse; border: none; font-size: 8pt; margin-top: 10px;">
+        <tbody>
+          <tr>
+            <td style="width: 50%; text-align: center; vertical-align: top; border: none; padding: 4px;">
+              <div style="font-weight: bold;">DÜZENLEYEN</div>
+              <div style="margin-top: 2px;">Kurs Öğretmeni / Usta Öğretici</div>
+              <div style="margin-top: 16px; font-weight: 600;">Adı Soyadı: ................................................</div>
+              <div style="margin-top: 6px;">İmza: .......................................</div>
+              <div style="margin-top: 4px; font-size: 7pt; color: #555;">Tarih: ..... / ..... / 20...</div>
+            </td>
+            <td style="width: 50%; text-align: center; vertical-align: top; border: none; padding: 4px;">
+              <div style="font-weight: bold;">ONAYLAYAN</div>
+              <div style="margin-top: 2px;">Kurum Müdürü</div>
+              <div style="margin-top: 16px; font-weight: 600;">Adı Soyadı: ................................................</div>
+              <div style="margin-top: 6px;">İmza &amp; Mühür: .......................................</div>
+              <div style="margin-top: 4px; font-size: 7pt; color: #555;">Tarih: ..... / ..... / 20...</div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+    </div>
+  `;
+}
+
+// 3. Boş Kurs Yoklama ve Ders Defteri (A4 Dikey - 2 Sayfa)
+function generateBlankDefterHtml() {
+  // 1. Sayfa: Yoklama Çizelgesi Sütun Başlıkları (1..31)
+  let attHeadersNum = '';
+  let attHeadersDates = '';
+  for (let c = 1; c <= 31; c++) {
+    attHeadersNum += `<th style="border: 1px solid black; padding: 2px 1px; width: 17px; font-size: 7.5pt; text-align: center; font-weight: bold;">${c}</th>`;
+    attHeadersDates += `<th style="border: 1px solid black; padding: 2px 1px; font-size: 5.5pt; text-align: center; font-weight: normal; writing-mode: vertical-lr; transform: rotate(180deg); height: 50px; white-space: nowrap;">.../...</th>`;
+  }
+
+  // 1. Sayfa: 35 Boş Kursiyer Yoklama Satırı
+  let attRows = '';
+  for (let r = 1; r <= 35; r++) {
+    let dayCells = '';
+    for (let c = 1; c <= 31; c++) {
+      dayCells += `<td style="border: 1px solid black; width: 17px; height: 18px; text-align: center; font-size: 7pt;">&nbsp;</td>`;
+    }
+    attRows += `
+      <tr style="height: 18px;">
+        <td style="border: 1px solid black; text-align: center; font-weight: bold; font-size: 7.5pt; padding: 1px;">${r}</td>
+        <td style="border: 1px solid black; padding: 1px 4px; font-size: 7.5pt; font-family: monospace;">&nbsp;</td>
+        <td style="border: 1px solid black; padding: 1px 4px; font-size: 7.5pt; text-align: left;">&nbsp;</td>
+        ${dayCells}
+        <td style="border: 1px solid black; width: 34px; text-align: center; font-size: 7.5pt;">&nbsp;</td>
+      </tr>
+    `;
+  }
+
+  // Alt Günlük Ders Saati ve İmza Satırları
+  let hoursCells = '';
+  let signCells = '';
+  for (let c = 1; c <= 31; c++) {
+    hoursCells += `<td style="border: 1px solid black; height: 16px; text-align: center; font-size: 6.5pt;">&nbsp;</td>`;
+    signCells += `<td style="border: 1px solid black; height: 22px; text-align: center; font-size: 6pt;">&nbsp;</td>`;
+  }
+
+  // 2. Sayfa: 35 Boş Günlük Ders Konu Satırı
+  let lessonRows = '';
+  for (let l = 1; l <= 35; l++) {
+    lessonRows += `
+      <tr style="height: 22px;">
+        <td style="border: 1px solid black; text-align: center; font-weight: bold; font-size: 7.5pt; padding: 1px;">${l}</td>
+        <td style="border: 1px solid black; text-align: center; font-size: 7.2pt; padding: 1px;">..../..../20...</td>
+        <td style="border: 1px solid black; text-align: center; font-size: 7pt; padding: 1px;">.... - ....</td>
+        <td style="border: 1px solid black; text-align: center; font-size: 7pt; padding: 1px;">.... Sa.</td>
+        <td style="border: 1px solid black; padding: 1px 6px; font-size: 7.5pt; text-align: left;">&nbsp;</td>
+        <td style="border: 1px solid black; text-align: center; font-size: 7pt; padding: 1px;">&nbsp;</td>
+      </tr>
+    `;
+  }
+
+  return `
+    <div class="defter-document-wrapper" style="font-family: Arial, Helvetica, sans-serif; color: #000; line-height: 1.2; width: 100%; max-width: 900px; margin: 0 auto; background: #fff; box-sizing: border-box;">
+      
+      <!-- ================= 1. BÖLÜM: KURSİYER DEVAM TAKİP ÇİZELGESİ ================= -->
+      <div class="defter-page" style="page-break-after: always; break-after: page; padding: 6px;">
+        <div style="text-align: center; margin-bottom: 6px;">
+          <div style="font-size: 10pt; font-weight: bold; text-transform: uppercase;">T.C.</div>
+          <div style="font-size: 10.5pt; font-weight: 800; text-transform: uppercase;">
+            ................................................................................................................................................
+          </div>
+          <div style="font-size: 11.5pt; font-weight: 800; text-transform: uppercase; margin-top: 2px; border-bottom: 2px solid #000; display: inline-block; padding-bottom: 1px;">
+            KURSİYER DEVAM TAKİP ÇİZELGESİ (YOKLAMA DEFTERİ)
+          </div>
+        </div>
+
+        <!-- Üst Bilgi Satırı -->
+        <table style="width: 100%; border-collapse: collapse; border: 1.5px solid black; font-size: 7.5pt; margin-bottom: 6px;">
+          <tbody>
+            <tr>
+              <td style="border: 1px solid black; padding: 2px 4px; font-weight: bold; width: 12%; background: #f8fafc;">Kursun Adı:</td>
+              <td style="border: 1px solid black; padding: 2px 4px; width: 38%;">................................................................</td>
+              <td style="border: 1px solid black; padding: 2px 4px; font-weight: bold; width: 12%; background: #f8fafc;">Kurs Kodu:</td>
+              <td style="border: 1px solid black; padding: 2px 4px; width: 38%;">................................................</td>
+            </tr>
+            <tr>
+              <td style="border: 1px solid black; padding: 2px 4px; font-weight: bold; background: #f8fafc;">Kurs Öğretmeni:</td>
+              <td style="border: 1px solid black; padding: 2px 4px;">................................................................</td>
+              <td style="border: 1px solid black; padding: 2px 4px; font-weight: bold; background: #f8fafc;">Ay / Yıl:</td>
+              <td style="border: 1px solid black; padding: 2px 4px;">............................................ 20...</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- Yoklama Tablosu -->
+        <table style="width: 100%; border-collapse: collapse; border: 1.5px solid black; font-size: 7pt; margin-bottom: 6px;">
+          <thead>
+            <tr style="background: #f1f5f9; height: 18px;">
+              <th rowspan="2" style="border: 1px solid black; width: 22px; text-align: center; padding: 1px;">No</th>
+              <th rowspan="2" style="border: 1px solid black; width: 85px; text-align: center; padding: 1px;">T.C. Kimlik No</th>
+              <th rowspan="2" style="border: 1px solid black; width: 155px; text-align: left; padding: 1px 4px;">Kursiyer Adı Soyadı</th>
+              ${attHeadersNum}
+              <th rowspan="2" style="border: 1px solid black; width: 34px; text-align: center; padding: 1px;">Top. Sa.</th>
+            </tr>
+            <tr style="background: #fff;">
+              ${attHeadersDates}
+            </tr>
+          </thead>
+          <tbody>
+            ${attRows}
+            <tr style="background: #f8fafc; font-weight: bold;">
+              <td colspan="3" style="border: 1px solid black; padding: 2px 4px; font-size: 7pt; text-align: right;">Ders Yapılan Saat:</td>
+              ${hoursCells}
+              <td style="border: 1px solid black;">&nbsp;</td>
+            </tr>
+            <tr style="background: #fff;">
+              <td colspan="3" style="border: 1px solid black; padding: 2px 4px; font-size: 6.8pt; font-weight: bold; text-align: right;">Eğitmen İmzası:</td>
+              ${signCells}
+              <td style="border: 1px solid black;">&nbsp;</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div style="font-size: 6.8pt; color: #444; margin-top: 2px;">
+          * Kursiyerin gelmediği ders saatleri ilgili günün kutucuğuna rakamla yazılır. Tam gün gelenler boş bırakılır veya nokta (.) konur.
+        </div>
+      </div>
+
+      <!-- ================= 2. BÖLÜM: GÜNLÜK DERS İŞLENİŞ VE KONU DEFTERİ ================= -->
+      <div class="defter-page" style="padding: 6px; page-break-before: always; break-before: page;">
+        <div style="text-align: center; margin-bottom: 6px;">
+          <div style="font-size: 10pt; font-weight: bold; text-transform: uppercase;">T.C.</div>
+          <div style="font-size: 10.5pt; font-weight: 800; text-transform: uppercase;">
+            ................................................................................................................................................
+          </div>
+          <div style="font-size: 11.5pt; font-weight: 800; text-transform: uppercase; margin-top: 2px; border-bottom: 2px solid #000; display: inline-block; padding-bottom: 1px;">
+            GÜNLÜK DERS İŞLENİŞ VE KONU DEFTERİ
+          </div>
+        </div>
+
+        <table style="width: 100%; border-collapse: collapse; border: 1.5px solid black; font-size: 7.5pt; margin-bottom: 6px;">
+          <tbody>
+            <tr>
+              <td style="border: 1px solid black; padding: 2px 4px; font-weight: bold; width: 12%; background: #f8fafc;">Kursun Adı:</td>
+              <td style="border: 1px solid black; padding: 2px 4px; width: 45%;">................................................................</td>
+              <td style="border: 1px solid black; padding: 2px 4px; font-weight: bold; width: 15%; background: #f8fafc;">Toplam Ders Saati:</td>
+              <td style="border: 1px solid black; padding: 2px 4px; width: 28%;">........... Saat</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- Ders Defteri Satırları -->
+        <table style="width: 100%; border-collapse: collapse; border: 1.5px solid black; font-size: 7.2pt; margin-bottom: 8px;">
+          <thead>
+            <tr style="background: #f1f5f9; height: 20px;">
+              <th style="border: 1px solid black; width: 5%; text-align: center; padding: 2px;">Ders</th>
+              <th style="border: 1px solid black; width: 14%; text-align: center; padding: 2px;">Tarih</th>
+              <th style="border: 1px solid black; width: 11%; text-align: center; padding: 2px;">Saat Aralığı</th>
+              <th style="border: 1px solid black; width: 8%; text-align: center; padding: 2px;">Süre</th>
+              <th style="border: 1px solid black; width: 50%; text-align: left; padding: 2px 6px;">İşlenen Modül, Konular ve Yapılan Temrin / Uygulamalar</th>
+              <th style="border: 1px solid black; width: 12%; text-align: center; padding: 2px;">Eğitmen İmzası</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${lessonRows}
+          </tbody>
+        </table>
+
+        <!-- Alt İmza Bloğu -->
+        <table style="width: 100%; border-collapse: collapse; border: none; font-size: 7.5pt; margin-top: 8px;">
+          <tbody>
+            <tr>
+              <td style="width: 50%; text-align: center; border: none; padding: 2px;">
+                <div style="font-weight: bold;">KURS ÖĞRETMENİ / USTA ÖĞRETİCİ</div>
+                <div style="margin-top: 14px;">Adı Soyadı: ................................................</div>
+                <div style="margin-top: 4px;">İmza: .......................................</div>
+              </td>
+              <td style="width: 50%; text-align: center; border: none; padding: 2px;">
+                <div style="font-weight: bold;">KURUM MÜDÜRÜ</div>
+                <div style="margin-top: 14px;">Adı Soyadı: ................................................</div>
+                <div style="margin-top: 4px;">İmza &amp; Mühür: .......................................</div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  `;
+}
+
+// 4. Boş Modül Değerlendirme Çizelgesi (Not Çizelgesi) (A4 Yatay)
+function generateBlankNotCizelgesiHtml() {
+  let modHeaders = '';
+  for (let m = 1; m <= 15; m++) {
+    modHeaders += `<th style="border: 1px solid black; width: 28px; height: 18px; padding: 1px 0; font-size: 7pt; text-align: center; font-weight: bold; background: #fff;">${m}</th>`;
+  }
+
+  let rows = '';
+  for (let i = 1; i <= 30; i++) {
+    let modScoreCells = '';
+    for (let m = 1; m <= 15; m++) {
+      modScoreCells += `<td style="border: 1px solid black; width: 28px; text-align: center; font-size: 7pt;">&nbsp;</td>`;
+    }
+    rows += `
+      <tr style="height: 18px;">
+        <td style="border: 1px solid black; text-align: center; font-weight: bold; font-size: 7pt; padding: 1px;">${i}</td>
+        <td style="border: 1px solid black; padding: 1px 4px; font-size: 7pt; text-align: center; font-family: monospace;">&nbsp;</td>
+        <td style="border: 1px solid black; padding: 1px 6px; font-size: 7pt; text-align: left;">&nbsp;</td>
+        ${modScoreCells}
+        <td style="border: 1px solid black; width: 34px; text-align: center; font-size: 7pt;">&nbsp;</td>
+        <td style="border: 1px solid black; width: 36px; text-align: center; font-size: 7pt; font-weight: bold;">&nbsp;</td>
+        <td style="border: 1px solid black; width: 50px; text-align: center; font-size: 6.5pt;">&nbsp;</td>
+      </tr>
+    `;
+  }
+
+  return `
+    <div class="not-cizelgesi-document" style="font-family: Arial, Helvetica, sans-serif; color: #000; line-height: 1.2; width: 100%; max-width: 1050px; margin: 0 auto; background: #fff; box-sizing: border-box; padding: 6px;">
+      
+      <!-- Başlık (Boş Matbu Şablon) -->
+      <div style="text-align: center; margin-bottom: 6px;">
+        <div style="font-size: 9.5pt; font-weight: bold; text-transform: uppercase;">T.C.</div>
+        <div style="font-size: 10.5pt; font-weight: 800; text-transform: uppercase;">
+          ................................................................................................................................................
+        </div>
+        <div style="font-size: 11pt; font-weight: 800; text-transform: uppercase; margin-top: 1px; border-bottom: 2px solid #000; display: inline-block; padding-bottom: 1px;">
+          MODÜL DEĞERLENDİRME ÇİZELGESİ (NOT ÇİZELGESİ)
+        </div>
+      </div>
+
+      <!-- Kurs Üst Bilgileri Tablosu -->
+      <table style="width: 100%; border-collapse: collapse; border: 1.5px solid black; font-size: 7.2pt; margin-bottom: 6px;">
+        <tbody>
+          <tr>
+            <td style="border: 1px solid black; padding: 2px 4px; font-weight: bold; width: 14%; background: #f8fafc;">Kursun Adı</td>
+            <td style="border: 1px solid black; padding: 2px 4px; width: 36%;">................................................................</td>
+            <td style="border: 1px solid black; padding: 2px 4px; font-weight: bold; width: 14%; background: #f8fafc;">Kurs Kodu</td>
+            <td style="border: 1px solid black; padding: 2px 4px; width: 36%;">................................................</td>
+          </tr>
+          <tr>
+            <td style="border: 1px solid black; padding: 2px 4px; font-weight: bold; background: #f8fafc;">Kurs Öğretmeni</td>
+            <td style="border: 1px solid black; padding: 2px 4px;">................................................................</td>
+            <td style="border: 1px solid black; padding: 2px 4px; font-weight: bold; background: #f8fafc;">Toplam Ders Saati</td>
+            <td style="border: 1px solid black; padding: 2px 4px;">........... Saat</td>
+          </tr>
+          <tr>
+            <td style="border: 1px solid black; padding: 2px 4px; font-weight: bold; background: #f8fafc;">Başlama / Bitiş Tarihi</td>
+            <td style="border: 1px solid black; padding: 2px 4px;">..... / ..... / 20... &nbsp;&mdash;&nbsp; ..... / ..... / 20...</td>
+            <td style="border: 1px solid black; padding: 2px 4px; font-weight: bold; background: #f8fafc;">Uygulama Yeri</td>
+            <td style="border: 1px solid black; padding: 2px 4px;">................................................</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Çizelge Tablosu (30 Boş Satır) -->
+      <table style="width: 100%; border-collapse: collapse; border: 1.5px solid black; font-size: 7pt; margin-bottom: 8px;">
+        <thead>
+          <tr style="background: #f1f5f9; height: 18px;">
+            <th rowspan="2" style="border: 1px solid black; width: 22px; text-align: center; padding: 1px;">Sıra</th>
+            <th rowspan="2" style="border: 1px solid black; width: 85px; text-align: center; padding: 1px;">T.C. Kimlik No</th>
+            <th rowspan="2" style="border: 1px solid black; width: 160px; text-align: left; padding: 1px 6px;">Kursiyer Adı Soyadı</th>
+            <th colspan="15" style="border: 1px solid black; text-align: center; padding: 1px; font-weight: bold;">MODÜL NOTLARI (1 - 15)</th>
+            <th rowspan="2" style="border: 1px solid black; width: 34px; text-align: center; padding: 1px;">Devam. Saati</th>
+            <th rowspan="2" style="border: 1px solid black; width: 36px; text-align: center; padding: 1px;">Başarı Notu</th>
+            <th rowspan="2" style="border: 1px solid black; width: 50px; text-align: center; padding: 1px;">Sonuç</th>
+          </tr>
+          <tr style="background: #fff;">
+            ${modHeaders}
+          </tr>
+        </thead>
+        <tbody>
+          ${rows}
+        </tbody>
+      </table>
+
+      <!-- Alt İmza Bloğu -->
+      <table style="width: 100%; border-collapse: collapse; border: none; font-size: 7.2pt; margin-top: 6px;">
+        <tbody>
+          <tr>
+            <td style="width: 33%; text-align: center; border: none; padding: 2px;">
+              <div style="font-weight: bold;">KURS ÖĞRETMENİ</div>
+              <div style="margin-top: 14px;">Adı Soyadı: ................................................</div>
+              <div style="margin-top: 4px;">İmza: .......................................</div>
+            </td>
+            <td style="width: 34%; text-align: center; border: none; padding: 2px;">
+              <div style="font-weight: bold;">SINAV KOMİSYON ÜYESİ</div>
+              <div style="margin-top: 14px;">Adı Soyadı: ................................................</div>
+              <div style="margin-top: 4px;">İmza: .......................................</div>
+            </td>
+            <td style="width: 33%; text-align: center; border: none; padding: 2px;">
+              <div style="font-weight: bold;">KURUM MÜDÜRÜ</div>
+              <div style="margin-top: 14px;">Adı Soyadı: ................................................</div>
+              <div style="margin-top: 4px;">İmza &amp; Mühür: .......................................</div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+    </div>
+  `;
+}
+
+// 5. Boş Dönem Sonu / Modül Sınav Tutanağı (A4 Dikey)
+function generateBlankSinavTutanagiHtml() {
+  let rows = '';
+  for (let i = 1; i <= 30; i++) {
+    rows += `
+      <tr style="height: 22px;">
+        <td style="border: 1px solid black; text-align: center; font-weight: bold; font-size: 8pt; padding: 1px;">${i}</td>
+        <td style="border: 1px solid black; padding: 1px 6px; font-size: 8pt; text-align: center; font-family: monospace;">&nbsp;</td>
+        <td style="border: 1px solid black; padding: 1px 8px; font-size: 8.5pt; text-align: left;">&nbsp;</td>
+        <td style="border: 1px solid black; width: 60px; text-align: center; font-size: 8pt;">&nbsp;</td>
+        <td style="border: 1px solid black; width: 90px; text-align: center; font-size: 8pt;">&nbsp;</td>
+        <td style="border: 1px solid black; width: 70px; text-align: center; font-size: 7.5pt;">&nbsp;</td>
+      </tr>
+    `;
+  }
+
+  return `
+    <div class="sinav-tutanagi-document" style="font-family: Arial, Helvetica, sans-serif; color: #000; line-height: 1.3; width: 100%; max-width: 800px; margin: 0 auto; background: #fff; box-sizing: border-box; padding: 8px;">
+      
+      <!-- Başlık (Boş Matbu Şablon) -->
+      <div style="text-align: center; margin-bottom: 8px;">
+        <div style="font-size: 10pt; font-weight: bold; text-transform: uppercase;">T.C.</div>
+        <div style="font-size: 10.5pt; font-weight: 800; text-transform: uppercase;">
+          ................................................................................................................................................
+        </div>
+        <div style="font-size: 11.5pt; font-weight: 800; text-transform: uppercase; margin-top: 2px; border-bottom: 2px solid #000; display: inline-block; padding-bottom: 2px;">
+          KURS DÖNEM SONU / MODÜL DEĞERLENDİRME SINAV TUTANAĞI
+        </div>
+      </div>
+
+      <!-- Sınav Bilgileri Tablosu -->
+      <table style="width: 100%; border-collapse: collapse; border: 1.5px solid black; font-size: 8pt; margin-bottom: 8px;">
+        <tbody>
+          <tr>
+            <td style="border: 1px solid black; padding: 3px 6px; font-weight: bold; width: 18%; background: #f8fafc;">Kursun Adı</td>
+            <td style="border: 1px solid black; padding: 3px 6px; width: 42%;">................................................................</td>
+            <td style="border: 1px solid black; padding: 3px 6px; font-weight: bold; width: 18%; background: #f8fafc;">Sınav Tarihi</td>
+            <td style="border: 1px solid black; padding: 3px 6px; width: 22%;">..... / ..... / 20...</td>
+          </tr>
+          <tr>
+            <td style="border: 1px solid black; padding: 3px 6px; font-weight: bold; background: #f8fafc;">Modül / Alan</td>
+            <td style="border: 1px solid black; padding: 3px 6px;">................................................................</td>
+            <td style="border: 1px solid black; padding: 3px 6px; font-weight: bold; background: #f8fafc;">Sınav Saati</td>
+            <td style="border: 1px solid black; padding: 3px 6px;">..... : .....</td>
+          </tr>
+          <tr>
+            <td style="border: 1px solid black; padding: 3px 6px; font-weight: bold; background: #f8fafc;">Sınav Salonu / Derslik</td>
+            <td style="border: 1px solid black; padding: 3px 6px;">................................................................</td>
+            <td style="border: 1px solid black; padding: 3px 6px; font-weight: bold; background: #f8fafc;">Sınav Türü</td>
+            <td style="border: 1px solid black; padding: 3px 6px;">[ &nbsp; ] Yazılı &nbsp;&nbsp; [ &nbsp; ] Uygulama</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Kursiyer Sınav Notları Tablosu (30 Boş Satır) -->
+      <table style="width: 100%; border-collapse: collapse; border: 1.5px solid black; font-size: 8pt; margin-bottom: 8px;">
+        <thead>
+          <tr style="background: #f1f5f9; height: 22px;">
+            <th style="border: 1px solid black; width: 6%; text-align: center; padding: 2px;">Sıra</th>
+            <th style="border: 1px solid black; width: 22%; text-align: center; padding: 2px;">T.C. Kimlik No</th>
+            <th style="border: 1px solid black; width: 36%; text-align: left; padding: 2px 8px;">Kursiyer Adı ve Soyadı</th>
+            <th style="border: 1px solid black; width: 11%; text-align: center; padding: 2px;">Not (Rakam)</th>
+            <th style="border: 1px solid black; width: 14%; text-align: center; padding: 2px;">Not (Yazı ile)</th>
+            <th style="border: 1px solid black; width: 11%; text-align: center; padding: 2px;">İmza</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rows}
+        </tbody>
+      </table>
+
+      <!-- Tutanak Beyan Metni -->
+      <div style="font-size: 7.5pt; text-align: justify; margin: 6px 0; line-height: 1.3;">
+        Yukarıda adı geçen kursun modül/dönem sonu değerlendirme sınavı belirtilen gün, saat ve salonda yapılmış olup, sınava iştirak eden kursiyerlerin aldıkları notlar ve başarı durumları tespit edilerek işbu tutanak müştereken imza altına alınmıştır.
+      </div>
+
+      <!-- Sınav Komisyonu İmzaları -->
+      <table style="width: 100%; border-collapse: collapse; border: none; font-size: 7.8pt; margin-top: 10px;">
+        <tbody>
+          <tr>
+            <td style="width: 33%; text-align: center; border: none; padding: 2px;">
+              <div style="font-weight: bold;">KOMİSYON BAŞKANI</div>
+              <div style="margin-top: 2px; font-size: 7pt;">(Kurs Öğretmeni)</div>
+              <div style="margin-top: 14px;">Adı Soyadı: .......................................</div>
+              <div style="margin-top: 4px;">İmza: .......................................</div>
+            </td>
+            <td style="width: 34%; text-align: center; border: none; padding: 2px;">
+              <div style="font-weight: bold;">KOMİSYON ÜYESİ</div>
+              <div style="margin-top: 2px; font-size: 7pt;">(Öğretmen / Uzman)</div>
+              <div style="margin-top: 14px;">Adı Soyadı: .......................................</div>
+              <div style="margin-top: 4px;">İmza: .......................................</div>
+            </td>
+            <td style="width: 33%; text-align: center; border: none; padding: 2px;">
+              <div style="font-weight: bold;">ONAYLAYAN</div>
+              <div style="margin-top: 2px; font-size: 7pt;">(Kurum Müdürü)</div>
+              <div style="margin-top: 14px;">Adı Soyadı: .......................................</div>
+              <div style="margin-top: 4px;">İmza &amp; Mühür: .......................................</div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+    </div>
+  `;
+}
+
+// 6. Boş Kursiyer Günlük İmza Listesi (A4 Yatay)
+function generateBlankImzaListesiHtml() {
+  let dateHeaders = '';
+  for (let c = 1; c <= 10; c++) {
+    dateHeaders += `<th style="border: 1px solid black; width: 8.5%; text-align: center; font-weight: bold; font-size: 7.5pt; padding: 4px 2px;">.../.../20..</th>`;
+  }
+
+  let rows = '';
+  for (let r = 1; r <= 25; r++) {
+    let signCells = '';
+    for (let c = 1; c <= 10; c++) {
+      signCells += `<td style="border: 1px solid black; height: 20px; text-align: center; font-size: 7pt;">&nbsp;</td>`;
+    }
+    rows += `
+      <tr style="height: 20px;">
+        <td style="border: 1px solid black; text-align: center; font-weight: bold; font-size: 7.5pt; padding: 1px;">${r}</td>
+        <td style="border: 1px solid black; padding: 1px 4px; font-size: 7.5pt; text-align: center; font-family: monospace;">&nbsp;</td>
+        <td style="border: 1px solid black; padding: 1px 4px; font-size: 7.5pt; text-align: left;">&nbsp;</td>
+        <td style="border: 1px solid black; padding: 1px 4px; font-size: 7.5pt; text-align: left;">&nbsp;</td>
+        ${signCells}
+      </tr>
+    `;
+  }
+
+  return `
+    <div class="imza-listesi-document" style="font-family: Arial, Helvetica, sans-serif; color: #000; line-height: 1.2; width: 100%; max-width: 1050px; margin: 0 auto; background: #fff; box-sizing: border-box; padding: 6px;">
+      
+      <!-- Başlık (Boş Matbu Şablon) -->
+      <div style="text-align: center; margin-bottom: 6px;">
+        <div style="font-size: 9.5pt; font-weight: bold; text-transform: uppercase;">T.C.</div>
+        <div style="font-size: 10.5pt; font-weight: 800; text-transform: uppercase;">
+          ................................................................................................................................................
+        </div>
+        <div style="font-size: 11.5pt; font-weight: 800; text-transform: uppercase; margin-top: 1px; border-bottom: 2px solid #000; display: inline-block; padding-bottom: 1px;">
+          KURSİYER GÜNLÜK İMZA LİSTESİ
+        </div>
+      </div>
+
+      <!-- Kurs Üst Bilgileri -->
+      <table style="width: 100%; border-collapse: collapse; border: 1.5px solid black; font-size: 7.5pt; margin-bottom: 6px;">
+        <tbody>
+          <tr>
+            <td style="border: 1px solid black; padding: 2px 4px; font-weight: bold; width: 14%; background: #f8fafc;">Kursun Adı:</td>
+            <td style="border: 1px solid black; padding: 2px 4px; width: 36%;">................................................................</td>
+            <td style="border: 1px solid black; padding: 2px 4px; font-weight: bold; width: 14%; background: #f8fafc;">Kurs Kodu:</td>
+            <td style="border: 1px solid black; padding: 2px 4px; width: 36%;">................................................</td>
+          </tr>
+          <tr>
+            <td style="border: 1px solid black; padding: 2px 4px; font-weight: bold; background: #f8fafc;">Kurs Öğretmeni:</td>
+            <td style="border: 1px solid black; padding: 2px 4px;">................................................................</td>
+            <td style="border: 1px solid black; padding: 2px 4px; font-weight: bold; background: #f8fafc;">Dönem Tarihleri:</td>
+            <td style="border: 1px solid black; padding: 2px 4px;">..... / ..... / 20... &nbsp;&mdash;&nbsp; ..... / ..... / 20...</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- İmza Tablosu (25 Boş Satır) -->
+      <table style="width: 100%; border-collapse: collapse; border: 1.5px solid black; font-size: 7.2pt; margin-bottom: 6px;">
+        <thead>
+          <tr style="background: #f1f5f9; height: 22px;">
+            <th style="border: 1px solid black; width: 3%; text-align: center; padding: 1px;">Sıra</th>
+            <th style="border: 1px solid black; width: 10%; text-align: center; padding: 1px;">T.C. Kimlik No</th>
+            <th style="border: 1px solid black; width: 9%; text-align: left; padding: 1px 4px;">Adı</th>
+            <th style="border: 1px solid black; width: 9%; text-align: left; padding: 1px 4px;">Soyadı</th>
+            ${dateHeaders}
+          </tr>
+        </thead>
+        <tbody>
+          ${rows}
+        </tbody>
+      </table>
+
+      <!-- Alt İmza Bloğu -->
+      <table style="width: 100%; border-collapse: collapse; border: none; font-size: 7.5pt; margin-top: 6px;">
+        <tbody>
+          <tr>
+            <td style="width: 50%; text-align: center; border: none; padding: 2px;">
+              <div style="font-weight: bold;">KURS ÖĞRETMENİ</div>
+              <div style="margin-top: 14px;">Adı Soyadı: ................................................</div>
+              <div style="margin-top: 4px;">İmza: .......................................</div>
+            </td>
+            <td style="width: 50%; text-align: center; border: none; padding: 2px;">
+              <div style="font-weight: bold;">KURUM MÜDÜRÜ</div>
+              <div style="margin-top: 14px;">Adı Soyadı: ................................................</div>
+              <div style="margin-top: 4px;">İmza &amp; Mühür: .......................................</div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+    </div>
+  `;
+}
+
+// 7. Tüm Boş Evrakların Birleştirilmiş Hali (Kitapçık Formatı)
+function generateMergedAllBlankDocumentsHtml() {
+  return `
+    <div class="merged-all-blank-documents">
+      <!-- 1. Boş Kurs Çerçeve ve Çalışma Planı -->
+      <div class="merged-doc-section" style="page-break-after: always; break-after: page;">
+        ${generateBlankKursPlaniHtml()}
+      </div>
+
+      <!-- 2. Boş Kursiyer Karar Durumu -->
+      <div class="merged-doc-section" style="page-break-after: always; break-after: page;">
+        ${generateBlankKararDurumuHtml()}
+      </div>
+
+      <!-- 3. Boş Yoklama ve Ders Defteri -->
+      <div class="merged-doc-section" style="page-break-after: always; break-after: page;">
+        ${generateBlankDefterHtml()}
+      </div>
+
+      <!-- 4. Boş Modül Değerlendirme Not Çizelgesi -->
+      <div class="merged-doc-section" style="page-break-after: always; break-after: page;">
+        ${generateBlankNotCizelgesiHtml()}
+      </div>
+
+      <!-- 5. Boş Sınav Tutanağı -->
+      <div class="merged-doc-section" style="page-break-after: always; break-after: page;">
+        ${generateBlankSinavTutanagiHtml()}
+      </div>
+
+      <!-- 6. Boş Kursiyer İmza Listesi -->
+      <div class="merged-doc-section">
+        ${generateBlankImzaListesiHtml()}
+      </div>
+    </div>
+  `;
+}
+
+// =================== BOŞ EVRAK MODAL VE İNDİRME / YAZDIRMA YÖNETİMİ ===================
+
+window.openBlankDocumentsModal = function() {
+  const modal = document.getElementById('blankDocsModal');
+  modal?.classList.remove('hidden');
+  refreshLucide();
+};
+
+window.closeBlankDocumentsModal = function() {
+  const modal = document.getElementById('blankDocsModal');
+  modal?.classList.add('hidden');
+};
+
+function getBlankDocMeta(docType) {
+  switch (docType) {
+    case 'plan':
+      return {
+        title: 'Boş Kurs Çerçeve ve Çalışma Planı',
+        fileName: '1 - Bos Kurs Cerceve ve Calisma Plani',
+        html: generateBlankKursPlaniHtml(),
+        isLandscape: true
+      };
+    case 'karar':
+      return {
+        title: 'Boş Kursiyer Karar Durumu Çizelgesi',
+        fileName: '2 - Bos Kursiyer Karar Durumu Cizelgesi',
+        html: generateBlankKararDurumuHtml(),
+        isLandscape: false
+      };
+    case 'defter':
+      return {
+        title: 'Boş Kurs Yoklama ve Ders Defteri',
+        fileName: '3 - Bos Kurs Yoklama ve Ders Defteri',
+        html: generateBlankDefterHtml(),
+        isLandscape: false
+      };
+    case 'not':
+      return {
+        title: 'Boş Modül Değerlendirme Çizelgesi (Not Çizelgesi)',
+        fileName: '4 - Bos Modul Degerlendirme Not Cizelgesi',
+        html: generateBlankNotCizelgesiHtml(),
+        isLandscape: true
+      };
+    case 'sinav':
+      return {
+        title: 'Boş Dönem Sonu / Modül Sınav Tutanağı',
+        fileName: '5 - Bos Donem Sonu Sinav Tutanagi',
+        html: generateBlankSinavTutanagiHtml(),
+        isLandscape: false
+      };
+    case 'imza':
+      return {
+        title: 'Boş Kursiyer Günlük İmza Listesi',
+        fileName: '6 - Bos Kursiyer Gunluk Imza Listesi',
+        html: generateBlankImzaListesiHtml(),
+        isLandscape: true
+      };
+    default:
+      return null;
+  }
+}
+
+window.previewBlankDocument = function(docType) {
+  const meta = getBlankDocMeta(docType);
+  if (!meta) return;
+
+  const modal = document.getElementById('blankDocPreviewModal');
+  const titleEl = document.getElementById('blankDocPreviewTitle');
+  const container = document.getElementById('blankDocPreviewContainer');
+  const printBtn = document.getElementById('blankDocPreviewPrintBtn');
+  const dlBtn = document.getElementById('blankDocPreviewDownloadBtn');
+
+  if (titleEl) titleEl.innerText = meta.title;
+  if (container) container.innerHTML = meta.html;
+
+  if (printBtn) {
+    printBtn.onclick = () => {
+      safePrint(meta.html, meta.isLandscape, meta.fileName);
+    };
+  }
+
+  if (dlBtn) {
+    dlBtn.onclick = () => {
+      window.downloadSingleBlankDocument(docType);
+    };
+  }
+
+  modal?.classList.remove('hidden');
+  refreshLucide();
+};
+
+window.closeBlankDocPreviewModal = function() {
+  const modal = document.getElementById('blankDocPreviewModal');
+  modal?.classList.add('hidden');
+  cleanupPrintArea();
+};
+
+window.downloadSingleBlankDocument = function(docType) {
+  const meta = getBlankDocMeta(docType);
+  if (!meta) return;
+
+  const fullHtml = generateStandaloneDocumentHtml(meta.title, meta.html, meta.isLandscape);
+  downloadTextFile(`${meta.fileName}.html`, fullHtml, 'text/html;charset=utf-8');
+  showAutoSaveToast(`"${meta.title}" indirildi`);
+};
+
+window.downloadAllBlankDocuments = function() {
+  const docs = [
+    getBlankDocMeta('plan'),
+    getBlankDocMeta('karar'),
+    getBlankDocMeta('defter'),
+    getBlankDocMeta('not'),
+    getBlankDocMeta('sinav'),
+    getBlankDocMeta('imza')
+  ].filter(Boolean);
+
+  docs.forEach((d, index) => {
+    setTimeout(() => {
+      const fullHtml = generateStandaloneDocumentHtml(d.title, d.html, d.isLandscape);
+      downloadTextFile(`${d.fileName}.html`, fullHtml, 'text/html;charset=utf-8');
+    }, index * 200);
+  });
+
+  showAutoSaveToast('6 boş resmi evrak indiriliyor');
+};
+
+window.printMergedAllBlankDocuments = function() {
+  const mergedHtml = generateMergedAllBlankDocumentsHtml();
+  const docTitle = 'Tüm Boş Kurs Sonu Evrakları (Matbu Kitapçık)';
+  safePrint(mergedHtml, false, docTitle);
+};
+
 // Yardımcı Fonksiyonlar
 function formatDate(dateStr) {
   if (!dateStr) return '-';
