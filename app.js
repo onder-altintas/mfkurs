@@ -2280,7 +2280,7 @@ function renderAdminTemplates() {
             <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
             <span>Düzenle</span>
           </button>
-          ${isDeveloper(currentUser) ? `
+          ${(isDeveloper(currentUser) || isDepartmentHead(currentUser)) ? `
           <button
             onclick="deleteCourseTemplate('${tmpl.id}')"
             class="px-3 py-1.5 text-xs font-semibold text-rose-600 bg-rose-50 hover:bg-rose-100 rounded-lg transition flex items-center gap-1 cursor-pointer"
@@ -2698,8 +2698,8 @@ window.editCourseTemplate = function(tmplId) {
 };
 
 window.deleteCourseTemplate = function(tmplId) {
-  if (!isDeveloper(currentUser)) {
-    alert('Müfredat planlarını silme yetkisi yalnızca sistem geliştiricisine aittir. Zümre başkanı olarak mevcut planları inceleyebilir veya düzenleyebilirsiniz.');
+  if (!isDeveloper(currentUser) && !isDepartmentHead(currentUser)) {
+    alert('Müfredat planlarını silme yetkisi yalnızca sistem geliştiricisi ve Zümre Başkanına aittir.');
     return;
   }
   if (confirm('Bu kurs şablonunu ve müfredatını silmek istediğinize emin misiniz?')) {
