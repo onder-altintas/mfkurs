@@ -15,6 +15,9 @@
   <!-- SheetJS (Excel xlsx/xls/csv import and export) -->
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   
+  <!-- Chart.js (Zaman Grafikleri ve İstatistikler) -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  
   <!-- Google Fonts: Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1293,166 +1296,148 @@
     </main>
 
     <!-- ================= EĞİTİM SORUMLUSU DASHBOARD (SALT-OKUNUR DENETİM & İSTATİSTİK) ================= -->
-    <main id="supervisorSection" class="hidden flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6">
+    <main id="supervisorSection" class="hidden flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
 
-      <!-- Karşılama Başlığı (Supervisor) -->
-      <div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-slate-900 via-[#1e293b] to-indigo-950 p-6 sm:p-8 text-white shadow-xl border border-indigo-900/40">
-        <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <!-- 1. KATMAN: Üst Başlık & Aktif Oturum -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white dark:bg-[#152125] p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-[#23353c] shadow-xs">
+        <div class="flex items-center gap-3">
+          <div class="p-2.5 bg-[#335C67]/10 dark:bg-[#335C67]/20 text-[#335C67] dark:text-[#FFF3B0] rounded-xl border border-[#335C67]/20">
+            <i data-lucide="bar-chart-3" class="w-6 h-6"></i>
+          </div>
           <div>
-            <div class="flex items-center gap-2 mb-2">
-              <span class="p-2 bg-indigo-500/20 rounded-xl border border-indigo-400/30 text-indigo-300">
-                <i data-lucide="bar-chart-3" class="w-5 h-5"></i>
-              </span>
-              <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-indigo-500/20 text-indigo-200 border border-indigo-400/30">
-                Salt Okunur Denetim Modu
+            <div class="flex items-center gap-2">
+              <h2 class="text-xl sm:text-2xl font-black text-slate-800 dark:text-slate-100 tracking-tight">
+                Denetim İstatistik Paneli
+              </h2>
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
+                Eğitim Sorumlusu
               </span>
             </div>
-            <h2 class="text-xl sm:text-2xl font-black tracking-tight text-white flex items-center gap-2">
-              <span>Eğitim Sorumlusu Denetim & İstatistik Paneli</span>
-            </h2>
-            <p class="text-xs sm:text-sm text-indigo-200/80 mt-1">
-              Tüm kurs merkezlerindeki aktif ve tamamlanan kursların performans, kursiyer ve başarı analizleri.
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+              Merkezler, branşlar, eğitmenler ve kursiyer başarı/devamsızlık durum analizleri
             </p>
           </div>
+        </div>
 
-          <div class="flex items-center gap-2.5 shrink-0">
-            <!-- Geliştirici için Admin Paneline Dön Butonu -->
-            <button
-              type="button"
-              id="supBackToAdminBtn"
-              onclick="switchView('admin')"
-              class="hidden px-3.5 py-2 bg-white/15 hover:bg-white/25 text-white font-bold text-xs rounded-xl border border-white/25 transition items-center gap-1.5 cursor-pointer shadow-sm"
-              title="Geliştirici Yönetim Paneline Geri Dön"
+        <div class="flex items-center gap-2.5 shrink-0">
+          <button
+            type="button"
+            id="supBackToAdminBtn"
+            onclick="switchView('admin')"
+            class="hidden px-3.5 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-[#1f2d31] dark:hover:bg-[#2b3e45] text-slate-700 dark:text-slate-200 font-bold text-xs rounded-xl border border-slate-200 dark:border-[#2b3e45] transition items-center gap-1.5 cursor-pointer shadow-2xs"
+            title="Geliştirici Yönetim Paneline Geri Dön"
+          >
+            <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
+            <span>Geliştirici Paneline Dön</span>
+          </button>
+
+          <div class="px-3 py-1.5 bg-slate-50 dark:bg-[#10191b] rounded-xl border border-slate-200 dark:border-[#23353c] text-right">
+            <div class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Aktif Oturum</div>
+            <div id="supWelcomeUser" class="text-xs font-bold text-slate-700 dark:text-slate-200">-</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. KATMAN: Görseldeki Üst Dinamik Filtre Barı (Merkez, Branş, Ders, Eğitmen, Durum, Tarih) -->
+      <div class="bg-white dark:bg-[#152125] p-4 rounded-2xl border border-slate-200 dark:border-[#23353c] shadow-xs">
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 text-xs">
+          
+          <!-- Filtre 1: Merkez -->
+          <div>
+            <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-300 mb-1">
+              Merkez <span class="text-slate-400">▼</span>
+            </label>
+            <select
+              id="supFilterCenter"
+              class="w-full px-2.5 py-2 bg-slate-50 dark:bg-[#10191b] border border-slate-200 dark:border-[#2b3e45] rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-[#335C67] transition"
             >
-              <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
-              <span>Geliştirici Paneline Dön</span>
-            </button>
+              <option value="all">Tüm Merkezler</option>
+            </select>
+          </div>
 
-            <div class="px-3 py-2 bg-black/25 rounded-xl border border-white/10 text-right">
-              <div class="text-[10px] font-bold text-indigo-300 uppercase tracking-wider">Aktif Oturum</div>
-              <div id="supWelcomeUser" class="text-xs sm:text-sm font-bold text-white">-</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Üst KPI Metrik Kartları -->
-      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <!-- Kart 1: Toplam Kurs -->
-        <div class="bg-white dark:bg-[#152125] p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-[#23353c] shadow-xs space-y-2">
-          <div class="flex items-center justify-between">
-            <span class="text-xs font-bold text-slate-500 dark:text-slate-400">Toplam Kurs</span>
-            <div class="p-2 rounded-xl bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400">
-              <i data-lucide="book-open" class="w-5 h-5"></i>
-            </div>
-          </div>
-          <div id="supStatTotalCourses" class="text-2xl sm:text-3xl font-black text-slate-800 dark:text-slate-100">0</div>
-          <div class="text-[11px] text-slate-500 flex items-center gap-2">
-            <span class="text-emerald-600 font-bold" id="supStatActiveCourses">0 Aktif</span>
-            <span>•</span>
-            <span class="text-slate-600 dark:text-slate-400 font-bold" id="supStatCompletedCourses">0 Biten</span>
-          </div>
-        </div>
-
-        <!-- Kart 2: Toplam Kursiyer -->
-        <div class="bg-white dark:bg-[#152125] p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-[#23353c] shadow-xs space-y-2">
-          <div class="flex items-center justify-between">
-            <span class="text-xs font-bold text-slate-500 dark:text-slate-400">Kayıtlı Kursiyer</span>
-            <div class="p-2 rounded-xl bg-sky-50 dark:bg-sky-950/50 text-sky-600 dark:text-sky-400">
-              <i data-lucide="users" class="w-5 h-5"></i>
-            </div>
-          </div>
-          <div id="supStatTotalStudents" class="text-2xl sm:text-3xl font-black text-slate-800 dark:text-slate-100">0</div>
-          <div class="text-[11px] text-slate-500">
-            Ort. <strong class="text-slate-700 dark:text-slate-300" id="supStatAvgStudents">0</strong> kursiyer / kurs
-          </div>
-        </div>
-
-        <!-- Kart 3: Başarı Oranı -->
-        <div class="bg-white dark:bg-[#152125] p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-[#23353c] shadow-xs space-y-2">
-          <div class="flex items-center justify-between">
-            <span class="text-xs font-bold text-slate-500 dark:text-slate-400">Başarı / Belge Oranı</span>
-            <div class="p-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400">
-              <i data-lucide="award" class="w-5 h-5"></i>
-            </div>
-          </div>
-          <div id="supStatSuccessRate" class="text-2xl sm:text-3xl font-black text-emerald-600 dark:text-emerald-400">%0</div>
-          <div class="text-[11px] text-slate-500">
-            <strong class="text-emerald-700 dark:text-emerald-400" id="supStatSuccessfulStudents">0</strong> başarılı kursiyer
-          </div>
-        </div>
-
-        <!-- Kart 4: Kapsam (Merkez & Branş) -->
-        <div class="bg-white dark:bg-[#152125] p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-[#23353c] shadow-xs space-y-2">
-          <div class="flex items-center justify-between">
-            <span class="text-xs font-bold text-slate-500 dark:text-slate-400">Merkez & Branş Havuzu</span>
-            <div class="p-2 rounded-xl bg-purple-50 dark:bg-purple-950/50 text-purple-600 dark:text-purple-400">
-              <i data-lucide="building-2" class="w-5 h-5"></i>
-            </div>
-          </div>
-          <div class="text-2xl sm:text-3xl font-black text-slate-800 dark:text-slate-100">
-            <span id="supStatTotalCenters">0</span> <span class="text-xs font-normal text-slate-400">Merkez</span>
-          </div>
-          <div class="text-[11px] text-slate-500">
-            <strong class="text-purple-700 dark:text-purple-400" id="supStatTotalAreas">0</strong> farklı eğitim alanı
-          </div>
-        </div>
-      </div>
-
-      <!-- Merkez ve Branş Dağılım Çizelgesi (İki Sütunlu Özet) -->
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <!-- Merkez Dağılımı -->
-        <div class="bg-white dark:bg-[#152125] rounded-2xl border border-slate-200 dark:border-[#23353c] p-4 sm:p-5 shadow-xs space-y-3">
-          <div class="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-[#23353c]">
-            <h3 class="font-bold text-xs sm:text-sm text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
-              <i data-lucide="building" class="w-4 h-4 text-indigo-600"></i>
-              <span>Merkez Bazlı Kurs Dağılımı</span>
-            </h3>
-            <span class="text-[10px] font-semibold text-slate-400">Merkez / Kurs / Kursiyer</span>
-          </div>
-          <div id="supCentersBreakdown" class="space-y-2 max-h-48 overflow-y-auto pr-1">
-            <!-- JS ile doldurulacak -->
-          </div>
-        </div>
-
-        <!-- Branş / Alan Dağılımı -->
-        <div class="bg-white dark:bg-[#152125] rounded-2xl border border-slate-200 dark:border-[#23353c] p-4 sm:p-5 shadow-xs space-y-3">
-          <div class="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-[#23353c]">
-            <h3 class="font-bold text-xs sm:text-sm text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
-              <i data-lucide="layers" class="w-4 h-4 text-teal-600"></i>
-              <span>Eğitim Alanı & Branş Dağılımı</span>
-            </h3>
-            <span class="text-[10px] font-semibold text-slate-400">Alan / Kurs / Kursiyer</span>
-          </div>
-          <div id="supAreasBreakdown" class="space-y-2 max-h-48 overflow-y-auto pr-1">
-            <!-- JS ile doldurulacak -->
-          </div>
-        </div>
-      </div>
-
-      <!-- Kurslar Listesi ve Filtreleme / Sıralama Bölümü -->
-      <div class="bg-white dark:bg-[#152125] rounded-2xl border border-slate-200 dark:border-[#23353c] shadow-xs overflow-hidden space-y-4 p-5">
-        
-        <!-- Üst Başlık & Arama Çubuğu -->
-        <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-3 border-b border-slate-100 dark:border-[#23353c]">
+          <!-- Filtre 2: Branş -->
           <div>
-            <h3 class="font-bold text-base text-slate-800 dark:text-slate-100 flex items-center gap-2">
-              <i data-lucide="list-checks" class="w-5 h-5 text-indigo-600"></i>
-              <span>Tüm Kursların Detaylı Denetim Listesi</span>
-            </h3>
-            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5" id="supCourseCountText">
-              Toplam 0 kurs listeleniyor
-            </p>
+            <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-300 mb-1">
+              Branş <span class="text-slate-400">▼</span>
+            </label>
+            <select
+              id="supFilterArea"
+              class="w-full px-2.5 py-2 bg-slate-50 dark:bg-[#10191b] border border-slate-200 dark:border-[#2b3e45] rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-[#335C67] transition"
+            >
+              <option value="all">Tüm Branşlar</option>
+            </select>
           </div>
 
-          <!-- Canlı Arama Input'u -->
-          <div class="relative w-full md:w-72">
+          <!-- Filtre 3: Ders (Kurs) -->
+          <div>
+            <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-300 mb-1">
+              Ders <span class="text-slate-400">▼</span>
+            </label>
+            <select
+              id="supFilterCourse"
+              class="w-full px-2.5 py-2 bg-slate-50 dark:bg-[#10191b] border border-slate-200 dark:border-[#2b3e45] rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-[#335C67] transition"
+            >
+              <option value="all">Tüm Dersler</option>
+            </select>
+          </div>
+
+          <!-- Filtre 4: Eğitmen -->
+          <div>
+            <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-300 mb-1">
+              Eğitmen <span class="text-slate-400">▼</span>
+            </label>
+            <select
+              id="supFilterInstructor"
+              class="w-full px-2.5 py-2 bg-slate-50 dark:bg-[#10191b] border border-slate-200 dark:border-[#2b3e45] rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-[#335C67] transition"
+            >
+              <option value="all">Tüm Eğitmenler</option>
+            </select>
+          </div>
+
+          <!-- Filtre 5: Durum -->
+          <div>
+            <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-300 mb-1">
+              Durum <span class="text-slate-400">▼</span>
+            </label>
+            <select
+              id="supFilterStatus"
+              class="w-full px-2.5 py-2 bg-slate-50 dark:bg-[#10191b] border border-slate-200 dark:border-[#2b3e45] rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-[#335C67] transition"
+            >
+              <option value="all">Tüm Durumlar</option>
+              <option value="active">Devam Eden</option>
+              <option value="completed">Biten</option>
+              <option value="cancelled">İptal Edilen</option>
+            </select>
+          </div>
+
+          <!-- Filtre 6: Tarih -->
+          <div>
+            <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-300 mb-1">
+              Tarih <span class="text-slate-400">▼</span>
+            </label>
+            <select
+              id="supFilterDatePeriod"
+              class="w-full px-2.5 py-2 bg-slate-50 dark:bg-[#10191b] border border-slate-200 dark:border-[#2b3e45] rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-[#335C67] transition"
+            >
+              <option value="all">Tüm Zamanlar</option>
+              <option value="this_month">Bu Ay</option>
+              <option value="last_3_months">Son 3 Ay</option>
+              <option value="last_6_months">Son 6 Ay</option>
+              <option value="this_year">Bu Yıl (2026)</option>
+            </select>
+          </div>
+
+        </div>
+
+        <!-- Arama ve Sıfırlama Alt Çizgisi -->
+        <div class="flex flex-wrap items-center justify-between gap-3 pt-3 mt-3 border-t border-slate-100 dark:border-[#23353c]">
+          <div class="relative w-full sm:w-80">
             <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"></i>
             <input
               type="text"
               id="supSearchInput"
               placeholder="Kurs, eğitmen veya merkez ara..."
-              class="w-full pl-9 pr-8 py-2 bg-slate-50 dark:bg-[#10191b] border border-slate-200 dark:border-[#2b3e45] rounded-xl text-xs text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
+              class="w-full pl-9 pr-8 py-1.5 bg-slate-50 dark:bg-[#10191b] border border-slate-200 dark:border-[#2b3e45] rounded-xl text-xs text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#335C67] transition"
             />
             <button
               type="button"
@@ -1462,103 +1447,255 @@
               <i data-lucide="x" class="w-3.5 h-3.5"></i>
             </button>
           </div>
+
+          <div class="flex items-center gap-2">
+            <span id="supCourseCountText" class="text-xs text-slate-500 font-medium">Toplam 0 kurs listeleniyor</span>
+            <button
+              type="button"
+              id="supResetFiltersBtn"
+              onclick="resetSupervisorFilters()"
+              class="hidden px-2.5 py-1 text-xs font-bold text-rose-600 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900 rounded-lg hover:bg-rose-100 transition items-center gap-1 cursor-pointer"
+            >
+              <i data-lucide="rotate-ccw" class="w-3 h-3"></i>
+              <span>Filtreleri Sıfırla</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. KATMAN: Görseldeki 3 Ana Metrik Kartı -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+        <!-- KART 1: Toplam Kursiyer -->
+        <div class="bg-white dark:bg-[#152125] p-5 rounded-2xl border border-slate-200 dark:border-[#23353c] shadow-xs flex flex-col justify-between">
+          <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-[#23353c]">
+            <div>
+              <div class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Toplam Kursiyer</div>
+              <div class="text-2xl sm:text-3xl font-black text-slate-800 dark:text-slate-100 mt-0.5 flex items-center gap-2">
+                <span>⇒</span>
+                <span id="supCardTotalStudents">0</span>
+              </div>
+            </div>
+            <div class="p-3 rounded-2xl bg-sky-50 dark:bg-sky-950/50 text-sky-600 dark:text-sky-400 border border-sky-100 dark:border-sky-900/50">
+              <i data-lucide="users" class="w-6 h-6"></i>
+            </div>
+          </div>
+          <div class="pt-3 space-y-2 text-xs">
+            <div class="flex items-center justify-between">
+              <span class="flex items-center gap-1.5 text-slate-600 dark:text-slate-300 font-medium">
+                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                <span>Başarılı</span>
+              </span>
+              <span id="supCardPassedStudents" class="font-black text-emerald-600 dark:text-emerald-400">0</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="flex items-center gap-1.5 text-slate-600 dark:text-slate-300 font-medium">
+                <span class="w-2 h-2 rounded-full bg-rose-500"></span>
+                <span>Devamsız</span>
+              </span>
+              <span id="supCardAbsentStudents" class="font-black text-rose-600 dark:text-rose-400">0</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="flex items-center gap-1.5 text-slate-600 dark:text-slate-300 font-medium">
+                <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+                <span>Hiç Gelmeyen</span>
+              </span>
+              <span id="supCardNeverAttendedStudents" class="font-black text-amber-600 dark:text-amber-400">0</span>
+            </div>
+          </div>
         </div>
 
-        <!-- Gelişmiş Filtreler & Sıralama Barı -->
-        <div class="p-3.5 bg-slate-50 dark:bg-[#10191b] rounded-xl border border-slate-200/80 dark:border-[#23353c] flex flex-wrap items-center gap-2.5 text-xs">
-          <!-- Merkez Filtresi -->
-          <div class="flex items-center gap-1.5">
-            <span class="text-[11px] font-bold text-slate-500">Merkez:</span>
-            <select
-              id="supFilterCenter"
-              class="px-2.5 py-1.5 bg-white dark:bg-[#152125] border border-slate-200 dark:border-[#2b3e45] rounded-lg text-xs text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-            >
-              <option value="all">Tüm Merkezler</option>
-            </select>
+        <!-- KART 2: Toplam Kurs Sayısı -->
+        <div class="bg-white dark:bg-[#152125] p-5 rounded-2xl border border-slate-200 dark:border-[#23353c] shadow-xs flex flex-col justify-between">
+          <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-[#23353c]">
+            <div>
+              <div class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Toplam Kurs Sayısı</div>
+              <div class="text-2xl sm:text-3xl font-black text-slate-800 dark:text-slate-100 mt-0.5 flex items-center gap-2">
+                <span>⇒</span>
+                <span id="supCardTotalCourses">0</span>
+              </div>
+            </div>
+            <div class="p-3 rounded-2xl bg-[#335C67]/10 dark:bg-[#335C67]/20 text-[#335C67] dark:text-[#FFF3B0] border border-[#335C67]/20">
+              <i data-lucide="book-open" class="w-6 h-6"></i>
+            </div>
           </div>
-
-          <!-- Alan Filtresi -->
-          <div class="flex items-center gap-1.5">
-            <span class="text-[11px] font-bold text-slate-500">Alan:</span>
-            <select
-              id="supFilterArea"
-              class="px-2.5 py-1.5 bg-white dark:bg-[#152125] border border-slate-200 dark:border-[#2b3e45] rounded-lg text-xs text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-            >
-              <option value="all">Tüm Alanlar</option>
-            </select>
+          <div class="pt-3 space-y-2 text-xs">
+            <div class="flex items-center justify-between">
+              <span class="flex items-center gap-1.5 text-slate-600 dark:text-slate-300 font-medium">
+                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                <span>Devam Eden</span>
+              </span>
+              <span id="supCardActiveCourses" class="font-black text-emerald-600 dark:text-emerald-400">0</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="flex items-center gap-1.5 text-slate-600 dark:text-slate-300 font-medium">
+                <span class="w-2 h-2 rounded-full bg-indigo-500"></span>
+                <span>Biten</span>
+              </span>
+              <span id="supCardCompletedCourses" class="font-black text-indigo-600 dark:text-indigo-400">0</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="flex items-center gap-1.5 text-slate-600 dark:text-slate-300 font-medium">
+                <span class="w-2 h-2 rounded-full bg-rose-500"></span>
+                <span>İptal Edilen</span>
+              </span>
+              <span id="supCardCancelledCourses" class="font-black text-rose-600 dark:text-rose-400">0</span>
+            </div>
           </div>
-
-          <!-- Durum Filtresi -->
-          <div class="flex items-center gap-1.5">
-            <span class="text-[11px] font-bold text-slate-500">Durum:</span>
-            <select
-              id="supFilterStatus"
-              class="px-2.5 py-1.5 bg-white dark:bg-[#152125] border border-slate-200 dark:border-[#2b3e45] rounded-lg text-xs text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-            >
-              <option value="all">Tümü</option>
-              <option value="active">Devam Edenler</option>
-              <option value="completed">Tamamlananlar</option>
-            </select>
-          </div>
-
-          <!-- Eğitmen Filtresi -->
-          <div class="flex items-center gap-1.5">
-            <span class="text-[11px] font-bold text-slate-500">Eğitmen:</span>
-            <select
-              id="supFilterInstructor"
-              class="px-2.5 py-1.5 bg-white dark:bg-[#152125] border border-slate-200 dark:border-[#2b3e45] rounded-lg text-xs text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-            >
-              <option value="all">Tüm Eğitmenler</option>
-            </select>
-          </div>
-
-          <!-- Sıralama -->
-          <div class="flex items-center gap-1.5 ml-auto">
-            <span class="text-[11px] font-bold text-slate-500">Sırala:</span>
-            <select
-              id="supSort"
-              class="px-2.5 py-1.5 bg-white dark:bg-[#152125] border border-slate-200 dark:border-[#2b3e45] rounded-lg text-xs text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-            >
-              <option value="date_desc">🕒 Başlama (En Yeni)</option>
-              <option value="date_asc">⏳ Başlama (En Eski)</option>
-              <option value="students_desc">👥 Kursiyer (Çoktan Aza)</option>
-              <option value="success_desc">🏆 Başarı Oranı (% Yüksek)</option>
-              <option value="name_asc">🔤 Kurs Adı (A ➜ Z)</option>
-            </select>
-          </div>
-
-          <!-- Filtreleri Sıfırla -->
-          <button
-            type="button"
-            id="supResetFiltersBtn"
-            class="hidden px-2.5 py-1.5 text-[11px] font-semibold text-rose-600 hover:text-rose-700 bg-rose-50 dark:bg-rose-950/30 rounded-lg transition items-center gap-1 cursor-pointer"
-          >
-            <i data-lucide="rotate-ccw" class="w-3 h-3"></i>
-            <span>Sıfırla</span>
-          </button>
         </div>
 
-        <!-- Kurslar Tablosu -->
+        <!-- KART 3: Aktivite Matrisi (Kurs Merkezi & Eğitmen / Aktif - Pasif Sayıları) -->
+        <div class="bg-white dark:bg-[#152125] p-5 rounded-2xl border border-slate-200 dark:border-[#23353c] shadow-xs flex flex-col justify-between">
+          <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-[#23353c]">
+            <div>
+              <div class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Aktivite Durumu</div>
+              <div class="text-base font-black text-slate-800 dark:text-slate-100 mt-1">
+                Merkez & Eğitmen Dağılımı
+              </div>
+            </div>
+            <div class="p-3 rounded-2xl bg-purple-50 dark:bg-purple-950/50 text-purple-600 dark:text-purple-400 border border-purple-100 dark:border-purple-900/50">
+              <i data-lucide="activity" class="w-6 h-6"></i>
+            </div>
+          </div>
+          
+          <div class="pt-3 space-y-3">
+            <!-- Başlık Satırı -->
+            <div class="grid grid-cols-12 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+              <div class="col-span-6">Birim</div>
+              <div class="col-span-3 text-center">Aktif</div>
+              <div class="col-span-3 text-center">Pasif</div>
+            </div>
+
+            <!-- Satır 1: Kurs Merkezi -->
+            <div class="grid grid-cols-12 items-center text-xs">
+              <div class="col-span-6 font-semibold text-slate-700 dark:text-slate-200 flex items-center gap-1.5">
+                <i data-lucide="building" class="w-3.5 h-3.5 text-indigo-500"></i>
+                <span>Kurs Merkezi</span>
+              </div>
+              <div class="col-span-3 text-center">
+                <span id="supActCenterActive" class="inline-block w-12 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 font-black border border-emerald-200 dark:border-emerald-800">
+                  0
+                </span>
+              </div>
+              <div class="col-span-3 text-center">
+                <span id="supActCenterPassive" class="inline-block w-12 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-black border border-slate-200 dark:border-slate-700">
+                  0
+                </span>
+              </div>
+            </div>
+
+            <!-- Satır 2: Eğitmen -->
+            <div class="grid grid-cols-12 items-center text-xs">
+              <div class="col-span-6 font-semibold text-slate-700 dark:text-slate-200 flex items-center gap-1.5">
+                <i data-lucide="user-check" class="w-3.5 h-3.5 text-sky-500"></i>
+                <span>Eğitmen</span>
+              </div>
+              <div class="col-span-3 text-center">
+                <span id="supActInstructorActive" class="inline-block w-12 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 font-black border border-emerald-200 dark:border-emerald-800">
+                  0
+                </span>
+              </div>
+              <div class="col-span-3 text-center">
+                <span id="supActInstructorPassive" class="inline-block w-12 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-black border border-slate-200 dark:border-slate-700">
+                  0
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- 4. KATMAN: 4 Adet Zaman Grafiği (Çizimdeki Oklarla Bağlı Grafikler) -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        
+        <!-- Grafik 1: Kursiyer Zaman Grafiği -->
+        <div class="bg-white dark:bg-[#152125] p-5 rounded-2xl border border-slate-200 dark:border-[#23353c] shadow-xs">
+          <div class="flex items-center justify-between pb-3 mb-2 border-b border-slate-100 dark:border-[#23353c]">
+            <h3 class="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+              <i data-lucide="trending-up" class="w-4 h-4 text-sky-600"></i>
+              <span>Kursiyer Zaman Grafiği</span>
+            </h3>
+            <span class="text-[10px] font-semibold text-slate-400">Aylık Kayıt & Başarı Eğrisi</span>
+          </div>
+          <div class="h-60 relative w-full">
+            <canvas id="supStudentTimeChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Grafik 2: Kurs Zaman Grafiği -->
+        <div class="bg-white dark:bg-[#152125] p-5 rounded-2xl border border-slate-200 dark:border-[#23353c] shadow-xs">
+          <div class="flex items-center justify-between pb-3 mb-2 border-b border-slate-100 dark:border-[#23353c]">
+            <h3 class="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+              <i data-lucide="bar-chart-2" class="w-4 h-4 text-indigo-600"></i>
+              <span>Kurs Zaman Grafiği</span>
+            </h3>
+            <span class="text-[10px] font-semibold text-slate-400">Aylık Kurs Açılış / Bitiş Sayıları</span>
+          </div>
+          <div class="h-60 relative w-full">
+            <canvas id="supCourseTimeChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Grafik 3: Kurs Merkezi Zaman Grafiği -->
+        <div class="bg-white dark:bg-[#152125] p-5 rounded-2xl border border-slate-200 dark:border-[#23353c] shadow-xs">
+          <div class="flex items-center justify-between pb-3 mb-2 border-b border-slate-100 dark:border-[#23353c]">
+            <h3 class="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+              <i data-lucide="building-2" class="w-4 h-4 text-teal-600"></i>
+              <span>Kurs Merkezi Zaman Grafiği</span>
+            </h3>
+            <span class="text-[10px] font-semibold text-slate-400">Merkez Bazlı Dönemsel Kurs Hacmi</span>
+          </div>
+          <div class="h-60 relative w-full">
+            <canvas id="supCenterTimeChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Grafik 4: Eğitmen Zaman Grafiği -->
+        <div class="bg-white dark:bg-[#152125] p-5 rounded-2xl border border-slate-200 dark:border-[#23353c] shadow-xs">
+          <div class="flex items-center justify-between pb-3 mb-2 border-b border-slate-100 dark:border-[#23353c]">
+            <h3 class="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+              <i data-lucide="users-round" class="w-4 h-4 text-purple-600"></i>
+              <span>Eğitmen Zaman Grafiği</span>
+            </h3>
+            <span class="text-[10px] font-semibold text-slate-400">Eğitmenlerin Aylık Ders & Kurs Eğrisi</span>
+          </div>
+          <div class="h-60 relative w-full">
+            <canvas id="supInstructorTimeChart"></canvas>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- 5. KATMAN: Görseldeki Büyük "TABLO" (İstenen Kolon Sıralaması İle) -->
+      <div class="bg-white dark:bg-[#152125] rounded-2xl border border-slate-200 dark:border-[#23353c] shadow-xs overflow-hidden p-5 space-y-3">
+        <div class="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-[#23353c]">
+          <h3 class="font-bold text-sm sm:text-base text-slate-800 dark:text-slate-100 flex items-center gap-2">
+            <i data-lucide="table" class="w-5 h-5 text-indigo-600"></i>
+            <span>Denetim Tablosu</span>
+          </h3>
+          <span class="text-[11px] font-semibold text-slate-400">Filtrelere göre anlık güncellenen liste</span>
+        </div>
+
         <div class="overflow-x-auto rounded-xl border border-slate-200 dark:border-[#23353c]">
           <table class="w-full text-left border-collapse text-xs">
             <thead>
               <tr class="bg-slate-50 dark:bg-[#10191b] border-b border-slate-200 dark:border-[#23353c] text-slate-600 dark:text-slate-400 font-bold uppercase text-[10px] tracking-wider">
-                <th class="px-4 py-3">Kurs Bilgisi</th>
-                <th class="px-4 py-3">Eğitmen</th>
                 <th class="px-4 py-3">Kurs Merkezi</th>
+                <th class="px-4 py-3">Kurs Adı</th>
+                <th class="px-4 py-3">Eğitmen</th>
+                <th class="px-3 py-3 text-center">Başlama - Bitiş Tarihi</th>
                 <th class="px-3 py-3 text-center">Süre</th>
-                <th class="px-3 py-3 text-center">Kursiyer</th>
-                <th class="px-4 py-3">Başarı Oranı</th>
+                <th class="px-3 py-3 text-center">Kursiyer Sayısı [Başarılı/Kaldı/Devam]</th>
                 <th class="px-3 py-3 text-center">Durum</th>
-                <th class="px-4 py-3 text-right">Denetim</th>
+                <th class="px-4 py-3 text-right">İşlem</th>
               </tr>
             </thead>
             <tbody id="supCoursesTableBody" class="divide-y divide-slate-100 dark:divide-[#23353c] bg-white dark:bg-[#152125]">
-              <!-- JS ile doldurulacak -->
+              <!-- JS ile dinamik olarak doldurulacak -->
             </tbody>
           </table>
         </div>
-
       </div>
 
     </main>
@@ -2179,7 +2316,6 @@
         <input type="hidden" id="courseFormInstructor" value="" />
         <input type="hidden" id="courseFormTotalHours" value="120" />
         <input type="hidden" id="courseFormModuleCount" value="1" />
-        <input type="hidden" id="courseFormStatus" value="active" />
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <!-- Kurs Alanı Filtresi (Eğitmenin Alanına Göre Filtreler) -->
@@ -2491,13 +2627,25 @@
             </div>
           </div>
 
-          <div class="md:col-span-2">
-            <label class="block text-xs font-semibold text-slate-700 mb-1">Açıklama / Not</label>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Kurs Durumu</label>
+            <select
+              id="courseFormStatus"
+              class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-[#10191b] border border-slate-200 dark:border-[#2b3e45] rounded-xl text-sm font-semibold text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-sky-500"
+            >
+              <option value="active">Devam Eden (Aktif)</option>
+              <option value="completed">Biten (Tamamlandı)</option>
+              <option value="cancelled">İptal Edilen</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Açıklama / Not</label>
             <textarea
               id="courseFormDescription"
-              rows="2"
-              placeholder="Kurs notları..."
-              class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm"
+              rows="1"
+              placeholder="Kurs notları veya iptal gerekçesi..."
+              class="w-full px-3.5 py-2 bg-slate-50 dark:bg-[#10191b] border border-slate-200 dark:border-[#2b3e45] rounded-xl text-sm text-slate-800 dark:text-slate-100"
             ></textarea>
           </div>
         </div>
