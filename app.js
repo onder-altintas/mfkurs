@@ -583,6 +583,9 @@ window.onCloudSync = function(type, data) {
     if (currentUser) {
       renderTeacherDashboard();
       if (typeof renderAdminPanel === 'function') renderAdminPanel();
+      if (typeof supervisorSection !== 'undefined' && supervisorSection && !supervisorSection.classList.contains('hidden')) {
+        renderSupervisorCoursesTable();
+      }
     }
   } else if (type === 'users') {
     currentUsers = data;
@@ -930,6 +933,7 @@ function showDashboard() {
   renderAdminPanel();
   if (typeof renderSupervisorDashboard === 'function') renderSupervisorDashboard();
   if (typeof checkDevTodoList === 'function') checkDevTodoList();
+  if (typeof startAutoDataRefresh === 'function') startAutoDataRefresh();
   refreshLucide();
 }
 
@@ -2842,6 +2846,7 @@ window.deleteCourseTemplate = function(tmplId) {
 
 function setCourseFilter(filter) {
   currentFilter = filter;
+  try { localStorage.setItem('mefportal_course_filter', filter); } catch (e) {}
   [filterAllBtn, filterActiveBtn, filterCompletedBtn].forEach(btn => {
     btn.className = 'filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 cursor-pointer';
   });
@@ -2859,6 +2864,23 @@ function setCourseFilter(filter) {
 
 function renderTeacherDashboard() {
   loadData();
+  try {
+    const savedFilter = localStorage.getItem('mefportal_course_filter');
+    if (savedFilter && ['all', 'active', 'completed'].includes(savedFilter) && currentFilter !== savedFilter) {
+      currentFilter = savedFilter;
+      [filterAllBtn, filterActiveBtn, filterCompletedBtn].forEach(btn => {
+        btn.className = 'filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 cursor-pointer';
+      });
+      if (currentFilter === 'all') {
+        filterAllBtn.className = 'filter-btn active px-3 py-1.5 rounded-lg text-xs font-bold bg-white dark:bg-[#152125] text-slate-800 dark:text-slate-100 shadow-xs border border-slate-200 dark:border-[#23353c] cursor-pointer';
+      } else if (currentFilter === 'active') {
+        filterActiveBtn.className = 'filter-btn active px-3 py-1.5 rounded-lg text-xs font-bold bg-white dark:bg-[#152125] text-[#335C67] dark:text-[#FFF3B0] shadow-xs border border-[#335C67]/40 cursor-pointer';
+      } else if (currentFilter === 'completed') {
+        filterCompletedBtn.className = 'filter-btn active px-3 py-1.5 rounded-lg text-xs font-bold bg-white dark:bg-[#152125] text-[#540B0E] dark:text-[#FFF3B0] shadow-xs border border-[#540B0E]/40 cursor-pointer';
+      }
+    }
+  } catch (e) {}
+
   // Geliştirici kullanıcılar tüm kursları görebilir; normal kullanıcılar yalnızca kendisiyle ilgili kursları görür
   const userCourses = isDeveloper(currentUser)
     ? currentCourses
@@ -11706,27 +11728,71 @@ let supCourseChartInstance = null;
 let supCenterChartInstance = null;
 let supInstructorChartInstance = null;
 
+function getSavedSupervisorFilters() {
+  try {
+    const raw = localStorage.getItem('mefportal_supervisor_filters');
+    return raw ? JSON.parse(raw) : null;
+  } catch (e) {
+    return null;
+  }
+}
+
+function saveSupervisorFilters() {
+  try {
+    const filters = {
+      search: supSearchInput?.value || '',
+      center: supFilterCenter?.value || 'all',
+      area: supFilterArea?.value || 'all',
+      course: supFilterCourse?.value || 'all',
+      instructor: supFilterInstructor?.value || 'all',
+      status: supFilterStatus?.value || 'all',
+      datePeriod: supFilterDatePeriod?.value || 'all'
+    };
+    localStorage.setItem('mefportal_supervisor_filters', JSON.stringify(filters));
+  } catch (e) {}
+}
+
 function initSupervisorDashboard() {
   if (supervisorInitialized) return;
   supervisorInitialized = true;
 
+  // Sayfa yenilendiğinde kayıtlı filtreleri geri yükle
+  const saved = getSavedSupervisorFilters();
+  if (saved) {
+    if (saved.search && supSearchInput) {
+      supSearchInput.value = saved.search;
+      supSearchClearBtn?.classList.remove('hidden');
+    }
+    if (saved.status && supFilterStatus) {
+      supFilterStatus.value = saved.status;
+    }
+    if (saved.datePeriod && supFilterDatePeriod) {
+      supFilterDatePeriod.value = saved.datePeriod;
+    }
+  }
+
+  const handleFilterChange = () => {
+    saveSupervisorFilters();
+    renderSupervisorCoursesTable();
+  };
+
   supSearchInput?.addEventListener('input', () => {
     supSearchClearBtn?.classList.toggle('hidden', !supSearchInput.value.trim());
-    renderSupervisorCoursesTable();
+    handleFilterChange();
   });
 
   supSearchClearBtn?.addEventListener('click', () => {
     if (supSearchInput) supSearchInput.value = '';
     supSearchClearBtn?.classList.add('hidden');
-    renderSupervisorCoursesTable();
+    handleFilterChange();
   });
 
-  supFilterCenter?.addEventListener('change', renderSupervisorCoursesTable);
-  supFilterArea?.addEventListener('change', renderSupervisorCoursesTable);
-  supFilterCourse?.addEventListener('change', renderSupervisorCoursesTable);
-  supFilterInstructor?.addEventListener('change', renderSupervisorCoursesTable);
-  supFilterStatus?.addEventListener('change', renderSupervisorCoursesTable);
-  supFilterDatePeriod?.addEventListener('change', renderSupervisorCoursesTable);
+  supFilterCenter?.addEventListener('change', handleFilterChange);
+  supFilterArea?.addEventListener('change', handleFilterChange);
+  supFilterCourse?.addEventListener('change', handleFilterChange);
+  supFilterInstructor?.addEventListener('change', handleFilterChange);
+  supFilterStatus?.addEventListener('change', handleFilterChange);
+  supFilterDatePeriod?.addEventListener('change', handleFilterChange);
   supResetFiltersBtn?.addEventListener('click', resetSupervisorFilters);
 }
 
@@ -11739,6 +11805,7 @@ function calculateDetailedCourseStats(course) {
   let passed = 0;
   let failed = 0;
   let inProgress = 0;
+  let continuing = 0; // Kursa devam eden (devamsızlıktan kalmayan, hiç gelmeyen olmayan)
   let absent = 0;
   let neverAttended = 0;
   let sumScore = 0;
@@ -11760,6 +11827,11 @@ function calculateDetailedCourseStats(course) {
 
     const isExplicitSuccess = s.result && (s.result.includes('Başarılı') || s.result.includes('Belge') || s.result.includes('Sertifika') || s.result.includes('Katılım'));
     const isExplicitFail = s.result && s.result.includes('Başarısız');
+
+    // Kursa devam eden devamsızlıktan kalmayanlar
+    if (!isHicGelmedi && !isDevamsiz) {
+      continuing++;
+    }
 
     if (!isHicGelmedi && !isDevamsiz && ((hasScore && Number(s.examScore) >= 50) || isExplicitSuccess)) {
       passed++;
@@ -11785,6 +11857,7 @@ function calculateDetailedCourseStats(course) {
     passed,
     failed,
     inProgress,
+    continuing,
     absent,
     neverAttended,
     evaluated,
@@ -11798,10 +11871,11 @@ function calculateCourseStats(course) {
 }
 
 function populateSupervisorSelectOptions() {
-  const curCenter = supFilterCenter?.value || 'all';
-  const curArea = supFilterArea?.value || 'all';
-  const curCourse = supFilterCourse?.value || 'all';
-  const curInstructor = supFilterInstructor?.value || 'all';
+  const saved = getSavedSupervisorFilters();
+  const curCenter = (supFilterCenter && supFilterCenter.value && supFilterCenter.value !== 'all') ? supFilterCenter.value : (saved?.center || 'all');
+  const curArea = (supFilterArea && supFilterArea.value && supFilterArea.value !== 'all') ? supFilterArea.value : (saved?.area || 'all');
+  const curCourse = (supFilterCourse && supFilterCourse.value && supFilterCourse.value !== 'all') ? supFilterCourse.value : (saved?.course || 'all');
+  const curInstructor = (supFilterInstructor && supFilterInstructor.value && supFilterInstructor.value !== 'all') ? supFilterInstructor.value : (saved?.instructor || 'all');
 
   // 1. Kurs Merkezleri
   if (supFilterCenter) {
@@ -11823,6 +11897,8 @@ function populateSupervisorSelectOptions() {
     supFilterCenter.innerHTML = cHtml;
     if (sortedCenters.includes(curCenter)) {
       supFilterCenter.value = curCenter;
+    } else {
+      supFilterCenter.value = 'all';
     }
   }
 
@@ -11846,6 +11922,8 @@ function populateSupervisorSelectOptions() {
     supFilterArea.innerHTML = aHtml;
     if (sortedAreas.includes(curArea)) {
       supFilterArea.value = curArea;
+    } else {
+      supFilterArea.value = 'all';
     }
   }
 
@@ -11864,6 +11942,8 @@ function populateSupervisorSelectOptions() {
     supFilterCourse.innerHTML = dHtml;
     if (sortedCourseNames.includes(curCourse)) {
       supFilterCourse.value = curCourse;
+    } else {
+      supFilterCourse.value = 'all';
     }
   }
 
@@ -11883,6 +11963,8 @@ function populateSupervisorSelectOptions() {
     supFilterInstructor.innerHTML = iHtml;
     if (sortedInst.includes(curInstructor)) {
       supFilterInstructor.value = curInstructor;
+    } else {
+      supFilterInstructor.value = 'all';
     }
   }
 }
@@ -12032,6 +12114,7 @@ function renderSupervisorCoursesTable() {
 
   // ================= 3 KPI KARTININ GÜNCELLENMESİ =================
   let totalStudents = 0;
+  let totalContinuing = 0;
   let totalPassed = 0;
   let totalAbsent = 0;
   let totalNeverAttended = 0;
@@ -12053,6 +12136,7 @@ function renderSupervisorCoursesTable() {
     // Kursiyer Durumları
     const st = calculateDetailedCourseStats(c);
     totalStudents += st.total;
+    totalContinuing += st.continuing;
     totalPassed += st.passed;
     totalAbsent += st.absent;
     totalNeverAttended += st.neverAttended;
@@ -12060,7 +12144,8 @@ function renderSupervisorCoursesTable() {
 
   // Kart 1: Toplam Kursiyer
   if (supCardTotalStudents) supCardTotalStudents.innerText = totalStudents;
-  if (supCardPassedStudents) supCardPassedStudents.innerText = totalPassed;
+  // Başarılı yerine Devam Eden (kursa devam eden devamsızlıktan kalmayanlar)
+  if (supCardPassedStudents) supCardPassedStudents.innerText = totalContinuing;
   if (supCardAbsentStudents) supCardAbsentStudents.innerText = totalAbsent;
   if (supCardNeverAttendedStudents) supCardNeverAttendedStudents.innerText = totalNeverAttended;
 
@@ -12217,16 +12302,14 @@ function renderSupervisorCoursesTable() {
         <span class="font-bold text-slate-700 dark:text-slate-300 text-xs">${course.totalHours || '-'} Saat</span>
       </td>
 
-      <!-- 6. Kursiyer Sayısı [Başarılı/Kaldı/Devam] -->
+      <!-- 6. Kursiyer Sayısı [Devam Eden/Kaldı/Toplam] -->
       <td class="px-3 py-3 text-center">
         <div class="inline-flex items-center gap-1.5 font-mono text-xs">
-          <span class="font-black text-slate-800 dark:text-slate-100 bg-slate-100 dark:bg-[#10191b] px-2 py-0.5 rounded-md border border-slate-200 dark:border-slate-800">${stats.total}</span>
+          <span class="font-black text-slate-800 dark:text-slate-100 bg-slate-100 dark:bg-[#10191b] px-2 py-0.5 rounded-md border border-slate-200 dark:border-slate-800" title="Toplam Kursiyer">${stats.total}</span>
           <span class="text-slate-400 font-bold">[</span>
-          <span class="font-bold text-emerald-600 dark:text-emerald-400" title="Başarılı">${stats.passed}</span>
+          <span class="font-bold text-emerald-600 dark:text-emerald-400" title="Devam Eden (Devamsızlıktan Kalmayan)">${stats.continuing}</span>
           <span class="text-slate-300 dark:text-slate-600">/</span>
-          <span class="font-bold text-rose-600 dark:text-rose-400" title="Kaldı (Başarısız, Devamsız, Hiç Gelmedi)">${stats.failed}</span>
-          <span class="text-slate-300 dark:text-slate-600">/</span>
-          <span class="font-bold text-sky-600 dark:text-sky-400" title="Devam Eden">${stats.inProgress}</span>
+          <span class="font-bold text-rose-600 dark:text-rose-400" title="Kaldı (Devamsız veya Hiç Gelmedi)">${stats.failed}</span>
           <span class="text-slate-400 font-bold">]</span>
         </div>
       </td>
@@ -12561,11 +12644,11 @@ function openSupervisorCourseModal(courseId) {
         <span class="text-base font-extrabold text-slate-800 dark:text-slate-100">${stats.total} Kursiyer</span>
       </div>
       <div class="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/40">
-        <span class="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold block uppercase">Başarılı (Geçti)</span>
-        <span class="text-base font-extrabold text-emerald-700 dark:text-emerald-300">${stats.passed} Kursiyer</span>
+        <span class="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold block uppercase">Devam Eden (Aktif)</span>
+        <span class="text-base font-extrabold text-emerald-700 dark:text-emerald-300">${stats.continuing || stats.passed} Kursiyer</span>
       </div>
       <div class="p-3 rounded-xl bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-800/40">
-        <span class="text-[10px] text-rose-600 dark:text-rose-400 font-semibold block uppercase">Başarısız (Kaldı)</span>
+        <span class="text-[10px] text-rose-600 dark:text-rose-400 font-semibold block uppercase">Kaldı (Devamsız / Sınav)</span>
         <span class="text-base font-extrabold text-rose-700 dark:text-rose-300">${stats.failed} Kursiyer</span>
       </div>
       <div class="p-3 rounded-xl bg-indigo-50 dark:bg-indigo-950/30 border border-indigo-200 dark:border-indigo-800/40">
@@ -12641,6 +12724,62 @@ function closeSupervisorCourseModal() {
   supervisorCourseModal?.classList.add('hidden');
 }
 
+// Sayfa Yenilemeden Otomatik Veri Senkronizasyonu (5 Saniyede Bir)
+let autoDataRefreshTimer = null;
+function startAutoDataRefresh() {
+  if (autoDataRefreshTimer) return;
+  autoDataRefreshTimer = setInterval(() => {
+    if (!currentUser) return;
+
+    // Aktif bir giriş/yazma işlemi varsa kullanıcı imlecini bozmamak için
+    const activeEl = document.activeElement;
+    const isUserTyping = activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA' || activeEl.isContentEditable);
+
+    // DataStore'dan güncel verileri oku
+    const freshCourses = (typeof DataStore !== 'undefined' && typeof DataStore.getCourses === 'function')
+      ? DataStore.getCourses()
+      : null;
+    if (!freshCourses || !Array.isArray(freshCourses)) return;
+
+    // Veri değişmiş mi kontrol et
+    const coursesChanged = JSON.stringify(freshCourses) !== JSON.stringify(currentCourses);
+    if (!coursesChanged) return;
+
+    // Verileri senkronize et
+    currentCourses = freshCourses;
+    currentCenters = DataStore.getCenters();
+    currentAreas = DataStore.getAreas();
+    currentTemplates = DataStore.getCourseTemplates();
+
+    // 1. Eğitim Sorumlusu Paneli Açıksa
+    if (typeof supervisorSection !== 'undefined' && supervisorSection && !supervisorSection.classList.contains('hidden')) {
+      if (!isUserTyping || activeEl.id !== 'supSearchInput') {
+        populateSupervisorSelectOptions();
+        renderSupervisorCoursesTable();
+      }
+    }
+
+    // 2. Eğitmen Paneli Açıksa
+    if (typeof teacherSection !== 'undefined' && teacherSection && !teacherSection.classList.contains('hidden')) {
+      if (!isUserTyping) {
+        renderTeacherDashboard();
+      }
+    }
+
+    // 3. Kurs Detay Ekranı Açıksa
+    if (activeCourseForDetail && typeof courseDetailView !== 'undefined' && courseDetailView && !courseDetailView.classList.contains('hidden')) {
+      const refreshed = currentCourses.find(c => c.id === activeCourseForDetail.id);
+      if (refreshed) {
+        activeCourseForDetail = refreshed;
+        if (!isUserTyping) {
+          if (typeof renderStudentsTable === 'function') renderStudentsTable();
+          if (typeof updateDetailHeaderStats === 'function') updateDetailHeaderStats();
+        }
+      }
+    }
+  }, 5000);
+}
+
 window.initSupervisorDashboard = initSupervisorDashboard;
 window.renderSupervisorDashboard = renderSupervisorDashboard;
 window.renderSupervisorBreakdowns = renderSupervisorBreakdowns;
@@ -12649,4 +12788,7 @@ window.renderSupervisorCoursesTable = renderSupervisorCoursesTable;
 window.resetSupervisorFilters = resetSupervisorFilters;
 window.openSupervisorCourseModal = openSupervisorCourseModal;
 window.closeSupervisorCourseModal = closeSupervisorCourseModal;
+window.startAutoDataRefresh = startAutoDataRefresh;
+window.getSavedSupervisorFilters = getSavedSupervisorFilters;
+window.saveSupervisorFilters = saveSupervisorFilters;
 
