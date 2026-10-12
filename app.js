@@ -2943,6 +2943,7 @@ function renderCourseList() {
     };
 
     const isActive = course.status === 'active';
+    const isClosed = course.status === 'completed';
     const statusBadgeClass = isActive 
       ? 'bg-[#335C67]/10 text-[#335C67] dark:bg-[#335C67]/30 dark:text-[#FFF3B0] border border-[#335C67]/30' 
       : 'bg-slate-100 dark:bg-[#10191b] text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-[#23353c]';
@@ -3038,21 +3039,29 @@ function renderCourseList() {
         </div>
 
         <div class="flex items-center gap-1 shrink-0">
-          <button
-            onclick="event.stopPropagation(); editCourse('${course.id}')"
-            class="card-action-btn p-2 text-slate-500 dark:text-slate-400 hover:text-[#E09F3E] hover:bg-[#E09F3E]/10 rounded-xl transition cursor-pointer"
-            title="Kurs Bilgilerini Düzenle"
-          >
-            <i data-lucide="edit-3" class="w-4 h-4"></i>
-          </button>
+          ${isClosed && !isDeveloper(currentUser) ? `
+            <span class="p-2 text-slate-400 dark:text-slate-500 rounded-xl" title="Kapatılmış Kurs (Salt-Okunur)">
+              <i data-lucide="lock" class="w-4 h-4 text-slate-400"></i>
+            </span>
+          ` : `
+            <button
+              onclick="event.stopPropagation(); editCourse('${course.id}')"
+              class="card-action-btn p-2 text-slate-500 dark:text-slate-400 hover:text-[#E09F3E] hover:bg-[#E09F3E]/10 rounded-xl transition cursor-pointer"
+              title="${isClosed ? 'Kurs Bilgilerini Düzenle (Geliştirici)' : 'Kurs Bilgilerini Düzenle'}"
+            >
+              <i data-lucide="edit-3" class="w-4 h-4"></i>
+            </button>
+          `}
 
-          <button
-            onclick="event.stopPropagation(); deleteCourse('${course.id}')"
-            class="card-action-btn p-2 text-slate-400 hover:text-[#9E2A2B] hover:bg-[#9E2A2B]/10 rounded-xl transition cursor-pointer"
-            title="Kursu Sil"
-          >
-            <i data-lucide="trash-2" class="w-4 h-4"></i>
-          </button>
+          ${isDeveloper(currentUser) ? `
+            <button
+              onclick="event.stopPropagation(); deleteCourse('${course.id}')"
+              class="card-action-btn p-2 text-slate-400 hover:text-[#9E2A2B] hover:bg-[#9E2A2B]/10 rounded-xl transition cursor-pointer"
+              title="Kursu Sil (Yalnızca Geliştirici)"
+            >
+              <i data-lucide="trash-2" class="w-4 h-4"></i>
+            </button>
+          ` : ''}
         </div>
       </div>
     `;
@@ -3356,6 +3365,12 @@ function openCourseModal(courseToEdit = null) {
 
     currentOffDays = Array.isArray(courseToEdit.offDays) ? [...courseToEdit.offDays] : [];
     renderOffDays();
+
+    // Düzenleme modunda onay kutusunu gizle
+    const noticeBox = document.getElementById('courseCreationNoticeBox');
+    if (noticeBox) noticeBox.classList.add('hidden');
+    const confirmAccuracyCb = document.getElementById('courseFormConfirmAccuracy');
+    if (confirmAccuracyCb) confirmAccuracyCb.checked = false;
   } else {
     courseModalTitle.innerText = 'Yeni Kurs Ekle';
     courseForm.reset();
@@ -3367,6 +3382,12 @@ function openCourseModal(courseToEdit = null) {
     if (courseFormModuleCount) courseFormModuleCount.value = 1;
     courseFormStatus.value = 'active';
     if (courseFormDocumentType) courseFormDocumentType.value = 'Sertifika';
+
+    // Yeni kurs modunda onay kutusunu göster ve sıfırla
+    const noticeBox = document.getElementById('courseCreationNoticeBox');
+    if (noticeBox) noticeBox.classList.remove('hidden');
+    const confirmAccuracyCb = document.getElementById('courseFormConfirmAccuracy');
+    if (confirmAccuracyCb) confirmAccuracyCb.checked = false;
 
     const defaultInitialArea = userAreas[0] || 'Bilişim Teknolojileri';
     if (courseFormCategory) courseFormCategory.value = defaultInitialArea;
@@ -3529,6 +3550,32 @@ function handleSaveCourse(e) {
       return c;
     });
   } else {
+    // YENİ KURS AÇILIŞ ONAYI VE SİLİNEMEZ BİLGİLENDİRMESİ
+    const confirmAccuracyCb = document.getElementById('courseFormConfirmAccuracy');
+    if (confirmAccuracyCb && !confirmAccuracyCb.checked) {
+      alert('⚠️ Kurs Açılış Onayı Gereklidir:\n\nLütfen formun altındaki "Kurs bilgilerinin doğruluğunu onaylıyorum. Kursun sonradan silinemeyeceğini biliyorum." kutucuğunu işaretleyiniz.');
+      confirmAccuracyCb.focus();
+      return;
+    }
+
+    const confirmCreate = confirm(
+      `⚠️ KURS AÇILIŞ ONAYI VE YASAL UYARI\n\n` +
+      `Kurs Adı: ${courseName}\n` +
+      `Merkez: ${institution}\n` +
+      `Kurs No / Kod: ${code}\n` +
+      `Toplam Süre: ${totalHours} Saat (${moduleCount} Modül)\n` +
+      `Tarih Aralığı: ${startDate} - ${endDate}\n\n` +
+      `ÖNEMLİ BİLGİLENDİRME:\n` +
+      `• Girdiğiniz tüm bilgilerin eksiksiz ve mevzuata uygun olduğunu onaylıyor musunuz?\n` +
+      `• Açılan bir kurs resmi kayıt niteliğinde olup SONRADAN SİLİNEMEZ!\n` +
+      `• Kurs tamamlandığında "Kursu Kapat" işlemi ile arşive alınacaktır.\n\n` +
+      `Kursu bu bilgilerle açmak istediğinize emin misiniz?`
+    );
+
+    if (!confirmCreate) {
+      return;
+    }
+
     const newCourse = {
       id: `crs_${Date.now()}`,
       userId: currentUser.id,
@@ -3590,21 +3637,22 @@ window.editCourse = function(courseId) {
     alert('Yalnızca kendinizle ilgili kursları düzenleyebilirsiniz.');
     return;
   }
+  if (course.status === 'completed' && !isDeveloper(currentUser)) {
+    alert('Bu kurs kapatılmıştır. Kapatılmış kurslar üzerinde düzenleme yapılamaz. Kurs sonu evraklarını görüntüleyebilir ve indirebilirsiniz.');
+    return;
+  }
   openCourseModal(course);
 };
 
 window.deleteCourse = function(courseId) {
-  if (isSupervisor(currentUser)) {
-    alert('Eğitim sorumluları kurs silemez.');
+  // Kurs silme işlemi SADECE geliştiricilerde olsun
+  if (!isDeveloper(currentUser)) {
+    alert('⚠️ Yetki Hatası:\n\nKurs silme işlemi sistem güvenliği ve resmi evrak bütünlüğü gereği yalnızca sistem geliştiricisine aittir. Kursu tamamlamak veya arşive almak için "Kursu Kapat" özelliğini kullanabilirsiniz.');
     return;
   }
   const course = currentCourses.find(c => c.id === courseId);
   if (!course) return;
-  if (!isCourseRelatedToUser(course, currentUser) && !isDeveloper(currentUser)) {
-    alert('Yalnızca kendinizle ilgili kursları silebilirsiniz.');
-    return;
-  }
-  if (confirm('Bu kursu ve bağlı tüm kursiyer kayıtlarını silmek istediğinize emin misiniz?')) {
+  if (confirm(`"${course.name}" (${course.code || ''}) kursunu ve bağlı tüm kursiyer, devamsızlık ve not kayıtlarını silmek istediğinize emin misiniz?\n\nBu işlem geri alınamaz!`)) {
     currentCourses = currentCourses.filter(c => c.id !== courseId);
     DataStore.saveCourses(currentCourses);
     renderTeacherDashboard();
@@ -3680,10 +3728,48 @@ window.openCourseDetail = function(courseId) {
   detailCourseMeta.innerText = `${currentInst} • ${activeCourseForDetail.totalHours} Saat • Eğitmen: ${currentInstr}${activeCourseForDetail.supervisor ? ' • Sorumlu: ' + activeCourseForDetail.supervisor : ''}${daysText}${timeText}`;
 
   const isActive = activeCourseForDetail.status === 'active';
-  detailStatusBadge.className = `px-2 py-0.5 rounded text-xs font-semibold ${
-    isActive ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200 text-slate-700'
-  }`;
-  detailStatusBadge.innerText = isActive ? 'Devam Eden Kurs' : 'Tamamlanmış Kurs (Arşiv)';
+  const isClosed = activeCourseForDetail.status === 'completed';
+
+  if (isClosed) {
+    detailStatusBadge.className = 'px-2.5 py-0.5 rounded text-xs font-bold bg-slate-200 dark:bg-[#10191b] text-slate-800 dark:text-slate-300 border border-slate-300 dark:border-[#23353c] inline-flex items-center gap-1';
+    detailStatusBadge.innerHTML = '<i data-lucide="lock" class="w-3 h-3 text-slate-500"></i> Kapatılmış Kurs (Salt-Okunur)';
+  } else {
+    detailStatusBadge.className = 'px-2.5 py-0.5 rounded text-xs font-semibold bg-emerald-100 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800';
+    detailStatusBadge.innerText = 'Devam Eden Kurs';
+  }
+
+  // Üst Başlık Butonlarının Durumu
+  const closeCourseBtn = document.getElementById('detailCloseCourseBtn');
+  const downloadDocsBtn = document.getElementById('detailDownloadDocsQuickBtn');
+  const reopenCourseBtn = document.getElementById('detailReopenCourseBtn');
+  const editCourseBtn = document.getElementById('detailEditCourseBtn');
+
+  if (isClosed) {
+    // Kurs kapatılmış: Kursu düzenle ve kursu kapat butonlarını gizle (geliştirici hariç)
+    if (editCourseBtn) {
+      if (isDeveloper(currentUser)) {
+        editCourseBtn.classList.remove('hidden');
+        editCourseBtn.title = 'Kurs Bilgilerini Düzenle (Geliştirici)';
+      } else {
+        editCourseBtn.classList.add('hidden');
+      }
+    }
+    if (closeCourseBtn) closeCourseBtn.classList.add('hidden');
+    if (downloadDocsBtn) downloadDocsBtn.classList.remove('hidden');
+    if (reopenCourseBtn) {
+      if (isDeveloper(currentUser)) {
+        reopenCourseBtn.classList.remove('hidden');
+      } else {
+        reopenCourseBtn.classList.add('hidden');
+      }
+    }
+  } else {
+    // Kurs aktif/açık: Düzenleme ve Kapatma butonları görünür
+    if (editCourseBtn) editCourseBtn.classList.remove('hidden');
+    if (closeCourseBtn) closeCourseBtn.classList.remove('hidden');
+    if (downloadDocsBtn) downloadDocsBtn.classList.add('hidden');
+    if (reopenCourseBtn) reopenCourseBtn.classList.add('hidden');
+  }
 
   if (detailModuleBadge) {
     detailModuleBadge.innerText = `${activeCourseForDetail.moduleCount || 1} Modül Sınavı`;
@@ -3725,6 +3811,75 @@ function closeDetailModal() {
   if (printArea) printArea.classList.add('hidden');
   document.getElementById('securePrintIframe')?.remove();
 }
+
+window.handleCloseCourseClick = function() {
+  if (!activeCourseForDetail) return;
+  const course = activeCourseForDetail;
+
+  if (course.status === 'completed') {
+    alert('Bu kurs zaten kapatılmıştır.');
+    return;
+  }
+
+  const confirmClose = confirm(
+    `🔒 KURSU KAPATMA VE RESMİ EVRAK OLUŞTURMA\n\n` +
+    `Kurs Adı: ${course.name}\n` +
+    `Kurs No: ${course.code || 'KODSUZ'}\n` +
+    `Kayıtlı Kursiyer: ${course.students?.length || 0} Kişi\n\n` +
+    `DİKKAT:\n` +
+    `• Kurs kapatıldığında durumu "Tamamlandı (Arşiv)" olarak güncellenecek ve SALT-OKUNUR hale gelecektir.\n` +
+    `• Kapatma işleminden sonra kursiyer bilgileri, devamsızlıklar ve sınav notları üzerinde düzenleme yapılamayacaktır.\n` +
+    `• Kurs kapatılır kapatılmaz tüm Kurs Sonu Resmi Evraklarını (Karar Durumu, Not Çizelgesi, Yoklama vb.) hemen indirebileceksiniz.\n\n` +
+    `Kursu şimdi kapatmak istiyor musunuz?`
+  );
+
+  if (!confirmClose) return;
+
+  // Kurs durumunu 'completed' (tamamlandı) yap
+  course.status = 'completed';
+  course.closedAt = new Date().toISOString();
+  course.closedBy = currentUser?.fullName || 'Kullanıcı';
+
+  // Kaydet
+  currentCourses = currentCourses.map(c => c.id === course.id ? course : c);
+  DataStore.saveCourses(currentCourses);
+
+  // Görünümü yenile
+  renderTeacherDashboard();
+  openCourseDetail(course.id);
+
+  // Kurs sonu evraklarını indirme penceresini doğrudan aç
+  setTimeout(() => {
+    if (typeof openSaveAllDocumentsModal === 'function') {
+      openSaveAllDocumentsModal();
+    }
+  }, 300);
+};
+
+window.handleReopenCourseClick = function() {
+  if (!activeCourseForDetail) return;
+  const course = activeCourseForDetail;
+
+  if (!isDeveloper(currentUser)) {
+    alert('Kursu yeniden aktif hale getirme yetkisi yalnızca sistem geliştiricisine aittir.');
+    return;
+  }
+
+  if (!confirm(`"${course.name}" kursunu yeniden aktif (düzenlenebilir) duruma getirmek istiyor musunuz?`)) {
+    return;
+  }
+
+  course.status = 'active';
+  delete course.closedAt;
+  delete course.closedBy;
+
+  currentCourses = currentCourses.map(c => c.id === course.id ? course : c);
+  DataStore.saveCourses(currentCourses);
+
+  renderTeacherDashboard();
+  openCourseDetail(course.id);
+  alert('Kurs başarıyla yeniden aktif hale getirildi.');
+};
 
 function switchDetailTab(tab) {
   const inactiveTabClasses = 'flex items-center gap-2 px-4 sm:px-5 py-3 text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-200 hover:text-slate-950 dark:hover:text-white hover:bg-slate-300/60 dark:hover:bg-[#1c2c32] rounded-t-xl transition cursor-pointer whitespace-nowrap border-b-2 border-transparent';
@@ -3790,11 +3945,20 @@ function renderStudentTable() {
 
   const moduleCount = activeCourseForDetail.moduleCount ? Math.max(1, Number(activeCourseForDetail.moduleCount)) : 1;
 
+  const isClosed = activeCourseForDetail.status === 'completed';
+  const isReadOnly = isClosed && !isDeveloper(currentUser);
+
+  // Kurs kapalıysa yeni kursiyer ekleme ve içe aktarma butonlarını gizle
+  if (toggleStudentFormBtn) toggleStudentFormBtn.style.display = isReadOnly ? 'none' : '';
+  if (toggleBulkStudentBtn) toggleBulkStudentBtn.style.display = isReadOnly ? 'none' : '';
+  const importExcelBtn = document.getElementById('importStudentsExcelBtn');
+  if (importExcelBtn) importExcelBtn.style.display = isReadOnly ? 'none' : '';
+
   if (students.length === 0) {
     studentTableBody.innerHTML = `
       <tr>
         <td colspan="8" class="text-center py-8 text-slate-400">
-          Bu kursa henüz kursiyer eklenmemiş. Yukarıdaki "Yeni Kursiyer Ekle" butonunu kullanarak isim, soyisim, telefon ve TC ile hemen kursiyer ekleyebilirsiniz.
+          ${isReadOnly ? 'Bu kursta kayıtlı kursiyer bulunmuyor (Kurs Kapatılmış).' : 'Bu kursa henüz kursiyer eklenmemiş. Yukarıdaki "Yeni Kursiyer Ekle" butonunu kullanarak isim, soyisim, telefon ve TC ile hemen kursiyer ekleyebilirsiniz.'}
         </td>
       </tr>
     `;
@@ -3887,29 +4051,36 @@ function renderStudentTable() {
       </td>
       <td class="px-4 py-3 text-right">
         <div class="flex items-center justify-end gap-1.5">
-          <button
-            onclick="markStudentNeverAttended('${s.id}')"
-            class="p-1.5 ${isHicGelmedi ? 'text-rose-700 bg-rose-100 border border-rose-300' : 'text-slate-400 hover:text-rose-600 hover:bg-rose-50'} rounded-lg transition cursor-pointer"
-            title="${isHicGelmedi ? 'Kursiyer \"Hiç Gelmedi\" olarak işaretli (Kaldırmak için tıklayınız)' : 'Kursiyeri \"Hiç Gelmedi\" olarak işaretle'}"
-          >
-            <i data-lucide="user-x" class="w-4 h-4"></i>
-          </button>
+          ${isReadOnly ? `
+            <span class="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[11px] font-medium text-slate-400 bg-slate-100 dark:bg-[#10191b] border border-slate-200 dark:border-[#23353c]" title="Kurs kapatıldığı için düzenlenemez">
+              <i data-lucide="lock" class="w-3 h-3 text-slate-400"></i>
+              <span>Kilitli</span>
+            </span>
+          ` : `
+            <button
+              onclick="markStudentNeverAttended('${s.id}')"
+              class="p-1.5 ${isHicGelmedi ? 'text-rose-700 bg-rose-100 border border-rose-300' : 'text-slate-400 hover:text-rose-600 hover:bg-rose-50'} rounded-lg transition cursor-pointer"
+              title="${isHicGelmedi ? 'Kursiyer \"Hiç Gelmedi\" olarak işaretli (Kaldırmak için tıklayınız)' : 'Kursiyeri \"Hiç Gelmedi\" olarak işaretle'}"
+            >
+              <i data-lucide="user-x" class="w-4 h-4"></i>
+            </button>
 
-          <button
-            onclick="editStudent('${s.id}')"
-            class="p-1.5 text-slate-500 hover:text-[#E09F3E] hover:bg-[#E09F3E]/10 rounded-lg transition cursor-pointer"
-            title="Kursiyer Bilgilerini Düzenle"
-          >
-            <i data-lucide="edit-3" class="w-4 h-4"></i>
-          </button>
+            <button
+              onclick="editStudent('${s.id}')"
+              class="p-1.5 text-slate-500 hover:text-[#E09F3E] hover:bg-[#E09F3E]/10 rounded-lg transition cursor-pointer"
+              title="Kursiyer Bilgilerini Düzenle"
+            >
+              <i data-lucide="edit-3" class="w-4 h-4"></i>
+            </button>
 
-          <button
-            onclick="deleteStudent('${s.id}')"
-            class="p-1.5 text-slate-400 hover:text-[#9E2A2B] hover:bg-[#9E2A2B]/10 rounded-lg transition cursor-pointer"
-            title="Kursiyeri Sil"
-          >
-            <i data-lucide="trash-2" class="w-4 h-4"></i>
-          </button>
+            <button
+              onclick="deleteStudent('${s.id}')"
+              class="p-1.5 text-slate-400 hover:text-[#9E2A2B] hover:bg-[#9E2A2B]/10 rounded-lg transition cursor-pointer"
+              title="Kursiyeri Sil"
+            >
+              <i data-lucide="trash-2" class="w-4 h-4"></i>
+            </button>
+          `}
         </div>
       </td>
     `;
@@ -4460,6 +4631,11 @@ function handleAddStudent(e) {
   e.preventDefault();
   if (!activeCourseForDetail) return;
 
+  if (activeCourseForDetail.status === 'completed' && !isDeveloper(currentUser)) {
+    alert('Bu kurs kapatılmıştır. Kapatılmış kurslara yeni kursiyer eklenemez veya mevcut kursiyer bilgileri değiştirilemez.');
+    return;
+  }
+
   const editId = (document.getElementById('stdEditId')?.value || '').trim();
   const rawFirstName = (document.getElementById('stdFirstName')?.value || '').trim();
   const rawLastName = (document.getElementById('stdLastName')?.value || '').trim();
@@ -4582,6 +4758,10 @@ function handleAddStudent(e) {
 
 window.editStudent = function(studentId) {
   if (!activeCourseForDetail) return;
+  if (activeCourseForDetail.status === 'completed' && !isDeveloper(currentUser)) {
+    alert('Bu kurs kapatılmıştır. Kapatılmış kurslarda kursiyer bilgileri düzenlenemez.');
+    return;
+  }
   const std = activeCourseForDetail.students?.find(s => s.id === studentId);
   if (!std) return;
 
@@ -4607,6 +4787,11 @@ window.editStudent = function(studentId) {
 };
 
 window.deleteStudent = function(studentId) {
+  if (!activeCourseForDetail) return;
+  if (activeCourseForDetail.status === 'completed' && !isDeveloper(currentUser)) {
+    alert('Bu kurs kapatılmıştır. Kapatılmış kurslardan kursiyer silinemez.');
+    return;
+  }
   if (confirm('Bu kursiyeri silmek istediğinize emin misiniz?')) {
     activeCourseForDetail.students = activeCourseForDetail.students.filter(s => s.id !== studentId);
     currentCourses = currentCourses.map(c => c.id === activeCourseForDetail.id ? activeCourseForDetail : c);
@@ -4745,6 +4930,11 @@ function handleBulkStudentInput() {
 function handleSaveBulkStudents() {
   if (!activeCourseForDetail) {
     alert('Aktif bir kurs bulunamadı.');
+    return;
+  }
+
+  if (activeCourseForDetail.status === 'completed' && !isDeveloper(currentUser)) {
+    alert('Bu kurs kapatılmıştır. Kapatılmış kurslara toplu kursiyer eklenemez.');
     return;
   }
 
@@ -5404,35 +5594,42 @@ function renderAttendanceTab() {
             placeholder="0"
             data-std-id="${s.id}"
             value="${hoursOnDate > 0 ? hoursOnDate : ''}"
+            ${activeCourseForDetail.status === 'completed' && !isDeveloper(currentUser) ? 'disabled' : ''}
             class="att-day-hour-input w-14 h-7 px-1.5 py-0.5 rounded-lg border-2 text-center text-xs font-black transition-all ${
-              hoursOnDate > 0
-                ? 'bg-rose-50 text-rose-800 border-[#9E2A2B] dark:bg-rose-950/40 dark:text-rose-200 dark:border-rose-600'
-                : 'bg-white dark:bg-[#152125] text-slate-800 dark:text-slate-100 border-slate-300 dark:border-[#23353c]'
+              activeCourseForDetail.status === 'completed' && !isDeveloper(currentUser)
+                ? 'bg-slate-100 text-slate-500 border-slate-200 cursor-not-allowed opacity-80'
+                : (hoursOnDate > 0
+                    ? 'bg-rose-50 text-rose-800 border-[#9E2A2B] dark:bg-rose-950/40 dark:text-rose-200 dark:border-rose-600'
+                    : 'bg-white dark:bg-[#152125] text-slate-800 dark:text-slate-100 border-slate-300 dark:border-[#23353c]')
             } focus:ring-2 focus:ring-[#335C67] focus:outline-none"
-            title="0 = Geldi, 1 ila ${dailyHours} saat arası devamsızlık yazabilirsiniz"
+            title="${activeCourseForDetail.status === 'completed' && !isDeveloper(currentUser) ? 'Kurs kapatıldığı için devamsızlık değiştirilemez' : `0 = Geldi, 1 ila ${dailyHours} saat arası devamsızlık yazabilirsiniz`}"
           />
           <span class="text-[10px] font-bold text-slate-400">Sa</span>
           
-          <button
-            type="button"
-            onclick="setStudentDateAbsenceHours('${s.id}', ${dailyHours})"
-            class="px-1.5 py-0.5 text-[10px] font-bold rounded bg-rose-50 hover:bg-rose-100 text-[#9E2A2B] border border-rose-200 transition cursor-pointer"
-            title="Tam gün devamsız yaz (${dailyHours} Saat)"
-          >
-            ${dailyHours} Sa
-          </button>
-          
-          <button
-            type="button"
-            onclick="setStudentDateAbsenceHours('${s.id}', 0)"
-            class="px-1.5 py-0.5 text-[10px] font-bold rounded bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 transition cursor-pointer"
-            title="Geldi / Devamlı yaz (0 Saat)"
-          >
-            0 Sa
-          </button>
+          ${activeCourseForDetail.status === 'completed' && !isDeveloper(currentUser) ? `
+            <span class="px-2 py-0.5 text-[10px] font-medium text-slate-400 bg-slate-100 dark:bg-[#10191b] rounded border border-slate-200 dark:border-[#23353c]">Kilitli</span>
+          ` : `
+            <button
+              type="button"
+              onclick="setStudentDateAbsenceHours('${s.id}', ${dailyHours})"
+              class="px-1.5 py-0.5 text-[10px] font-bold rounded bg-rose-50 hover:bg-rose-100 text-[#9E2A2B] border border-rose-200 transition cursor-pointer"
+              title="Tam gün devamsız yaz (${dailyHours} Saat)"
+            >
+              ${dailyHours} Sa
+            </button>
+            
+            <button
+              type="button"
+              onclick="setStudentDateAbsenceHours('${s.id}', 0)"
+              class="px-1.5 py-0.5 text-[10px] font-bold rounded bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 transition cursor-pointer"
+              title="Geldi / Devamlı yaz (0 Saat)"
+            >
+              0 Sa
+            </button>
 
-          ${dropBtnHtml}
-          ${neverAttendedBtnHtml}
+            ${dropBtnHtml}
+            ${neverAttendedBtnHtml}
+          `}
         </div>
       </td>
 
@@ -5529,6 +5726,10 @@ function showAutoSaveToast(message = 'Değişiklik anında kaydedildi') {
 // Kursiyerin seçili tarihteki devamsızlık saatini güncelleme fonksiyonu
 window.setStudentDateAbsenceHours = function(studentId, hours, shouldRefresh = true) {
   if (!activeCourseForDetail) return;
+  if (activeCourseForDetail.status === 'completed' && !isDeveloper(currentUser)) {
+    alert('Bu kurs kapatılmıştır. Kapatılmış kurslarda devamsızlık girişi veya düzenlemesi yapılamaz.');
+    return;
+  }
   const std = activeCourseForDetail.students.find(s => s.id === studentId);
   if (!std) return;
 
@@ -5596,6 +5797,10 @@ window.setStudentDateAbsenceHours = function(studentId, hours, shouldRefresh = t
 // Kursu Bırakan Kursiyer İçin Seçili Tarihten Kurs Bitimine Kadar Devamsız İşleme
 window.markStudentAbsentFromDateOnwards = function(studentId) {
   if (!activeCourseForDetail) return;
+  if (activeCourseForDetail.status === 'completed' && !isDeveloper(currentUser)) {
+    alert('Bu kurs kapatılmıştır. Kapatılmış kurslarda devamsızlık girişi yapılamaz.');
+    return;
+  }
   const std = activeCourseForDetail.students?.find(s => s.id === studentId);
   if (!std) return;
 
@@ -5689,6 +5894,10 @@ window.markStudentAbsentFromDateOnwards = function(studentId) {
 // Kursa Hiç Gelmeyen Kursiyer İçin Tek Tıkla Tüm Kursu Devamsız Yazma ve "Hiç Gelmedi" Olarak İşleme
 window.markStudentNeverAttended = function(studentId) {
   if (!activeCourseForDetail) return;
+  if (activeCourseForDetail.status === 'completed' && !isDeveloper(currentUser)) {
+    alert('Bu kurs kapatılmıştır. Kapatılmış kurslarda devamsızlık durumu değiştirilemez.');
+    return;
+  }
   const std = (activeCourseForDetail.students || []).find(s => s.id === studentId);
   if (!std) return;
 
@@ -6033,6 +6242,7 @@ function renderExamsTab() {
           </td>
         `;
       } else {
+        const isExamReadOnly = activeCourseForDetail.status === 'completed' && !isDeveloper(currentUser);
         moduleInputsHtml += `
           <td class="px-2 py-2 text-center border-x border-slate-100 dark:border-[#23353c]/40">
             <input
@@ -6043,7 +6253,13 @@ function renderExamsTab() {
               value="${val}"
               data-std-id="${s.id}"
               data-module="${m}"
-              class="exam-cell-score text-center w-20 px-2 py-1.5 bg-white dark:bg-[#10191b] border border-slate-200 dark:border-[#23353c] rounded-lg text-xs font-bold text-purple-950 dark:text-purple-200 focus:ring-2 focus:ring-purple-500 focus:outline-none transition shadow-2xs"
+              ${isExamReadOnly ? 'disabled' : ''}
+              class="exam-cell-score text-center w-20 px-2 py-1.5 ${
+                isExamReadOnly 
+                  ? 'bg-slate-100 text-slate-500 border-slate-200 cursor-not-allowed opacity-80' 
+                  : 'bg-white dark:bg-[#10191b] border-slate-200 dark:border-[#23353c] text-purple-950 dark:text-purple-200 focus:ring-2 focus:ring-purple-500'
+              } border rounded-lg text-xs font-bold focus:outline-none transition shadow-2xs"
+              title="${isExamReadOnly ? 'Kurs kapatıldığı için not değiştirilemez' : 'Modül sınav notunu giriniz (0-100)'}"
             />
           </td>
         `;
@@ -6243,6 +6459,10 @@ function recalculateStudentExamRowLive(stdId) {
 
 function handleSaveAllExams() {
   if (!activeCourseForDetail) return;
+  if (activeCourseForDetail.status === 'completed' && !isDeveloper(currentUser)) {
+    alert('Bu kurs kapatılmıştır. Kapatılmış kurslarda sınav notları değiştirilemez.');
+    return;
+  }
   const moduleCount = activeCourseForDetail.moduleCount ? Math.max(1, Number(activeCourseForDetail.moduleCount)) : 1;
   const totalHours = Number(activeCourseForDetail.totalHours) || 0;
   const maxAllowed = Math.floor(totalHours / 5);
@@ -6766,6 +6986,10 @@ function closeSingleExamModal() {
 function handleSaveSingleExam(e) {
   e.preventDefault();
   if (!activeCourseForDetail) return;
+  if (activeCourseForDetail.status === 'completed' && !isDeveloper(currentUser)) {
+    alert('Bu kurs kapatılmıştır. Kapatılmış kurslarda sınav notları değiştirilemez.');
+    return;
+  }
 
   const stdId = singleExamStudentId.value;
   const std = activeCourseForDetail.students.find(s => s.id === stdId);

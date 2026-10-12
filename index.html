@@ -2622,6 +2622,22 @@
           </div>
         </div>
 
+        <!-- Kurs Açılış Resmi Onay ve Silinememe Bildirimi -->
+        <div id="courseCreationNoticeBox" class="p-4 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-700/60 space-y-2.5">
+          <div class="flex items-start gap-2.5">
+            <i data-lucide="alert-triangle" class="w-5 h-5 text-amber-600 shrink-0 mt-0.5"></i>
+            <div class="text-xs text-amber-900 dark:text-amber-200 leading-relaxed font-medium">
+              <strong>Önemli Yasal ve Resmi Bildirim:</strong> Açılan kurslar resmi evrak, e-Yaygın ve teftiş süreçlerine dahil edildiğinden <strong>kurs sistemden silinemez</strong>. Kurs süreci tamamlandığında "Kursu Kapat" işlemi uygulanmalıdır.
+            </div>
+          </div>
+          <label class="flex items-start gap-2.5 cursor-pointer pt-2 border-t border-amber-200/70 dark:border-amber-800/50 select-none">
+            <input type="checkbox" id="courseFormConfirmAccuracy" class="mt-0.5 w-4 h-4 text-amber-600 rounded border-amber-300 focus:ring-amber-500 cursor-pointer" />
+            <span class="text-xs font-bold text-amber-950 dark:text-amber-100">
+              Girdiğim kurs bilgilerinin (Tarihler, Günler, Süre, Merkez ve Eğitmen) doğruluğunu ve bu kursun daha sonra <u>silinemeyeceğini</u> onaylıyorum. *
+            </span>
+          </label>
+        </div>
+
         <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
           <button
             type="button"
@@ -2686,6 +2702,18 @@
           <button id="detailEditCourseBtn" class="flex items-center gap-1.5 px-3.5 py-2 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 dark:border-amber-700/50 dark:bg-amber-950/40 dark:text-amber-200 rounded-xl text-xs font-bold transition cursor-pointer" title="Kurs Bilgilerini, Günleri ve Saatleri Düzenle">
             <i data-lucide="edit" class="w-4 h-4 text-amber-600 dark:text-amber-400"></i>
             <span>Kursu Düzenle</span>
+          </button>
+          <button id="detailCloseCourseBtn" onclick="handleCloseCourseClick()" class="flex items-center gap-1.5 px-3.5 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold transition cursor-pointer shadow-xs" title="Kursu Kapat ve Kurs Sonu Evraklarını İndir">
+            <i data-lucide="lock" class="w-4 h-4 text-white"></i>
+            <span>Kursu Kapat</span>
+          </button>
+          <button id="detailDownloadDocsQuickBtn" onclick="openSaveAllDocumentsModal()" class="hidden flex items-center gap-1.5 px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition cursor-pointer shadow-xs" title="Kurs Sonu Resmi Evraklarını İndir / Yazdır">
+            <i data-lucide="file-down" class="w-4 h-4 text-white"></i>
+            <span>Kurs Sonu Evrakları</span>
+          </button>
+          <button id="detailReopenCourseBtn" onclick="handleReopenCourseClick()" class="hidden flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 rounded-xl text-xs font-bold transition cursor-pointer" title="Kursu Yeniden Aktif Yap (Geliştirici Yetkisi)">
+            <i data-lucide="unlock" class="w-3.5 h-3.5 text-slate-600"></i>
+            <span>Yeniden Aç</span>
           </button>
           <button id="closeDetailModalTopRightBtn" class="p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-xl cursor-pointer transition" title="Kapat">
             <i data-lucide="x" class="w-6 h-6"></i>
