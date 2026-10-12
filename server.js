@@ -1,4 +1,4 @@
-// Kurs Sonu Evrak Yönetim Sistemi - Hafif Yerel Sunucu
+// Kurs Sonu Evrak Yönetim Sistemi - Hafif Yerel & Vercel Sunucusu
 // Sıfır harici bağımlılık, Node.js yerleşik modülleri ile çalışır.
 
 const http = require('http');
@@ -23,17 +23,22 @@ const MIME_TYPES = {
   '.pdf': 'application/pdf',
 };
 
-const server = http.createServer((req, res) => {
+function handleRequest(req, res) {
   let reqUrl = req.url.split('?')[0];
   if (reqUrl === '/') {
     reqUrl = '/index.html';
   }
 
   const safePath = path.normalize(reqUrl).replace(/^(\.\.[\/\\])+/, '');
-  const filePath = path.join(PUBLIC_DIR, safePath);
+  let filePath = path.join(PUBLIC_DIR, safePath);
 
-  fs.stat(filePath, (err, stats) => {
-    if (err || !stats.isFile()) {
+  if (!fs.existsSync(filePath) || fs.statSync(filePath).isDirectory()) {
+    filePath = path.join(PUBLIC_DIR, 'index.html');
+  }
+
+  try {
+    const stat = fs.statSync(filePath);
+    if (!stat.isFile()) {
       res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
       res.end('404 - Dosya Bulunamadı');
       return;
@@ -44,12 +49,22 @@ const server = http.createServer((req, res) => {
 
     res.writeHead(200, { 'Content-Type': contentType });
     fs.createReadStream(filePath).pipe(res);
-  });
-});
+  } catch (err) {
+    res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
+    res.end('404 - Bulunamadı');
+  }
+}
 
-server.listen(PORT, () => {
-  console.log(`====================================================`);
-  console.log(`  Kurs Sonu Evrak Sistemi Başarıyla Başlatıldı!     `);
-  console.log(`  Tarayıcınızdan açın: http://localhost:${PORT}      `);
-  console.log(`====================================================`);
-});
+// Vercel serverless handler export
+module.exports = handleRequest;
+
+// Local Node.js server execution (sadece yerelde node server.js çalıştırıldığında portu dinler)
+if (require.main === module) {
+  const server = http.createServer(handleRequest);
+  server.listen(PORT, () => {
+    console.log(`====================================================`);
+    console.log(`  Kurs Sonu Evrak Sistemi Başarıyla Başlatıldı!     `);
+    console.log(`  Tarayıcınızdan açın: http://localhost:${PORT}      `);
+    console.log(`====================================================`);
+  });
+}
