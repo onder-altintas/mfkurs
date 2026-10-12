@@ -1,8 +1,7 @@
 {
-  "name": "kurs-sonu-evrak-yonetim-sistemi",
+  "name": "mefportal",
   "version": "1.0.0",
-  "description": "Kurs sonu resmi evrak ve sertifika düzenleme web uygulaması",
-  "main": "server.js",
+  "description": "MEFPORTAL - Kurs Sonu Evrak & Müfredat Yönetim Sistemi",
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js"
