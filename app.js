@@ -12345,27 +12345,36 @@ function renderSupervisorCharts(coursesList) {
   if (courseCanvas) {
     if (supCourseChartInstance) supCourseChartInstance.destroy();
     supCourseChartInstance = new Chart(courseCanvas, {
-      type: 'bar',
+      type: 'line',
       data: {
         labels,
         datasets: [
           {
             label: 'Devam Eden',
             data: sortedKeys.map(k => monthMap[k].coursesActive),
-            backgroundColor: '#10b981',
-            borderRadius: 6
+            borderColor: '#10b981',
+            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+            fill: true,
+            tension: 0.35,
+            pointRadius: 4
           },
           {
             label: 'Biten',
             data: sortedKeys.map(k => monthMap[k].coursesCompleted),
-            backgroundColor: '#6366f1',
-            borderRadius: 6
+            borderColor: '#6366f1',
+            backgroundColor: 'rgba(99, 102, 241, 0.1)',
+            fill: false,
+            tension: 0.35,
+            pointRadius: 4
           },
           {
             label: 'İptal Edilen',
             data: sortedKeys.map(k => monthMap[k].coursesCancelled),
-            backgroundColor: '#f43f5e',
-            borderRadius: 6
+            borderColor: '#f43f5e',
+            backgroundColor: 'rgba(244, 63, 94, 0.1)',
+            fill: false,
+            tension: 0.35,
+            pointRadius: 4
           }
         ]
       },
@@ -12387,23 +12396,30 @@ function renderSupervisorCharts(coursesList) {
     });
     const topCenters = Object.entries(centerTotals).sort((a, b) => b[1] - a[1]).slice(0, 3).map(e => e[0]);
     const palette = ['#0d9488', '#f59e0b', '#8b5cf6'];
+    const paletteBg = ['rgba(13, 148, 136, 0.1)', 'rgba(245, 158, 11, 0.1)', 'rgba(139, 92, 246, 0.1)'];
 
     const centerDatasets = topCenters.length > 0 ? topCenters.map((cName, idx) => ({
       label: cName,
       data: sortedKeys.map(k => monthMap[k].centers[cName] || 0),
-      backgroundColor: palette[idx % palette.length],
-      borderRadius: 6
+      borderColor: palette[idx % palette.length],
+      backgroundColor: paletteBg[idx % paletteBg.length],
+      fill: false,
+      tension: 0.35,
+      pointRadius: 4
     })) : [
       {
         label: 'Aylık Merkez Kurs Hacmi',
         data: sortedKeys.map(k => Object.values(monthMap[k].centers).reduce((a, b) => a + b, 0)),
-        backgroundColor: '#0d9488',
-        borderRadius: 6
+        borderColor: '#0d9488',
+        backgroundColor: 'rgba(13, 148, 136, 0.1)',
+        fill: true,
+        tension: 0.35,
+        pointRadius: 4
       }
     ];
 
     supCenterChartInstance = new Chart(centerCanvas, {
-      type: 'bar',
+      type: 'line',
       data: {
         labels,
         datasets: centerDatasets
