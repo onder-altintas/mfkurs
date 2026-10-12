@@ -3721,10 +3721,7 @@ function renderStudentTable() {
 
     const totalHours = Number(activeCourseForDetail.totalHours) || 0;
     const maxAllowed = Math.floor(totalHours / 5);
-    const isHicGelmedi = (s.attendance === 'Hiç Gelmedi') || 
-                         (s.result === 'Hiç Gelmedi') || 
-                         (typeof s.attendanceNote === 'string' && s.attendanceNote.toLowerCase().includes('hiç gelme')) ||
-                         (totalHours > 0 && Number(s.absentHours || 0) >= totalHours);
+    const isHicGelmedi = isStudentHicGelmedi(s, activeCourseForDetail);
 
     const isDevamsiz = !isHicGelmedi && ((s.attendance === 'Devamsız') || (s.result === 'Devamsız') || (totalHours > 0 && Number(s.absentHours || 0) > maxAllowed));
     const isSuccess = !isHicGelmedi && !isDevamsiz && ((s.result || '').includes('Başarılı') || (s.result || '').includes('Belge'));
@@ -5648,6 +5645,8 @@ window.markStudentNeverAttended = function(studentId) {
     std.attendance = 'Hiç Gelmedi';
     std.attendanceNote = 'Kursa hiç gelmedi';
     std.result = 'Hiç Gelmedi';
+    std.moduleScores = {};
+    std.examScore = null;
   }
 
   // Kaydet
@@ -5750,6 +5749,84 @@ function getModuleExamInfo(course, moduleNumber) {
 }
 window.getModuleExamInfo = getModuleExamInfo;
 
+// Kursiyerin kursa hiç gelmediğini tespit eden evrensel fonksiyon
+function isStudentHicGelmedi(student, course) {
+  if (!student) return false;
+  const attLower = String(student.attendance || '').trim().toLocaleLowerCase('tr-TR');
+  const resLower = String(student.result || '').trim().toLocaleLowerCase('tr-TR');
+  const noteLower = String(student.attendanceNote || '').trim().toLocaleLowerCase('tr-TR');
+
+  if (attLower.includes('hiç gelme') || resLower.includes('hiç gelme') || noteLower.includes('hiç gelme')) {
+    return true;
+  }
+
+  const totalHours = Number(course?.totalHours || 0);
+  const absentHours = Number(student.absentHours || 0);
+  if (totalHours > 0 && absentHours >= totalHours) {
+    return true;
+  }
+
+  // Kursun ders günlerinin tamamında devamsızlık yapılmış ve hiç gelinmemişse
+  const lessonDates = (typeof getValidCourseDates === 'function' && course) ? getValidCourseDates(course) : [];
+  if (lessonDates.length > 0 && Array.isArray(student.dailyAbsences) && student.dailyAbsences.length >= lessonDates.length) {
+    const isAllDaysAbsent = lessonDates.every(d => {
+      const rec = student.dailyAbsences.find(a => a.date === d);
+      return rec && Number(rec.hours) > 0;
+    });
+    if (isAllDaysAbsent) return true;
+  }
+
+  return false;
+}
+window.isStudentHicGelmedi = isStudentHicGelmedi;
+
+// Kursiyerin belirli bir modül sınavına girip giremeyeceğini (kilitli olup olmadığını) kontrol eder
+function isModuleExamLockedForStudent(student, course, moduleNumber) {
+  if (!student || !course) {
+    return { locked: true, reason: 'Veri yok', title: 'Kursiyer bilgisi yok', badgeSubtitle: 'Kilitli' };
+  }
+
+  // 1. Kursa hiç gelmeyen kursiyer hiçbir modül sınavına giremez
+  if (isStudentHicGelmedi(student, course)) {
+    return { 
+      locked: true, 
+      reason: 'hic_gelmedi', 
+      title: 'Kursiyer kursa hiç gelmediği için modül sınavına giremez.', 
+      badgeSubtitle: 'Hiç Gelmedi' 
+    };
+  }
+
+  const examInfo = getModuleExamInfo(course, moduleNumber);
+  const examDate = examInfo?.dateStr;
+
+  // 2. Sınav tarihinde devamsız mı?
+  if (examDate && Array.isArray(student.dailyAbsences)) {
+    const isAbsentOnExamDate = student.dailyAbsences.some(d => d.date === examDate && Number(d.hours) > 0);
+    if (isAbsentOnExamDate) {
+      return { 
+        locked: true, 
+        reason: 'sinavda_devamsiz', 
+        title: `Kursiyer sınav tarihinde (${formatShortDate(examDate)}) devamsız olduğu için bu modül sınavına giremez.`, 
+        badgeSubtitle: 'Sınavda Yok' 
+      };
+    }
+  }
+
+  // 3. Devamsızlık hakkı (1/5) bu sınav tarihinden önce dolmuş mu?
+  const exceededDate = getStudentAbsenceLimitExceededDate(student, course);
+  if (exceededDate && examDate && examDate > exceededDate) {
+    return { 
+      locked: true, 
+      reason: 'devamsizlik_hakki_bitti', 
+      title: `Kursiyer ${formatShortDate(exceededDate)} tarihinde devamsızlık hakkını doldurduğu için bu tarihten sonraki modül sınavına giremez.`, 
+      badgeSubtitle: 'Kaldı' 
+    };
+  }
+
+  return { locked: false, reason: null, title: null, badgeSubtitle: null };
+}
+window.isModuleExamLockedForStudent = isModuleExamLockedForStudent;
+
 function renderExamsTab() {
   if (!activeCourseForDetail) return;
   activeCourseForDetail.students = sortStudentsAlphabetically(activeCourseForDetail.students || []);
@@ -5835,20 +5912,14 @@ function renderExamsTab() {
     tr.setAttribute('data-std-id', s.id);
 
     const modScores = s.moduleScores || {};
-    const exceededDate = (typeof getStudentAbsenceLimitExceededDate === 'function') 
-      ? getStudentAbsenceLimitExceededDate(s, activeCourseForDetail) 
-      : null;
     const totalHours = Number(activeCourseForDetail.totalHours) || 0;
     const maxAllowed = Math.floor(totalHours / 5);
     const absentHours = Number(s.absentHours || 0);
 
-    const attLower = String(s.attendance || '').trim().toLocaleLowerCase('tr-TR');
-    const resLower = String(s.result || '').trim().toLocaleLowerCase('tr-TR');
-    const noteLower = String(s.attendanceNote || '').trim().toLocaleLowerCase('tr-TR');
-    const isHicGelmedi = attLower.includes('hiç gelme') ||
-                         resLower.includes('hiç gelme') ||
-                         noteLower.includes('hiç gelme') ||
-                         (totalHours > 0 && absentHours >= totalHours);
+    const isHicGelmedi = isStudentHicGelmedi(s, activeCourseForDetail);
+    const exceededDate = (typeof getStudentAbsenceLimitExceededDate === 'function') 
+      ? getStudentAbsenceLimitExceededDate(s, activeCourseForDetail) 
+      : null;
 
     const isDevamsiz = !isHicGelmedi && (
       s.attendance === 'Devamsız' || 
@@ -5859,27 +5930,19 @@ function renderExamsTab() {
 
     let moduleInputsHtml = '';
     for (let m = 1; m <= moduleCount; m++) {
-      const examInfo = examInfos[m - 1];
-      const examDate = examInfo?.dateStr || '9999-9999';
-      
-      // Öğrencinin devamsızlık hakkı bittikten sonraki tarihte yapılan modül sınavları kilitlenir
-      const isExamLockedDueToAbsence = isHicGelmedi || (exceededDate && examDate > exceededDate);
-
+      const lockStatus = isModuleExamLockedForStudent(s, activeCourseForDetail, m);
       const score = modScores[m];
-      const val = (!isExamLockedDueToAbsence && score !== null && score !== undefined && score !== '') ? score : '';
+      const val = (!lockStatus.locked && score !== null && score !== undefined && score !== '') ? score : '';
 
-      if (isExamLockedDueToAbsence) {
-        const lockTitle = isHicGelmedi 
-          ? 'Kursiyer kursa hiç gelmediği için modül sınavına giremez.' 
-          : `Kursiyer ${formatShortDate(exceededDate)} tarihinde devamsızlık hakkını doldurduğu için bu tarihten sonraki modül sınavına giremez.`;
+      if (lockStatus.locked) {
         moduleInputsHtml += `
-          <td class="px-2 py-2 text-center border-x border-slate-100 dark:border-[#23353c]/40 bg-rose-50/60 dark:bg-rose-950/20" title="${lockTitle}">
+          <td class="px-2 py-2 text-center border-x border-slate-100 dark:border-[#23353c]/40 bg-rose-50/60 dark:bg-rose-950/20" title="${escapeHtml(lockStatus.title || 'Sınava girilemez')}">
             <div class="inline-flex flex-col items-center justify-center">
               <span class="inline-flex items-center gap-1 px-2 py-1 bg-rose-100 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 border border-rose-300 dark:border-rose-800 rounded-lg text-[10px] font-black tracking-tight shadow-2xs cursor-not-allowed">
                 <i data-lucide="lock" class="w-3 h-3 text-rose-600 shrink-0"></i>
                 <span>Giremez</span>
               </span>
-              <span class="text-[9px] text-rose-500 font-bold mt-0.5">${isHicGelmedi ? 'Hiç Gelmedi' : 'Kaldı'}</span>
+              <span class="text-[9px] text-rose-500 font-bold mt-0.5">${escapeHtml(lockStatus.badgeSubtitle || 'Kilitli')}</span>
             </div>
           </td>
         `;
@@ -5887,9 +5950,9 @@ function renderExamsTab() {
         moduleInputsHtml += `
           <td class="px-2 py-2 text-center border-x border-slate-100 dark:border-[#23353c]/40">
             <input
-              type="number"
-              min="0"
-              max="100"
+              type="text"
+              inputmode="numeric"
+              maxlength="3"
               placeholder="0 - 100"
               value="${val}"
               data-std-id="${s.id}"
@@ -5901,7 +5964,7 @@ function renderExamsTab() {
       }
     }
 
-    const avgDisplay = (s.examScore !== null && s.examScore !== undefined && !isHicGelmedi && !isDevamsiz) ? s.examScore : '-';
+    const avgDisplay = (s.examScore !== null && s.examScore !== undefined && !isHicGelmedi && !isDevamsiz) ? s.examScore : (isDevamsiz && s.examScore !== null ? s.examScore : '-');
     let resultClass = 'bg-slate-100 text-slate-700';
     let resultText = s.result || 'Devam Ediyor';
 
@@ -5927,8 +5990,8 @@ function renderExamsTab() {
       <td class="px-3 py-3 font-mono text-slate-600 dark:text-slate-400 text-xs">${escapeHtml(s.tcNo || '-')}</td>
       ${moduleInputsHtml}
       <td class="px-3 py-3 text-center">
-        <span class="exam-row-avg text-sm font-extrabold ${isHicGelmedi || isDevamsiz ? 'text-rose-600' : 'text-purple-900 dark:text-purple-300'}" data-std-id="${s.id}">
-          ${isHicGelmedi || isDevamsiz ? '-' : avgDisplay}
+        <span class="exam-row-avg text-sm font-extrabold ${isHicGelmedi ? 'text-rose-600' : (isDevamsiz ? 'text-amber-700 dark:text-amber-400' : 'text-purple-900 dark:text-purple-300')}" data-std-id="${s.id}">
+          ${isHicGelmedi ? '-' : avgDisplay}
         </span>
       </td>
       <td class="px-3 py-3 text-center">
@@ -5940,12 +6003,57 @@ function renderExamsTab() {
     examsMatrixTbody.appendChild(tr);
   });
 
-  // Not değiştiğinde canlı ortalama ve durum hesaplama & mouse tekerleğiyle yanlışlıkla not değişmesini önleme
+  // Not değiştiğinde canlı ortalama ve durum hesaplama & 3 haneli (100 üstü) girişi kesin olarak engelleme
   examsMatrixTbody.querySelectorAll('.exam-cell-score').forEach(input => {
     input.addEventListener('wheel', (e) => e.preventDefault(), { passive: false });
+
+    input.addEventListener('keydown', (e) => {
+      // Kontrol tuşlarına izin ver (Backspace, Delete, Tab, Arrow, vb.)
+      if (e.key === 'Backspace' || e.key === 'Delete' || e.key === 'Tab' || e.key === 'ArrowLeft' || e.key === 'ArrowRight' || e.ctrlKey || e.metaKey) {
+        return;
+      }
+      // Sadece 0-9 rakamlarına izin ver
+      if (!/^[0-9]$/.test(e.key)) {
+        e.preventDefault();
+        return;
+      }
+
+      const curVal = input.value;
+      const selStart = input.selectionStart || 0;
+      const selEnd = input.selectionEnd || 0;
+      const nextVal = curVal.slice(0, selStart) + e.key + curVal.slice(selEnd);
+
+      // 3 haneli rakam girilmesine izin verme: Sadece 100 geçerlidir, 100'den büyük veya 3 haneden uzun girişler engellenir
+      if (Number(nextVal) > 100 || nextVal.length > 3) {
+        e.preventDefault();
+      }
+    });
+
     input.addEventListener('input', (e) => {
+      let val = e.target.value.replace(/[^0-9]/g, '');
+      if (val !== '') {
+        if (Number(val) > 100) {
+          val = '100';
+        }
+        if (val.length > 3) {
+          val = val.slice(0, 3);
+        }
+      }
+      e.target.value = val;
       const stdId = e.target.dataset.stdId;
       recalculateStudentExamRowLive(stdId);
+    });
+
+    input.addEventListener('paste', (e) => {
+      e.preventDefault();
+      const paste = (e.clipboardData || window.clipboardData).getData('text').trim();
+      const num = parseInt(paste, 10);
+      if (!isNaN(num)) {
+        if (num < 0) e.target.value = '0';
+        else if (num > 100) e.target.value = '100';
+        else e.target.value = String(num);
+        recalculateStudentExamRowLive(e.target.dataset.stdId);
+      }
     });
   });
 
@@ -5973,14 +6081,7 @@ function recalculateStudentExamRowLive(stdId) {
   const maxAllowed = Math.floor(totalHours / 5);
   const absentHours = Number(std?.absentHours || 0);
 
-  const attLower = String(std?.attendance || '').trim().toLocaleLowerCase('tr-TR');
-  const resLower = String(std?.result || '').trim().toLocaleLowerCase('tr-TR');
-  const noteLower = String(std?.attendanceNote || '').trim().toLocaleLowerCase('tr-TR');
-  const isHicGelmedi = attLower.includes('hiç gelme') ||
-                       resLower.includes('hiç gelme') ||
-                       noteLower.includes('hiç gelme') ||
-                       (totalHours > 0 && absentHours >= totalHours);
-
+  const isHicGelmedi = isStudentHicGelmedi(std, activeCourseForDetail);
   const exceededDate = (typeof getStudentAbsenceLimitExceededDate === 'function') 
     ? getStudentAbsenceLimitExceededDate(std, activeCourseForDetail) 
     : null;
@@ -6007,7 +6108,7 @@ function recalculateStudentExamRowLive(stdId) {
   if (isDevamsiz) {
     if (avgSpan) {
       avgSpan.className = 'exam-row-avg text-sm font-extrabold text-rose-600';
-      avgSpan.innerText = '-';
+      avgSpan.innerText = count > 0 ? (Math.round((sum / count) * 10) / 10) : '-';
     }
     if (statusSpan) {
       statusSpan.className = 'exam-row-status inline-flex px-2 py-0.5 rounded text-[11px] font-black bg-rose-100 text-rose-800 border border-rose-300';
@@ -6061,18 +6162,11 @@ function handleSaveAllExams() {
   const maxAllowed = Math.floor(totalHours / 5);
 
   activeCourseForDetail.students.forEach(std => {
+    const isHicGelmedi = isStudentHicGelmedi(std, activeCourseForDetail);
     const exceededDate = (typeof getStudentAbsenceLimitExceededDate === 'function')
       ? getStudentAbsenceLimitExceededDate(std, activeCourseForDetail)
       : null;
     const absentHours = Number(std.absentHours || 0);
-
-    const attLower = String(std.attendance || '').trim().toLocaleLowerCase('tr-TR');
-    const resLower = String(std.result || '').trim().toLocaleLowerCase('tr-TR');
-    const noteLower = String(std.attendanceNote || '').trim().toLocaleLowerCase('tr-TR');
-    const isHicGelmedi = attLower.includes('hiç gelme') ||
-                         resLower.includes('hiç gelme') ||
-                         noteLower.includes('hiç gelme') ||
-                         (totalHours > 0 && absentHours >= totalHours);
 
     const isDevamsiz = !isHicGelmedi && (
       std.attendance === 'Devamsız' || 
@@ -6087,11 +6181,9 @@ function handleSaveAllExams() {
     let count = 0;
 
     for (let m = 1; m <= moduleCount; m++) {
-      const examInfo = getModuleExamInfo(activeCourseForDetail, m);
-      const examDate = examInfo?.dateStr || '9999-9999';
-      const isLocked = isHicGelmedi || (exceededDate && examDate > exceededDate);
+      const lockStatus = isModuleExamLockedForStudent(std, activeCourseForDetail, m);
 
-      if (isLocked) {
+      if (lockStatus.locked) {
         modScores[m] = null;
       } else {
         const inp = Array.from(inputs).find(i => Number(i.dataset.module) === m);
@@ -6112,13 +6204,15 @@ function handleSaveAllExams() {
     std.moduleScores = modScores;
 
     if (isHicGelmedi) {
+      std.moduleScores = {};
       std.examScore = null;
       std.attendance = 'Hiç Gelmedi';
       std.result = 'Hiç Gelmedi';
     } else if (isDevamsiz) {
-      std.examScore = null;
       std.attendance = 'Devamsız';
       std.result = 'Devamsız';
+      // Girdiği önceki modüllerin ortalaması saklanır
+      std.examScore = count > 0 ? (Math.round((sum / count) * 10) / 10) : null;
     } else if (count > 0) {
       std.examScore = Math.round((sum / count) * 10) / 10;
       let allPassed = (count === moduleCount);
@@ -6424,21 +6518,6 @@ window.openSingleExamModal = function(studentId) {
 
   const moduleCount = activeCourseForDetail.moduleCount ? Math.max(1, Number(activeCourseForDetail.moduleCount)) : 1;
   const modScores = std.moduleScores || {};
-  const totalHours = Number(activeCourseForDetail.totalHours) || 0;
-  const maxAllowed = Math.floor(totalHours / 5);
-  const absentHours = Number(std.absentHours || 0);
-
-  const attLower = String(std.attendance || '').trim().toLocaleLowerCase('tr-TR');
-  const resLower = String(std.result || '').trim().toLocaleLowerCase('tr-TR');
-  const noteLower = String(std.attendanceNote || '').trim().toLocaleLowerCase('tr-TR');
-  const isHicGelmedi = attLower.includes('hiç gelme') ||
-                       resLower.includes('hiç gelme') ||
-                       noteLower.includes('hiç gelme') ||
-                       (totalHours > 0 && absentHours >= totalHours);
-
-  const exceededDate = (typeof getStudentAbsenceLimitExceededDate === 'function') 
-    ? getStudentAbsenceLimitExceededDate(std, activeCourseForDetail) 
-    : null;
 
   singleExamStudentId.value = std.id;
   singleExamStudentName.innerText = std.fullName;
@@ -6447,16 +6526,12 @@ window.openSingleExamModal = function(studentId) {
   singleExamModulesContainer.innerHTML = '';
 
   for (let m = 1; m <= moduleCount; m++) {
-    const examInfo = getModuleExamInfo(activeCourseForDetail, m);
-    const examDate = examInfo?.dateStr || '9999-9999';
-    const isLocked = isHicGelmedi || (exceededDate && examDate > exceededDate);
-
-    const scoreVal = (!isLocked && modScores[m] !== null && modScores[m] !== undefined && modScores[m] !== '') ? modScores[m] : '';
+    const lockStatus = isModuleExamLockedForStudent(std, activeCourseForDetail, m);
+    const scoreVal = (!lockStatus.locked && modScores[m] !== null && modScores[m] !== undefined && modScores[m] !== '') ? modScores[m] : '';
     const div = document.createElement('div');
-    div.className = `flex items-center justify-between p-3 rounded-xl ${isLocked ? 'bg-rose-50/70 border border-rose-200' : 'bg-slate-50 border border-slate-200'}`;
+    div.className = `flex items-center justify-between p-3 rounded-xl ${lockStatus.locked ? 'bg-rose-50/70 border border-rose-200' : 'bg-slate-50 border border-slate-200'}`;
     
-    if (isLocked) {
-      const lockReason = isHicGelmedi ? 'Kursa hiç gelmedi' : `Devamsızlık sınırı aşıldı (${formatShortDate(exceededDate)})`;
+    if (lockStatus.locked) {
       div.innerHTML = `
         <div>
           <div class="flex items-center gap-2">
@@ -6465,10 +6540,10 @@ window.openSingleExamModal = function(studentId) {
               <i data-lucide="lock" class="w-3 h-3 text-rose-600"></i> Kilitli
             </span>
           </div>
-          <span class="text-[11px] text-rose-600 font-medium">${lockReason} • Sınava Giriş Yapılamaz</span>
+          <span class="text-[11px] text-rose-600 font-medium">${escapeHtml(lockStatus.title || 'Sınava girilemez')}</span>
         </div>
         <div class="flex items-center gap-1.5">
-          <span class="px-3 py-1.5 rounded-lg text-xs font-black bg-rose-100 text-rose-700 border border-rose-200">GİREMEZ</span>
+          <span class="px-3 py-1.5 rounded-lg text-xs font-black bg-rose-100 text-rose-700 border border-rose-200">GİREMEZ (${escapeHtml(lockStatus.badgeSubtitle || 'Kilitli')})</span>
         </div>
       `;
     } else {
@@ -6479,9 +6554,9 @@ window.openSingleExamModal = function(studentId) {
         </div>
         <div class="flex items-center gap-1.5">
           <input
-            type="number"
-            min="0"
-            max="100"
+            type="text"
+            inputmode="numeric"
+            maxlength="3"
             placeholder="0-100"
             data-module="${m}"
             value="${scoreVal}"
@@ -6494,9 +6569,46 @@ window.openSingleExamModal = function(studentId) {
     singleExamModulesContainer.appendChild(div);
   }
 
-  // Canlı ortalama dinleyicisi
+  // Canlı ortalama dinleyicisi & 3 haneli (100 üstü) engelleme
   singleExamModulesContainer.querySelectorAll('.single-exam-module-input').forEach(inp => {
-    inp.addEventListener('input', updateSingleExamModalSummary);
+    inp.addEventListener('keydown', (e) => {
+      if (e.key === 'Backspace' || e.key === 'Delete' || e.key === 'Tab' || e.key === 'ArrowLeft' || e.key === 'ArrowRight' || e.ctrlKey || e.metaKey) {
+        return;
+      }
+      if (!/^[0-9]$/.test(e.key)) {
+        e.preventDefault();
+        return;
+      }
+      const curVal = inp.value;
+      const selStart = inp.selectionStart || 0;
+      const selEnd = inp.selectionEnd || 0;
+      const nextVal = curVal.slice(0, selStart) + e.key + curVal.slice(selEnd);
+      if (Number(nextVal) > 100 || nextVal.length > 3) {
+        e.preventDefault();
+      }
+    });
+
+    inp.addEventListener('input', (e) => {
+      let val = e.target.value.replace(/[^0-9]/g, '');
+      if (val !== '') {
+        if (Number(val) > 100) val = '100';
+        if (val.length > 3) val = val.slice(0, 3);
+      }
+      e.target.value = val;
+      updateSingleExamModalSummary();
+    });
+
+    inp.addEventListener('paste', (e) => {
+      e.preventDefault();
+      const paste = (e.clipboardData || window.clipboardData).getData('text').trim();
+      const num = parseInt(paste, 10);
+      if (!isNaN(num)) {
+        if (num < 0) e.target.value = '0';
+        else if (num > 100) e.target.value = '100';
+        else e.target.value = String(num);
+        updateSingleExamModalSummary();
+      }
+    });
   });
 
   updateSingleExamModalSummary();
@@ -6522,14 +6634,7 @@ function updateSingleExamModalSummary() {
   const maxAllowed = Math.floor(totalHours / 5);
   const absentHours = Number(std?.absentHours || 0);
 
-  const attLower = String(std?.attendance || '').trim().toLocaleLowerCase('tr-TR');
-  const resLower = String(std?.result || '').trim().toLocaleLowerCase('tr-TR');
-  const noteLower = String(std?.attendanceNote || '').trim().toLocaleLowerCase('tr-TR');
-  const isHicGelmedi = attLower.includes('hiç gelme') ||
-                       resLower.includes('hiç gelme') ||
-                       noteLower.includes('hiç gelme') ||
-                       (totalHours > 0 && absentHours >= totalHours);
-
+  const isHicGelmedi = isStudentHicGelmedi(std, activeCourseForDetail);
   const exceededDate = (typeof getStudentAbsenceLimitExceededDate === 'function') 
     ? getStudentAbsenceLimitExceededDate(std, activeCourseForDetail) 
     : null;
@@ -6549,7 +6654,7 @@ function updateSingleExamModalSummary() {
   }
 
   if (isDevamsiz) {
-    singleExamAvgScore.innerText = '-';
+    singleExamAvgScore.innerText = count > 0 ? `${Math.round((sum / count) * 10) / 10} Puan` : '-';
     singleExamResultBadge.className = 'inline-flex px-2.5 py-0.5 rounded text-xs font-black bg-rose-100 text-rose-800 border border-rose-300';
     singleExamResultBadge.innerText = 'Devamsız (Kaldı)';
     return;
@@ -6585,14 +6690,7 @@ function handleSaveSingleExam(e) {
   const maxAllowed = Math.floor(totalHours / 5);
   const absentHours = Number(std.absentHours || 0);
 
-  const attLower = String(std.attendance || '').trim().toLocaleLowerCase('tr-TR');
-  const resLower = String(std.result || '').trim().toLocaleLowerCase('tr-TR');
-  const noteLower = String(std.attendanceNote || '').trim().toLocaleLowerCase('tr-TR');
-  const isHicGelmedi = attLower.includes('hiç gelme') ||
-                       resLower.includes('hiç gelme') ||
-                       noteLower.includes('hiç gelme') ||
-                       (totalHours > 0 && absentHours >= totalHours);
-
+  const isHicGelmedi = isStudentHicGelmedi(std, activeCourseForDetail);
   const exceededDate = (typeof getStudentAbsenceLimitExceededDate === 'function') 
     ? getStudentAbsenceLimitExceededDate(std, activeCourseForDetail) 
     : null;
@@ -6610,11 +6708,9 @@ function handleSaveSingleExam(e) {
   let count = 0;
 
   for (let m = 1; m <= moduleCount; m++) {
-    const examInfo = getModuleExamInfo(activeCourseForDetail, m);
-    const examDate = examInfo?.dateStr || '9999-9999';
-    const isLocked = isHicGelmedi || (exceededDate && examDate > exceededDate);
+    const lockStatus = isModuleExamLockedForStudent(std, activeCourseForDetail, m);
 
-    if (isLocked) {
+    if (lockStatus.locked) {
       modScores[m] = null;
     } else {
       const inp = Array.from(inputs).find(i => Number(i.dataset.module) === m);
@@ -6635,13 +6731,15 @@ function handleSaveSingleExam(e) {
   std.moduleScores = modScores;
 
   if (isHicGelmedi) {
+    std.moduleScores = {};
     std.examScore = null;
     std.attendance = 'Hiç Gelmedi';
     std.result = 'Hiç Gelmedi';
   } else if (isDevamsiz) {
-    std.examScore = null;
     std.attendance = 'Devamsız';
     std.result = 'Devamsız';
+    // Girdiği önceki modüllerin ortalaması saklanır
+    std.examScore = count > 0 ? (Math.round((sum / count) * 10) / 10) : null;
   } else if (count > 0) {
     std.examScore = Math.round((sum / count) * 10) / 10;
     let allPassed = (count === moduleCount);
@@ -6694,15 +6792,8 @@ function getStudentAbsenceLimitExceededDate(student, course) {
   const maxAllowed = Math.floor(totalHours / 5);
   if (totalHours <= 0) return null;
 
-  const attLower = String(student.attendance || '').trim().toLocaleLowerCase('tr-TR');
-  const resLower = String(student.result || '').trim().toLocaleLowerCase('tr-TR');
-  const noteLower = String(student.attendanceNote || '').trim().toLocaleLowerCase('tr-TR');
-  const isExplicitlyHicGelmedi = attLower.includes('hiç gelme') ||
-                                 resLower.includes('hiç gelme') ||
-                                 noteLower.includes('hiç gelme');
-
   // Kursa hiç gelmedi olarak işaretlendiyse kursun en başından (başlangıç tarihinden) itibaren aştı sayılır
-  if (isExplicitlyHicGelmedi) {
+  if (isStudentHicGelmedi(student, course)) {
     const validDates = (typeof getValidCourseDates === 'function') ? getValidCourseDates(course) : [];
     return validDates[0] || course.startDate || '1970-01-01';
   }
@@ -6745,25 +6836,7 @@ function getStudentKararDurumu(student, course) {
   const docType = (course && course.documentType) ? course.documentType : 'Sertifika';
 
   // 1. Hiç Gelmedi Kontrolü: Kursa kaydolmuş fakat hiç gelmeyenler "Hiç Gelmedi" olarak işlenir
-  const attLower = String(student.attendance || '').trim().toLocaleLowerCase('tr-TR');
-  const resLower = String(student.result || '').trim().toLocaleLowerCase('tr-TR');
-  const noteLower = String(student.attendanceNote || '').trim().toLocaleLowerCase('tr-TR');
-
-  const isExplicitlyHicGelmedi = attLower.includes('hiç gelme') ||
-                                 resLower.includes('hiç gelme') ||
-                                 noteLower.includes('hiç gelme');
-
-  // Kursun toplam ders saati kadar devamsızlık yapılmışsa (yani tüm kurs boyunca hiç gelinmemişse)
-  const isAllHoursAbsent = (totalHours > 0 && absentHours >= totalHours);
-
-  // Kursun ders günlerinin tamamında devamsızlık yapılmış ve hiç gelinmemişse
-  const lessonDates = (typeof getValidCourseDates === 'function' && course) ? getValidCourseDates(course) : [];
-  const isAllDaysAbsent = lessonDates.length > 0 && Array.isArray(student.dailyAbsences) && lessonDates.every(d => {
-    const rec = student.dailyAbsences.find(a => a.date === d);
-    return rec && Number(rec.hours) > 0;
-  });
-
-  if (isExplicitlyHicGelmedi || isAllHoursAbsent || isAllDaysAbsent) {
+  if (isStudentHicGelmedi(student, course)) {
     return 'Hiç Gelmedi';
   }
 
@@ -9069,13 +9142,7 @@ function generateNotCizelgesiHtml(course) {
       const sFullName = toTurkishStudentName(s.fullName || `${s.firstName || ''} ${s.lastName || ''}`);
       const absentHours = Number(s.absentHours || 0);
 
-      const attLower = String(s.attendance || '').trim().toLocaleLowerCase('tr-TR');
-      const resLower = String(s.result || '').trim().toLocaleLowerCase('tr-TR');
-      const noteLower = String(s.attendanceNote || '').trim().toLocaleLowerCase('tr-TR');
-      const isHicGelmedi = attLower.includes('hiç gelme') ||
-                           resLower.includes('hiç gelme') ||
-                           noteLower.includes('hiç gelme') ||
-                           (totalHours > 0 && absentHours >= totalHours);
+      const isHicGelmedi = isStudentHicGelmedi(s, course);
 
       const exceededDate = (typeof getStudentAbsenceLimitExceededDate === 'function')
         ? getStudentAbsenceLimitExceededDate(s, course)
@@ -9096,13 +9163,32 @@ function generateNotCizelgesiHtml(course) {
 
       for (let m = 1; m <= maxModules; m++) {
         if (m <= moduleCount) {
-          const examInfo = (typeof getModuleExamInfo === 'function') 
-            ? getModuleExamInfo(course, m) 
-            : { dateStr: '9999-9999' };
-          const examDate = examInfo?.dateStr || '9999-9999';
-          const isExamLocked = isHicGelmedi || (exceededDate && examDate > exceededDate);
+          const lockStatus = isModuleExamLockedForStudent(s, course, m);
+          const sc = modScores[m];
+          const hasScore = (sc !== null && sc !== undefined && sc !== '' && !isNaN(Number(sc)));
 
-          if (isExamLocked || isDevamsiz) {
+          if (isHicGelmedi) {
+            failedCount++;
+            moduleCellsHtml += `
+              <td style="border: 1px solid black; text-align: center; vertical-align: middle; font-size: ${rowFontSize}; font-weight: bold; color: #b91c1c; padding: 0 1px; height: ${rowHeight};">
+                D
+              </td>
+            `;
+          } else if (hasScore && !lockStatus.locked) {
+            // Kursiyer bu modüle gelmiş, sınavına girmiş ve geçerli notu var (sonradan devamsız olsa dahi evrakta notu görünür)
+            const numSc = Number(sc);
+            if (numSc >= 50) {
+              passedCount++;
+            } else {
+              failedCount++;
+            }
+            moduleCellsHtml += `
+              <td style="border: 1px solid black; text-align: center; vertical-align: middle; font-size: ${rowFontSize}; font-weight: 600; padding: 0 1px; height: ${rowHeight};">
+                ${numSc}
+              </td>
+            `;
+          } else if (lockStatus.locked || isDevamsiz) {
+            // Sınav tarihinde devamsızsa, hakkı dolduysa veya bu modülde devamsızsa 'D'
             failedCount++;
             moduleCellsHtml += `
               <td style="border: 1px solid black; text-align: center; vertical-align: middle; font-size: ${rowFontSize}; font-weight: bold; color: #b91c1c; padding: 0 1px; height: ${rowHeight};">
@@ -9110,28 +9196,13 @@ function generateNotCizelgesiHtml(course) {
               </td>
             `;
           } else {
-            const sc = modScores[m];
-            if (sc !== null && sc !== undefined && sc !== '' && !isNaN(Number(sc))) {
-              const numSc = Number(sc);
-              if (numSc >= 50) {
-                passedCount++;
-              } else {
-                failedCount++;
-              }
-              moduleCellsHtml += `
-                <td style="border: 1px solid black; text-align: center; vertical-align: middle; font-size: ${rowFontSize}; font-weight: 600; padding: 0 1px; height: ${rowHeight};">
-                  ${numSc}
-                </td>
-              `;
-            } else {
-              // Devam ettiği halde sınava girmediyse 'G'
-              failedCount++;
-              moduleCellsHtml += `
-                <td style="border: 1px solid black; text-align: center; vertical-align: middle; font-size: ${rowFontSize}; font-weight: bold; color: #b45309; padding: 0 1px; height: ${rowHeight};">
-                  G
-                </td>
-              `;
-            }
+            // Devam ettiği halde sınava girmediyse 'G'
+            failedCount++;
+            moduleCellsHtml += `
+              <td style="border: 1px solid black; text-align: center; vertical-align: middle; font-size: ${rowFontSize}; font-weight: bold; color: #b45309; padding: 0 1px; height: ${rowHeight};">
+                G
+              </td>
+            `;
           }
         } else {
           // Boş kalacak olan modüllerin not hücrelerinde ortada '-' işareti yer alır
