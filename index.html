@@ -3062,15 +3062,30 @@
       <div id="tabSyllabusContent" class="hidden p-5 overflow-y-auto flex-1 space-y-4">
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-3 border-b border-slate-200 dark:border-[#23353c]">
           <div>
-            <h4 class="font-bold text-slate-800 dark:text-slate-100 text-sm flex items-center gap-2">
-              <i data-lucide="book-open" class="w-4 h-4 text-[#335C67] dark:text-[#FFF3B0]"></i>
-              <span>Resmi Ders Defteri Konu Planı</span>
-              <span id="syllabusBadgeCount" class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-sky-100 dark:bg-sky-950/50 text-sky-800 dark:text-sky-300 border border-sky-200 dark:border-sky-800">
-                0 Saat
+            <div class="flex items-center gap-2 flex-wrap">
+              <h4 class="font-bold text-slate-800 dark:text-slate-100 text-sm flex items-center gap-2">
+                <i data-lucide="book-open" class="w-4 h-4 text-[#335C67] dark:text-[#FFF3B0]"></i>
+                <span>Resmi Ders Defteri Konu Planı</span>
+                <span id="syllabusBadgeCount" class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-sky-100 dark:bg-sky-950/50 text-sky-800 dark:text-sky-300 border border-sky-200 dark:border-sky-800">
+                  0 Saat
+                </span>
+              </h4>
+              <span id="syllabusUserCustomBadge" class="hidden px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-100 dark:bg-amber-950/50 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-700/60 flex items-center gap-1" title="Bu plan sizin hesabınıza özel olarak düzenlenmiştir. Diğer kullanıcılar standart planı görür.">
+                <i data-lucide="user-check" class="w-3.5 h-3.5 text-amber-600 dark:text-amber-400"></i>
+                <span>Size Özel Plan</span>
               </span>
-            </h4>
+              <button
+                type="button"
+                id="resetSyllabusToStandardBtn"
+                onclick="resetSyllabusToStandard()"
+                class="hidden text-xs font-semibold text-slate-500 hover:text-rose-600 underline cursor-pointer transition ml-1"
+                title="Özelleştirmenizi iptal edip standart kurs konu planına geri dönün"
+              >
+                Standart Plana Dön
+              </button>
+            </div>
             <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-              Her ders saati için işlenen konuları buradan tek tek veya toplu olarak düzenleyebilirsiniz.
+              Her ders saati için işlenen konuları buradan tek tek veya toplu olarak düzenleyebilirsiniz. Yaptığınız değişiklikler yalnızca sizin hesabınıza özel kaydedilir.
             </p>
           </div>
           <div class="flex items-center gap-2 flex-wrap">
@@ -5033,6 +5048,11 @@
           <span id="editSyllabusHourBadge" class="px-2.5 py-1 rounded-lg text-xs font-extrabold bg-[#335C67] text-[#FFF3B0]">1. Ders Saati</span>
         </div>
 
+        <div class="p-2.5 rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/40 text-[11px] text-amber-900 dark:text-amber-200 flex items-center gap-2">
+          <i data-lucide="user-check" class="w-4 h-4 text-amber-600 shrink-0"></i>
+          <span>Bu değişiklik <strong>yalnızca sizin hesabınıza özel</strong> kaydedilir. Diğer kullanıcılar standart planı görmeye devam eder.</span>
+        </div>
+
         <div>
           <label for="editSyllabusTopicInput" class="block text-xs font-bold text-slate-700 dark:text-slate-200 mb-1.5">
             Anlatılan Konu / Faaliyet / Etkinlik:
@@ -5112,6 +5132,11 @@
           <p class="text-[11px] leading-relaxed">
             Aşağıdaki alanda her satır sırasıyla <strong>1. Saat</strong>, <strong>2. Saat</strong>, <strong>3. Saat</strong>... olarak kaydedilir. Konuları satır satır doğrudan düzenleyebilir veya listenizi buraya yapıştırabilirsiniz.
           </p>
+        </div>
+
+        <div class="p-2.5 rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/40 text-[11px] text-amber-900 dark:text-amber-200 flex items-center gap-2">
+          <i data-lucide="user-check" class="w-4 h-4 text-amber-600 shrink-0"></i>
+          <span>Yaptığınız toplu düzenleme <strong>yalnızca sizin hesabınıza özel</strong> kaydedilir. Diğer kullanıcılar standart planı görmeye ve kendi planlarını bağımsız değiştirmeye devam edebilir.</span>
         </div>
 
         <div>

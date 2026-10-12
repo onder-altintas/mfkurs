@@ -3525,6 +3525,15 @@ window.openCourseDetail = function(courseId) {
   }
   activeCourseForDetail = currentCourses.find(c => c.id === courseId);
   if (!activeCourseForDetail) return;
+
+  // Standart orijinal planı koru ve aktif kullanıcının özel planını yükle
+  if (!activeCourseForDetail.baseSyllabus && activeCourseForDetail.syllabus) {
+    activeCourseForDetail.baseSyllabus = Array.isArray(activeCourseForDetail.syllabus)
+      ? JSON.parse(JSON.stringify(activeCourseForDetail.syllabus))
+      : [];
+  }
+  activeCourseForDetail.syllabus = getEffectiveCourseSyllabus(activeCourseForDetail);
+
   if (!isCourseRelatedToUser(activeCourseForDetail, currentUser) && !isDeveloper(currentUser)) {
     alert('Bu kursu görüntüleme yetkiniz bulunmamaktadır.');
     return;
@@ -3819,12 +3828,141 @@ function renderStudentTable() {
   refreshLucide();
 }
 
+// =================== KULLANICIYA ÖZEL SAATLİK KONU PLANI YÖNETİMİ ===================
+
+// Aktif kullanıcının saatlik konu planı kimliğini çözen fonksiyon (yetkiden bağımsız benzersiz kimlik)
+function getCurrentUserSyllabusKey() {
+  if (currentUser) {
+    return String(currentUser.id || currentUser.username || currentUser.fullName || 'user').trim().toLowerCase();
+  }
+  return 'default_user';
+}
+
+// Bir kursun mevcut kullanıcı için özelleştirilip özelleştirilmediğini kontrol eden fonksiyon
+function isSyllabusCustomizedForCurrentUser(course) {
+  if (!course) return false;
+  const uKey = getCurrentUserSyllabusKey();
+  if (course.userSyllabusMap && Array.isArray(course.userSyllabusMap[uKey]) && course.userSyllabusMap[uKey].length > 0) {
+    return true;
+  }
+  try {
+    const local = localStorage.getItem(`user_syllabus_${course.id}_${uKey}`);
+    if (local) {
+      const parsed = JSON.parse(local);
+      if (Array.isArray(parsed) && parsed.length > 0) return true;
+    }
+  } catch (e) {}
+  return false;
+}
+
+// Kursun geçerli (kullanıcıya özel veya standart) saatlik konu planını getiren fonksiyon
+function getEffectiveCourseSyllabus(course) {
+  if (!course) return [];
+  const uKey = getCurrentUserSyllabusKey();
+
+  // 1. Önce bu kullanıcının bu kurs için veritabanında saklanan kendi özel konu planı var mı bak
+  if (course.userSyllabusMap && Array.isArray(course.userSyllabusMap[uKey]) && course.userSyllabusMap[uKey].length > 0) {
+    return course.userSyllabusMap[uKey];
+  }
+
+  // 2. Tarayıcı yerel hafızasında bu kullanıcıya özel kayıt var mı bak
+  try {
+    const local = localStorage.getItem(`user_syllabus_${course.id}_${uKey}`);
+    if (local) {
+      const parsed = JSON.parse(local);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    }
+  } catch (e) {}
+
+  // 3. Kullanıcıya özel plan yoksa: Standart orijinal planı döndür
+  if (Array.isArray(course.baseSyllabus) && course.baseSyllabus.length > 0) {
+    return course.baseSyllabus;
+  }
+
+  return Array.isArray(course.syllabus) ? course.syllabus : [];
+}
+
+// Saatlik konu planını SADECE aktif kullanıcı hesabına özel kaydeden fonksiyon
+function saveUserCourseSyllabus(course, newSyllabus) {
+  if (!course) return;
+  const uKey = getCurrentUserSyllabusKey();
+
+  // Standart orijinal planı güvenceye al (henüz baseSyllabus yoksa mevcut planı standart kabul et)
+  if (!course.baseSyllabus || !Array.isArray(course.baseSyllabus) || course.baseSyllabus.length === 0) {
+    course.baseSyllabus = Array.isArray(course.syllabus) ? JSON.parse(JSON.stringify(course.syllabus)) : [];
+  }
+
+  if (!course.userSyllabusMap) {
+    course.userSyllabusMap = {};
+  }
+
+  // Yalnızca mevcut kullanıcıya özel alana yaz
+  course.userSyllabusMap[uKey] = newSyllabus;
+
+  // LocalStorage'a da yedekle
+  try {
+    localStorage.setItem(`user_syllabus_${course.id}_${uKey}`, JSON.stringify(newSyllabus));
+  } catch (e) {}
+
+  // Aktif oturum için syllabus'ı güncelle
+  course.syllabus = newSyllabus;
+
+  currentCourses = currentCourses.map(c => c.id === course.id ? course : c);
+  DataStore.saveCourses(currentCourses);
+}
+
+// Kullanıcının özel konu planını sıfırlayıp standart plana geri döndüren fonksiyon
+window.resetSyllabusToStandard = function() {
+  if (!activeCourseForDetail) return;
+  if (!confirm('Özelleştirdiğiniz konu planını iptal edip standart kurs konu planına geri dönmek istediğinize emin misiniz?')) return;
+
+  const uKey = getCurrentUserSyllabusKey();
+  if (activeCourseForDetail.userSyllabusMap) {
+    delete activeCourseForDetail.userSyllabusMap[uKey];
+  }
+  try {
+    localStorage.removeItem(`user_syllabus_${activeCourseForDetail.id}_${uKey}`);
+  } catch (e) {}
+
+  activeCourseForDetail.syllabus = Array.isArray(activeCourseForDetail.baseSyllabus) && activeCourseForDetail.baseSyllabus.length > 0
+    ? JSON.parse(JSON.stringify(activeCourseForDetail.baseSyllabus))
+    : (activeCourseForDetail.syllabus || []);
+
+  currentCourses = currentCourses.map(c => c.id === activeCourseForDetail.id ? activeCourseForDetail : c);
+  DataStore.saveCourses(currentCourses);
+
+  renderDetailSyllabus();
+};
+
 function renderDetailSyllabus(filterKeyword = '') {
   if (!activeCourseForDetail) return;
-  const syllabus = activeCourseForDetail.syllabus || [];
+  
+  // Standart planı koru ve bu kullanıcıya özel konu planını yükle
+  if (!activeCourseForDetail.baseSyllabus && activeCourseForDetail.syllabus) {
+    activeCourseForDetail.baseSyllabus = Array.isArray(activeCourseForDetail.syllabus)
+      ? JSON.parse(JSON.stringify(activeCourseForDetail.syllabus))
+      : [];
+  }
+  const syllabus = getEffectiveCourseSyllabus(activeCourseForDetail);
+  activeCourseForDetail.syllabus = syllabus;
+
   if (detailSyllabusCount) detailSyllabusCount.innerText = syllabus.length;
   const badge = document.getElementById('syllabusBadgeCount');
   if (badge) badge.innerText = `${syllabus.length} Saat`;
+
+  // Kullanıcıya özel durum rozeti ve standart plana dön butonu kontrolü
+  const isCustom = isSyllabusCustomizedForCurrentUser(activeCourseForDetail);
+  const customBadge = document.getElementById('syllabusUserCustomBadge');
+  const resetBtn = document.getElementById('resetSyllabusToStandardBtn');
+  if (customBadge) {
+    if (isCustom) customBadge.classList.remove('hidden');
+    else customBadge.classList.add('hidden');
+  }
+  if (resetBtn) {
+    if (isCustom) resetBtn.classList.remove('hidden');
+    else resetBtn.classList.add('hidden');
+  }
+
   detailSyllabusTableBody.innerHTML = '';
 
   const detailOffDaysContainer = document.getElementById('detailOffDaysContainer');
@@ -3965,7 +4103,7 @@ function renderDetailSyllabus(filterKeyword = '') {
 // Saatlik Konu Arama / Filtreleme
 window.filterSyllabusRows = function(keyword) {
   const filterInfo = document.getElementById('syllabusFilteredInfo');
-  const syllabus = activeCourseForDetail?.syllabus || [];
+  const syllabus = getEffectiveCourseSyllabus(activeCourseForDetail);
   if (!keyword || !keyword.trim()) {
     if (filterInfo) filterInfo.classList.add('hidden');
     renderDetailSyllabus();
@@ -3984,10 +4122,10 @@ window.filterSyllabusRows = function(keyword) {
   renderDetailSyllabus(keyword);
 };
 
-// Tekil Saat Düzenleme Modalı
+// Tekil Saat Düzenleme Modalı (Yetkiden bağımsız herkes düzenleyebilir, kullanıcıya özel kaydedilir)
 window.openEditSyllabusHourModal = function(hourNumber) {
   if (!activeCourseForDetail) return;
-  const syllabus = activeCourseForDetail.syllabus || [];
+  const syllabus = getEffectiveCourseSyllabus(activeCourseForDetail);
   const item = syllabus.find(s => Number(s.hour) === Number(hourNumber));
   const modal = document.getElementById('editSyllabusHourModal');
   if (!modal) return;
@@ -4026,17 +4164,16 @@ window.saveEditSyllabusHour = function(e) {
     return;
   }
 
-  activeCourseForDetail.syllabus = activeCourseForDetail.syllabus || [];
-  const existingIndex = activeCourseForDetail.syllabus.findIndex(s => Number(s.hour) === hourNumber);
+  const currentSyllabus = [...getEffectiveCourseSyllabus(activeCourseForDetail)];
+  const existingIndex = currentSyllabus.findIndex(s => Number(s.hour) === hourNumber);
   if (existingIndex !== -1) {
-    activeCourseForDetail.syllabus[existingIndex].topic = topic;
+    currentSyllabus[existingIndex].topic = topic;
   } else {
-    activeCourseForDetail.syllabus.push({ hour: hourNumber, topic });
+    currentSyllabus.push({ hour: hourNumber, topic });
   }
 
-  activeCourseForDetail.syllabus.sort((a, b) => Number(a.hour) - Number(b.hour));
-  currentCourses = currentCourses.map(c => c.id === activeCourseForDetail.id ? activeCourseForDetail : c);
-  DataStore.saveCourses(currentCourses);
+  currentSyllabus.sort((a, b) => Number(a.hour) - Number(b.hour));
+  saveUserCourseSyllabus(activeCourseForDetail, currentSyllabus);
 
   closeEditSyllabusHourModal();
   renderDetailSyllabus();
@@ -4045,11 +4182,10 @@ window.saveEditSyllabusHour = function(e) {
 window.deleteCurrentSyllabusHour = function() {
   if (!activeCourseForDetail) return;
   const hourNumber = Number(document.getElementById('editSyllabusHourNumber')?.value);
-  if (!confirm(`${hourNumber}. ders saatini saatlik konu planından silmek istediğinize emin misiniz?`)) return;
+  if (!confirm(`${hourNumber}. ders saatini kendi saatlik konu planınızdan silmek istediğinize emin misiniz?`)) return;
 
-  activeCourseForDetail.syllabus = (activeCourseForDetail.syllabus || []).filter(s => Number(s.hour) !== hourNumber);
-  currentCourses = currentCourses.map(c => c.id === activeCourseForDetail.id ? activeCourseForDetail : c);
-  DataStore.saveCourses(currentCourses);
+  const currentSyllabus = getEffectiveCourseSyllabus(activeCourseForDetail).filter(s => Number(s.hour) !== hourNumber);
+  saveUserCourseSyllabus(activeCourseForDetail, currentSyllabus);
 
   closeEditSyllabusHourModal();
   renderDetailSyllabus();
@@ -4061,7 +4197,7 @@ window.openBulkSyllabusEditModal = function() {
   const modal = document.getElementById('bulkSyllabusEditModal');
   if (!modal) return;
 
-  const syllabus = [...(activeCourseForDetail.syllabus || [])].sort((a, b) => Number(a.hour) - Number(b.hour));
+  const syllabus = [...getEffectiveCourseSyllabus(activeCourseForDetail)].sort((a, b) => Number(a.hour) - Number(b.hour));
   const textarea = document.getElementById('bulkSyllabusTextarea');
   
   if (textarea) {
@@ -4108,18 +4244,18 @@ window.saveBulkSyllabusEdit = function(e) {
   const rawLines = (textarea?.value || '').split('\n');
   const lines = rawLines.map(l => l.trim()).filter(l => l.length > 0);
 
+  let newSyllabus = [];
   if (lines.length === 0) {
-    if (!confirm('Tüm saatlik konu planını temizlemek istediğinize emin misiniz?')) return;
-    activeCourseForDetail.syllabus = [];
+    if (!confirm('Tüm saatlik konu planınızı temizlemek istediğinize emin misiniz?')) return;
+    newSyllabus = [];
   } else {
-    activeCourseForDetail.syllabus = lines.map((topic, idx) => ({
+    newSyllabus = lines.map((topic, idx) => ({
       hour: idx + 1,
       topic: topic
     }));
   }
 
-  currentCourses = currentCourses.map(c => c.id === activeCourseForDetail.id ? activeCourseForDetail : c);
-  DataStore.saveCourses(currentCourses);
+  saveUserCourseSyllabus(activeCourseForDetail, newSyllabus);
 
   closeBulkSyllabusEditModal();
   renderDetailSyllabus();
@@ -4131,7 +4267,7 @@ window.openAddSyllabusHourModal = function() {
   const modal = document.getElementById('addSyllabusHourModal');
   if (!modal) return;
 
-  const syllabus = activeCourseForDetail.syllabus || [];
+  const syllabus = getEffectiveCourseSyllabus(activeCourseForDetail);
   let nextHour = 1;
   if (syllabus.length > 0) {
     const maxHour = Math.max(...syllabus.map(s => Number(s.hour) || 0));
@@ -4170,18 +4306,17 @@ window.saveAddSyllabusHour = function(e) {
     return;
   }
 
-  activeCourseForDetail.syllabus = activeCourseForDetail.syllabus || [];
-  const existingIndex = activeCourseForDetail.syllabus.findIndex(s => Number(s.hour) === hourNumber);
+  const currentSyllabus = [...getEffectiveCourseSyllabus(activeCourseForDetail)];
+  const existingIndex = currentSyllabus.findIndex(s => Number(s.hour) === hourNumber);
   if (existingIndex !== -1) {
     if (!confirm(`${hourNumber}. ders saati zaten mevcut. Üzerine yazmak istiyor musunuz?`)) return;
-    activeCourseForDetail.syllabus[existingIndex].topic = topic;
+    currentSyllabus[existingIndex].topic = topic;
   } else {
-    activeCourseForDetail.syllabus.push({ hour: hourNumber, topic });
+    currentSyllabus.push({ hour: hourNumber, topic });
   }
 
-  activeCourseForDetail.syllabus.sort((a, b) => Number(a.hour) - Number(b.hour));
-  currentCourses = currentCourses.map(c => c.id === activeCourseForDetail.id ? activeCourseForDetail : c);
-  DataStore.saveCourses(currentCourses);
+  currentSyllabus.sort((a, b) => Number(a.hour) - Number(b.hour));
+  saveUserCourseSyllabus(activeCourseForDetail, currentSyllabus);
 
   closeAddSyllabusHourModal();
   renderDetailSyllabus();
@@ -6439,7 +6574,7 @@ function generateKursPlaniHtml(course) {
   const totalHours = Number(course.totalHours) || 120;
   const dailyHours = Number(course.dailyHours) || 4;
   const validDates = getValidCourseDates(course);
-  const syllabus = course.syllabus || [];
+  const syllabus = getEffectiveCourseSyllabus(course);
   const courseDays = (course.days && course.days.length > 0)
     ? course.days.join(', ')
     : 'Pazartesi, Salı, Çarşamba, Perşembe, Cuma';
@@ -8108,7 +8243,7 @@ function generateDefterHtml(course) {
   const totalHours = Number(course.totalHours) || 120;
   const dailyHours = Number(course.dailyHours) || 4;
   const validDates = getValidCourseDates(course);
-  const syllabus = course.syllabus || [];
+  const syllabus = getEffectiveCourseSyllabus(course);
   const courseDays = (course.days && course.days.length > 0)
     ? course.days.join(', ')
     : 'Pazartesi, Salı, Çarşamba, Perşembe, Cuma';
