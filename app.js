@@ -3703,6 +3703,7 @@ function renderStudentTable() {
     tr.className = 'border-b border-slate-100 dark:border-[#23353c]/70 transition-colors';
 
     const totalHours = Number(activeCourseForDetail.totalHours) || 0;
+    const maxAllowed = Math.floor(totalHours / 5);
     const isHicGelmedi = (s.attendance === 'Hiç Gelmedi') || 
                          (s.result === 'Hiç Gelmedi') || 
                          (typeof s.attendanceNote === 'string' && s.attendanceNote.toLowerCase().includes('hiç gelme')) ||
