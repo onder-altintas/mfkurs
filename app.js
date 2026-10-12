@@ -132,6 +132,196 @@ window.toTurkishPersonName = toTurkishPersonName;
 window.toTurkishSentenceCase = toTurkishSentenceCase;
 window.setupAutoCasingListeners = setupAutoCasingListeners;
 
+// ============================================================================
+// MODAL UYARI VE ONAY PENCERESİ MOTORU (GELİŞMİŞ MODAL DİYALOG)
+// Tarayıcının standart bildirim kutuları yerine butonlu, modern modal gösterir.
+// ============================================================================
+
+let currentDialogResolve = null;
+
+function showCustomDialog(options = {}) {
+  const {
+    title = 'Bilgilendirme',
+    message = '',
+    type = 'warning', // 'warning', 'danger', 'info', 'success'
+    confirmText = 'Tamam',
+    cancelText = 'Vazgeç',
+    showCancel = false,
+    confirmBtnClass = '',
+    onConfirm = null,
+    onCancel = null
+  } = options;
+
+  const modal = document.getElementById('customDialogModal');
+  const titleEl = document.getElementById('customDialogTitle');
+  const msgEl = document.getElementById('customDialogMessage');
+  const iconContainer = document.getElementById('customDialogIconContainer');
+  const iconEl = document.getElementById('customDialogIcon');
+  const confirmBtn = document.getElementById('customDialogConfirmBtn');
+  const confirmBtnText = document.getElementById('customDialogConfirmBtnText');
+  const cancelBtn = document.getElementById('customDialogCancelBtn');
+  const closeTopBtn = document.getElementById('customDialogCloseTopBtn');
+
+  if (!modal || !msgEl) {
+    // Fallback if modal DOM is missing
+    if (showCancel) {
+      const res = window.__nativeConfirm ? window.__nativeConfirm(message) : true;
+      if (res && onConfirm) onConfirm();
+      if (!res && onCancel) onCancel();
+      return Promise.resolve(res);
+    } else {
+      if (window.__nativeAlert) window.__nativeAlert(message);
+      if (onConfirm) onConfirm();
+      return Promise.resolve(true);
+    }
+  }
+
+  if (titleEl) titleEl.innerText = title;
+  msgEl.innerText = message;
+
+  // İkon ve tema stilleri
+  if (iconContainer) {
+    iconContainer.className = 'p-3 rounded-2xl shrink-0 text-white shadow-sm';
+    let iconName = 'alert-triangle';
+    if (type === 'danger') {
+      iconContainer.classList.add('bg-rose-600');
+      iconName = 'alert-octagon';
+    } else if (type === 'success') {
+      iconContainer.classList.add('bg-emerald-600');
+      iconName = 'check-circle-2';
+    } else if (type === 'info') {
+      iconContainer.classList.add('bg-sky-600');
+      iconName = 'info';
+    } else {
+      iconContainer.classList.add('bg-amber-500');
+      iconName = 'alert-triangle';
+    }
+    if (iconEl) iconEl.setAttribute('data-lucide', iconName);
+  }
+
+  // Buton stilleri
+  if (confirmBtnText) confirmBtnText.innerText = confirmText;
+  if (confirmBtn) {
+    confirmBtn.className = confirmBtnClass || (
+      type === 'danger'
+        ? 'px-5 py-2.5 rounded-xl text-xs sm:text-sm font-extrabold text-white bg-rose-600 hover:bg-rose-700 transition cursor-pointer shadow-md flex items-center gap-1.5'
+        : 'px-5 py-2.5 rounded-xl text-xs sm:text-sm font-extrabold text-white bg-[#335C67] hover:bg-[#284952] transition cursor-pointer shadow-md flex items-center gap-1.5'
+    );
+  }
+
+  if (cancelBtn) {
+    cancelBtn.innerText = cancelText;
+    if (showCancel) {
+      cancelBtn.classList.remove('hidden');
+    } else {
+      cancelBtn.classList.add('hidden');
+    }
+  }
+
+  modal.classList.remove('hidden');
+  if (typeof refreshLucide === 'function') refreshLucide();
+
+  return new Promise((resolve) => {
+    currentDialogResolve = resolve;
+
+    const cleanup = () => {
+      modal.classList.add('hidden');
+      confirmBtn.onclick = null;
+      if (cancelBtn) cancelBtn.onclick = null;
+      if (closeTopBtn) closeTopBtn.onclick = null;
+    };
+
+    confirmBtn.onclick = () => {
+      cleanup();
+      if (onConfirm) onConfirm();
+      resolve(true);
+    };
+
+    if (cancelBtn) {
+      cancelBtn.onclick = () => {
+        cleanup();
+        if (onCancel) onCancel();
+        resolve(false);
+      };
+    }
+
+    if (closeTopBtn) {
+      closeTopBtn.onclick = () => {
+        cleanup();
+        if (onCancel) onCancel();
+        resolve(false);
+      };
+    }
+  });
+}
+
+// Global alert & confirm wrapper
+window.showModalAlert = function(message, title = '⚠️ Önemli Uyarı', type = 'warning') {
+  return showCustomDialog({
+    title,
+    message,
+    type,
+    showCancel: false,
+    confirmText: 'Anladım / Tamam'
+  });
+};
+
+window.showModalConfirm = function(message, title = '⚠️ İşlem Onayı', confirmText = 'Onaylıyorum', cancelText = 'Vazgeç', type = 'danger') {
+  return showCustomDialog({
+    title,
+    message,
+    type,
+    showCancel: true,
+    confirmText,
+    cancelText
+  });
+};
+
+// Standart window.alert ve window.confirm metodlarını zarif modal diyaloglarına bağla
+window.__nativeAlert = window.alert;
+window.__nativeConfirm = window.confirm;
+
+window.alert = function(msg) {
+  let title = '⚠️ Uyarı';
+  let type = 'warning';
+  const str = String(msg || '');
+  if (str.includes('Yetki') || str.includes('Engellendi') || str.includes('Hata')) {
+    title = '⛔ Yetki ve İşlem Hatası';
+    type = 'danger';
+  } else if (str.includes('başarıyla') || str.includes('kaydedildi') || str.includes('✓')) {
+    title = '✓ İşlem Başarılı';
+    type = 'success';
+  }
+  return showCustomDialog({
+    title,
+    message: str,
+    type,
+    showCancel: false,
+    confirmText: 'Tamam'
+  });
+};
+
+window.confirm = function(msg) {
+  // Senkron çalışan çağrılar için varsayılan olarak modal pencereyi açar
+  let title = '⚠️ İşlem Onayı';
+  let type = 'warning';
+  const str = String(msg || '');
+  if (str.includes('silmek') || str.includes('Sil') || str.includes('Kapat') || str.includes('DİKKAT')) {
+    title = '⚠️ Önemli İşlem Onayı';
+    type = 'danger';
+  }
+  showCustomDialog({
+    title,
+    message: str,
+    type,
+    showCancel: true,
+    confirmText: 'Evet, Onaylıyorum',
+    cancelText: 'Vazgeç'
+  });
+  // Geriye fallback olarak native confirm durumunu da güvenli işlet
+  return window.__nativeConfirm(msg);
+};
+
 // DOM Elementleri
 const loginScreen = document.getElementById('loginScreen');
 const dashboardScreen = document.getElementById('dashboardScreen');
@@ -3817,43 +4007,52 @@ window.handleCloseCourseClick = function() {
   const course = activeCourseForDetail;
 
   if (course.status === 'completed') {
-    alert('Bu kurs zaten kapatılmıştır.');
+    showCustomDialog({
+      title: 'Bilgilendirme',
+      message: 'Bu kurs zaten kapatılmıştır. Resmi evrakları "Kurs Sonu Evrakları" butonundan indirebilirsiniz.',
+      type: 'info',
+      confirmText: 'Tamam'
+    });
     return;
   }
 
-  const confirmClose = confirm(
-    `🔒 KURSU KAPATMA VE RESMİ EVRAK OLUŞTURMA\n\n` +
-    `Kurs Adı: ${course.name}\n` +
-    `Kurs No: ${course.code || 'KODSUZ'}\n` +
-    `Kayıtlı Kursiyer: ${course.students?.length || 0} Kişi\n\n` +
-    `DİKKAT:\n` +
-    `• Kurs kapatıldığında durumu "Tamamlandı (Arşiv)" olarak güncellenecek ve SALT-OKUNUR hale gelecektir.\n` +
-    `• Kapatma işleminden sonra kursiyer bilgileri, devamsızlıklar ve sınav notları üzerinde düzenleme yapılamayacaktır.\n` +
-    `• Kurs kapatılır kapatılmaz tüm Kurs Sonu Resmi Evraklarını (Karar Durumu, Not Çizelgesi, Yoklama vb.) hemen indirebileceksiniz.\n\n` +
-    `Kursu şimdi kapatmak istiyor musunuz?`
-  );
+  showCustomDialog({
+    title: '🔒 Kursu Kapatma & Resmi Evrak Onayı',
+    message: 
+      `Kurs Adı: ${course.name}\n` +
+      `Kurs No: ${course.code || 'KODSUZ'}\n` +
+      `Kayıtlı Kursiyer: ${course.students?.length || 0} Kişi\n\n` +
+      `⚠️ ÖNEMLİ BİLGİLENDİRME:\n` +
+      `• Kurs kapatıldığında durumu "Tamamlandı (Arşiv)" olarak güncellenecek ve SALT-OKUNUR hale gelecektir.\n` +
+      `• Kapatma işleminden sonra kursiyer bilgileri, devamsızlıklar ve sınav notları üzerinde düzenleme yapılamayacaktır.\n` +
+      `• Kurs kapatılır kapatılmaz tüm Kurs Sonu Resmi Evraklarını (Karar Durumu, Not Çizelgesi, Yoklama vb.) hemen indirebileceksiniz.\n\n` +
+      `Kursu şimdi kapatıp resmi evrakları indirmek istiyor musunuz?`,
+    type: 'danger',
+    showCancel: true,
+    confirmText: '🔒 Evet, Kursu Kapat ve Evrakları Aç',
+    cancelText: 'Vazgeç',
+    onConfirm: () => {
+      // Kurs durumunu 'completed' (tamamlandı) yap
+      course.status = 'completed';
+      course.closedAt = new Date().toISOString();
+      course.closedBy = currentUser?.fullName || 'Kullanıcı';
 
-  if (!confirmClose) return;
+      // Kaydet
+      currentCourses = currentCourses.map(c => c.id === course.id ? course : c);
+      DataStore.saveCourses(currentCourses);
 
-  // Kurs durumunu 'completed' (tamamlandı) yap
-  course.status = 'completed';
-  course.closedAt = new Date().toISOString();
-  course.closedBy = currentUser?.fullName || 'Kullanıcı';
+      // Görünümü yenile
+      renderTeacherDashboard();
+      openCourseDetail(course.id);
 
-  // Kaydet
-  currentCourses = currentCourses.map(c => c.id === course.id ? course : c);
-  DataStore.saveCourses(currentCourses);
-
-  // Görünümü yenile
-  renderTeacherDashboard();
-  openCourseDetail(course.id);
-
-  // Kurs sonu evraklarını indirme penceresini doğrudan aç
-  setTimeout(() => {
-    if (typeof openSaveAllDocumentsModal === 'function') {
-      openSaveAllDocumentsModal();
+      // Kurs sonu evraklarını indirme penceresini doğrudan aç
+      setTimeout(() => {
+        if (typeof openSaveAllDocumentsModal === 'function') {
+          openSaveAllDocumentsModal();
+        }
+      }, 300);
     }
-  }, 300);
+  });
 };
 
 window.handleReopenCourseClick = function() {
