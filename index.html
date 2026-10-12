@@ -3340,8 +3340,36 @@
           </div>
         </div>
 
+        <!-- Kurs Kapatılmamışsa Gösterilecek Uyarı ve Bilgilendirme Kutusu -->
+        <div id="courseDocumentsLockedBanner" class="p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/30 border-2 border-amber-300 dark:border-amber-800/60 text-amber-950 dark:text-amber-200 shadow-sm flex items-start gap-3.5">
+          <div class="p-2.5 bg-amber-200/80 dark:bg-amber-900/60 rounded-xl shrink-0 mt-0.5">
+            <i data-lucide="alert-triangle" class="w-5 h-5 text-amber-800 dark:text-amber-300"></i>
+          </div>
+          <div class="space-y-1 flex-1 text-xs">
+            <h5 class="font-extrabold text-sm text-amber-900 dark:text-amber-100 flex items-center gap-1.5">
+              <span>Kurs Kapatılmadan Kurs Sonu Evrakları Görüntülenemez</span>
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-rose-100 text-rose-800 border border-rose-300">İşlem Gerekli</span>
+            </h5>
+            <p class="leading-relaxed">
+              Mevzuat gereği; <strong>Kursiyer Karar Durumu, Yoklama Defteri, Not Çizelgesi, Sınav Tutanağı ve İmza Listesi</strong> gibi resmi kurs sonu evraklarının kesinleşmesi için kursun tamamlanmış ve kapatılmış olması şarttır.
+            </p>
+            <p class="text-[11px] text-amber-800/90 dark:text-amber-300/90 pt-0.5">
+              💡 Kursu kapatmak için sağ üstteki <strong class="text-rose-700 dark:text-rose-400">"Kursu Kapat"</strong> butonuna tıklayınız. Kurs kapatıldığında tüm resmi evraklar otomatik olarak açılacak ve tek tıkla toplu olarak indirilebilecektir.
+            </p>
+          </div>
+          <button
+            type="button"
+            onclick="handleCloseCourseClick()"
+            class="px-3 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold shrink-0 shadow-xs cursor-pointer transition flex items-center gap-1.5"
+            title="Kursu Kapat ve Evrakları Aç"
+          >
+            <i data-lucide="lock" class="w-3.5 h-3.5 text-white"></i>
+            <span>Kursu Kapat</span>
+          </button>
+        </div>
+
         <!-- 3 Sütunlu Kart Izgarası (6 Element / Belge) -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 my-3">
+        <div id="courseDocumentsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 my-3">
 
           <!-- 1. Belge: Modüler Kurs Çerçeve ve Çalışma Planı -->
           <div class="flex flex-col justify-between p-6 sm:p-7 min-h-[300px] rounded-2xl border border-slate-200 dark:border-[#23353c] bg-white dark:bg-[#152125] shadow-xs hover:shadow-lg hover:border-[#335C67] dark:hover:border-[#FFF3B0]/60 transition-all duration-200 group">

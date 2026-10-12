@@ -3916,6 +3916,12 @@ function switchDetailTab(tab) {
   } else {
     tabDocumentsBtn.className = activeTabClasses;
     tabDocumentsContent.classList.remove('hidden');
+    
+    // Kurs kapatılmamışsa eğitmeni uyar
+    if (activeCourseForDetail && activeCourseForDetail.status !== 'completed' && !isDeveloper(currentUser)) {
+      alert('⚠️ DİKKAT: Kurs Henüz Kapatılmamıştır!\n\nResmi mevzuat gereği; Kursiyer Karar Durumu, Yoklama Defteri, Not Çizelgesi, Sınav Tutanağı ve İmza Listesi evrakları kurs kapatılmadan önce oluşturulamaz ve teslim edilemez.\n\nEvrakları görüntülemek ve indirmek için lütfen önce üst kısımdaki "Kursu Kapat" butonuna tıklayınız.');
+    }
+    
     renderDocumentsTab();
   }
   refreshLucide();
@@ -7904,6 +7910,31 @@ function renderDocumentsTab() {
   if (!activeCourseForDetail) return;
   activeCourseForDetail.students = sortStudentsAlphabetically(activeCourseForDetail.students || []);
 
+  const isClosed = activeCourseForDetail.status === 'completed';
+  const isDev = isDeveloper(currentUser);
+
+  // Kurs Kapatılmamışsa Uyarı Bannerını Göster, Kapatılmışsa Gizle
+  const lockedBanner = document.getElementById('courseDocumentsLockedBanner');
+  if (lockedBanner) {
+    if (!isClosed && !isDev) {
+      lockedBanner.classList.remove('hidden');
+    } else {
+      lockedBanner.classList.add('hidden');
+    }
+  }
+
+  // Kurs Kapatılmamışsa Toplu Kaydet Butonunu Devre Dışı Bırak / Gizle
+  const saveAllBtn = document.getElementById('saveAllCourseDocumentsBtn');
+  if (saveAllBtn) {
+    if (!isClosed && !isDev) {
+      saveAllBtn.classList.add('opacity-50', 'cursor-not-allowed');
+      saveAllBtn.title = 'Kurs kapatılmadan tüm evraklar kaydedilemez. Lütfen önce "Kursu Kapat" işlemini yapınız.';
+    } else {
+      saveAllBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+      saveAllBtn.title = 'Tüm Kurs Sonu Evraklarını Kendi İsmi ve Kurs No ile Kaydet';
+    }
+  }
+
   const docType = (activeCourseForDetail && activeCourseForDetail.documentType) ? activeCourseForDetail.documentType : 'Sertifika';
   const isKatilim = docType.toLowerCase().includes('katılım') || docType.toLowerCase().includes('katilim');
   const students = activeCourseForDetail.students;
@@ -8262,6 +8293,16 @@ window.openKursPlaniConfigModal = function() {
     return;
   }
 
+  // Kurs kapatılmamışsa uyarı mesajı ver
+  if (activeCourseForDetail.status !== 'completed' && !isDeveloper(currentUser)) {
+    const proceed = confirm(
+      '⚠️ DİKKAT: Kurs Henüz Kapatılmamıştır!\n\n' +
+      'Kurs Planı ve resmi evraklar kurs kapatma işlemi yapıldıktan sonra kesinleşmektedir. Kurs henüz kapatılmamış durumdadır.\n\n' +
+      'Yine de Kurs Planı yapılandırma ekranına devam etmek istiyor musunuz?'
+    );
+    if (!proceed) return;
+  }
+
   const course = activeCourseForDetail;
 
   // Başlık ve Kurs Bilgilerini Doldur
@@ -8425,8 +8466,23 @@ window.triggerPrintKursPlani = function() {
   safePrint(generateKursPlaniHtml(activeCourseForDetail), true, title);
 };
 
+// Kurs Sonu Resmi Evraklarının Kapatılma Kontrolü
+function checkCourseClosedForDocuments(docName = 'Resmi Evrak') {
+  if (!activeCourseForDetail) return false;
+  if (activeCourseForDetail.status !== 'completed' && !isDeveloper(currentUser)) {
+    alert(
+      `⚠️ DİKKAT: Kurs Henüz Kapatılmamıştır!\n\n` +
+      `Resmi mevzuat gereği; "${docName}" ve diğer kurs sonu evrakları (Karar Durumu, Yoklama Defteri, Not Çizelgesi, Sınav Tutanağı ve İmza Listesi) kurs kapatılmadan önce oluşturulamaz ve teslim edilemez.\n\n` +
+      `Kurs sonu evraklarını görüntülemek ve indirmek için lütfen önce kurs detayındaki "Kursu Kapat" butonuna tıklayınız.`
+    );
+    return false;
+  }
+  return true;
+}
+
 window.openKararDurumuPreview = function() {
   if (!activeCourseForDetail) return;
+  if (!checkCourseClosedForDocuments('Kursiyer Karar Durumu')) return;
   const container = document.getElementById('kararDurumuPreviewContainer');
   const modal = document.getElementById('kararDurumuModal');
   if (container) {
@@ -8742,6 +8798,7 @@ function safePrint(htmlContent, isLandscape = false, documentTitle = 'Resmi Evra
 
 window.triggerPrintKararDurumu = function() {
   if (!activeCourseForDetail) return;
+  if (!checkCourseClosedForDocuments('Kursiyer Karar Durumu')) return;
   const title = getDocumentSaveTitle('Kursiyer Karar Durumu', activeCourseForDetail);
   safePrint(generateKararDurumuHtml(activeCourseForDetail), false, title);
 };
@@ -8753,6 +8810,13 @@ window.openSaveAllDocumentsModal = function() {
     alert('Lütfen önce bir kurs seçiniz.');
     return;
   }
+
+  // Kurs kapatılmamışsa kurs sonu evrakları açılamaz
+  if (activeCourseForDetail.status !== 'completed' && !isDeveloper(currentUser)) {
+    alert('⚠️ DİKKAT: Kurs Henüz Kapatılmamıştır!\n\nResmi mevzuat gereği kurs kapatılmadan önce kurs sonu resmi evrakları (Karar Durumu, Yoklama Defteri, Not Çizelgesi, Sınav Tutanağı ve İmza Listesi) hazırlanamaz ve indirilemez.\n\nLütfen önce "Kursu Kapat" butonunu kullanarak kursu tamamlayınız.');
+    return;
+  }
+
   const course = activeCourseForDetail;
   const courseNumber = getCourseNumber(course) || 'KODSUZ';
   const courseName = course.name || course.title || 'Kurs';
@@ -8827,6 +8891,10 @@ window.closeSaveAllDocumentsModal = function() {
 
 window.downloadSingleDocument = function(docName) {
   if (!activeCourseForDetail) return;
+  // Kurs planı haricindeki tüm kurs sonu evrakları için kapatılma şartı
+  if (!docName.includes('Plan') && !docName.includes('plan')) {
+    if (!checkCourseClosedForDocuments(docName)) return;
+  }
   const course = activeCourseForDetail;
   const courseNumber = getCourseNumber(course) || 'KODSUZ';
   let html = '';
@@ -8863,6 +8931,7 @@ window.downloadSingleDocument = function(docName) {
 
 window.downloadAllCourseDocuments = function() {
   if (!activeCourseForDetail) return;
+  if (!checkCourseClosedForDocuments('Tüm Kurs Sonu Evrakları')) return;
   const course = activeCourseForDetail;
   const courseNumber = getCourseNumber(course) || 'KODSUZ';
 
@@ -9350,6 +9419,7 @@ function generateDefterHtml(course) {
 
 window.openDefterPreview = function() {
   if (!activeCourseForDetail) return;
+  if (!checkCourseClosedForDocuments('Yoklama ve Ders Defteri')) return;
   const container = document.getElementById('defterPreviewContainer');
   const modal = document.getElementById('defterModal');
   if (container) {
@@ -9367,6 +9437,7 @@ window.closeDefterPreview = function() {
 
 window.triggerPrintDefter = function() {
   if (!activeCourseForDetail) return;
+  if (!checkCourseClosedForDocuments('Yoklama ve Ders Defteri')) return;
   const title = getDocumentSaveTitle('Yoklama ve Ders Defteri', activeCourseForDetail);
   safePrint(generateDefterHtml(activeCourseForDetail), false, title);
 };
@@ -9674,6 +9745,7 @@ function generateNotCizelgesiHtml(course) {
 
 window.openNotCizelgesiPreview = function() {
   if (!activeCourseForDetail) return;
+  if (!checkCourseClosedForDocuments('Modül Değerlendirme Çizelgesi')) return;
   const container = document.getElementById('notCizelgesiPreviewContainer');
   const modal = document.getElementById('notCizelgesiModal');
   if (container) {
@@ -9691,6 +9763,7 @@ window.closeNotCizelgesiPreview = function() {
 
 window.triggerPrintNotCizelgesi = function() {
   if (!activeCourseForDetail) return;
+  if (!checkCourseClosedForDocuments('Modül Değerlendirme Çizelgesi')) return;
   const title = getDocumentSaveTitle('Modül Değerlendirme Çizelgesi', activeCourseForDetail);
   safePrint(generateNotCizelgesiHtml(activeCourseForDetail), true, title);
 };
@@ -9802,6 +9875,7 @@ function generateSinavTutanagiHtml(course) {
 
 window.openSinavTutanagiPreview = function() {
   if (!activeCourseForDetail) return;
+  if (!checkCourseClosedForDocuments('Sınav Tutanağı')) return;
   const container = document.getElementById('sinavTutanagiPreviewContainer');
   const modal = document.getElementById('sinavTutanagiModal');
   if (container) {
@@ -9819,6 +9893,7 @@ window.closeSinavTutanagiPreview = function() {
 
 window.triggerPrintSinavTutanagi = function() {
   if (!activeCourseForDetail) return;
+  if (!checkCourseClosedForDocuments('Sınav Tutanağı')) return;
   const title = getDocumentSaveTitle('Sınav Tutanağı', activeCourseForDetail);
   safePrint(generateSinavTutanagiHtml(activeCourseForDetail), false, title);
 };
@@ -9941,6 +10016,7 @@ function generateImzaListesiHtml(course) {
 
 window.openImzaListesiPreview = function() {
   if (!activeCourseForDetail) return;
+  if (!checkCourseClosedForDocuments('İmza Listesi')) return;
   const container = document.getElementById('imzaListesiPreviewContainer');
   const modal = document.getElementById('imzaListesiModal');
   if (container) {
@@ -9958,6 +10034,7 @@ window.closeImzaListesiPreview = function() {
 
 window.triggerPrintImzaListesi = function() {
   if (!activeCourseForDetail) return;
+  if (!checkCourseClosedForDocuments('İmza Listesi')) return;
   const title = getDocumentSaveTitle('İmza Listesi', activeCourseForDetail);
   safePrint(generateImzaListesiHtml(activeCourseForDetail), true, title);
 };
