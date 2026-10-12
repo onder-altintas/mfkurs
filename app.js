@@ -688,8 +688,8 @@ window.isCourseInstructor = isCourseInstructor;
 /**
  * Bir kursun oturum açmış kullanıcı ile ilgili olup olmadığını (görüntüleme ve yönetim yetkisini) belirler.
  * - Geliştiriciler: Tüm kurslar
- * - Kursun kendi eğitmeni: İlgili kurs
- * - Zümre Başkanı: Kendi branşındaki (veya yetkili olduğu branşlardaki) tüm mevcut/planlanan kurslar
+ * - Zümre Başkanı: SADECE kendi alan(lar)ının kursları
+ * - Kursun kendi eğitmeni / Normal kullanıcı: Yalnızca kendi açtığı/yönettiği kurslar
  */
 function isCourseRelatedToUser(course, user) {
   if (!course || !user) return false;
@@ -697,7 +697,28 @@ function isCourseRelatedToUser(course, user) {
   // 1. Geliştirici kullanıcılar tüm kurslara tam yetkili erişebilir
   if (isDeveloper(user)) return true;
 
-  // 2. Doğrudan bu eğitmene ait kurslar (Zümre başkanları da dahil eğitmenler sadece kendi açtıkları kursları yönetir)
+  // 2. Zümre Başkanı: SADECE kendi alan(lar)ının kurslarını görebilir
+  if (isDepartmentHead(user)) {
+    const userAreas = getUserAreas(user).map(a => toTurkishLower(a)).filter(Boolean);
+    let courseArea = toTurkishLower(course.category || course.area || '');
+
+    // Eğer kurs alan bilgisi doğrudan tanımlı değilse, şablondan (templateId) çözümle
+    if (!courseArea && course.templateId && Array.isArray(currentTemplates)) {
+      const tmpl = currentTemplates.find(t => t.id === course.templateId);
+      if (tmpl) {
+        courseArea = toTurkishLower(tmpl.category || tmpl.area || '');
+      }
+    }
+
+    if (!courseArea) {
+      // Kursun alanı hiç belirtilmemişse, yalnızca kursun kendi eğitmeni ise görebilir
+      return isCourseInstructor(course, user);
+    }
+
+    return userAreas.some(ua => ua === courseArea || courseArea.includes(ua) || ua.includes(courseArea));
+  }
+
+  // 3. Doğrudan bu eğitmene ait kurslar (Standart eğitmenler yalnızca kendi açtıkları kursları yönetir)
   if (isCourseInstructor(course, user)) return true;
 
   return false;
@@ -867,12 +888,19 @@ function showDashboard() {
       navAdminViewBtn.title = 'Geliştirici Yönetim Paneli';
       navAdminViewBtn.innerHTML = '<i data-lucide="settings" class="w-3.5 h-3.5 text-[#540B0E]"></i><span class="hidden md:inline">Geliştirici Paneli</span>';
     }
-    if (navSupervisorViewBtn) navSupervisorViewBtn.classList.remove('hidden');
+    if (navSupervisorViewBtn) {
+      navSupervisorViewBtn.classList.remove('hidden');
+      navSupervisorViewBtn.style.removeProperty('display');
+    }
     switchView('admin');
   } else if (isSupervisor(currentUser)) {
     roleBadge.innerText = 'Eğitim Sorumlusu';
     roleBadge.className = 'px-2 py-0.5 text-[10px] uppercase font-bold tracking-wider rounded bg-indigo-700 text-white border border-indigo-300/30 shadow-xs';
     navViewSwitcher.style.setProperty('display', 'none', 'important');
+    if (navSupervisorViewBtn) {
+      navSupervisorViewBtn.classList.add('hidden');
+      navSupervisorViewBtn.style.setProperty('display', 'none', 'important');
+    }
     switchView('supervisor');
   } else if (isDepartmentHead(currentUser)) {
     roleBadge.innerText = 'Zümre Başkanı';
@@ -882,12 +910,19 @@ function showDashboard() {
       navAdminViewBtn.title = 'Kurs ve Müfredat Planları Yönetimi';
       navAdminViewBtn.innerHTML = '<i data-lucide="layers" class="w-3.5 h-3.5 text-teal-600"></i><span class="hidden md:inline">Müfredat Planları</span>';
     }
-    if (navSupervisorViewBtn) navSupervisorViewBtn.classList.add('hidden');
+    if (navSupervisorViewBtn) {
+      navSupervisorViewBtn.classList.add('hidden');
+      navSupervisorViewBtn.style.setProperty('display', 'none', 'important');
+    }
     switchView('teacher');
   } else {
     roleBadge.innerText = 'Öğretici Paneli';
     roleBadge.className = 'px-2 py-0.5 text-[10px] uppercase font-bold tracking-wider rounded bg-[#FFF3B0] text-[#540B0E] border border-[#E09F3E]/40 shadow-xs';
     navViewSwitcher.style.setProperty('display', 'none', 'important');
+    if (navSupervisorViewBtn) {
+      navSupervisorViewBtn.classList.add('hidden');
+      navSupervisorViewBtn.style.setProperty('display', 'none', 'important');
+    }
     switchView('teacher');
   }
 
@@ -927,7 +962,15 @@ function switchView(view) {
   const inactiveBtnClass = 'px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 cursor-pointer flex items-center gap-1.5 transition';
   if (navAdminViewBtn) navAdminViewBtn.className = inactiveBtnClass;
   if (navTeacherViewBtn) navTeacherViewBtn.className = inactiveBtnClass;
-  if (navSupervisorViewBtn) navSupervisorViewBtn.className = inactiveBtnClass;
+  if (navSupervisorViewBtn) {
+    if (isDeveloper(currentUser)) {
+      navSupervisorViewBtn.className = inactiveBtnClass;
+      navSupervisorViewBtn.style.removeProperty('display');
+    } else {
+      navSupervisorViewBtn.className = inactiveBtnClass + ' hidden';
+      navSupervisorViewBtn.style.setProperty('display', 'none', 'important');
+    }
+  }
 
   if (view === 'admin') {
     adminSection?.classList.remove('hidden');
@@ -940,8 +983,9 @@ function switchView(view) {
     }
   } else if (view === 'supervisor') {
     if (supSection) supSection.classList.remove('hidden');
-    if (navSupervisorViewBtn) {
+    if (navSupervisorViewBtn && isDeveloper(currentUser)) {
       navSupervisorViewBtn.className = 'px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-white dark:bg-[#152125] text-indigo-700 dark:text-indigo-300 shadow-xs cursor-pointer flex items-center gap-1.5 transition border border-indigo-500/20';
+      navSupervisorViewBtn.style.removeProperty('display');
     }
     renderSupervisorDashboard();
   } else {
@@ -2276,10 +2320,21 @@ window.deleteArea = function(areaId) {
 function renderAdminTemplates() {
   // Kurs ve müfredat planlarını her zaman Türkçe alfabetik sıraya göre (A-Z) listele
   currentTemplates.sort((a, b) => (a.name || '').localeCompare(b.name || '', 'tr', { sensitivity: 'base' }));
-  adminTemplatesCount.innerText = currentTemplates.length;
+
+  let templatesToShow = currentTemplates;
+  if (isDepartmentHead(currentUser) && !isDeveloper(currentUser)) {
+    const userAreas = getUserAreas(currentUser).map(a => toTurkishLower(a)).filter(Boolean);
+    templatesToShow = currentTemplates.filter(tmpl => {
+      const tArea = toTurkishLower(tmpl.category || tmpl.area || '');
+      if (!tArea) return false;
+      return userAreas.some(ua => ua === tArea || tArea.includes(ua) || ua.includes(tArea));
+    });
+  }
+
+  adminTemplatesCount.innerText = templatesToShow.length;
   templatesGrid.innerHTML = '';
 
-  currentTemplates.forEach((tmpl) => {
+  templatesToShow.forEach((tmpl) => {
     const card = document.createElement('div');
     card.className = 'bg-white dark:bg-[#152125] rounded-2xl border border-slate-200 dark:border-[#23353c] p-5 shadow-xs space-y-4 hover:border-sky-400 dark:hover:border-sky-400 hover:bg-sky-50/15 dark:hover:bg-[#152730] transition';
 
@@ -2717,6 +2772,15 @@ function handleSaveCourseTemplate(e) {
   }
 
   const category = tmplFormCategory.value;
+  if (isDepartmentHead(currentUser) && !isDeveloper(currentUser)) {
+    const userAreas = getUserAreas(currentUser).map(a => toTurkishLower(a)).filter(Boolean);
+    const catLower = toTurkishLower(category);
+    if (!userAreas.some(ua => ua === catLower || catLower.includes(ua) || ua.includes(catLower))) {
+      alert(`Yetki Hatası: Yalnızca yetkili olduğunuz kendi alan(lar)ınız (${userAreas.join(', ')}) için müfredat planı tanımlayabilirsiniz!`);
+      tmplFormCategory.focus();
+      return;
+    }
+  }
   const description = tmplFormDescription.value.trim();
   const totalHours = fullSyllabus.length;
   const moduleCount = savedModules.length;
