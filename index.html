@@ -2565,49 +2565,49 @@
       </div>
 
       <!-- Sekmeler -->
-      <div class="flex border-b border-slate-200 bg-slate-100/50 px-5 pt-2 overflow-x-auto">
+      <div class="flex items-center border-b border-slate-300 dark:border-[#23353c] bg-slate-200/80 dark:bg-[#0f1719] px-6 pt-2.5 gap-2 overflow-x-auto shadow-inner">
         <button
           id="tabStudentsBtn"
-          class="flex items-center gap-2 px-4 py-2.5 text-xs sm:text-sm font-semibold border-b-2 border-sky-600 text-sky-700 bg-white rounded-t-lg transition cursor-pointer whitespace-nowrap"
+          class="flex items-center gap-2 px-4 sm:px-5 py-3 text-xs sm:text-sm font-extrabold border-b-2 border-[#335C67] dark:border-[#FFF3B0] text-[#335C67] dark:text-[#FFF3B0] bg-white dark:bg-[#152125] rounded-t-xl transition cursor-pointer whitespace-nowrap shadow-sm"
         >
-          <i data-lucide="users" class="w-4 h-4"></i>
-          <span>Kursiyer Listesi (<span id="detailStudentCount">0</span>)</span>
+          <i data-lucide="users" class="w-4 h-4 text-[#335C67] dark:text-[#FFF3B0]"></i>
+          <span>Kursiyer Listesi (<span id="detailStudentCount" class="font-extrabold">0</span>)</span>
         </button>
 
         <button
           id="tabAttendanceBtn"
-          class="flex items-center gap-2 px-4 py-2.5 text-xs sm:text-sm font-semibold border-b-2 border-transparent text-slate-600 hover:text-slate-900 transition cursor-pointer whitespace-nowrap"
+          class="flex items-center gap-2 px-4 sm:px-5 py-3 text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-200 hover:text-slate-950 dark:hover:text-white hover:bg-slate-300/60 dark:hover:bg-[#1c2c32] rounded-t-xl transition cursor-pointer whitespace-nowrap border-b-2 border-transparent"
         >
-          <i data-lucide="calendar-check-2" class="w-4 h-4 text-emerald-600"></i>
+          <i data-lucide="calendar-check-2" class="w-4 h-4 text-emerald-600 dark:text-emerald-400"></i>
           <span>Devamsızlık</span>
         </button>
 
         <button
           id="tabExamsBtn"
-          class="flex items-center gap-2 px-4 py-2.5 text-xs sm:text-sm font-semibold border-b-2 border-transparent text-slate-600 hover:text-slate-900 transition cursor-pointer whitespace-nowrap"
+          class="flex items-center gap-2 px-4 sm:px-5 py-3 text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-200 hover:text-slate-950 dark:hover:text-white hover:bg-slate-300/60 dark:hover:bg-[#1c2c32] rounded-t-xl transition cursor-pointer whitespace-nowrap border-b-2 border-transparent"
         >
-          <i data-lucide="award" class="w-4 h-4 text-purple-600"></i>
+          <i data-lucide="award" class="w-4 h-4 text-purple-600 dark:text-purple-400"></i>
           <span>Modül Sınavları & Not Girişi</span>
-          <span id="detailModuleBadge" class="px-1.5 py-0.5 bg-purple-100 text-purple-800 text-[10px] font-bold rounded-full">
+          <span id="detailModuleBadge" class="px-2 py-0.5 bg-purple-100 dark:bg-purple-900/40 text-purple-800 dark:text-purple-300 text-[11px] font-bold rounded-full border border-purple-200 dark:border-purple-800/50">
             1 Modül
           </span>
         </button>
 
         <button
           id="tabSyllabusBtn"
-          class="flex items-center gap-2 px-4 py-2.5 text-xs sm:text-sm font-semibold border-b-2 border-transparent text-slate-600 hover:text-slate-900 transition cursor-pointer whitespace-nowrap"
+          class="flex items-center gap-2 px-4 sm:px-5 py-3 text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-200 hover:text-slate-950 dark:hover:text-white hover:bg-slate-300/60 dark:hover:bg-[#1c2c32] rounded-t-xl transition cursor-pointer whitespace-nowrap border-b-2 border-transparent"
         >
-          <i data-lucide="calendar" class="w-4 h-4 text-sky-600"></i>
-          <span>Saatlik Konu Planı (<span id="detailSyllabusCount">0</span> Saat)</span>
+          <i data-lucide="calendar" class="w-4 h-4 text-sky-600 dark:text-sky-400"></i>
+          <span>Saatlik Konu Planı (<span id="detailSyllabusCount" class="font-extrabold">0</span> Saat)</span>
         </button>
 
         <button
           id="tabDocumentsBtn"
-          class="flex items-center gap-2 px-4 py-2.5 text-xs sm:text-sm font-semibold border-b-2 border-transparent text-slate-600 hover:text-slate-900 transition cursor-pointer whitespace-nowrap"
+          class="flex items-center gap-2 px-4 sm:px-5 py-3 text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-200 hover:text-slate-950 dark:hover:text-white hover:bg-slate-300/60 dark:hover:bg-[#1c2c32] rounded-t-xl transition cursor-pointer whitespace-nowrap border-b-2 border-transparent"
         >
-          <i data-lucide="file-text" class="w-4 h-4 text-indigo-600"></i>
+          <i data-lucide="file-text" class="w-4 h-4 text-indigo-600 dark:text-indigo-400"></i>
           <span>Resmi Evraklar & Kurs Planı</span>
-          <span class="px-1.5 py-0.5 bg-emerald-100 text-emerald-800 text-[10px] font-bold rounded-full">
+          <span class="px-2 py-0.5 bg-emerald-100 dark:bg-emerald-900/40 text-emerald-800 dark:text-emerald-300 text-[11px] font-bold rounded-full border border-emerald-200 dark:border-emerald-800/50">
             6 Belge
           </span>
         </button>
@@ -3121,58 +3121,58 @@
         </div>
 
         <!-- 3 Sütunlu Kart Izgarası (6 Element / Belge) -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 my-2">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 my-3">
 
           <!-- 1. Belge: Modüler Kurs Çerçeve ve Çalışma Planı -->
-          <div class="flex flex-col justify-between p-5 rounded-2xl border border-slate-200 dark:border-[#23353c] bg-white dark:bg-[#152125] shadow-xs hover:shadow-md hover:border-[#335C67] dark:hover:border-[#FFF3B0]/60 transition-all duration-200 group">
-            <div class="space-y-3">
-              <div class="flex items-start justify-between gap-2.5">
-                <div class="flex items-center gap-3">
-                  <div class="p-2.5 rounded-xl bg-gradient-to-br from-[#335C67] via-[#284952] to-[#540B0E] text-white shadow-xs shrink-0 group-hover:scale-105 transition-transform">
-                    <i data-lucide="file-spreadsheet" class="w-5 h-5 text-[#FFF3B0]"></i>
+          <div class="flex flex-col justify-between p-6 sm:p-7 min-h-[300px] rounded-2xl border border-slate-200 dark:border-[#23353c] bg-white dark:bg-[#152125] shadow-xs hover:shadow-lg hover:border-[#335C67] dark:hover:border-[#FFF3B0]/60 transition-all duration-200 group">
+            <div class="space-y-4">
+              <div class="flex items-start justify-between gap-3">
+                <div class="flex items-center gap-3.5">
+                  <div class="p-3.5 rounded-2xl bg-gradient-to-br from-[#335C67] via-[#284952] to-[#540B0E] text-white shadow-sm shrink-0 group-hover:scale-105 transition-transform">
+                    <i data-lucide="file-spreadsheet" class="w-6 h-6 text-[#FFF3B0]"></i>
                   </div>
                   <div>
-                    <h5 class="font-extrabold text-sm text-slate-800 dark:text-slate-100 leading-snug">
+                    <h5 class="font-extrabold text-base text-slate-800 dark:text-slate-100 leading-snug">
                       Kurs Çerçeve &amp; Çalışma Planı
                     </h5>
-                    <div class="flex items-center gap-1.5 mt-1 flex-wrap">
-                      <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-[#FFF3B0] text-[#540B0E] border border-[#E09F3E]/40">Açılış Belgesi</span>
-                      <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-300">Yatay A4</span>
+                    <div class="flex items-center gap-2 mt-1.5 flex-wrap">
+                      <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-[#FFF3B0] text-[#540B0E] border border-[#E09F3E]/40">Açılış Belgesi</span>
+                      <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-amber-100 text-amber-800 border border-amber-300">Yatay A4</span>
                     </div>
                   </div>
                 </div>
               </div>
-              <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed line-clamp-3" title="Kurs modül süreleri, sınav tarihleri, haftalık ders dağıtımı ve 3'lü resmi onay bloğunu içeren açılış planıdır.">
-                Modül süreleri, sınav tarihleri, haftalık ders dağıtımı ve 3'lü resmi onay bloğunu içeren kurs açılış planıdır.
+              <p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed pt-1">
+                Kurs modül süreleri, sınav tarihleri, haftalık ders dağıtımı ve 3'lü resmi onay bloğunu içeren açılış planıdır. Ders saatlerine göre otomatik yapılandırılır.
               </p>
             </div>
 
-            <div class="pt-4 border-t border-slate-100 dark:border-[#23353c] mt-4">
+            <div class="pt-5 border-t border-slate-100 dark:border-[#23353c] mt-6">
               <!-- Butonlar -->
               <div class="flex items-center gap-2">
                 <button
                   type="button"
                   id="previewKursPlaniBtn"
                   onclick="openKursPlaniConfigModal()"
-                  class="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-[#10191b] dark:hover:bg-[#19272c] text-slate-800 dark:text-slate-100 rounded-xl text-xs font-bold transition cursor-pointer border border-slate-200 dark:border-[#2b3e45]"
+                  class="flex-1 flex items-center justify-center gap-1.5 px-3.5 py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-[#10191b] dark:hover:bg-[#19272c] text-slate-800 dark:text-slate-100 rounded-xl text-xs sm:text-sm font-bold transition cursor-pointer border border-slate-200 dark:border-[#2b3e45]"
                   title="Planı Yapılandır ve Önizle"
                 >
-                  <i data-lucide="sparkles" class="w-3.5 h-3.5 text-[#335C67] dark:text-[#FFF3B0]"></i>
+                  <i data-lucide="sparkles" class="w-4 h-4 text-[#335C67] dark:text-[#FFF3B0]"></i>
                   <span>Plan Oluştur</span>
                 </button>
                 <button
                   type="button"
                   onclick="triggerPrintKursPlani()"
-                  class="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-[#335C67] hover:bg-[#274851] text-white rounded-xl text-xs font-bold shadow-xs transition cursor-pointer"
+                  class="flex-1 flex items-center justify-center gap-1.5 px-3.5 py-2.5 bg-[#335C67] hover:bg-[#274851] text-white rounded-xl text-xs sm:text-sm font-bold shadow-xs transition cursor-pointer"
                   title="Yazdır veya PDF Kaydet"
                 >
-                  <i data-lucide="printer" class="w-3.5 h-3.5 text-[#FFF3B0]"></i>
+                  <i data-lucide="printer" class="w-4 h-4 text-[#FFF3B0]"></i>
                   <span>Yazdır</span>
                 </button>
                 <button
                   type="button"
                   onclick="downloadSingleDocument('Kurs Planı')"
-                  class="p-2 bg-slate-100 hover:bg-slate-200 dark:bg-[#10191b] dark:hover:bg-[#19272c] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-[#2b3e45] rounded-xl text-xs font-bold transition cursor-pointer"
+                  class="p-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-[#10191b] dark:hover:bg-[#19272c] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-[#2b3e45] rounded-xl text-xs font-bold transition cursor-pointer"
                   title="HTML Olarak İndir"
                 >
                   <i data-lucide="download" class="w-4 h-4 text-[#335C67] dark:text-[#FFF3B0]"></i>
@@ -3182,47 +3182,47 @@
           </div>
 
           <!-- 2. Belge: Kursiyer Karar Durumu -->
-          <div class="flex flex-col justify-between p-5 rounded-2xl border border-slate-200 dark:border-[#23353c] bg-white dark:bg-[#152125] shadow-xs hover:shadow-md hover:border-[#335C67] dark:hover:border-[#FFF3B0]/60 transition-all duration-200 group">
-            <div class="space-y-3">
-              <div class="flex items-start justify-between gap-2.5">
-                <div class="flex items-center gap-3">
-                  <div class="p-2.5 rounded-xl bg-gradient-to-br from-[#335C67] via-[#284952] to-[#540B0E] text-white shadow-xs shrink-0 group-hover:scale-105 transition-transform">
-                    <i data-lucide="file-text" class="w-5 h-5 text-[#FFF3B0]"></i>
+          <div class="flex flex-col justify-between p-6 sm:p-7 min-h-[300px] rounded-2xl border border-slate-200 dark:border-[#23353c] bg-white dark:bg-[#152125] shadow-xs hover:shadow-lg hover:border-[#335C67] dark:hover:border-[#FFF3B0]/60 transition-all duration-200 group">
+            <div class="space-y-4">
+              <div class="flex items-start justify-between gap-3">
+                <div class="flex items-center gap-3.5">
+                  <div class="p-3.5 rounded-2xl bg-gradient-to-br from-[#335C67] via-[#284952] to-[#540B0E] text-white shadow-sm shrink-0 group-hover:scale-105 transition-transform">
+                    <i data-lucide="file-text" class="w-6 h-6 text-[#FFF3B0]"></i>
                   </div>
                   <div>
-                    <h5 class="font-extrabold text-sm text-slate-800 dark:text-slate-100 leading-snug">
+                    <h5 class="font-extrabold text-base text-slate-800 dark:text-slate-100 leading-snug">
                       Kursiyer Karar Durumu
                     </h5>
-                    <div class="flex items-center gap-1.5 mt-1 flex-wrap">
-                      <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-[#FFF3B0] text-[#540B0E] border border-[#E09F3E]/40">Kapanış Belgesi</span>
-                      <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-slate-100 dark:bg-[#10191b] text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-[#23353c]">Dikey A4</span>
+                    <div class="flex items-center gap-2 mt-1.5 flex-wrap">
+                      <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-[#FFF3B0] text-[#540B0E] border border-[#E09F3E]/40">Kapanış Belgesi</span>
+                      <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-slate-100 dark:bg-[#10191b] text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-[#23353c]">Dikey A4</span>
                     </div>
                   </div>
                 </div>
               </div>
-              <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed line-clamp-3" title="Kursiyerlerin başarı ve devamsızlık durumlarına göre resmi karar ve belge türü tutanağıdır.">
-                Kursiyerlerin başarı ve devamsızlık durumlarına göre kesinleşen resmi karar ve belge türü tutanağıdır.
+              <p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed pt-1">
+                Kursiyerlerin başarı ve devamsızlık durumlarına göre kesinleşen resmi karar, kurs tamamlama ve belge türü onay tutanağı dökümüdür.
               </p>
             </div>
 
-            <div class="pt-4 border-t border-slate-100 dark:border-[#23353c] mt-4">
+            <div class="pt-5 border-t border-slate-100 dark:border-[#23353c] mt-6">
               <!-- Butonlar -->
               <div class="flex items-center gap-2">
                 <button
                   type="button"
                   id="previewKararDurumuBtn"
                   onclick="openKararDurumuPreview()"
-                  class="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-[#10191b] dark:hover:bg-[#19272c] text-slate-800 dark:text-slate-100 rounded-xl text-xs font-bold transition cursor-pointer border border-slate-200 dark:border-[#2b3e45]"
+                  class="flex-1 flex items-center justify-center gap-1.5 px-3.5 py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-[#10191b] dark:hover:bg-[#19272c] text-slate-800 dark:text-slate-100 rounded-xl text-xs sm:text-sm font-bold transition cursor-pointer border border-slate-200 dark:border-[#2b3e45]"
                 >
-                  <i data-lucide="eye" class="w-3.5 h-3.5 text-[#335C67] dark:text-[#FFF3B0]"></i>
+                  <i data-lucide="eye" class="w-4 h-4 text-[#335C67] dark:text-[#FFF3B0]"></i>
                   <span>Önizle</span>
                 </button>
                 <button
                   type="button"
                   onclick="triggerPrintKararDurumu()"
-                  class="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-[#335C67] hover:bg-[#274851] text-white rounded-xl text-xs font-bold shadow-xs transition cursor-pointer"
+                  class="flex-1 flex items-center justify-center gap-1.5 px-3.5 py-2.5 bg-[#335C67] hover:bg-[#274851] text-white rounded-xl text-xs sm:text-sm font-bold shadow-xs transition cursor-pointer"
                 >
-                  <i data-lucide="printer" class="w-3.5 h-3.5 text-[#FFF3B0]"></i>
+                  <i data-lucide="printer" class="w-4 h-4 text-[#FFF3B0]"></i>
                   <span>Yazdır</span>
                 </button>
               </div>
@@ -3230,47 +3230,47 @@
           </div>
 
           <!-- 3. Belge: Yoklama ve Ders Defteri -->
-          <div class="flex flex-col justify-between p-5 rounded-2xl border border-slate-200 dark:border-[#23353c] bg-white dark:bg-[#152125] shadow-xs hover:shadow-md hover:border-[#335C67] dark:hover:border-[#FFF3B0]/60 transition-all duration-200 group">
-            <div class="space-y-3">
-              <div class="flex items-start justify-between gap-2.5">
-                <div class="flex items-center gap-3">
-                  <div class="p-2.5 rounded-xl bg-gradient-to-br from-[#335C67] via-[#284952] to-[#540B0E] text-white shadow-xs shrink-0 group-hover:scale-105 transition-transform">
-                    <i data-lucide="book-open" class="w-5 h-5 text-[#FFF3B0]"></i>
+          <div class="flex flex-col justify-between p-6 sm:p-7 min-h-[300px] rounded-2xl border border-slate-200 dark:border-[#23353c] bg-white dark:bg-[#152125] shadow-xs hover:shadow-lg hover:border-[#335C67] dark:hover:border-[#FFF3B0]/60 transition-all duration-200 group">
+            <div class="space-y-4">
+              <div class="flex items-start justify-between gap-3">
+                <div class="flex items-center gap-3.5">
+                  <div class="p-3.5 rounded-2xl bg-gradient-to-br from-[#335C67] via-[#284952] to-[#540B0E] text-white shadow-sm shrink-0 group-hover:scale-105 transition-transform">
+                    <i data-lucide="book-open" class="w-6 h-6 text-[#FFF3B0]"></i>
                   </div>
                   <div>
-                    <h5 class="font-extrabold text-sm text-slate-800 dark:text-slate-100 leading-snug">
+                    <h5 class="font-extrabold text-base text-slate-800 dark:text-slate-100 leading-snug">
                       Yoklama ve Ders Defteri
                     </h5>
-                    <div class="flex items-center gap-1.5 mt-1 flex-wrap">
-                      <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-[#FFF3B0] text-[#540B0E] border border-[#E09F3E]/40">Kapanış Belgesi</span>
-                      <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-slate-100 dark:bg-[#10191b] text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-[#23353c]">Dikey A4</span>
+                    <div class="flex items-center gap-2 mt-1.5 flex-wrap">
+                      <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-[#FFF3B0] text-[#540B0E] border border-[#E09F3E]/40">Kapanış Belgesi</span>
+                      <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-slate-100 dark:bg-[#10191b] text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-[#23353c]">Dikey A4</span>
                     </div>
                   </div>
                 </div>
               </div>
-              <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed line-clamp-3" title="Kapak sayfası, 31 günlük yoklama cetveli ve saatlik günlük ders defteri sayfalarıdır.">
-                Kapak sayfası, 31 günlük yoklama cetveli ve saatlik günlük ders defteri sayfalarının resmi dökümüdür.
+              <p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed pt-1">
+                Resmi kapak sayfası, aylık/günlük yoklama cetvelleri ve saatlik günlük ders defteri sayfalarının resmi dökümüdür.
               </p>
             </div>
 
-            <div class="pt-4 border-t border-slate-100 dark:border-[#23353c] mt-4">
+            <div class="pt-5 border-t border-slate-100 dark:border-[#23353c] mt-6">
               <!-- Butonlar -->
               <div class="flex items-center gap-2">
                 <button
                   type="button"
                   id="previewDefterBtn"
                   onclick="openDefterPreview()"
-                  class="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-[#10191b] dark:hover:bg-[#19272c] text-slate-800 dark:text-slate-100 rounded-xl text-xs font-bold transition cursor-pointer border border-slate-200 dark:border-[#2b3e45]"
+                  class="flex-1 flex items-center justify-center gap-1.5 px-3.5 py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-[#10191b] dark:hover:bg-[#19272c] text-slate-800 dark:text-slate-100 rounded-xl text-xs sm:text-sm font-bold transition cursor-pointer border border-slate-200 dark:border-[#2b3e45]"
                 >
-                  <i data-lucide="eye" class="w-3.5 h-3.5 text-[#335C67] dark:text-[#FFF3B0]"></i>
+                  <i data-lucide="eye" class="w-4 h-4 text-[#335C67] dark:text-[#FFF3B0]"></i>
                   <span>Önizle</span>
                 </button>
                 <button
                   type="button"
                   onclick="triggerPrintDefter()"
-                  class="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-[#335C67] hover:bg-[#274851] text-white rounded-xl text-xs font-bold shadow-xs transition cursor-pointer"
+                  class="flex-1 flex items-center justify-center gap-1.5 px-3.5 py-2.5 bg-[#335C67] hover:bg-[#274851] text-white rounded-xl text-xs sm:text-sm font-bold shadow-xs transition cursor-pointer"
                 >
-                  <i data-lucide="printer" class="w-3.5 h-3.5 text-[#FFF3B0]"></i>
+                  <i data-lucide="printer" class="w-4 h-4 text-[#FFF3B0]"></i>
                   <span>Yazdır</span>
                 </button>
               </div>
@@ -3278,47 +3278,47 @@
           </div>
 
           <!-- 4. Belge: Modül Değerlendirme (Not) Çizelgesi -->
-          <div class="flex flex-col justify-between p-5 rounded-2xl border border-slate-200 dark:border-[#23353c] bg-white dark:bg-[#152125] shadow-xs hover:shadow-md hover:border-[#335C67] dark:hover:border-[#FFF3B0]/60 transition-all duration-200 group">
-            <div class="space-y-3">
-              <div class="flex items-start justify-between gap-2.5">
-                <div class="flex items-center gap-3">
-                  <div class="p-2.5 rounded-xl bg-gradient-to-br from-[#335C67] via-[#284952] to-[#540B0E] text-white shadow-xs shrink-0 group-hover:scale-105 transition-transform">
-                    <i data-lucide="graduation-cap" class="w-5 h-5 text-[#FFF3B0]"></i>
+          <div class="flex flex-col justify-between p-6 sm:p-7 min-h-[300px] rounded-2xl border border-slate-200 dark:border-[#23353c] bg-white dark:bg-[#152125] shadow-xs hover:shadow-lg hover:border-[#335C67] dark:hover:border-[#FFF3B0]/60 transition-all duration-200 group">
+            <div class="space-y-4">
+              <div class="flex items-start justify-between gap-3">
+                <div class="flex items-center gap-3.5">
+                  <div class="p-3.5 rounded-2xl bg-gradient-to-br from-[#335C67] via-[#284952] to-[#540B0E] text-white shadow-sm shrink-0 group-hover:scale-105 transition-transform">
+                    <i data-lucide="graduation-cap" class="w-6 h-6 text-[#FFF3B0]"></i>
                   </div>
                   <div>
-                    <h5 class="font-extrabold text-sm text-slate-800 dark:text-slate-100 leading-snug">
+                    <h5 class="font-extrabold text-base text-slate-800 dark:text-slate-100 leading-snug">
                       Modül Değerlendirme Çizelgesi
                     </h5>
-                    <div class="flex items-center gap-1.5 mt-1 flex-wrap">
-                      <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-[#FFF3B0] text-[#540B0E] border border-[#E09F3E]/40">Kapanış Belgesi</span>
-                      <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-300">Yatay A4</span>
+                    <div class="flex items-center gap-2 mt-1.5 flex-wrap">
+                      <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-[#FFF3B0] text-[#540B0E] border border-[#E09F3E]/40">Kapanış Belgesi</span>
+                      <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-amber-100 text-amber-800 border border-amber-300">Yatay A4</span>
                     </div>
                   </div>
                 </div>
               </div>
-              <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed line-clamp-3" title="Modül bazlı teorik ve pratik sınav notları ile kurs tamamlama başarı durum çizelgesidir.">
-                Modül bazlı teorik ve pratik sınav notları ile kurs tamamlama başarı durum çizelgesidir.
+              <p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed pt-1">
+                Modül bazlı teorik ve pratik sınav notları, başarı yüzdeleri ile kurs tamamlama nihai başarı durum çizelgesidir.
               </p>
             </div>
 
-            <div class="pt-4 border-t border-slate-100 dark:border-[#23353c] mt-4">
+            <div class="pt-5 border-t border-slate-100 dark:border-[#23353c] mt-6">
               <!-- Butonlar -->
               <div class="flex items-center gap-2">
                 <button
                   type="button"
                   id="previewNotCizelgesiBtn"
                   onclick="openNotCizelgesiPreview()"
-                  class="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-[#10191b] dark:hover:bg-[#19272c] text-slate-800 dark:text-slate-100 rounded-xl text-xs font-bold transition cursor-pointer border border-slate-200 dark:border-[#2b3e45]"
+                  class="flex-1 flex items-center justify-center gap-1.5 px-3.5 py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-[#10191b] dark:hover:bg-[#19272c] text-slate-800 dark:text-slate-100 rounded-xl text-xs sm:text-sm font-bold transition cursor-pointer border border-slate-200 dark:border-[#2b3e45]"
                 >
-                  <i data-lucide="eye" class="w-3.5 h-3.5 text-[#335C67] dark:text-[#FFF3B0]"></i>
+                  <i data-lucide="eye" class="w-4 h-4 text-[#335C67] dark:text-[#FFF3B0]"></i>
                   <span>Önizle</span>
                 </button>
                 <button
                   type="button"
                   onclick="triggerPrintNotCizelgesi()"
-                  class="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-[#335C67] hover:bg-[#274851] text-white rounded-xl text-xs font-bold shadow-xs transition cursor-pointer"
+                  class="flex-1 flex items-center justify-center gap-1.5 px-3.5 py-2.5 bg-[#335C67] hover:bg-[#274851] text-white rounded-xl text-xs sm:text-sm font-bold shadow-xs transition cursor-pointer"
                 >
-                  <i data-lucide="printer" class="w-3.5 h-3.5 text-[#FFF3B0]"></i>
+                  <i data-lucide="printer" class="w-4 h-4 text-[#FFF3B0]"></i>
                   <span>Yazdır</span>
                 </button>
               </div>
@@ -3326,47 +3326,47 @@
           </div>
 
           <!-- 5. Belge: Sınav Tutanağı -->
-          <div class="flex flex-col justify-between p-5 rounded-2xl border border-slate-200 dark:border-[#23353c] bg-white dark:bg-[#152125] shadow-xs hover:shadow-md hover:border-[#335C67] dark:hover:border-[#FFF3B0]/60 transition-all duration-200 group">
-            <div class="space-y-3">
-              <div class="flex items-start justify-between gap-2.5">
-                <div class="flex items-center gap-3">
-                  <div class="p-2.5 rounded-xl bg-gradient-to-br from-[#335C67] via-[#284952] to-[#540B0E] text-white shadow-xs shrink-0 group-hover:scale-105 transition-transform">
-                    <i data-lucide="clipboard-check" class="w-5 h-5 text-[#FFF3B0]"></i>
+          <div class="flex flex-col justify-between p-6 sm:p-7 min-h-[300px] rounded-2xl border border-slate-200 dark:border-[#23353c] bg-white dark:bg-[#152125] shadow-xs hover:shadow-lg hover:border-[#335C67] dark:hover:border-[#FFF3B0]/60 transition-all duration-200 group">
+            <div class="space-y-4">
+              <div class="flex items-start justify-between gap-3">
+                <div class="flex items-center gap-3.5">
+                  <div class="p-3.5 rounded-2xl bg-gradient-to-br from-[#335C67] via-[#284952] to-[#540B0E] text-white shadow-sm shrink-0 group-hover:scale-105 transition-transform">
+                    <i data-lucide="clipboard-check" class="w-6 h-6 text-[#FFF3B0]"></i>
                   </div>
                   <div>
-                    <h5 class="font-extrabold text-sm text-slate-800 dark:text-slate-100 leading-snug">
+                    <h5 class="font-extrabold text-base text-slate-800 dark:text-slate-100 leading-snug">
                       Sınav Tutanağı
                     </h5>
-                    <div class="flex items-center gap-1.5 mt-1 flex-wrap">
-                      <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-[#FFF3B0] text-[#540B0E] border border-[#E09F3E]/40">Kapanış Belgesi</span>
-                      <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-slate-100 dark:bg-[#10191b] text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-[#23353c]">Dikey A4</span>
+                    <div class="flex items-center gap-2 mt-1.5 flex-wrap">
+                      <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-[#FFF3B0] text-[#540B0E] border border-[#E09F3E]/40">Kapanış Belgesi</span>
+                      <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-slate-100 dark:bg-[#10191b] text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-[#23353c]">Dikey A4</span>
                     </div>
                   </div>
                 </div>
               </div>
-              <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed line-clamp-3" title="Kursiyerlerin sınav katılım imzalarının alındığı resmi sınav katılım tutanağıdır.">
-                Kursiyerlerin sınav katılım imzalarının alındığı resmi sınav katılım tutanağıdır.
+              <p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed pt-1">
+                Kursiyerlerin sınav katılım imzalarının ve sınav komisyon onaylarının yer aldığı resmi sınav katılım tutanağıdır.
               </p>
             </div>
 
-            <div class="pt-4 border-t border-slate-100 dark:border-[#23353c] mt-4">
+            <div class="pt-5 border-t border-slate-100 dark:border-[#23353c] mt-6">
               <!-- Butonlar -->
               <div class="flex items-center gap-2">
                 <button
                   type="button"
                   id="previewSinavTutanagiBtn"
                   onclick="openSinavTutanagiPreview()"
-                  class="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-[#10191b] dark:hover:bg-[#19272c] text-slate-800 dark:text-slate-100 rounded-xl text-xs font-bold transition cursor-pointer border border-slate-200 dark:border-[#2b3e45]"
+                  class="flex-1 flex items-center justify-center gap-1.5 px-3.5 py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-[#10191b] dark:hover:bg-[#19272c] text-slate-800 dark:text-slate-100 rounded-xl text-xs sm:text-sm font-bold transition cursor-pointer border border-slate-200 dark:border-[#2b3e45]"
                 >
-                  <i data-lucide="eye" class="w-3.5 h-3.5 text-[#335C67] dark:text-[#FFF3B0]"></i>
+                  <i data-lucide="eye" class="w-4 h-4 text-[#335C67] dark:text-[#FFF3B0]"></i>
                   <span>Önizle</span>
                 </button>
                 <button
                   type="button"
                   onclick="triggerPrintSinavTutanagi()"
-                  class="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-[#335C67] hover:bg-[#274851] text-white rounded-xl text-xs font-bold shadow-xs transition cursor-pointer"
+                  class="flex-1 flex items-center justify-center gap-1.5 px-3.5 py-2.5 bg-[#335C67] hover:bg-[#274851] text-white rounded-xl text-xs sm:text-sm font-bold shadow-xs transition cursor-pointer"
                 >
-                  <i data-lucide="printer" class="w-3.5 h-3.5 text-[#FFF3B0]"></i>
+                  <i data-lucide="printer" class="w-4 h-4 text-[#FFF3B0]"></i>
                   <span>Yazdır</span>
                 </button>
               </div>
@@ -3374,47 +3374,47 @@
           </div>
 
           <!-- 6. Belge: İmza Listesi (Günlük İmza Çizelgesi) -->
-          <div class="flex flex-col justify-between p-5 rounded-2xl border border-slate-200 dark:border-[#23353c] bg-white dark:bg-[#152125] shadow-xs hover:shadow-md hover:border-[#335C67] dark:hover:border-[#FFF3B0]/60 transition-all duration-200 group">
-            <div class="space-y-3">
-              <div class="flex items-start justify-between gap-2.5">
-                <div class="flex items-center gap-3">
-                  <div class="p-2.5 rounded-xl bg-gradient-to-br from-[#335C67] via-[#284952] to-[#540B0E] text-white shadow-xs shrink-0 group-hover:scale-105 transition-transform">
-                    <i data-lucide="pen-tool" class="w-5 h-5 text-[#FFF3B0]"></i>
+          <div class="flex flex-col justify-between p-6 sm:p-7 min-h-[300px] rounded-2xl border border-slate-200 dark:border-[#23353c] bg-white dark:bg-[#152125] shadow-xs hover:shadow-lg hover:border-[#335C67] dark:hover:border-[#FFF3B0]/60 transition-all duration-200 group">
+            <div class="space-y-4">
+              <div class="flex items-start justify-between gap-3">
+                <div class="flex items-center gap-3.5">
+                  <div class="p-3.5 rounded-2xl bg-gradient-to-br from-[#335C67] via-[#284952] to-[#540B0E] text-white shadow-sm shrink-0 group-hover:scale-105 transition-transform">
+                    <i data-lucide="pen-tool" class="w-6 h-6 text-[#FFF3B0]"></i>
                   </div>
                   <div>
-                    <h5 class="font-extrabold text-sm text-slate-800 dark:text-slate-100 leading-snug">
+                    <h5 class="font-extrabold text-base text-slate-800 dark:text-slate-100 leading-snug">
                       İmza Listesi
                     </h5>
-                    <div class="flex items-center gap-1.5 mt-1 flex-wrap">
-                      <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-[#FFF3B0] text-[#540B0E] border border-[#E09F3E]/40">Kapanış Belgesi</span>
-                      <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-300">Yatay A4</span>
+                    <div class="flex items-center gap-2 mt-1.5 flex-wrap">
+                      <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-[#FFF3B0] text-[#540B0E] border border-[#E09F3E]/40">Kapanış Belgesi</span>
+                      <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-amber-100 text-amber-800 border border-amber-300">Yatay A4</span>
                     </div>
                   </div>
                 </div>
               </div>
-              <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed line-clamp-3" title="Kursiyerlerin günlük ders katılım imzalarının alındığı resmi tarihli imza çizelgesidir.">
-                Kursiyerlerin günlük ders katılım imzalarının alındığı resmi tarihli imza çizelgesidir.
+              <p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed pt-1">
+                Kursiyerlerin günlük ders oturumlarına fiili katılım imzalarının alındığı resmi tarihli ders imza sirküsü çizelgesidir.
               </p>
             </div>
 
-            <div class="pt-4 border-t border-slate-100 dark:border-[#23353c] mt-4">
+            <div class="pt-5 border-t border-slate-100 dark:border-[#23353c] mt-6">
               <!-- Butonlar -->
               <div class="flex items-center gap-2">
                 <button
                   type="button"
                   id="previewImzaListesiBtn"
                   onclick="openImzaListesiPreview()"
-                  class="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-[#10191b] dark:hover:bg-[#19272c] text-slate-800 dark:text-slate-100 rounded-xl text-xs font-bold transition cursor-pointer border border-slate-200 dark:border-[#2b3e45]"
+                  class="flex-1 flex items-center justify-center gap-1.5 px-3.5 py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-[#10191b] dark:hover:bg-[#19272c] text-slate-800 dark:text-slate-100 rounded-xl text-xs sm:text-sm font-bold transition cursor-pointer border border-slate-200 dark:border-[#2b3e45]"
                 >
-                  <i data-lucide="eye" class="w-3.5 h-3.5 text-[#335C67] dark:text-[#FFF3B0]"></i>
+                  <i data-lucide="eye" class="w-4 h-4 text-[#335C67] dark:text-[#FFF3B0]"></i>
                   <span>Önizle</span>
                 </button>
                 <button
                   type="button"
                   onclick="triggerPrintImzaListesi()"
-                  class="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-[#335C67] hover:bg-[#274851] text-white rounded-xl text-xs font-bold shadow-xs transition cursor-pointer"
+                  class="flex-1 flex items-center justify-center gap-1.5 px-3.5 py-2.5 bg-[#335C67] hover:bg-[#274851] text-white rounded-xl text-xs sm:text-sm font-bold shadow-xs transition cursor-pointer"
                 >
-                  <i data-lucide="printer" class="w-3.5 h-3.5 text-[#FFF3B0]"></i>
+                  <i data-lucide="printer" class="w-4 h-4 text-[#FFF3B0]"></i>
                   <span>Yazdır</span>
                 </button>
               </div>

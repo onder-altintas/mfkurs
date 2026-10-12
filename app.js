@@ -3625,9 +3625,12 @@ function closeDetailModal() {
 }
 
 function switchDetailTab(tab) {
+  const inactiveTabClasses = 'flex items-center gap-2 px-4 sm:px-5 py-3 text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-200 hover:text-slate-950 dark:hover:text-white hover:bg-slate-300/60 dark:hover:bg-[#1c2c32] rounded-t-xl transition cursor-pointer whitespace-nowrap border-b-2 border-transparent';
+  const activeTabClasses = 'flex items-center gap-2 px-4 sm:px-5 py-3 text-xs sm:text-sm font-extrabold border-b-2 border-[#335C67] dark:border-[#FFF3B0] text-[#335C67] dark:text-[#FFF3B0] bg-white dark:bg-[#152125] rounded-t-xl transition cursor-pointer whitespace-nowrap shadow-sm';
+
   [tabStudentsBtn, tabAttendanceBtn, tabExamsBtn, tabSyllabusBtn, tabDocumentsBtn].forEach(btn => {
     if (btn) {
-      btn.className = 'flex items-center gap-2 px-4 py-2.5 text-xs sm:text-sm font-semibold border-b-2 border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition cursor-pointer whitespace-nowrap';
+      btn.className = inactiveTabClasses;
     }
   });
 
@@ -3636,8 +3639,6 @@ function switchDetailTab(tab) {
   tabExamsContent.classList.add('hidden');
   tabSyllabusContent.classList.add('hidden');
   tabDocumentsContent.classList.add('hidden');
-
-  const activeTabClasses = 'flex items-center gap-2 px-4 py-2.5 text-xs sm:text-sm font-bold border-b-2 border-[#335C67] dark:border-[#FFF3B0] text-[#335C67] dark:text-[#FFF3B0] bg-white dark:bg-[#152125] rounded-t-lg transition cursor-pointer whitespace-nowrap shadow-xs';
 
   if (tab === 'students') {
     tabStudentsBtn.className = activeTabClasses;
