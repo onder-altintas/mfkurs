@@ -3819,10 +3819,12 @@ function renderStudentTable() {
   refreshLucide();
 }
 
-function renderDetailSyllabus() {
+function renderDetailSyllabus(filterKeyword = '') {
   if (!activeCourseForDetail) return;
   const syllabus = activeCourseForDetail.syllabus || [];
-  detailSyllabusCount.innerText = syllabus.length;
+  if (detailSyllabusCount) detailSyllabusCount.innerText = syllabus.length;
+  const badge = document.getElementById('syllabusBadgeCount');
+  if (badge) badge.innerText = `${syllabus.length} Saat`;
   detailSyllabusTableBody.innerHTML = '';
 
   const detailOffDaysContainer = document.getElementById('detailOffDaysContainer');
@@ -3877,8 +3879,34 @@ function renderDetailSyllabus() {
   if (syllabus.length === 0) {
     detailSyllabusTableBody.innerHTML = `
       <tr>
-        <td colspan="2" class="text-center py-8 text-slate-400">
-          Bu kurs için henüz saatlik konu planı tanımlanmamış.
+        <td colspan="3" class="text-center py-10 text-slate-400">
+          <div class="flex flex-col items-center justify-center gap-2 max-w-sm mx-auto">
+            <div class="p-3 rounded-2xl bg-slate-100 dark:bg-[#10191b] text-slate-400 dark:text-slate-500">
+              <i data-lucide="book-x" class="w-8 h-8"></i>
+            </div>
+            <p class="font-bold text-slate-700 dark:text-slate-300 text-sm">Bu kurs için henüz saatlik konu planı tanımlanmamış.</p>
+            <p class="text-xs text-slate-500 dark:text-slate-400 text-center">
+              Yukarıdaki "Toplu Konu Düzenle" butonundan listenizi yapıştırabilir veya "Yeni Saat Ekle" butonuna basarak ilk ders saatini oluşturabilirsiniz.
+            </p>
+            <div class="flex items-center gap-2 mt-2">
+              <button
+                type="button"
+                onclick="openBulkSyllabusEditModal()"
+                class="px-3.5 py-2 bg-[#335C67] hover:bg-[#274851] text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition cursor-pointer shadow-xs"
+              >
+                <i data-lucide="file-edit" class="w-4 h-4 text-[#FFF3B0]"></i>
+                <span>Toplu Konu Oluştur</span>
+              </button>
+              <button
+                type="button"
+                onclick="openAddSyllabusHourModal()"
+                class="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-[#18262b] dark:hover:bg-[#203138] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-[#2b3e45] rounded-xl text-xs font-bold flex items-center gap-1.5 transition cursor-pointer"
+              >
+                <i data-lucide="plus" class="w-4 h-4 text-[#335C67] dark:text-[#FFF3B0]"></i>
+                <span>İlk Saati Ekle</span>
+              </button>
+            </div>
+          </div>
         </td>
       </tr>
     `;
@@ -3886,17 +3914,278 @@ function renderDetailSyllabus() {
     return;
   }
 
-  syllabus.forEach(item => {
+  const keyword = (filterKeyword || '').trim().toLocaleLowerCase('tr-TR');
+  const filtered = keyword ? syllabus.filter(item => {
+    const hMatch = `${item.hour}`.includes(keyword) || `${item.hour}. ders saati`.toLocaleLowerCase('tr-TR').includes(keyword);
+    const tMatch = (item.topic || '').toLocaleLowerCase('tr-TR').includes(keyword);
+    return hMatch || tMatch;
+  }) : syllabus;
+
+  if (filtered.length === 0) {
+    detailSyllabusTableBody.innerHTML = `
+      <tr>
+        <td colspan="3" class="text-center py-8 text-slate-400 text-xs">
+          "${escapeHtml(filterKeyword)}" aramasına uygun ders saati veya konu bulunamadı.
+        </td>
+      </tr>
+    `;
+    refreshLucide();
+    return;
+  }
+
+  filtered.forEach(item => {
     const tr = document.createElement('tr');
-    tr.className = 'border-b border-slate-100 dark:border-[#23353c]/70 transition-colors';
+    tr.className = 'border-b border-slate-100 dark:border-[#23353c]/70 hover:bg-slate-50/70 dark:hover:bg-[#1c2c32]/50 transition-colors group';
     tr.innerHTML = `
-      <td class="px-4 py-2.5 font-bold text-sky-700">${item.hour}. Ders Saati</td>
-      <td class="px-4 py-2.5 text-slate-700">${escapeHtml(item.topic)}</td>
+      <td class="px-4 py-3 font-bold text-sky-700 dark:text-sky-400 whitespace-nowrap">
+        <span class="inline-flex items-center px-2.5 py-1 rounded-lg bg-sky-50 dark:bg-sky-950/40 border border-sky-200 dark:border-sky-800/50 text-xs font-extrabold">
+          ${item.hour}. Ders Saati
+        </span>
+      </td>
+      <td class="px-4 py-3 text-slate-800 dark:text-slate-200 font-medium leading-relaxed">
+        ${escapeHtml(item.topic)}
+      </td>
+      <td class="px-4 py-3 text-center whitespace-nowrap">
+        <button
+          type="button"
+          onclick="openEditSyllabusHourModal(${item.hour})"
+          class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-[#335C67] dark:text-[#FFF3B0] hover:text-white hover:bg-[#335C67] bg-slate-100 dark:bg-[#18262b] border border-slate-200 dark:border-[#2b3e45] rounded-xl transition cursor-pointer shadow-2xs group-hover:border-[#335C67]"
+          title="${item.hour}. ders saati konusunu düzenle"
+        >
+          <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
+          <span>Düzenle</span>
+        </button>
+      </td>
     `;
     detailSyllabusTableBody.appendChild(tr);
   });
   refreshLucide();
 }
+
+// Saatlik Konu Arama / Filtreleme
+window.filterSyllabusRows = function(keyword) {
+  const filterInfo = document.getElementById('syllabusFilteredInfo');
+  const syllabus = activeCourseForDetail?.syllabus || [];
+  if (!keyword || !keyword.trim()) {
+    if (filterInfo) filterInfo.classList.add('hidden');
+    renderDetailSyllabus();
+    return;
+  }
+  const cleanKey = keyword.trim().toLocaleLowerCase('tr-TR');
+  const count = syllabus.filter(item => {
+    const hMatch = `${item.hour}`.includes(cleanKey) || `${item.hour}. ders saati`.toLocaleLowerCase('tr-TR').includes(cleanKey);
+    const tMatch = (item.topic || '').toLocaleLowerCase('tr-TR').includes(cleanKey);
+    return hMatch || tMatch;
+  }).length;
+  if (filterInfo) {
+    filterInfo.innerText = `${count} / ${syllabus.length} saat listeleniyor`;
+    filterInfo.classList.remove('hidden');
+  }
+  renderDetailSyllabus(keyword);
+};
+
+// Tekil Saat Düzenleme Modalı
+window.openEditSyllabusHourModal = function(hourNumber) {
+  if (!activeCourseForDetail) return;
+  const syllabus = activeCourseForDetail.syllabus || [];
+  const item = syllabus.find(s => Number(s.hour) === Number(hourNumber));
+  const modal = document.getElementById('editSyllabusHourModal');
+  if (!modal) return;
+
+  const hourInput = document.getElementById('editSyllabusHourNumber');
+  const badge = document.getElementById('editSyllabusHourBadge');
+  const title = document.getElementById('editSyllabusHourModalTitle');
+  const sub = document.getElementById('editSyllabusHourModalSub');
+  const topicInput = document.getElementById('editSyllabusTopicInput');
+
+  if (hourInput) hourInput.value = hourNumber;
+  if (badge) badge.innerText = `${hourNumber}. Ders Saati`;
+  if (title) title.innerText = `${hourNumber}. Ders Saati Konusunu Düzenle`;
+  if (sub) sub.innerText = `${activeCourseForDetail.name || 'Kurs'} (Toplam ${activeCourseForDetail.totalHours || syllabus.length} Saat)`;
+  if (topicInput) topicInput.value = item ? item.topic : '';
+
+  modal.classList.remove('hidden');
+  setTimeout(() => {
+    topicInput?.focus();
+  }, 50);
+  refreshLucide();
+};
+
+window.closeEditSyllabusHourModal = function() {
+  const modal = document.getElementById('editSyllabusHourModal');
+  if (modal) modal.classList.add('hidden');
+};
+
+window.saveEditSyllabusHour = function(e) {
+  if (e) e.preventDefault();
+  if (!activeCourseForDetail) return;
+  const hourNumber = Number(document.getElementById('editSyllabusHourNumber')?.value);
+  const topic = (document.getElementById('editSyllabusTopicInput')?.value || '').trim();
+  if (!topic) {
+    alert('Lütfen bu ders saatinde işlenen konuyu yazınız.');
+    return;
+  }
+
+  activeCourseForDetail.syllabus = activeCourseForDetail.syllabus || [];
+  const existingIndex = activeCourseForDetail.syllabus.findIndex(s => Number(s.hour) === hourNumber);
+  if (existingIndex !== -1) {
+    activeCourseForDetail.syllabus[existingIndex].topic = topic;
+  } else {
+    activeCourseForDetail.syllabus.push({ hour: hourNumber, topic });
+  }
+
+  activeCourseForDetail.syllabus.sort((a, b) => Number(a.hour) - Number(b.hour));
+  currentCourses = currentCourses.map(c => c.id === activeCourseForDetail.id ? activeCourseForDetail : c);
+  DataStore.saveCourses(currentCourses);
+
+  closeEditSyllabusHourModal();
+  renderDetailSyllabus();
+};
+
+window.deleteCurrentSyllabusHour = function() {
+  if (!activeCourseForDetail) return;
+  const hourNumber = Number(document.getElementById('editSyllabusHourNumber')?.value);
+  if (!confirm(`${hourNumber}. ders saatini saatlik konu planından silmek istediğinize emin misiniz?`)) return;
+
+  activeCourseForDetail.syllabus = (activeCourseForDetail.syllabus || []).filter(s => Number(s.hour) !== hourNumber);
+  currentCourses = currentCourses.map(c => c.id === activeCourseForDetail.id ? activeCourseForDetail : c);
+  DataStore.saveCourses(currentCourses);
+
+  closeEditSyllabusHourModal();
+  renderDetailSyllabus();
+};
+
+// Toplu Saatlik Konu Düzenleme Modalı
+window.openBulkSyllabusEditModal = function() {
+  if (!activeCourseForDetail) return;
+  const modal = document.getElementById('bulkSyllabusEditModal');
+  if (!modal) return;
+
+  const syllabus = [...(activeCourseForDetail.syllabus || [])].sort((a, b) => Number(a.hour) - Number(b.hour));
+  const textarea = document.getElementById('bulkSyllabusTextarea');
+  
+  if (textarea) {
+    if (syllabus.length > 0) {
+      textarea.value = syllabus.map(s => s.topic).join('\n');
+    } else {
+      const totalH = Number(activeCourseForDetail.totalHours) || 0;
+      if (totalH > 0) {
+        const lines = [];
+        for (let i = 1; i <= totalH; i++) {
+          lines.push(`${activeCourseForDetail.name || 'Ders'} Uygulama ve Konu ${i}`);
+        }
+        textarea.value = lines.join('\n');
+      } else {
+        textarea.value = '';
+      }
+    }
+    updateBulkSyllabusLineCount(textarea.value);
+  }
+
+  modal.classList.remove('hidden');
+  setTimeout(() => {
+    textarea?.focus();
+  }, 50);
+  refreshLucide();
+};
+
+window.closeBulkSyllabusEditModal = function() {
+  const modal = document.getElementById('bulkSyllabusEditModal');
+  if (modal) modal.classList.add('hidden');
+};
+
+window.updateBulkSyllabusLineCount = function(val) {
+  const countBadge = document.getElementById('bulkSyllabusLineCount');
+  if (!countBadge) return;
+  const lines = (val || '').split('\n').filter(l => l.trim().length > 0);
+  countBadge.innerText = `${lines.length} Saat Tanımlı`;
+};
+
+window.saveBulkSyllabusEdit = function(e) {
+  if (e) e.preventDefault();
+  if (!activeCourseForDetail) return;
+  const textarea = document.getElementById('bulkSyllabusTextarea');
+  const rawLines = (textarea?.value || '').split('\n');
+  const lines = rawLines.map(l => l.trim()).filter(l => l.length > 0);
+
+  if (lines.length === 0) {
+    if (!confirm('Tüm saatlik konu planını temizlemek istediğinize emin misiniz?')) return;
+    activeCourseForDetail.syllabus = [];
+  } else {
+    activeCourseForDetail.syllabus = lines.map((topic, idx) => ({
+      hour: idx + 1,
+      topic: topic
+    }));
+  }
+
+  currentCourses = currentCourses.map(c => c.id === activeCourseForDetail.id ? activeCourseForDetail : c);
+  DataStore.saveCourses(currentCourses);
+
+  closeBulkSyllabusEditModal();
+  renderDetailSyllabus();
+};
+
+// Yeni Saat Ekleme Modalı
+window.openAddSyllabusHourModal = function() {
+  if (!activeCourseForDetail) return;
+  const modal = document.getElementById('addSyllabusHourModal');
+  if (!modal) return;
+
+  const syllabus = activeCourseForDetail.syllabus || [];
+  let nextHour = 1;
+  if (syllabus.length > 0) {
+    const maxHour = Math.max(...syllabus.map(s => Number(s.hour) || 0));
+    nextHour = maxHour + 1;
+  }
+
+  const hourInput = document.getElementById('newSyllabusHourNumber');
+  const topicInput = document.getElementById('newSyllabusTopicInput');
+  if (hourInput) hourInput.value = nextHour;
+  if (topicInput) topicInput.value = '';
+
+  modal.classList.remove('hidden');
+  setTimeout(() => {
+    topicInput?.focus();
+  }, 50);
+  refreshLucide();
+};
+
+window.closeAddSyllabusHourModal = function() {
+  const modal = document.getElementById('addSyllabusHourModal');
+  if (modal) modal.classList.add('hidden');
+};
+
+window.saveAddSyllabusHour = function(e) {
+  if (e) e.preventDefault();
+  if (!activeCourseForDetail) return;
+  const hourNumber = Number(document.getElementById('newSyllabusHourNumber')?.value);
+  const topic = (document.getElementById('newSyllabusTopicInput')?.value || '').trim();
+
+  if (!hourNumber || hourNumber < 1) {
+    alert('Geçerli bir ders saati numarası giriniz.');
+    return;
+  }
+  if (!topic) {
+    alert('Lütfen bu ders saatinde işlenen konuyu yazınız.');
+    return;
+  }
+
+  activeCourseForDetail.syllabus = activeCourseForDetail.syllabus || [];
+  const existingIndex = activeCourseForDetail.syllabus.findIndex(s => Number(s.hour) === hourNumber);
+  if (existingIndex !== -1) {
+    if (!confirm(`${hourNumber}. ders saati zaten mevcut. Üzerine yazmak istiyor musunuz?`)) return;
+    activeCourseForDetail.syllabus[existingIndex].topic = topic;
+  } else {
+    activeCourseForDetail.syllabus.push({ hour: hourNumber, topic });
+  }
+
+  activeCourseForDetail.syllabus.sort((a, b) => Number(a.hour) - Number(b.hour));
+  currentCourses = currentCourses.map(c => c.id === activeCourseForDetail.id ? activeCourseForDetail : c);
+  DataStore.saveCourses(currentCourses);
+
+  closeAddSyllabusHourModal();
+  renderDetailSyllabus();
+};
 
 // Resmi 11 Haneli T.C. Kimlik Numarası Algoritması Doğrulaması
 function isValidTcKimlikNo(tc) {
