@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kurs Sonu Evrak & Müfredat Yönetim Sistemi</title>
+  <title>MEFPORTAL - Kurs & Evrak Yönetim Sistemi</title>
+  <link rel="icon" type="image/png" href="logo.png">
   
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -361,15 +362,16 @@
         </div>
 
         <div class="space-y-3">
-          <div class="flex items-center gap-3">
-            <div class="p-3 bg-[#335C67] rounded-2xl shadow-lg border border-[#FFF3B0]/30">
-              <i data-lucide="file-check-2" class="w-8 h-8 text-[#FFF3B0]"></i>
+          <div class="flex items-center gap-3.5">
+            <img src="logo.png" alt="MEFPORTAL Logo" class="w-12 h-12 object-contain rounded-2xl bg-white/10 p-1.5 shadow-lg border border-[#FFF3B0]/30 backdrop-blur-xs shrink-0" onerror="this.style.display='none'" />
+            <div>
+              <h1 class="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-white flex items-center gap-2">
+                <span>MEF</span><span class="text-[#FFF3B0]">PORTAL</span>
+              </h1>
+              <p class="text-xs sm:text-sm text-[#FFF3B0]/90 font-semibold tracking-wide">Kurs & Resmi Evrak Yönetim Portalı</p>
             </div>
-            <h1 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-white">
-              Kurs Sonu <span class="text-[#FFF3B0]">Evrakları</span>
-            </h1>
           </div>
-          <p class="text-slate-200 text-sm sm:text-base leading-relaxed">
+          <p class="text-slate-200 text-sm sm:text-base leading-relaxed pt-1">
             Kurs merkezleri tanımlama, ders saati ve konu müfredat planı hazırlama, kursiyer not ve devam takibi ve dönem sonu resmi evraklarını tek tıkla otomatik oluşturma sistemi.
           </p>
         </div>
@@ -404,6 +406,10 @@
       <div class="lg:col-span-6">
         <div class="bg-white/95 dark:bg-[#152125]/95 backdrop-blur-md rounded-3xl p-6 sm:p-8 shadow-2xl border border-white/20 dark:border-[#335C67]/40">
           <div class="text-center mb-6">
+            <div class="inline-flex items-center justify-center gap-2 mb-2">
+              <img src="logo.png" alt="MEFPORTAL Logo" class="w-10 h-10 object-contain drop-shadow-xs" />
+              <span class="text-xl font-black text-slate-800 dark:text-slate-100 tracking-tight">MEF<span class="text-[#335C67] dark:text-[#FFF3B0]">PORTAL</span></span>
+            </div>
             <h2 class="text-xl sm:text-2xl font-bold text-slate-800 dark:text-slate-100">
               Sisteme Giriş Yapın
             </h2>
@@ -650,12 +656,10 @@
         <!-- Sol: Logo & Başlık & Mod Geçişi -->
         <div class="flex items-center gap-3 sm:gap-5 min-w-0">
           <div class="flex items-center gap-2.5 shrink-0">
-            <div class="p-2 bg-gradient-to-tr from-[#335C67] to-[#540B0E] rounded-xl text-white shadow-xs border border-[#FFF3B0]/30 shrink-0">
-              <i data-lucide="file-check-2" class="w-5 h-5 text-[#FFF3B0]"></i>
-            </div>
+            <img src="logo.png" alt="MEFPORTAL Logo" class="w-8 h-8 object-contain shrink-0 rounded-lg p-0.5 bg-slate-100 dark:bg-[#10191b] border border-slate-200 dark:border-[#23353c]" onerror="this.style.display='none'" />
             <div class="flex items-center gap-2">
-              <span class="font-bold text-slate-800 dark:text-slate-100 text-sm sm:text-base tracking-tight truncate">
-                Kurs Sonu Evrakları
+              <span class="font-extrabold text-slate-800 dark:text-slate-100 text-base sm:text-lg tracking-tight truncate">
+                MEF<span class="text-[#335C67] dark:text-[#FFF3B0]">PORTAL</span>
               </span>
               <span id="roleBadge" class="hidden px-2 py-0.5 text-[9px] uppercase font-bold tracking-wider rounded-md bg-[#FFF3B0] text-[#540B0E] border border-[#E09F3E]/40 shrink-0">
                 Öğretici
@@ -2529,6 +2533,11 @@
             <i data-lucide="arrow-left" class="w-4 h-4"></i>
             <span>Kurs Listesine Dön</span>
           </button>
+          <div class="h-6 w-px bg-slate-200 hidden sm:block"></div>
+          <div class="hidden sm:flex items-center gap-2 shrink-0">
+            <img src="logo.png" alt="MEFPORTAL Logo" class="w-7 h-7 object-contain rounded-lg p-0.5 bg-slate-50 border border-slate-200" onerror="this.style.display='none'" />
+            <span class="font-extrabold text-xs text-slate-700 tracking-tight">MEF<span class="text-[#335C67]">PORTAL</span></span>
+          </div>
           <div class="h-6 w-px bg-slate-200 hidden sm:block"></div>
           <div>
             <div class="flex items-center gap-2">
