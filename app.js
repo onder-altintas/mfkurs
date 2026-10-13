@@ -727,6 +727,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initTheme();
   refreshLucide();
   updateCurrentDate();
+  restoreRememberedCredentials();
 
   let sessionUser = null;
   try {
@@ -1062,6 +1063,24 @@ window.isSupervisor = isSupervisor;
 window.isDepartmentHead = isDepartmentHead;
 window.isTeacher = isTeacher;
 
+// Beni Hatırla Bilgilerini Geri Yükleme
+function restoreRememberedCredentials() {
+  const rememberVal = localStorage.getItem('kurs_sonu_remember_me');
+  const isRemembered = (rememberVal === null || rememberVal === 'true');
+  if (rememberMeCheckbox) {
+    rememberMeCheckbox.checked = isRemembered;
+  }
+  if (isRemembered) {
+    const savedUName = localStorage.getItem('kurs_sonu_remembered_username') || '';
+    const savedPass = localStorage.getItem('kurs_sonu_remembered_password') || '';
+    if (loginUsernameInput && savedUName) loginUsernameInput.value = savedUName;
+    if (loginPasswordInput && savedPass) loginPasswordInput.value = savedPass;
+  } else {
+    if (loginUsernameInput) loginUsernameInput.value = '';
+    if (loginPasswordInput) loginPasswordInput.value = '';
+  }
+}
+
 // Ekran Değişimleri
 function showLogin() {
   loginScreen.classList.remove('hidden');
@@ -1071,6 +1090,7 @@ function showLogin() {
   if (backupTools) backupTools.classList.add('hidden');
   if (backupDivider) backupDivider.classList.add('hidden');
   if (typeof hideDevTodoList === 'function') hideDevTodoList();
+  restoreRememberedCredentials();
   refreshLucide();
 }
 
@@ -1450,11 +1470,17 @@ function setupEventListeners() {
     if (found) {
       currentUser = found;
 
-      const rememberMe = rememberMeCheckbox ? rememberMeCheckbox.checked : true;
+      const rememberMe = rememberMeCheckbox ? rememberMeCheckbox.checked : false;
       if (rememberMe) {
+        localStorage.setItem('kurs_sonu_remember_me', 'true');
+        localStorage.setItem('kurs_sonu_remembered_username', found.username);
+        localStorage.setItem('kurs_sonu_remembered_password', pass);
         DataStore.setActiveUser(currentUser);
         sessionStorage.removeItem('kurs_sonu_session_user');
       } else {
+        localStorage.setItem('kurs_sonu_remember_me', 'false');
+        localStorage.removeItem('kurs_sonu_remembered_username');
+        localStorage.removeItem('kurs_sonu_remembered_password');
         sessionStorage.setItem('kurs_sonu_session_user', JSON.stringify(currentUser));
         DataStore.setActiveUser(null);
       }
@@ -1466,6 +1492,25 @@ function setupEventListeners() {
       refreshLucide();
     }
   });
+
+  // Beni Hatırla Seçimi Değiştiğinde
+  if (rememberMeCheckbox) {
+    rememberMeCheckbox.addEventListener('change', () => {
+      if (!rememberMeCheckbox.checked) {
+        localStorage.setItem('kurs_sonu_remember_me', 'false');
+        localStorage.removeItem('kurs_sonu_remembered_username');
+        localStorage.removeItem('kurs_sonu_remembered_password');
+      } else {
+        localStorage.setItem('kurs_sonu_remember_me', 'true');
+        if (loginUsernameInput && loginUsernameInput.value.trim()) {
+          localStorage.setItem('kurs_sonu_remembered_username', loginUsernameInput.value.trim());
+        }
+        if (loginPasswordInput && loginPasswordInput.value.trim()) {
+          localStorage.setItem('kurs_sonu_remembered_password', loginPasswordInput.value.trim());
+        }
+      }
+    });
+  }
 
   // Şifre Göster/Gizle
   togglePasswordBtn.addEventListener('click', () => {
@@ -1510,8 +1555,6 @@ function setupEventListeners() {
       currentUser = null;
       DataStore.setActiveUser(null);
       sessionStorage.removeItem('kurs_sonu_session_user');
-      loginUsernameInput.value = '';
-      loginPasswordInput.value = '';
       if (window.history && window.history.replaceState) {
         window.history.replaceState(null, '', window.location.pathname);
       }
