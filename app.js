@@ -302,24 +302,7 @@ window.alert = function(msg) {
 };
 
 window.confirm = function(msg) {
-  // Senkron çalışan çağrılar için varsayılan olarak modal pencereyi açar
-  let title = '⚠️ İşlem Onayı';
-  let type = 'warning';
-  const str = String(msg || '');
-  if (str.includes('silmek') || str.includes('Sil') || str.includes('Kapat') || str.includes('DİKKAT')) {
-    title = '⚠️ Önemli İşlem Onayı';
-    type = 'danger';
-  }
-  showCustomDialog({
-    title,
-    message: str,
-    type,
-    showCancel: true,
-    confirmText: 'Evet, Onaylıyorum',
-    cancelText: 'Vazgeç'
-  });
-  // Geriye fallback olarak native confirm durumunu da güvenli işlet
-  return window.__nativeConfirm(msg);
+  return window.__nativeConfirm ? window.__nativeConfirm(msg) : true;
 };
 
 // DOM Elementleri
@@ -2221,20 +2204,27 @@ window.toggleUserAdminRole = function(userId) {
   if (user) openUserModal(user);
 };
 
-window.deleteUserAccount = function(userId) {
+window.deleteUserAccount = async function(userId) {
   if (!isDeveloper(currentUser)) {
-    alert('Kullanıcı hesabı silme yetkisi yalnızca sistem geliştiricisine aittir.');
+    showModalAlert('Kullanıcı hesabı silme yetkisi yalnızca sistem geliştiricisine aittir.');
     return;
   }
   if (userId === currentUser?.id) {
-    alert('Kendi hesabınızı silemezsiniz.');
+    showModalAlert('Kendi hesabınızı silemezsiniz.');
     return;
   }
 
   const user = currentUsers.find(u => u.id === userId);
   if (!user) return;
 
-  if (confirm(`"${user.fullName}" (${user.username}) kullanıcısını silmek istediğinize emin misiniz?`)) {
+  const confirmed = await showModalConfirm(
+    `"${user.fullName}" (${user.username}) kullanıcısını silmek istediğinize emin misiniz?`,
+    '🗑️ Kullanıcıyı Sil',
+    'Evet, Sil',
+    'Vazgeç',
+    'danger'
+  );
+  if (confirmed) {
     currentUsers = currentUsers.filter(u => u.id !== userId);
     DataStore.saveUsers(currentUsers);
     renderAdminUsers();
@@ -2353,12 +2343,13 @@ window.editCenter = function(centerId) {
   if (center) openCenterModal(center);
 };
 
-window.deleteCenter = function(centerId) {
+window.deleteCenter = async function(centerId) {
   if (!isDeveloper(currentUser)) {
-    alert('Kurs merkezi silme yetkisi yalnızca sistem geliştiricisine aittir.');
+    showModalAlert('Kurs merkezi silme yetkisi yalnızca sistem geliştiricisine aittir.');
     return;
   }
-  if (confirm('Bu kurs merkezini silmek istediğinize emin misiniz?')) {
+  const confirmed = await showModalConfirm('Bu kurs merkezini silmek istediğinize emin misiniz?', '🗑️ Kurs Merkezini Sil', 'Evet, Sil', 'Vazgeç', 'danger');
+  if (confirmed) {
     currentCenters = currentCenters.filter(c => c.id !== centerId);
     DataStore.saveCenters(currentCenters);
     renderAdminCenters();
@@ -2642,15 +2633,16 @@ window.editArea = function(areaId) {
   if (found) openAreaModal(found);
 };
 
-window.deleteArea = function(areaId) {
+window.deleteArea = async function(areaId) {
   if (!isDeveloper(currentUser)) {
-    alert('Kurs alanı silme yetkisi yalnızca sistem geliştiricisine aittir.');
+    showModalAlert('Kurs alanı silme yetkisi yalnızca sistem geliştiricisine aittir.');
     return;
   }
   const found = currentAreas.find(a => (typeof a === 'string' ? a : a.id) === areaId);
   const areaName = found ? (typeof found === 'string' ? found : found.name) : '';
 
-  if (confirm(`"${areaName || 'Bu'}" kurs alanını silmek istediğinize emin misiniz?`)) {
+  const confirmed = await showModalConfirm(`"${areaName || 'Bu'}" kurs alanını silmek istediğinize emin misiniz?`, '🗑️ Kurs Alanını Sil', 'Evet, Sil', 'Vazgeç', 'danger');
+  if (confirmed) {
     currentAreas = currentAreas.filter(a => (typeof a === 'string' ? a : a.id) !== areaId);
     DataStore.saveAreas(currentAreas);
     renderAdminAreas();
@@ -3168,12 +3160,13 @@ window.editCourseTemplate = function(tmplId) {
   if (tmpl) openCourseTmplModal(tmpl);
 };
 
-window.deleteCourseTemplate = function(tmplId) {
+window.deleteCourseTemplate = async function(tmplId) {
   if (!isDeveloper(currentUser) && !isDepartmentHead(currentUser)) {
-    alert('Müfredat planlarını silme yetkisi yalnızca sistem geliştiricisi ve Zümre Başkanına aittir.');
+    showModalAlert('Müfredat planlarını silme yetkisi yalnızca sistem geliştiricisi ve Zümre Başkanına aittir.');
     return;
   }
-  if (confirm('Bu kurs şablonunu ve müfredatını silmek istediğinize emin misiniz?')) {
+  const confirmed = await showModalConfirm('Bu kurs şablonunu ve müfredatını silmek istediğinize emin misiniz?', '🗑️ Müfredat Planını Sil', 'Evet, Sil', 'Vazgeç', 'danger');
+  if (confirmed) {
     currentTemplates = currentTemplates.filter(t => t.id !== tmplId);
     currentTemplates.sort((a, b) => (a.name || '').localeCompare(b.name || '', 'tr', { sensitivity: 'base' }));
     DataStore.saveCourseTemplates(currentTemplates);
@@ -3902,24 +3895,6 @@ function handleSaveCourse(e) {
       return;
     }
 
-    const confirmCreate = confirm(
-      `⚠️ KURS AÇILIŞ ONAYI VE YASAL UYARI\n\n` +
-      `Kurs Adı: ${courseName}\n` +
-      `Merkez: ${institution}\n` +
-      `Kurs No / Kod: ${code}\n` +
-      `Toplam Süre: ${totalHours} Saat (${moduleCount} Modül)\n` +
-      `Tarih Aralığı: ${startDate} - ${endDate}\n\n` +
-      `ÖNEMLİ BİLGİLENDİRME:\n` +
-      `• Girdiğiniz tüm bilgilerin eksiksiz ve mevzuata uygun olduğunu onaylıyor musunuz?\n` +
-      `• Açılan bir kurs resmi kayıt niteliğinde olup SONRADAN SİLİNEMEZ!\n` +
-      `• Kurs tamamlandığında "Kursu Kapat" işlemi ile arşive alınacaktır.\n\n` +
-      `Kursu bu bilgilerle açmak istediğinize emin misiniz?`
-    );
-
-    if (!confirmCreate) {
-      return;
-    }
-
     const newCourse = {
       id: `crs_${Date.now()}`,
       userId: currentUser.id,
@@ -3988,15 +3963,22 @@ window.editCourse = function(courseId) {
   openCourseModal(course);
 };
 
-window.deleteCourse = function(courseId) {
+window.deleteCourse = async function(courseId) {
   // Kurs silme işlemi SADECE geliştiricilerde olsun
   if (!isDeveloper(currentUser)) {
-    alert('⚠️ Yetki Hatası:\n\nKurs silme işlemi sistem güvenliği ve resmi evrak bütünlüğü gereği yalnızca sistem geliştiricisine aittir. Kursu tamamlamak veya arşive almak için "Kursu Kapat" özelliğini kullanabilirsiniz.');
+    showModalAlert('Yetki Hatası:\n\nKurs silme işlemi sistem güvenliği ve resmi evrak bütünlüğü gereği yalnızca sistem geliştiricisine aittir. Kursu tamamlamak veya arşive almak için "Kursu Kapat" özelliğini kullanabilirsiniz.', '⛔ Yetki Hatası', 'danger');
     return;
   }
   const course = currentCourses.find(c => c.id === courseId);
   if (!course) return;
-  if (confirm(`"${course.name}" (${course.code || ''}) kursunu ve bağlı tüm kursiyer, devamsızlık ve not kayıtlarını silmek istediğinize emin misiniz?\n\nBu işlem geri alınamaz!`)) {
+  const confirmed = await showModalConfirm(
+    `"${course.name}" (${course.code || ''}) kursunu ve bağlı tüm kursiyer, devamsızlık ve not kayıtlarını silmek istediğinize emin misiniz?\n\nBu işlem geri alınamaz!`,
+    '🗑️ Kursu Sil',
+    'Evet, Kursu Sil',
+    'Vazgeç',
+    'danger'
+  );
+  if (confirmed) {
     currentCourses = currentCourses.filter(c => c.id !== courseId);
     DataStore.saveCourses(currentCourses);
     renderTeacherDashboard();
@@ -4224,7 +4206,7 @@ window.handleCloseCourseClick = function() {
   });
 };
 
-window.handleReopenCourseClick = function() {
+window.handleReopenCourseClick = async function() {
   if (!activeCourseForDetail) return;
   const course = activeCourseForDetail;
 
@@ -4233,9 +4215,14 @@ window.handleReopenCourseClick = function() {
     return;
   }
 
-  if (!confirm(`"${course.name}" kursunu yeniden aktif (düzenlenebilir) duruma getirmek istiyor musunuz?`)) {
-    return;
-  }
+  const confirmed = await showModalConfirm(
+    `"${course.name}" kursunu yeniden aktif (düzenlenebilir) duruma getirmek istiyor musunuz?`,
+    '🔓 Kursu Yeniden Aktif Et',
+    'Evet, Aktif Et',
+    'Vazgeç',
+    'warning'
+  );
+  if (!confirmed) return;
 
   course.status = 'active';
   delete course.closedAt;
@@ -4577,9 +4564,10 @@ function saveUserCourseSyllabus(course, newSyllabus) {
 }
 
 // Kullanıcının özel konu planını sıfırlayıp standart plana geri döndüren fonksiyon
-window.resetSyllabusToStandard = function() {
+window.resetSyllabusToStandard = async function() {
   if (!activeCourseForDetail) return;
-  if (!confirm('Özelleştirdiğiniz konu planını iptal edip standart kurs konu planına geri dönmek istediğinize emin misiniz?')) return;
+  const confirmed = await showModalConfirm('Özelleştirdiğiniz konu planını iptal edip standart kurs konu planına geri dönmek istediğinize emin misiniz?', '🔄 Standart Plana Dön', 'Evet, Geri Dön', 'Vazgeç', 'warning');
+  if (!confirmed) return;
 
   const uKey = getCurrentUserSyllabusKey();
   if (activeCourseForDetail.userSyllabusMap) {
@@ -4841,10 +4829,11 @@ window.saveEditSyllabusHour = function(e) {
   renderDetailSyllabus();
 };
 
-window.deleteCurrentSyllabusHour = function() {
+window.deleteCurrentSyllabusHour = async function() {
   if (!activeCourseForDetail) return;
   const hourNumber = Number(document.getElementById('editSyllabusHourNumber')?.value);
-  if (!confirm(`${hourNumber}. ders saatini kendi saatlik konu planınızdan silmek istediğinize emin misiniz?`)) return;
+  const confirmed = await showModalConfirm(`${hourNumber}. ders saatini kendi saatlik konu planınızdan silmek istediğinize emin misiniz?`, '🗑️ Ders Saatini Sil', 'Evet, Sil', 'Vazgeç', 'danger');
+  if (!confirmed) return;
 
   const currentSyllabus = getEffectiveCourseSyllabus(activeCourseForDetail).filter(s => Number(s.hour) !== hourNumber);
   saveUserCourseSyllabus(activeCourseForDetail, currentSyllabus);
@@ -4899,7 +4888,7 @@ window.updateBulkSyllabusLineCount = function(val) {
   countBadge.innerText = `${lines.length} Saat Tanımlı`;
 };
 
-window.saveBulkSyllabusEdit = function(e) {
+window.saveBulkSyllabusEdit = async function(e) {
   if (e) e.preventDefault();
   if (!activeCourseForDetail) return;
   const textarea = document.getElementById('bulkSyllabusTextarea');
@@ -4908,7 +4897,8 @@ window.saveBulkSyllabusEdit = function(e) {
 
   let newSyllabus = [];
   if (lines.length === 0) {
-    if (!confirm('Tüm saatlik konu planınızı temizlemek istediğinize emin misiniz?')) return;
+    const confirmed = await showModalConfirm('Tüm saatlik konu planınızı temizlemek istediğinize emin misiniz?', '⚠️ Konu Planını Temizle', 'Evet, Temizle', 'Vazgeç', 'warning');
+    if (!confirmed) return;
     newSyllabus = [];
   } else {
     newSyllabus = lines.map((topic, idx) => ({
@@ -4953,25 +4943,26 @@ window.closeAddSyllabusHourModal = function() {
   if (modal) modal.classList.add('hidden');
 };
 
-window.saveAddSyllabusHour = function(e) {
+window.saveAddSyllabusHour = async function(e) {
   if (e) e.preventDefault();
   if (!activeCourseForDetail) return;
   const hourNumber = Number(document.getElementById('newSyllabusHourNumber')?.value);
   const topic = (document.getElementById('newSyllabusTopicInput')?.value || '').trim();
 
   if (!hourNumber || hourNumber < 1) {
-    alert('Geçerli bir ders saati numarası giriniz.');
+    showModalAlert('Geçerli bir ders saati numarası giriniz.');
     return;
   }
   if (!topic) {
-    alert('Lütfen bu ders saatinde işlenen konuyu yazınız.');
+    showModalAlert('Lütfen bu ders saatinde işlenen konuyu yazınız.');
     return;
   }
 
   const currentSyllabus = [...getEffectiveCourseSyllabus(activeCourseForDetail)];
   const existingIndex = currentSyllabus.findIndex(s => Number(s.hour) === hourNumber);
   if (existingIndex !== -1) {
-    if (!confirm(`${hourNumber}. ders saati zaten mevcut. Üzerine yazmak istiyor musunuz?`)) return;
+    const confirmed = await showModalConfirm(`${hourNumber}. ders saati zaten mevcut. Üzerine yazmak istiyor musunuz?`, '⚠️ Ders Saati Mevcut', 'Evet, Üzerine Yaz', 'Vazgeç', 'warning');
+    if (!confirmed) return;
     currentSyllabus[existingIndex].topic = topic;
   } else {
     currentSyllabus.push({ hour: hourNumber, topic });
@@ -5160,13 +5151,14 @@ window.editStudent = function(studentId) {
   refreshLucide();
 };
 
-window.deleteStudent = function(studentId) {
+window.deleteStudent = async function(studentId) {
   if (!activeCourseForDetail) return;
   if (activeCourseForDetail.status === 'completed' && !isDeveloper(currentUser)) {
-    alert('Bu kurs kapatılmıştır. Kapatılmış kurslardan kursiyer silinemez.');
+    showModalAlert('Bu kurs kapatılmıştır. Kapatılmış kurslardan kursiyer silinemez.');
     return;
   }
-  if (confirm('Bu kursiyeri silmek istediğinize emin misiniz?')) {
+  const confirmed = await showModalConfirm('Bu kursiyeri silmek istediğinize emin misiniz?', '🗑️ Kursiyeri Sil', 'Evet, Sil', 'Vazgeç', 'danger');
+  if (confirmed) {
     activeCourseForDetail.students = activeCourseForDetail.students.filter(s => s.id !== studentId);
     currentCourses = currentCourses.map(c => c.id === activeCourseForDetail.id ? activeCourseForDetail : c);
     DataStore.saveCourses(currentCourses);
@@ -6169,17 +6161,17 @@ window.setStudentDateAbsenceHours = function(studentId, hours, shouldRefresh = t
 };
 
 // Kursu Bırakan Kursiyer İçin Seçili Tarihten Kurs Bitimine Kadar Devamsız İşleme
-window.markStudentAbsentFromDateOnwards = function(studentId) {
+window.markStudentAbsentFromDateOnwards = async function(studentId) {
   if (!activeCourseForDetail) return;
   if (activeCourseForDetail.status === 'completed' && !isDeveloper(currentUser)) {
-    alert('Bu kurs kapatılmıştır. Kapatılmış kurslarda devamsızlık girişi yapılamaz.');
+    showModalAlert('Bu kurs kapatılmıştır. Kapatılmış kurslarda devamsızlık girişi yapılamaz.');
     return;
   }
   const std = activeCourseForDetail.students?.find(s => s.id === studentId);
   if (!std) return;
 
   if (currentAttendanceDateIndex < 0 || currentAttendanceDateIndex >= currentCourseLessonDates.length) {
-    alert('Lütfen geçerli bir ders tarihi seçiniz.');
+    showModalAlert('Lütfen geçerli bir ders tarihi seçiniz.');
     return;
   }
 
@@ -6200,7 +6192,8 @@ window.markStudentAbsentFromDateOnwards = function(studentId) {
 
   if (allAlreadyAbsent) {
     const clearConfirm = `ℹ️ ${std.fullName} için ${formattedDate} tarihinden kurs bitimine (${endDate}) kadar olan ${remainingDates.length} ders günü zaten devamsız olarak kayıtlı.\n\nBu tarihten sonrasındaki tüm devamsızlıkları TEMİZLEMEK (kursiyeri geldi / 0 saat yapmak) istiyor musunuz?`;
-    if (!confirm(clearConfirm)) return;
+    const confirmed = await showModalConfirm(clearConfirm, 'ℹ️ Devamsızlıkları Temizle', 'Evet, Temizle', 'Vazgeç', 'warning');
+    if (!confirmed) return;
 
     std.dailyAbsences = std.dailyAbsences.filter(d => !remainingDates.includes(d.date));
   } else {
@@ -6212,7 +6205,8 @@ window.markStudentAbsentFromDateOnwards = function(studentId) {
       `Kursiyer bu tarihten sonra kursu bıraktığı için, ${formattedDate} tarihinden kurs sonuna kadar olan ${remainingDates.length} ders gününün tamamına tam gün (${dailyHours} saat) devamsızlık işlenecektir.\n\n` +
       `Onaylıyor musunuz?`;
 
-    if (!confirm(confirmMsg)) return;
+    const confirmed = await showModalConfirm(confirmMsg, '⚠️ Kursu Bırakan Kursiyer', 'Evet, Onayla', 'Vazgeç', 'warning');
+    if (!confirmed) return;
 
     remainingDates.forEach(dateStr => {
       const existing = std.dailyAbsences.find(d => d.date === dateStr);
@@ -6266,10 +6260,10 @@ window.markStudentAbsentFromDateOnwards = function(studentId) {
 };
 
 // Kursa Hiç Gelmeyen Kursiyer İçin Tek Tıkla Tüm Kursu Devamsız Yazma ve "Hiç Gelmedi" Olarak İşleme
-window.markStudentNeverAttended = function(studentId) {
+window.markStudentNeverAttended = async function(studentId) {
   if (!activeCourseForDetail) return;
   if (activeCourseForDetail.status === 'completed' && !isDeveloper(currentUser)) {
-    alert('Bu kurs kapatılmıştır. Kapatılmış kurslarda devamsızlık durumu değiştirilemez.');
+    showModalAlert('Bu kurs kapatılmıştır. Kapatılmış kurslarda devamsızlık durumu değiştirilemez.');
     return;
   }
   const std = (activeCourseForDetail.students || []).find(s => s.id === studentId);
@@ -6285,7 +6279,8 @@ window.markStudentNeverAttended = function(studentId) {
                               (totalHours > 0 && Number(std.absentHours || 0) >= totalHours);
 
   if (currentlyHicGelmedi) {
-    if (!confirm(`"${std.fullName}" için "Hiç Gelmedi" durumunu kaldırıp devamsızlık kayıtlarını sıfırlamak istiyor musunuz?`)) {
+    const confirmed = await showModalConfirm(`"${std.fullName}" için "Hiç Gelmedi" durumunu kaldırıp devamsızlık kayıtlarını sıfırlamak istiyor musunuz?`, '🔄 Durumu Sıfırla', 'Evet, Sıfırla', 'Vazgeç', 'warning');
+    if (!confirmed) {
       return;
     }
     std.dailyAbsences = [];
@@ -6294,12 +6289,14 @@ window.markStudentNeverAttended = function(studentId) {
     std.attendanceNote = '';
     std.result = (std.examScore !== null && Number(std.examScore) >= 50) ? 'Başarılı' : (std.examScore !== null ? 'Başarısız' : 'Devam Ediyor');
   } else {
-    if (!confirm(`⚠️ DİKKAT: Kursa Hiç Gelmeyen Kursiyer İşlemi\n\n` +
+    const confirmMsg = `⚠️ DİKKAT: Kursa Hiç Gelmeyen Kursiyer İşlemi\n\n` +
       `Kursiyer: ${std.fullName}\n\n` +
       `Bu kursiyer kursa hiç gelmediği için;\n` +
       `• Kursun tüm ders günlerine (${validDates.length} gün, toplam ${totalHours} saat) tam devamsızlık işlenecektir.\n` +
       `• Kursiyer Karar Durumu resmi evrakında doğrudan "Hiç Gelmedi" olarak yer alacaktır.\n\n` +
-      `Onaylıyor musunuz?`)) {
+      `Onaylıyor musunuz?`;
+    const confirmed = await showModalConfirm(confirmMsg, '⚠️ Hiç Gelmedi İşlemi', 'Evet, Onayla', 'Vazgeç', 'danger');
+    if (!confirmed) {
       return;
     }
 
@@ -6340,7 +6337,7 @@ window.markCurrentModalStudentNeverAttended = function() {
 };
 
 // Seçili Ders Günü İçin Tüm Kursiyerleri "Geldi (0 Saat)" Yap
-function handleMarkDayPresent() {
+async function handleMarkDayPresent() {
   if (!activeCourseForDetail) return;
   const selectedDate = currentCourseLessonDates[currentAttendanceDateIndex];
   if (!selectedDate) return;
@@ -6348,7 +6345,8 @@ function handleMarkDayPresent() {
   const dObj = new Date(selectedDate + 'T00:00:00');
   const dateName = dObj.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', weekday: 'long' });
 
-  if (!confirm(`${dateName} tarihindeki ders için tüm kursiyerlerin devamsızlığı 0 yapılacak (herkes geldi sayılacak). Onaylıyor musunuz?`)) {
+  const confirmed = await showModalConfirm(`${dateName} tarihindeki ders için tüm kursiyerlerin devamsızlığı 0 yapılacak (herkes geldi sayılacak). Onaylıyor musunuz?`, '👥 Tüm Kursiyerleri Geldi Yap', 'Evet, Onayla', 'Vazgeç', 'info');
+  if (!confirmed) {
     return;
   }
 
@@ -7081,12 +7079,12 @@ window.removeSingleAttDay = function(index) {
   renderSingleAttDaysTable();
 };
 
-function handleAddDailyAttEntry() {
+async function handleAddDailyAttEntry() {
   if (!activeCourseForDetail) return;
 
   const date = dailyAttDateInput?.value;
   if (!date) {
-    alert('Lütfen geçerli bir devamsızlık tarihi seçiniz.');
+    showModalAlert('Lütfen geçerli bir devamsızlık tarihi seçiniz.');
     dailyAttDateInput?.focus();
     return;
   }
@@ -7095,13 +7093,13 @@ function handleAddDailyAttEntry() {
   const dailyHours = Number(activeCourseForDetail.dailyHours) || 4;
 
   if (isNaN(hours) || hours < 1) {
-    alert('Devamsızlık saati en az 1 saat olmalıdır.');
+    showModalAlert('Devamsızlık saati en az 1 saat olmalıdır.');
     dailyAttHoursInput?.focus();
     return;
   }
 
   if (hours > dailyHours) {
-    alert(`Devamsızlık saati kursun günlük ders saatinden (${dailyHours} saat) fazla olamaz.`);
+    showModalAlert(`Devamsızlık saati kursun günlük ders saatinden (${dailyHours} saat) fazla olamaz.`);
     dailyAttHoursInput?.focus();
     return;
   }
@@ -7114,14 +7112,14 @@ function handleAddDailyAttEntry() {
   const offDayDates = new Set((activeCourseForDetail.offDays || []).map(o => o.date));
 
   if (!activeDays.includes(dayName)) {
-    alert(`Seçilen tarih (${formatDate(date)} - ${dayName}) bu kursun ders günleri (${activeDays.join(', ')}) arasında yer almamaktadır.`);
+    showModalAlert(`Seçilen tarih (${formatDate(date)} - ${dayName}) bu kursun ders günleri (${activeDays.join(', ')}) arasında yer almamaktadır.`);
     dailyAttDateInput?.focus();
     return;
   }
 
   if (offDayDates.has(date) || isCourseHolidayOnDate(date, activeCourseForDetail)) {
     const hName = getTurkishHolidayName(date);
-    alert(`Seçilen tarih (${formatDate(date)}) resmi tatil veya ders yapılmayan gündür${hName ? ` (${hName})` : ''}. Resmi tatillerde ders işlenemez ve devamsızlık kaydedilemez.`);
+    showModalAlert(`Seçilen tarih (${formatDate(date)}) resmi tatil veya ders yapılmayan gündür${hName ? ` (${hName})` : ''}. Resmi tatillerde ders işlenemez ve devamsızlık kaydedilemez.`);
     dailyAttDateInput?.focus();
     return;
   }
@@ -7132,7 +7130,8 @@ function handleAddDailyAttEntry() {
   const existingIdx = currentModalDailyAbsences.findIndex(d => d.date === date);
   if (existingIdx !== -1) {
     const existing = currentModalDailyAbsences[existingIdx];
-    if (confirm(`${formatDate(date)} tarihi için zaten ${existing.hours} saat devamsızlık girilmiş.\n\n${hours} saat olarak güncellemek istiyor musunuz?`)) {
+    const confirmed = await showModalConfirm(`${formatDate(date)} tarihi için zaten ${existing.hours} saat devamsızlık girilmiş.\n\n${hours} saat olarak güncellemek istiyor musunuz?`, '⚠️ Devamsızlık Güncelleme', 'Evet, Güncelle', 'Vazgeç', 'warning');
+    if (confirmed) {
       currentModalDailyAbsences[existingIdx].hours = hours;
       if (note) currentModalDailyAbsences[existingIdx].note = note;
     } else {
@@ -8655,18 +8654,20 @@ window.clearPlanConfigSelection = function() {
   updatePlanConfigCounts();
 };
 
-window.openKursPlaniConfigModal = function() {
+window.openKursPlaniConfigModal = async function() {
   if (!activeCourseForDetail) {
-    alert('Lütfen önce bir kurs seçiniz.');
+    showModalAlert('Lütfen önce bir kurs seçiniz.');
     return;
   }
 
   // Kurs kapatılmamışsa uyarı mesajı ver
   if (activeCourseForDetail.status !== 'completed' && !isDeveloper(currentUser)) {
-    const proceed = confirm(
-      '⚠️ DİKKAT: Kurs Henüz Kapatılmamıştır!\n\n' +
-      'Kurs Planı ve resmi evraklar kurs kapatma işlemi yapıldıktan sonra kesinleşmektedir. Kurs henüz kapatılmamış durumdadır.\n\n' +
-      'Yine de Kurs Planı yapılandırma ekranına devam etmek istiyor musunuz?'
+    const proceed = await showModalConfirm(
+      'Kurs Planı ve resmi evraklar kurs kapatma işlemi yapıldıktan sonra kesinleşmektedir. Kurs henüz kapatılmamış durumdadır.\n\nYine de devam etmek istiyor musunuz?',
+      '⚠️ Kurs Henüz Kapatılmadı',
+      'Evet, Devam Et',
+      'Vazgeç',
+      'warning'
     );
     if (!proceed) return;
   }
@@ -11613,9 +11614,9 @@ function exportSystemBackupJson() {
   URL.revokeObjectURL(url);
 }
 
-function handleImportSystemBackupJson(e) {
+async function handleImportSystemBackupJson(e) {
   if (!isDeveloper(currentUser)) {
-    alert('Bu işlem yalnızca geliştirici yetkisine sahip kullanıcılar tarafından yapılabilir.');
+    showModalAlert('Bu işlem yalnızca geliştirici yetkisine sahip kullanıcılar tarafından yapılabilir.');
     if (e && e.target) e.target.value = '';
     return;
   }
@@ -11623,7 +11624,14 @@ function handleImportSystemBackupJson(e) {
   const file = e.target.files?.[0];
   if (!file) return;
 
-  if (!confirm('Dikkat! Yedek dosyasını yüklediğinizde mevcut veriler güncellenecektir. Onaylıyor musunuz?')) {
+  const confirmed = await showModalConfirm(
+    'Dikkat! Yedek dosyasını yüklediğinizde mevcut veriler güncellenecektir. Onaylıyor musunuz?',
+    '⚠️ Yedek Geri Yükleme Onayı',
+    'Evet, Yükle',
+    'Vazgeç',
+    'warning'
+  );
+  if (!confirmed) {
     e.target.value = '';
     return;
   }
@@ -11951,14 +11959,15 @@ function initDevTodoList() {
 
   // Bitenleri temizle (Drawer)
   if (clearCompletedBtn) {
-    clearCompletedBtn.addEventListener('click', () => {
+    clearCompletedBtn.addEventListener('click', async () => {
       const todos = DataStore.getTodos();
       const remaining = todos.filter(t => !t.completed);
       if (todos.length === remaining.length) {
-        alert('Tamamlanmış görev bulunmuyor.');
+        showModalAlert('Tamamlanmış görev bulunmuyor.');
         return;
       }
-      if (confirm('Tamamlanan tüm görevler silinsin mi?')) {
+      const confirmed = await showModalConfirm('Tamamlanan tüm görevler silinsin mi?', '🗑️ Tamamlanan Görevleri Sil', 'Evet, Sil', 'Vazgeç', 'danger');
+      if (confirmed) {
         DataStore.saveTodos(remaining);
         renderDevTodos();
       }
@@ -11968,14 +11977,15 @@ function initDevTodoList() {
   // Bitenleri temizle (Admin Paneli)
   const adminClearBtn = document.getElementById('adminTodoClearCompletedBtn');
   if (adminClearBtn) {
-    adminClearBtn.addEventListener('click', () => {
+    adminClearBtn.addEventListener('click', async () => {
       const todos = DataStore.getTodos();
       const remaining = todos.filter(t => !t.completed);
       if (todos.length === remaining.length) {
-        alert('Tamamlanmış görev bulunmuyor.');
+        showModalAlert('Tamamlanmış görev bulunmuyor.');
         return;
       }
-      if (confirm('Tamamlanan tüm görevler silinsin mi?')) {
+      const confirmed = await showModalConfirm('Tamamlanan tüm görevler silinsin mi?', '🗑️ Tamamlanan Görevleri Sil', 'Evet, Sil', 'Vazgeç', 'danger');
+      if (confirmed) {
         DataStore.saveTodos(remaining);
         renderDevTodos();
       }
@@ -12343,8 +12353,15 @@ window.toggleDevTodo = function(id) {
   }
 };
 
-window.deleteDevTodo = function(id) {
-  if (!confirm('Bu görevi silmek istediğinize emin misiniz?')) return;
+window.deleteDevTodo = async function(id) {
+  const confirmed = await showModalConfirm(
+    'Bu görevi silmek istediğinize emin misiniz?',
+    '🗑️ Görevi Sil',
+    'Evet, Sil',
+    'Vazgeç',
+    'danger'
+  );
+  if (!confirmed) return;
   let todos = DataStore.getTodos();
   todos = todos.filter(t => t.id !== id);
   DataStore.saveTodos(todos);
