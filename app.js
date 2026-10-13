@@ -760,6 +760,12 @@ window.onCloudSync = function(type, data) {
       if (typeof supervisorSection !== 'undefined' && supervisorSection && !supervisorSection.classList.contains('hidden')) {
         renderSupervisorCoursesTable();
       }
+      if (typeof supervisorCourseModal !== 'undefined' && supervisorCourseModal && !supervisorCourseModal.classList.contains('hidden')) {
+        const state = window.history.state;
+        if (state && state.view === 'supervisorCourseModal' && state.courseId) {
+          openSupervisorCourseModal(state.courseId, false);
+        }
+      }
     }
   } else if (type === 'users') {
     currentUsers = data;
@@ -1469,6 +1475,9 @@ function setupEventListeners() {
       }
 
       showDashboard();
+      if (typeof DataStore !== 'undefined' && typeof DataStore.initCloudListeners === 'function') {
+        DataStore.initCloudListeners();
+      }
     } else {
       loginErrorText.innerText = 'Kullanıcı adı veya şifre hatalı! Lütfen deneme hesaplarını kullanınız.';
       loginError.classList.remove('hidden');
@@ -1537,6 +1546,9 @@ function setupEventListeners() {
     if (confirmed) {
       currentUser = null;
       DataStore.setActiveUser(null);
+      if (typeof DataStore !== 'undefined' && typeof DataStore.stopAutoSync === 'function') {
+        DataStore.stopAutoSync();
+      }
       sessionStorage.removeItem('kurs_sonu_session_user');
       if (window.history && window.history.replaceState) {
         window.history.replaceState(null, '', window.location.pathname);
