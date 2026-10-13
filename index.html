@@ -705,10 +705,10 @@
         <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
           
           <!-- Bulut Senkronizasyon Durumu -->
-          <div id="cloudSyncBadge" class="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-semibold text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60" title="Firebase Bulut Veritabanı Aktif">
-            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-            <i data-lucide="cloud" class="w-3.5 h-3.5"></i>
-            <span class="hidden lg:inline text-[11px]">Bulut Aktif</span>
+          <div id="cloudSyncBadge" class="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-semibold text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60" title="Supabase PostgreSQL Bulut Veritabanı Aktif">
+            <span id="cloudSyncIndicator" class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            <i data-lucide="database" class="w-3.5 h-3.5"></i>
+            <span id="cloudSyncText" class="hidden lg:inline text-[11px]">Supabase Aktif</span>
           </div>
 
           <!-- Geliştirici Todo Butonu (Sade, İkon + Sayaç Rozeti) -->
@@ -5484,12 +5484,10 @@
     </div>
   </div>
 
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-
-  <!-- Firebase Bulut Servisi & Veri Deposu -->
-  <script src="firebase.js?v=20261002_1240"></script>
-  <script src="app.js?v=20261002_1240"></script>
+  <!-- Supabase JS SDK (PostgreSQL & Realtime) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js?v=20261013_1000"></script>
+  <script src="db.js?v=20261013_1000"></script>
+  <script src="app.js?v=20261013_1000"></script>
 </body>
 </html>

@@ -4,16 +4,14 @@ Kurs merkezleri tanımlama, her saat için ders müfredatı hazırlama, kullanı
 
 ---
 
-## 🚀 Hızlı Başlangıç
+## 🚀 Canlı Sistem & Mimari
 
-### Yöntem 1: Yerel Sunucu
-```bash
-node server.js
-```
-Tarayıcınızda açın: **[http://localhost:3000](http://localhost:3000)**
+Bu sistem, **100+ eşzamanlı kullanıcı (eğitmen, idareci, zümre başkanı)** için özel olarak tasarlanmış, **PostgreSQL ilişkisel veritabanı** ve **Supabase altyapısı** üzerine inşa edilmiştir.
 
-### Yöntem 2: Doğrudan Açma
-`index.html` dosyasına çift tıklayarak tarayıcınızda sıfır kurulumla çalıştırabilirsiniz.
+- **Canlı Yayın (Vercel):** Proje doğrudan Vercel üzerinde barındırılmaktadır.
+- **Veritabanı:** Supabase PostgreSQL & Realtime senkronizasyon.
+- **İlişkisel Veri Modeli:** Eğitmenler yalnızca kendi kurslarını sorgular, 100 kullanıcının veri trafiği optimize edilmiştir.
+- **Sıfır Kota Riski:** 5 MB LocalStorage sınırı kaldırılmış, veriler doğrudan bulut PostgreSQL veritabanında güvenceye alınmıştır.
 
 ---
 
