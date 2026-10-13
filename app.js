@@ -1059,6 +1059,10 @@ window.isTeacher = isTeacher;
 function showLogin() {
   loginScreen.classList.remove('hidden');
   dashboardScreen.classList.add('hidden');
+  const backupTools = document.getElementById('navbarBackupToolsWrapper');
+  const backupDivider = document.getElementById('navbarBackupDivider');
+  if (backupTools) backupTools.classList.add('hidden');
+  if (backupDivider) backupDivider.classList.add('hidden');
   if (typeof hideDevTodoList === 'function') hideDevTodoList();
   refreshLucide();
 }
@@ -1072,6 +1076,29 @@ function showDashboard() {
   userTitle.innerText = currentUser.title;
   welcomeUserName.innerText = currentUser.fullName;
   userInstitution.innerText = currentUser.institution;
+
+  // Sistem Yedeği İndir / Geri Yükle araçları yalnızca geliştiriciye görünür
+  const backupTools = document.getElementById('navbarBackupToolsWrapper');
+  const backupDivider = document.getElementById('navbarBackupDivider');
+  if (backupTools) {
+    if (isDeveloper(currentUser)) {
+      backupTools.classList.remove('hidden');
+      backupTools.classList.add('flex');
+      backupTools.style.removeProperty('display');
+      if (backupDivider) {
+        backupDivider.classList.remove('hidden');
+        backupDivider.style.removeProperty('display');
+      }
+    } else {
+      backupTools.classList.add('hidden');
+      backupTools.classList.remove('flex');
+      backupTools.style.setProperty('display', 'none', 'important');
+      if (backupDivider) {
+        backupDivider.classList.add('hidden');
+        backupDivider.style.setProperty('display', 'none', 'important');
+      }
+    }
+  }
 
   if (isDeveloper(currentUser)) {
     roleBadge.innerText = '';
@@ -11417,6 +11444,11 @@ function handleImportStudentsFromExcel(e) {
 // =================== JSON SİSTEM YEDEKLEME & GERİ YÜKLEME ===================
 
 function exportSystemBackupJson() {
+  if (!isDeveloper(currentUser)) {
+    alert('Bu işlem yalnızca geliştirici yetkisine sahip kullanıcılar tarafından yapılabilir.');
+    return;
+  }
+
   const backupData = {
     version: '1.0',
     exportDate: new Date().toISOString(),
@@ -11440,6 +11472,12 @@ function exportSystemBackupJson() {
 }
 
 function handleImportSystemBackupJson(e) {
+  if (!isDeveloper(currentUser)) {
+    alert('Bu işlem yalnızca geliştirici yetkisine sahip kullanıcılar tarafından yapılabilir.');
+    if (e && e.target) e.target.value = '';
+    return;
+  }
+
   const file = e.target.files?.[0];
   if (!file) return;
 

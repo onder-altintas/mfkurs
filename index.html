@@ -734,8 +734,8 @@
             <span id="navbarThemeText" class="sr-only">Açık</span>
           </button>
 
-          <!-- Yedekleme & Geri Yükleme Araçları (Kompakt Gruplanmış) -->
-          <div class="flex items-center bg-slate-100 dark:bg-[#10191b] p-0.5 rounded-xl border border-slate-200 dark:border-[#2b3e45]">
+          <!-- Yedekleme & Geri Yükleme Araçları (Kompakt Gruplanmış - Yalnızca Geliştirici) -->
+          <div id="navbarBackupToolsWrapper" class="hidden items-center bg-slate-100 dark:bg-[#10191b] p-0.5 rounded-xl border border-slate-200 dark:border-[#2b3e45]">
             <button
               type="button"
               id="exportBackupJsonBtn"
@@ -755,7 +755,7 @@
             <input type="file" id="importBackupJsonInput" accept=".json" class="hidden" />
           </div>
 
-          <div class="h-5 w-px bg-slate-200 dark:bg-[#23353c] mx-0.5"></div>
+          <div id="navbarBackupDivider" class="hidden h-5 w-px bg-slate-200 dark:bg-[#23353c] mx-0.5"></div>
 
           <!-- Kullanıcı Profil Butonu -->
           <button
