@@ -1071,11 +1071,8 @@ function showDashboard() {
   loginScreen.classList.add('hidden');
   dashboardScreen.classList.remove('hidden');
 
-  userAvatar.src = currentUser.avatar || 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&auto=format&fit=crop&q=80';
-  userFullName.innerText = currentUser.fullName;
-  userTitle.innerText = currentUser.title;
-  welcomeUserName.innerText = currentUser.fullName;
-  userInstitution.innerText = currentUser.institution;
+  if (userFullName) userFullName.innerText = currentUser.fullName;
+  if (welcomeUserName) welcomeUserName.innerText = currentUser.fullName;
 
   // Sistem Yedeği İndir / Geri Yükle araçları yalnızca geliştiriciye görünür
   const backupTools = document.getElementById('navbarBackupToolsWrapper');
@@ -1100,9 +1097,33 @@ function showDashboard() {
     }
   }
 
+  // Sistem Rolü Etiketi (EĞİTMEN, ZÜMRE BAŞKANI, EĞİTİM SORUMLUSU, GELİŞTİRİCİ)
+  let roleText = 'EĞİTMEN';
+  let roleBadgeClass = 'px-2.5 py-0.5 text-[9.5px] uppercase font-extrabold tracking-wider rounded-md bg-[#335C67] text-white shrink-0 shadow-xs';
+
   if (isDeveloper(currentUser)) {
-    roleBadge.innerText = '';
-    roleBadge.className = 'hidden';
+    roleText = 'GELİŞTİRİCİ';
+    roleBadgeClass = 'px-2.5 py-0.5 text-[9.5px] uppercase font-extrabold tracking-wider rounded-md bg-[#540B0E] text-white shrink-0 shadow-xs';
+  } else if (isSupervisor(currentUser)) {
+    roleText = 'EĞİTİM SORUMLUSU';
+    roleBadgeClass = 'px-2.5 py-0.5 text-[9.5px] uppercase font-extrabold tracking-wider rounded-md bg-indigo-700 text-white shrink-0 shadow-xs';
+  } else if (isDepartmentHead(currentUser)) {
+    roleText = 'ZÜMRE BAŞKANI';
+    roleBadgeClass = 'px-2.5 py-0.5 text-[9.5px] uppercase font-extrabold tracking-wider rounded-md bg-teal-700 text-white shrink-0 shadow-xs';
+  }
+
+  if (roleBadge) {
+    roleBadge.innerText = roleText;
+    roleBadge.className = roleBadgeClass;
+    roleBadge.classList.remove('hidden');
+  }
+
+  const userRoleSubtext = document.getElementById('userRoleSubtext');
+  if (userRoleSubtext) {
+    userRoleSubtext.innerText = roleText;
+  }
+
+  if (isDeveloper(currentUser)) {
     navViewSwitcher.style.setProperty('display', 'flex', 'important');
     if (navAdminViewBtn) {
       navAdminViewBtn.title = 'Geliştirici Yönetim Paneli';
@@ -1114,8 +1135,6 @@ function showDashboard() {
     }
     switchView('admin');
   } else if (isSupervisor(currentUser)) {
-    roleBadge.innerText = 'Eğitim Sorumlusu';
-    roleBadge.className = 'px-2 py-0.5 text-[10px] uppercase font-bold tracking-wider rounded bg-indigo-700 text-white border border-indigo-300/30 shadow-xs';
     navViewSwitcher.style.setProperty('display', 'none', 'important');
     if (navSupervisorViewBtn) {
       navSupervisorViewBtn.classList.add('hidden');
@@ -1123,8 +1142,6 @@ function showDashboard() {
     }
     switchView('supervisor');
   } else if (isDepartmentHead(currentUser)) {
-    roleBadge.innerText = 'Zümre Başkanı';
-    roleBadge.className = 'px-2 py-0.5 text-[10px] uppercase font-bold tracking-wider rounded bg-teal-700 text-white border border-teal-300/30 shadow-xs';
     navViewSwitcher.style.setProperty('display', 'flex', 'important');
     if (navAdminViewBtn) {
       navAdminViewBtn.title = 'Kurs ve Müfredat Planları Yönetimi';
@@ -1136,8 +1153,6 @@ function showDashboard() {
     }
     switchView('teacher');
   } else {
-    roleBadge.innerText = 'Öğretici Paneli';
-    roleBadge.className = 'px-2 py-0.5 text-[10px] uppercase font-bold tracking-wider rounded bg-[#FFF3B0] text-[#540B0E] border border-[#E09F3E]/40 shadow-xs';
     navViewSwitcher.style.setProperty('display', 'none', 'important');
     if (navSupervisorViewBtn) {
       navSupervisorViewBtn.classList.add('hidden');
@@ -1267,28 +1282,22 @@ function openProfileModal() {
   if (profileFullName) profileFullName.value = currentUser.fullName || '';
   if (profileUsername) profileUsername.value = currentUser.username || '';
   if (profilePassword) profilePassword.value = currentUser.password || '';
-  if (profileTitle) profileTitle.value = currentUser.title || '';
-  if (profileInstitution) profileInstitution.value = currentUser.institution || '';
   if (profileArea) profileArea.value = getUserArea(currentUser);
   if (profileArea2) profileArea2.value = currentUser.area2 || '';
-  if (profileAvatarUrl) profileAvatarUrl.value = currentUser.avatar || '';
-  if (profilePreviewAvatar) {
-    profilePreviewAvatar.src = currentUser.avatar || 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&auto=format&fit=crop&q=80';
-  }
 
   if (profileRoleBadge) {
     if (isDeveloper(currentUser)) {
-      profileRoleBadge.innerText = 'Geliştirici (Admin)';
-      profileRoleBadge.className = 'font-bold px-2 py-0.5 rounded text-[11px] bg-[#540B0E] text-white';
+      profileRoleBadge.innerText = 'GELİŞTİRİCİ';
+      profileRoleBadge.className = 'font-extrabold px-3 py-1 rounded-lg text-xs uppercase tracking-wider bg-[#540B0E] text-white';
     } else if (isSupervisor(currentUser)) {
-      profileRoleBadge.innerText = 'Eğitim Sorumlusu';
-      profileRoleBadge.className = 'font-bold px-2 py-0.5 rounded text-[11px] bg-indigo-700 text-white';
+      profileRoleBadge.innerText = 'EĞİTİM SORUMLUSU';
+      profileRoleBadge.className = 'font-extrabold px-3 py-1 rounded-lg text-xs uppercase tracking-wider bg-indigo-700 text-white';
     } else if (isDepartmentHead(currentUser)) {
-      profileRoleBadge.innerText = 'Zümre Başkanı';
-      profileRoleBadge.className = 'font-bold px-2 py-0.5 rounded text-[11px] bg-teal-700 text-white';
+      profileRoleBadge.innerText = 'ZÜMRE BAŞKANI';
+      profileRoleBadge.className = 'font-extrabold px-3 py-1 rounded-lg text-xs uppercase tracking-wider bg-teal-700 text-white';
     } else {
-      profileRoleBadge.innerText = 'Eğitmen';
-      profileRoleBadge.className = 'font-bold px-2 py-0.5 rounded text-[11px] bg-[#335C67] text-white';
+      profileRoleBadge.innerText = 'EĞİTMEN';
+      profileRoleBadge.className = 'font-extrabold px-3 py-1 rounded-lg text-xs uppercase tracking-wider bg-[#335C67] text-white';
     }
   }
 
@@ -1308,11 +1317,8 @@ function handleSaveProfile(e) {
   const fullName = toTurkishPersonName(profileFullName?.value || '');
   const username = profileUsername?.value.trim() || '';
   const password = profilePassword?.value.trim() || '';
-  const title = toTurkishTitleCase(profileTitle?.value || '');
-  const institution = toTurkishTitleCase(profileInstitution?.value || '');
   const area = profileArea ? profileArea.value : getUserArea(currentUser);
   const area2 = profileArea2 ? profileArea2.value.trim() : (currentUser.area2 || '');
-  const avatar = profileAvatarUrl?.value.trim() || '';
 
   if (!fullName || !username || !password) {
     alert('Lütfen Ad Soyad, Kullanıcı Adı ve Şifre alanlarını eksiksiz doldurunuz.');
@@ -1330,29 +1336,19 @@ function handleSaveProfile(e) {
   currentUser.fullName = fullName;
   currentUser.username = username;
   currentUser.password = password;
-  currentUser.title = title;
-  currentUser.institution = institution;
   currentUser.area = area;
   currentUser.area2 = (area2 && area2 !== area) ? area2 : '';
-  if (avatar) {
-    currentUser.avatar = avatar;
-  }
 
   currentUsers = currentUsers.map(u => u.id === currentUser.id ? { ...u, ...currentUser } : u);
   DataStore.saveUsers(currentUsers);
   DataStore.setActiveUser(currentUser);
 
-  // Kurslardaki eğitmen adı ve kurum bilgilerini senkronize et
+  // Kurslardaki eğitmen adı bilgilerini senkronize et
   syncCoursesWithCurrentInstructor();
 
   // Arayüzü güncelle
-  if (userAvatar) {
-    userAvatar.src = currentUser.avatar || 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&auto=format&fit=crop&q=80';
-  }
   if (userFullName) userFullName.innerText = currentUser.fullName;
-  if (userTitle) userTitle.innerText = currentUser.title || '';
   if (welcomeUserName) welcomeUserName.innerText = currentUser.fullName;
-  if (userInstitution) userInstitution.innerText = currentUser.institution || '';
 
   // Kurs detay başlığı açıksa güncelle
   if (activeCourseForDetail && detailCourseMeta) {

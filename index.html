@@ -764,21 +764,15 @@
             class="flex items-center gap-2 p-1 pl-1.5 pr-2.5 rounded-xl hover:bg-slate-100 dark:hover:bg-[#19272c] transition cursor-pointer group text-left"
             title="Profil Bilgilerini Düzenle"
           >
-            <div class="relative">
-              <img
-                id="userAvatar"
-                src=""
-                alt="Avatar"
-                class="w-7 h-7 rounded-full object-cover ring-1 ring-slate-300 dark:ring-[#335C67] group-hover:ring-[#335C67] transition"
-              />
-              <span class="absolute -bottom-0.5 -right-0.5 w-2 h-2 bg-emerald-500 border border-white dark:border-[#152125] rounded-full"></span>
+            <div class="w-7 h-7 rounded-full bg-slate-100 dark:bg-[#10191b] border border-slate-300 dark:border-[#23353c] flex items-center justify-center text-slate-600 dark:text-slate-300 group-hover:text-[#335C67] dark:group-hover:text-[#FFF3B0] transition shrink-0">
+              <i data-lucide="user" class="w-4 h-4"></i>
             </div>
             <div class="hidden sm:block text-left leading-tight">
-              <div id="userFullName" class="text-xs font-semibold text-slate-800 dark:text-slate-100 group-hover:text-[#335C67] dark:group-hover:text-[#FFF3B0] transition truncate max-w-[120px]">
+              <div id="userFullName" class="text-xs font-semibold text-slate-800 dark:text-slate-100 group-hover:text-[#335C67] dark:group-hover:text-[#FFF3B0] transition truncate max-w-[130px]">
                 -
               </div>
-              <div id="userTitle" class="text-[10px] text-slate-400 dark:text-slate-500 truncate max-w-[120px]">
-                -
+              <div id="userRoleSubtext" class="text-[9.5px] font-extrabold uppercase tracking-wider text-[#335C67] dark:text-[#FFF3B0] truncate max-w-[130px]">
+                EĞİTMEN
               </div>
             </div>
           </button>
@@ -815,8 +809,6 @@
             <div class="flex items-center gap-1.5 text-[#FFF3B0]/90 text-xs font-medium bg-black/20 px-2.5 py-1 rounded-lg border border-white/10">
               <i data-lucide="calendar" class="w-3.5 h-3.5 text-[#E09F3E]"></i>
               <span id="currentDateText">28 Eylül 2026</span>
-              <span class="text-white/40">•</span>
-              <span id="userInstitution" class="text-white font-semibold">-</span>
             </div>
           </div>
 
@@ -1962,25 +1954,6 @@
       <!-- Profil Formu -->
       <form id="profileForm" class="p-6 space-y-3.5">
         
-        <!-- Avatar Önizleme & URL -->
-        <div class="flex items-center gap-3.5 p-3 bg-slate-50 dark:bg-[#10191b] rounded-xl border border-slate-200 dark:border-[#2b3e45]">
-          <img
-            id="profilePreviewAvatar"
-            src=""
-            alt="Profil"
-            class="w-12 h-12 rounded-full object-cover ring-2 ring-[#335C67] shadow-sm shrink-0"
-          />
-          <div class="flex-1 space-y-1">
-            <label class="block text-[11px] font-semibold text-slate-600 dark:text-slate-400">Profil Fotoğrafı (URL)</label>
-            <input
-              type="url"
-              id="profileAvatarUrl"
-              placeholder="https://images.unsplash.com/..."
-              class="w-full px-3 py-1.5 bg-white dark:bg-[#152125] border border-slate-200 dark:border-[#2b3e45] rounded-lg text-xs focus:ring-2 focus:ring-[#335C67] focus:outline-none"
-            />
-          </div>
-        </div>
-
         <div>
           <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Adı Soyadı *</label>
           <input
@@ -2012,29 +1985,6 @@
               required
               placeholder="••••••"
               class="w-full px-3.5 py-2 bg-slate-50 dark:bg-[#10191b] border border-slate-200 dark:border-[#2b3e45] rounded-xl text-xs focus:ring-2 focus:ring-[#335C67] focus:outline-none font-mono"
-            />
-          </div>
-        </div>
-
-        <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Unvan / Branş</label>
-            <input
-              type="text"
-              id="profileTitle"
-              data-casing="title"
-              placeholder="Bilişim Eğitmeni"
-              class="w-full px-3.5 py-2 bg-slate-50 dark:bg-[#10191b] border border-slate-200 dark:border-[#2b3e45] rounded-xl text-xs focus:ring-2 focus:ring-[#335C67] focus:outline-none"
-            />
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Kurum / Merkez</label>
-            <input
-              type="text"
-              id="profileInstitution"
-              data-casing="title"
-              placeholder="Halk Eğitimi Merkezi"
-              class="w-full px-3.5 py-2 bg-slate-50 dark:bg-[#10191b] border border-slate-200 dark:border-[#2b3e45] rounded-xl text-xs focus:ring-2 focus:ring-[#335C67] focus:outline-none"
             />
           </div>
         </div>
@@ -2080,9 +2030,9 @@
 
         <!-- Rol Bilgisi (Bilgilendirme) -->
         <div class="flex items-center justify-between p-2.5 bg-slate-100 dark:bg-[#10191b] rounded-xl text-xs border border-slate-200 dark:border-[#23353c]">
-          <span class="text-slate-500 dark:text-slate-400">Sistem Rolü:</span>
-          <span id="profileRoleBadge" class="font-bold px-2 py-0.5 rounded text-[11px] bg-[#335C67] text-white">
-            Eğitmen
+          <span class="text-slate-500 dark:text-slate-400 font-medium">Sistem Rolü:</span>
+          <span id="profileRoleBadge" class="font-extrabold px-3 py-1 rounded-lg text-xs uppercase tracking-wider bg-[#335C67] text-white">
+            EĞİTMEN
           </span>
         </div>
 
