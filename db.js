@@ -187,13 +187,18 @@ const DataStore = {
   getCourseTemplates() {
     try {
       const raw = localStorage.getItem(STORAGE_KEYS.TEMPLATES);
+      let list = [];
       if (raw) {
         const parsed = JSON.parse(raw);
-        if (Array.isArray(parsed)) {
-          return parsed.slice().sort((a, b) => (a.name || '').localeCompare(b.name || '', 'tr', { sensitivity: 'base' }));
-        }
+        if (Array.isArray(parsed)) list = parsed;
       }
-      return (MemoryStore.templates || []).slice().sort((a, b) => (a.name || '').localeCompare(b.name || '', 'tr', { sensitivity: 'base' }));
+      if (list.length === 0) list = MemoryStore.templates || [];
+      const tmplMap = new Map();
+      list.forEach(t => {
+        const k = (t.code || t.name || t.id || '').trim().toLowerCase();
+        if (k && !tmplMap.has(k)) tmplMap.set(k, t);
+      });
+      return Array.from(tmplMap.values()).sort((a, b) => (a.name || '').localeCompare(b.name || '', 'tr', { sensitivity: 'base' }));
     } catch (e) {
       return [];
     }
@@ -447,44 +452,64 @@ const DataStore = {
     try {
       updateCloudSyncStatus(true, "Supabase Aktif");
 
-      // 1. Merkezleri Çek
+      // 1. Merkezleri Çek (Yinelenenleri otomatik birleştir)
       const { data: centers } = await client.from('centers').select('*').order('name');
       if (Array.isArray(centers)) {
-        MemoryStore.centers = centers.map(c => {
+        const centerMap = new Map();
+        centers.forEach(c => {
           let name = c.name || '';
           let supervisor = '';
           if (name.includes(' ::: ')) {
             const parts = name.split(' ::: ');
-            name = parts[0];
-            supervisor = parts[1] || '';
+            name = parts[0].trim();
+            supervisor = parts[1] ? parts[1].trim() : '';
+          } else {
+            name = name.trim();
           }
-          return { id: c.id, name, supervisor };
+          if (!centerMap.has(name) || supervisor) {
+            centerMap.set(name, { id: c.id, name, supervisor });
+          }
         });
+        MemoryStore.centers = Array.from(centerMap.values());
         localStorage.setItem(STORAGE_KEYS.CENTERS, JSON.stringify(MemoryStore.centers));
         if (typeof window.onCloudSync === 'function') window.onCloudSync('centers', MemoryStore.centers);
       }
 
-      // 2. Alanları Çek
+      // 2. Alanları Çek (Yinelenenleri filtrele)
       const { data: areas } = await client.from('areas').select('*').order('name');
       if (Array.isArray(areas)) {
-        MemoryStore.areas = areas.map(a => ({ id: a.id, name: a.name }));
+        const areaMap = new Map();
+        areas.forEach(a => {
+          const name = typeof a === 'string' ? a.trim() : (a.name || '').trim();
+          if (name && !areaMap.has(name.toLowerCase())) {
+            areaMap.set(name.toLowerCase(), { id: a.id, name });
+          }
+        });
+        MemoryStore.areas = Array.from(areaMap.values());
         localStorage.setItem(STORAGE_KEYS.AREAS, JSON.stringify(MemoryStore.areas));
         if (typeof window.onCloudSync === 'function') window.onCloudSync('areas', MemoryStore.areas);
       }
 
-      // 3. Şablonları Çek
+      // 3. Şablonları Çek (Yinelenenleri filtrele)
       const { data: templates } = await client.from('course_templates').select('*').order('name');
       if (Array.isArray(templates)) {
-        MemoryStore.templates = templates.map(t => ({
-          id: t.id,
-          name: t.name,
-          code: t.code,
-          category: t.category,
-          area: t.area,
-          totalHours: t.total_hours,
-          moduleCount: t.module_count,
-          syllabus: t.syllabus || []
-        }));
+        const tmplMap = new Map();
+        templates.forEach(t => {
+          const key = (t.code || t.name || t.id || '').trim().toLowerCase();
+          if (!tmplMap.has(key)) {
+            tmplMap.set(key, {
+              id: t.id,
+              name: t.name,
+              code: t.code,
+              category: t.category,
+              area: t.area,
+              totalHours: t.total_hours,
+              moduleCount: t.module_count,
+              syllabus: t.syllabus || []
+            });
+          }
+        });
+        MemoryStore.templates = Array.from(tmplMap.values()).sort((a, b) => (a.name || '').localeCompare(b.name || '', 'tr', { sensitivity: 'base' }));
         localStorage.setItem(STORAGE_KEYS.TEMPLATES, JSON.stringify(MemoryStore.templates));
         if (typeof window.onCloudSync === 'function') window.onCloudSync('templates', MemoryStore.templates);
       }
@@ -527,7 +552,10 @@ const DataStore = {
       const { data: courses, error: coursesErr } = await courseQuery;
       if (!coursesErr && Array.isArray(courses)) {
         const idSet = new Set();
-        MemoryStore.courses = courses.map(c => {
+        const courseMap = new Map();
+        courses.forEach(c => {
+          const key = (c.code || c.name || c.id || '').trim().toLowerCase();
+          if (courseMap.has(key)) return;
           idSet.add(c.id);
           let days = [];
           let extra = {};
@@ -538,7 +566,7 @@ const DataStore = {
             extra = c.lesson_days.extra || {};
           }
 
-          return {
+          const mappedCourse = {
             id: c.id,
             name: c.name,
             code: c.code,
@@ -580,7 +608,9 @@ const DataStore = {
               attendanceNote: s.note || ''
             }))
           };
+          courseMap.set(key, mappedCourse);
         });
+        MemoryStore.courses = Array.from(courseMap.values());
         MemoryStore.knownCourseIds = idSet;
         localStorage.setItem(STORAGE_KEYS.COURSES, JSON.stringify(MemoryStore.courses));
         if (typeof window.onCloudSync === 'function') window.onCloudSync('courses', MemoryStore.courses);

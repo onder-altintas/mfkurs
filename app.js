@@ -816,6 +816,13 @@ function loadData() {
   currentCenters = DataStore.getCenters();
   currentAreas = DataStore.getAreas();
   currentTemplates = DataStore.getCourseTemplates();
+  // Yinelenen şablonları filtrele
+  const tmplMap = new Map();
+  currentTemplates.forEach(t => {
+    const k = (t.code || t.name || t.id || '').trim().toLowerCase();
+    if (k && !tmplMap.has(k)) tmplMap.set(k, t);
+  });
+  currentTemplates = Array.from(tmplMap.values());
   currentTemplates.sort((a, b) => (a.name || '').localeCompare(b.name || '', 'tr', { sensitivity: 'base' }));
   currentUsers = DataStore.getUsers();
 
