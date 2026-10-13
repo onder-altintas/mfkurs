@@ -1639,13 +1639,13 @@ function setupEventListeners() {
     });
   }
 
-  // Kurs Merkezi Seçildiğinde Otomatik Sorumlu Doldurma
+  // Kurs Merkezi Seçildiğinde Otomatik Sorumlu Doldurma (Sorumlu yoksa boş kalır)
   if (courseFormInstitutionSelect) {
     courseFormInstitutionSelect.addEventListener('change', (e) => {
       const selectedName = e.target.value;
       const matchedCenter = currentCenters.find(c => c.name === selectedName);
-      if (matchedCenter && matchedCenter.supervisor) {
-        courseFormSupervisor.value = matchedCenter.supervisor;
+      if (courseFormSupervisor) {
+        courseFormSupervisor.value = (matchedCenter && matchedCenter.supervisor) ? matchedCenter.supervisor : '';
       }
     });
   }
@@ -3655,7 +3655,9 @@ function openCourseModal(courseToEdit = null) {
     currentOffDays = Array.isArray(courseToEdit.offDays) ? [...courseToEdit.offDays] : [];
     renderOffDays();
 
-    // Düzenleme modunda onay kutusunu gizle
+    // Düzenleme modunda kurs durumu görünür, onay kutusu gizlenir
+    const statusGroup = document.getElementById('courseFormStatusGroup');
+    if (statusGroup) statusGroup.classList.remove('hidden');
     const noticeBox = document.getElementById('courseCreationNoticeBox');
     if (noticeBox) noticeBox.classList.add('hidden');
     const confirmAccuracyCb = document.getElementById('courseFormConfirmAccuracy');
@@ -3672,7 +3674,10 @@ function openCourseModal(courseToEdit = null) {
     courseFormStatus.value = 'active';
     if (courseFormDocumentType) courseFormDocumentType.value = 'Sertifika';
 
-    // Yeni kurs modunda onay kutusunu göster ve sıfırla
+    // Yeni kurs modunda kurs durumu istenmez (gizli ve varsayılan aktif), onay kutusunu göster
+    const statusGroup = document.getElementById('courseFormStatusGroup');
+    if (statusGroup) statusGroup.classList.add('hidden');
+    courseFormStatus.value = 'active';
     const noticeBox = document.getElementById('courseCreationNoticeBox');
     if (noticeBox) noticeBox.classList.remove('hidden');
     const confirmAccuracyCb = document.getElementById('courseFormConfirmAccuracy');
@@ -3686,9 +3691,9 @@ function openCourseModal(courseToEdit = null) {
 
     if (currentCenters.length > 0) {
       courseFormInstitutionSelect.value = currentCenters[0].name;
-      if (currentCenters[0].supervisor) {
-        courseFormSupervisor.value = currentCenters[0].supervisor;
-      }
+      courseFormSupervisor.value = currentCenters[0].supervisor || '';
+    } else {
+      courseFormSupervisor.value = '';
     }
 
     // Varsayılan Hafta İçi Günleri ve Saatleri
