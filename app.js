@@ -1133,14 +1133,12 @@ function showDashboard() {
       navSupervisorViewBtn.classList.remove('hidden');
       navSupervisorViewBtn.style.removeProperty('display');
     }
-    switchView('admin');
   } else if (isSupervisor(currentUser)) {
     navViewSwitcher.style.setProperty('display', 'none', 'important');
     if (navSupervisorViewBtn) {
       navSupervisorViewBtn.classList.add('hidden');
       navSupervisorViewBtn.style.setProperty('display', 'none', 'important');
     }
-    switchView('supervisor');
   } else if (isDepartmentHead(currentUser)) {
     navViewSwitcher.style.setProperty('display', 'flex', 'important');
     if (navAdminViewBtn) {
@@ -1151,15 +1149,36 @@ function showDashboard() {
       navSupervisorViewBtn.classList.add('hidden');
       navSupervisorViewBtn.style.setProperty('display', 'none', 'important');
     }
-    switchView('teacher');
   } else {
     navViewSwitcher.style.setProperty('display', 'none', 'important');
     if (navSupervisorViewBtn) {
       navSupervisorViewBtn.classList.add('hidden');
       navSupervisorViewBtn.style.setProperty('display', 'none', 'important');
     }
-    switchView('teacher');
   }
+
+  // İlk ana ekranı belirle & Tarayıcı Geçmişi (History) Entegrasyonu
+  let initialView = 'teacher';
+  if (isDeveloper(currentUser)) {
+    initialView = 'admin';
+  } else if (isSupervisor(currentUser)) {
+    initialView = 'supervisor';
+  }
+
+  // URL hash kontrolü
+  const requestedHash = window.location.hash.replace(/^#\/?/, '').split('/')[0];
+  if (requestedHash === 'admin' && (isDeveloper(currentUser) || isDepartmentHead(currentUser))) {
+    initialView = 'admin';
+  } else if (requestedHash === 'supervisor' && isSupervisor(currentUser)) {
+    initialView = 'supervisor';
+  } else if (requestedHash === 'teacher' && !isSupervisor(currentUser)) {
+    initialView = 'teacher';
+  }
+
+  if (window.history && window.history.replaceState) {
+    window.history.replaceState({ view: 'section', section: initialView }, '', '#/' + initialView);
+  }
+  switchView(initialView, false);
 
   renderTeacherDashboard();
   renderAdminPanel();
@@ -1169,7 +1188,7 @@ function showDashboard() {
   refreshLucide();
 }
 
-function switchView(view) {
+function switchView(view, push = true) {
   // GÜVENLİK YETKİ KONTROLLERİ:
   if (isSupervisor(currentUser)) {
     // Eğitim sorumlusu sadece kendilerine özel dashboard'u görebilir
@@ -1187,6 +1206,14 @@ function switchView(view) {
   }
 
   currentActiveView = view;
+
+  // Tarayıcı Geri / İleri Butonları Geçmiş Kaydı (pushState)
+  if (push && window.history && window.history.pushState) {
+    const targetHash = '#/' + view;
+    if (window.location.hash !== targetHash) {
+      window.history.pushState({ view: 'section', section: view }, '', targetHash);
+    }
+  }
 
   // Tüm ana panelleri gizle
   teacherSection?.classList.add('hidden');
@@ -1285,6 +1312,16 @@ function openProfileModal() {
   if (profileArea) profileArea.value = getUserArea(currentUser);
   if (profileArea2) profileArea2.value = currentUser.area2 || '';
 
+  // Kurs sorumlusu profillerinde kurs alanı (branş) tamamen gizlenir
+  const profileAreaGroup = document.getElementById('profileAreaGroup');
+  if (profileAreaGroup) {
+    if (isSupervisor(currentUser)) {
+      profileAreaGroup.classList.add('hidden');
+    } else {
+      profileAreaGroup.classList.remove('hidden');
+    }
+  }
+
   if (profileRoleBadge) {
     if (isDeveloper(currentUser)) {
       profileRoleBadge.innerText = 'GELİŞTİRİCİ';
@@ -1336,8 +1373,15 @@ function handleSaveProfile(e) {
   currentUser.fullName = fullName;
   currentUser.username = username;
   currentUser.password = password;
-  currentUser.area = area;
-  currentUser.area2 = (area2 && area2 !== area) ? area2 : '';
+  if (isSupervisor(currentUser)) {
+    currentUser.area = '';
+    currentUser.area2 = '';
+    currentUser.title = '';
+    currentUser.institution = '';
+  } else {
+    currentUser.area = area;
+    currentUser.area2 = (area2 && area2 !== area) ? area2 : '';
+  }
 
   currentUsers = currentUsers.map(u => u.id === currentUser.id ? { ...u, ...currentUser } : u);
   DataStore.saveUsers(currentUsers);
@@ -1446,14 +1490,24 @@ function setupEventListeners() {
     });
   }
 
-  // Çıkış
-  logoutBtn.addEventListener('click', () => {
-    if (confirm('Oturumu kapatmak istediğinize emin misiniz?')) {
+  // Çıkış (Özel Modal Onay Penceresi ile)
+  logoutBtn.addEventListener('click', async () => {
+    const confirmed = await showModalConfirm(
+      'Mevcut oturumunuz sonlandırılacak ve giriş ekranına yönlendirileceksiniz.\nOturumu kapatmak istediğinize emin misiniz?',
+      '🚪 Oturumu Kapat',
+      'Evet, Çıkış Yap',
+      'Vazgeç',
+      'warning'
+    );
+    if (confirmed) {
       currentUser = null;
       DataStore.setActiveUser(null);
       sessionStorage.removeItem('kurs_sonu_session_user');
       loginUsernameInput.value = '';
       loginPasswordInput.value = '';
+      if (window.history && window.history.replaceState) {
+        window.history.replaceState(null, '', window.location.pathname);
+      }
       showLogin();
     }
   });
@@ -1506,6 +1560,9 @@ function setupEventListeners() {
   closeUserModalBtn.addEventListener('click', () => closeUserModal());
   cancelUserModalBtn.addEventListener('click', () => closeUserModal());
   userForm.addEventListener('submit', handleSaveUser);
+  [roleDeveloper, roleSupervisor, roleDeptHead, roleTeacher].forEach(r => {
+    r?.addEventListener('change', () => { if (typeof toggleUserModalRoleFields === 'function') toggleUserModalRoleFields(); });
+  });
 
   // Merkez Ekleme
   openAddCenterModalBtn.addEventListener('click', () => openCenterModal());
@@ -1904,11 +1961,12 @@ function renderAdminUsers() {
           />
           <div>
             <div class="font-bold text-slate-800 text-xs">${escapeHtml(user.fullName)} ${isCurrentActiveUser ? '<span class="text-[10px] text-purple-600 font-bold">(Siz)</span>' : ''}</div>
+            ${user.role === 'supervisor' ? '' : `
             <div class="text-[11px] text-slate-400 flex items-center gap-1 mt-0.5">
               <span>${escapeHtml(user.title || '-')}</span>
               <span class="text-slate-300">•</span>
               <span class="text-purple-600 font-medium" title="Tanımlı Kurs Alanı / Branşlar">${escapeHtml(areasBadgeText)}</span>
-            </div>
+            </div>`}
           </div>
         </div>
       </td>
@@ -1954,6 +2012,20 @@ function renderAdminUsers() {
   refreshLucide();
 }
 
+function toggleUserModalRoleFields() {
+  const isSup = roleSupervisor && roleSupervisor.checked;
+  const userFormAreaGroup = document.getElementById('userFormAreaGroup');
+  const userFormTitleGroup = document.getElementById('userFormTitleGroup');
+  if (userFormAreaGroup) {
+    if (isSup) userFormAreaGroup.classList.add('hidden');
+    else userFormAreaGroup.classList.remove('hidden');
+  }
+  if (userFormTitleGroup) {
+    if (isSup) userFormTitleGroup.classList.add('hidden');
+    else userFormTitleGroup.classList.remove('hidden');
+  }
+}
+
 function openUserModal(userToEdit = null) {
   if (!isDeveloper(currentUser)) {
     alert('Kullanıcı hesabı oluşturma ve düzenleme yetkisi yalnızca sistem geliştiricisine aittir.');
@@ -1989,6 +2061,7 @@ function openUserModal(userToEdit = null) {
     if (roleTeacher) roleTeacher.checked = true;
   }
 
+  toggleUserModalRoleFields();
   userFormFullName.focus();
   refreshLucide();
 }
@@ -2007,10 +2080,6 @@ function handleSaveUser(e) {
   const fullName = toTurkishPersonName(userFormFullName.value);
   const username = userFormUsername.value.trim().toLowerCase();
   const password = userFormPassword.value.trim();
-  const area = userFormArea ? userFormArea.value : '';
-  const area2 = userFormArea2 ? userFormArea2.value.trim() : '';
-  const title = toTurkishTitleCase(userFormTitle.value);
-  
   let role = 'teacher';
   if (roleDeveloper && roleDeveloper.checked) {
     role = 'developer';
@@ -2021,6 +2090,11 @@ function handleSaveUser(e) {
   } else {
     role = 'teacher';
   }
+
+  const isSup = (role === 'supervisor');
+  const area = isSup ? '' : (userFormArea ? userFormArea.value : '');
+  const area2 = isSup ? '' : (userFormArea2 ? userFormArea2.value.trim() : '');
+  const title = isSup ? '' : toTurkishTitleCase(userFormTitle.value);
 
   if (!fullName || !username || !password) {
     alert('Lütfen Ad Soyad, Kullanıcı Adı ve Şifre alanlarını doldurunuz.');
@@ -2045,9 +2119,10 @@ function handleSaveUser(e) {
           fullName,
           username,
           password,
-          area: area || u.area,
-          area2: cleanArea2,
-          title,
+          area: isSup ? '' : (area || u.area),
+          area2: isSup ? '' : cleanArea2,
+          title: isSup ? '' : title,
+          institution: isSup ? '' : (u.institution || ''),
           role
         };
         if (currentUser?.id === id) {
@@ -2062,7 +2137,7 @@ function handleSaveUser(e) {
     // Yeni kullanıcı
     let defaultTitle = 'Eğitmen';
     if (role === 'developer') defaultTitle = 'Geliştirici';
-    else if (role === 'supervisor') defaultTitle = 'Eğitim Sorumlusu';
+    else if (role === 'supervisor') defaultTitle = '';
     else if (role === 'department_head') defaultTitle = 'Zümre Başkanı';
 
     const newUser = {
@@ -2070,9 +2145,10 @@ function handleSaveUser(e) {
       fullName,
       username,
       password,
-      area: area || 'Bilişim Teknolojileri',
-      area2: cleanArea2,
-      title: title || defaultTitle,
+      area: isSup ? '' : (area || 'Bilişim Teknolojileri'),
+      area2: isSup ? '' : cleanArea2,
+      title: isSup ? '' : (title || defaultTitle),
+      institution: '',
       role,
       email: `${username}@meb.k12.tr`,
       avatar: `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(fullName)}`
@@ -3874,7 +3950,7 @@ window.deleteCourse = function(courseId) {
 
 // =================== KURS DETAYI, KURSİYER & SAATLİK MÜFREDAT ===================
 
-window.openCourseDetail = function(courseId) {
+window.openCourseDetail = function(courseId, push = true) {
   if (isSupervisor(currentUser)) {
     openSupervisorCourseModal(courseId);
     return;
@@ -4008,10 +4084,16 @@ window.openCourseDetail = function(courseId) {
   renderDocumentsTab();
 
   detailModal.classList.remove('hidden');
+  if (push && window.history && window.history.pushState) {
+    const targetHash = '#/course/' + courseId;
+    if (window.location.hash !== targetHash) {
+      window.history.pushState({ view: 'courseDetail', courseId: courseId }, '', targetHash);
+    }
+  }
   refreshLucide();
 };
 
-function closeDetailModal() {
+function closeDetailModal(push = true) {
   detailModal.classList.add('hidden');
   activeCourseForDetail = null;
   studentAddForm.classList.add('hidden');
@@ -4023,6 +4105,15 @@ function closeDetailModal() {
   if (printAreaContent) printAreaContent.innerHTML = '';
   if (printArea) printArea.classList.add('hidden');
   document.getElementById('securePrintIframe')?.remove();
+
+  if (push && window.history) {
+    if (window.history.state && window.history.state.view === 'courseDetail') {
+      window.history.back();
+    } else {
+      const fallbackSection = currentActiveView || 'teacher';
+      window.history.pushState({ view: 'section', section: fallbackSection }, '', '#/' + fallbackSection);
+    }
+  }
 }
 
 window.handleCloseCourseClick = function() {
@@ -13155,7 +13246,7 @@ function resetSupervisorFilters() {
   renderSupervisorCoursesTable();
 }
 
-function openSupervisorCourseModal(courseId) {
+function openSupervisorCourseModal(courseId, push = true) {
   const course = currentCourses.find(c => c.id === courseId);
   if (!course) return;
 
@@ -13251,11 +13342,24 @@ function openSupervisorCourseModal(courseId) {
   }
 
   supervisorCourseModal?.classList.remove('hidden');
+  if (push && window.history && window.history.pushState) {
+    const targetHash = '#/supervisor/course/' + courseId;
+    if (window.location.hash !== targetHash) {
+      window.history.pushState({ view: 'supervisorCourseModal', courseId: courseId }, '', targetHash);
+    }
+  }
   refreshLucide();
 }
 
-function closeSupervisorCourseModal() {
+function closeSupervisorCourseModal(push = true) {
   supervisorCourseModal?.classList.add('hidden');
+  if (push && window.history) {
+    if (window.history.state && window.history.state.view === 'supervisorCourseModal') {
+      window.history.back();
+    } else {
+      window.history.pushState({ view: 'section', section: 'supervisor' }, '', '#/supervisor');
+    }
+  }
 }
 
 // Sayfa Yenilemeden Otomatik Veri Senkronizasyonu (5 Saniyede Bir)
@@ -13326,3 +13430,58 @@ window.startAutoDataRefresh = startAutoDataRefresh;
 window.getSavedSupervisorFilters = getSavedSupervisorFilters;
 window.saveSupervisorFilters = saveSupervisorFilters;
 
+
+
+// =====================================================================
+// TARAYICI GERİ / İLERİ BUTONLARI GEÇMİŞ YÖNETİMİ (POPSTATE ENTEGRASYONU)
+// =====================================================================
+window.addEventListener('popstate', (e) => {
+  if (!currentUser) return;
+  const state = e.state;
+
+  // Açık olan popup ve modalleri güvenle kapat
+  const dialogModal = document.getElementById('customDialogModal');
+  if (dialogModal && !dialogModal.classList.contains('hidden')) {
+    if (typeof hideCustomDialog === 'function') hideCustomDialog(false);
+  }
+  const uModal = document.getElementById('userModal');
+  if (uModal && !uModal.classList.contains('hidden')) closeUserModal();
+  const cModal = document.getElementById('courseModal');
+  if (cModal && !cModal.classList.contains('hidden')) {
+    if (typeof closeCourseModal === 'function') closeCourseModal();
+  }
+  const pModal = document.getElementById('profileModal');
+  if (pModal && !pModal.classList.contains('hidden')) closeProfileModal();
+
+  if (state && state.view === 'courseDetail' && state.courseId) {
+    if (typeof supervisorCourseModal !== 'undefined' && supervisorCourseModal && !supervisorCourseModal.classList.contains('hidden')) {
+      supervisorCourseModal.classList.add('hidden');
+    }
+    if (typeof openCourseDetail === 'function') openCourseDetail(state.courseId, false);
+  } else if (state && state.view === 'supervisorCourseModal' && state.courseId) {
+    if (typeof detailModal !== 'undefined' && detailModal && !detailModal.classList.contains('hidden')) {
+      detailModal.classList.add('hidden');
+    }
+    if (typeof openSupervisorCourseModal === 'function') openSupervisorCourseModal(state.courseId, false);
+  } else {
+    // Kurs detay modalleri açıksa kapat
+    if (typeof detailModal !== 'undefined' && detailModal && !detailModal.classList.contains('hidden')) {
+      closeDetailModal(false);
+    }
+    if (typeof supervisorCourseModal !== 'undefined' && supervisorCourseModal && !supervisorCourseModal.classList.contains('hidden')) {
+      closeSupervisorCourseModal(false);
+    }
+
+    // Hedef ana sekmeye/ekrana dön
+    let targetSection = state?.section;
+    if (!targetSection) {
+      const hashPart = window.location.hash.replace(/^#\/?/, '').split('/')[0];
+      if (['teacher', 'admin', 'supervisor'].includes(hashPart)) {
+        targetSection = hashPart;
+      } else {
+        targetSection = isSupervisor(currentUser) ? 'supervisor' : (isDeveloper(currentUser) ? 'admin' : 'teacher');
+      }
+    }
+    switchView(targetSection, false);
+  }
+});
