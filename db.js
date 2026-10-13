@@ -269,6 +269,15 @@ const DataStore = {
         const courseId = stringToUuid(c.id || c.code || c.name);
         currentUuids.add(courseId);
 
+        const studentAbsencesMap = {};
+        if (Array.isArray(c.students)) {
+          c.students.forEach(s => {
+            if (s && s.id && Array.isArray(s.dailyAbsences) && s.dailyAbsences.length > 0) {
+              studentAbsencesMap[s.id] = s.dailyAbsences;
+            }
+          });
+        }
+
         const lessonDaysPayload = {
           days: c.days || [],
           extra: {
@@ -281,7 +290,8 @@ const DataStore = {
             supervisor: c.supervisor || '',
             closedAt: c.closedAt || null,
             closedBy: c.closedBy || null,
-            baseSyllabus: c.baseSyllabus || null
+            baseSyllabus: c.baseSyllabus || null,
+            studentAbsences: studentAbsencesMap
           }
         };
 
@@ -392,7 +402,8 @@ const DataStore = {
         absentHours: s.absentHours !== undefined ? Number(s.absentHours) : 0,
         attendance: s.attendance || 'Devamlı',
         attendanceNote: s.attendanceNote || '',
-        moduleScores: modScores
+        moduleScores: modScores,
+        dailyAbsences: Array.isArray(s.dailyAbsences) ? s.dailyAbsences : []
       };
     });
 
@@ -657,19 +668,27 @@ const DataStore = {
         closedAt: extra.closedAt || null,
         closedBy: extra.closedBy || null,
         baseSyllabus: extra.baseSyllabus || null,
-        students: (c.students || []).map(s => ({
-          id: s.id,
-          firstName: s.first_name,
-          lastName: s.last_name,
-          fullName: s.full_name,
-          tcNo: s.tc_no,
-          phone: s.phone,
-          attendance: s.attendance,
-          result: s.result,
-          absentHours: s.absent_hours,
-          moduleScores: s.module_scores || {},
-          attendanceNote: s.note || ''
-        }))
+        students: (c.students || []).map(s => {
+          const studentAbsencesMap = extra.studentAbsences || {};
+          const dailyAbs = (Array.isArray(s.dailyAbsences) && s.dailyAbsences.length > 0)
+            ? s.dailyAbsences
+            : (studentAbsencesMap[s.id] || []);
+
+          return {
+            id: s.id,
+            firstName: s.first_name || s.firstName || '',
+            lastName: s.last_name || s.lastName || '',
+            fullName: s.full_name || s.fullName || '',
+            tcNo: s.tc_no || s.tcNo || '',
+            phone: s.phone || '',
+            attendance: s.attendance || 'Devamlı',
+            result: s.result || '',
+            absentHours: Number(s.absent_hours !== undefined ? s.absent_hours : (s.absentHours || 0)),
+            moduleScores: s.module_scores || s.moduleScores || {},
+            attendanceNote: s.note || s.attendanceNote || '',
+            dailyAbsences: dailyAbs
+          };
+        })
       };
       courseMap.set(key, mappedCourse);
     });

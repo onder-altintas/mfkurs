@@ -5863,24 +5863,32 @@ function renderAttendanceTab() {
     return;
   }
 
+  let hasRepairedAnyStudent = false;
+
   students.forEach((s, idx) => {
     s.dailyAbsences = s.dailyAbsences || [];
 
-    // Geçmiş verilerden gelen tekil absentHours varsa ve dailyAbsences henüz boşsa, günlük kayıtları başlat
+    // Geçmiş verilerden gelen veya buluttan boş gelen kayıtlar için:
+    // Eğer s.dailyAbsences boşsa ve s.absentHours > 0 ise, devamsızlığı kursun gerçek ders günlerine düzgün dağıt
     if (s.dailyAbsences.length === 0 && Number(s.absentHours) > 0) {
       let rem = Number(s.absentHours);
-      let dayCnt = 0;
-      while (rem > 0) {
+      let dayIdx = 0;
+      const lessonDatesList = (currentCourseLessonDates && currentCourseLessonDates.length > 0)
+        ? currentCourseLessonDates
+        : getValidCourseDates(activeCourseForDetail);
+
+      while (rem > 0 && dayIdx < lessonDatesList.length) {
         const chunk = Math.min(rem, dailyHours);
         s.dailyAbsences.push({
-          id: `att_init_${s.id}_${dayCnt}`,
-          date: activeCourseForDetail.startDate || selectedDate,
+          id: `att_init_${s.id}_${dayIdx}`,
+          date: lessonDatesList[dayIdx],
           hours: chunk,
-          note: s.attendanceNote || 'Kayıtlı Devamsızlık'
+          note: s.attendanceNote || (s.attendance === 'Hiç Gelmedi' ? 'Kursa hiç gelmedi' : 'Kayıtlı Devamsızlık')
         });
         rem -= chunk;
-        dayCnt++;
+        dayIdx++;
       }
+      hasRepairedAnyStudent = true;
     }
 
     // Seçili güne ait devamsızlık saati
@@ -6031,6 +6039,11 @@ function renderAttendanceTab() {
     `;
     attendanceTableBody.appendChild(tr);
   });
+
+  if (hasRepairedAnyStudent) {
+    currentCourses = currentCourses.map(c => c.id === activeCourseForDetail.id ? activeCourseForDetail : c);
+    DataStore.saveCourses(currentCourses);
+  }
 
   // Kutucuk saat değişikliklerini dinle
   attendanceTableBody.querySelectorAll('.att-day-hour-input').forEach(input => {
@@ -6312,12 +6325,17 @@ window.markStudentNeverAttended = async function(studentId) {
       return;
     }
 
-    std.dailyAbsences = validDates.map((dateStr, idx) => ({
-      id: `att_never_${Date.now()}_${idx}`,
-      date: dateStr,
-      hours: dailyHours,
-      note: 'Kursa hiç gelmedi'
-    }));
+    let remHours = totalHours;
+    std.dailyAbsences = validDates.map((dateStr, idx) => {
+      const h = Math.min(dailyHours, Math.max(0, remHours));
+      remHours -= h;
+      return {
+        id: `att_never_${Date.now()}_${idx}`,
+        date: dateStr,
+        hours: h,
+        note: 'Kursa hiç gelmedi'
+      };
+    }).filter(d => d.hours > 0);
 
     std.absentHours = totalHours;
     std.attendance = 'Hiç Gelmedi';
