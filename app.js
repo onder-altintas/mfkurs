@@ -3397,6 +3397,16 @@ function renderCourseList() {
             </button>
           `}
 
+          ${isClosed && isDeveloper(currentUser) ? `
+            <button
+              onclick="event.stopPropagation(); handleReopenCourseClick('${course.id}')"
+              class="card-action-btn p-2 text-amber-600 dark:text-amber-400 hover:text-amber-700 hover:bg-amber-50 dark:hover:bg-amber-950/40 rounded-xl transition cursor-pointer"
+              title="Kapatmayı İptal Et / Kursu Yeniden Aç ve Düzenlenebilir Yap (Geliştirici)"
+            >
+              <i data-lucide="unlock" class="w-4 h-4 text-amber-600 dark:text-amber-400"></i>
+            </button>
+          ` : ''}
+
           ${isDeveloper(currentUser) ? `
             <button
               onclick="event.stopPropagation(); deleteCourse('${course.id}')"
@@ -4089,8 +4099,9 @@ window.openCourseDetail = function(courseId, push = true) {
   const isClosed = activeCourseForDetail.status === 'completed';
 
   if (isClosed) {
-    detailStatusBadge.className = 'px-2.5 py-0.5 rounded text-xs font-bold bg-slate-200 dark:bg-[#10191b] text-slate-800 dark:text-slate-300 border border-slate-300 dark:border-[#23353c] inline-flex items-center gap-1';
-    detailStatusBadge.innerHTML = '<i data-lucide="lock" class="w-3 h-3 text-slate-500"></i> Kapatılmış Kurs (Salt-Okunur)';
+    detailStatusBadge.className = 'px-2.5 py-0.5 rounded text-xs font-bold bg-slate-200 dark:bg-[#10191b] text-slate-800 dark:text-slate-300 border border-slate-300 dark:border-[#23353c] inline-flex items-center gap-1.5 flex-wrap';
+    detailStatusBadge.innerHTML = '<i data-lucide="lock" class="w-3 h-3 text-slate-500"></i> Kapatılmış Kurs (Salt-Okunur)' +
+      (isDeveloper(currentUser) ? ' <button type="button" onclick="handleReopenCourseClick()" class="ml-1 text-amber-700 dark:text-amber-400 hover:text-amber-800 underline font-extrabold cursor-pointer text-[11px]" title="Kapatma işlemini iptal et ve kursu düzenlemeye aç">[Kapatmayı İptal Et]</button>' : '');
   } else {
     detailStatusBadge.className = 'px-2.5 py-0.5 rounded text-xs font-semibold bg-emerald-100 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800';
     detailStatusBadge.innerText = 'Devam Eden Kurs';
@@ -4238,19 +4249,26 @@ window.handleCloseCourseClick = function() {
   });
 };
 
-window.handleReopenCourseClick = async function() {
-  if (!activeCourseForDetail) return;
-  const course = activeCourseForDetail;
+window.handleReopenCourseClick = async function(courseId = null) {
+  const targetId = courseId || activeCourseForDetail?.id;
+  if (!targetId) return;
+  const course = (currentCourses || []).find(c => c.id === targetId) || activeCourseForDetail;
+  if (!course) return;
 
   if (!isDeveloper(currentUser)) {
-    alert('Kursu yeniden aktif hale getirme yetkisi yalnızca sistem geliştiricisine aittir.');
+    showModalAlert('Kurs kapatma işlemini iptal etme ve yeniden düzenlemeye açma yetkisi yalnızca sistem geliştiricisine aittir.', 'Yetki Hatası', 'danger');
     return;
   }
 
   const confirmed = await showModalConfirm(
-    `"${course.name}" kursunu yeniden aktif (düzenlenebilir) duruma getirmek istiyor musunuz?`,
-    '🔓 Kursu Yeniden Aktif Et',
-    'Evet, Aktif Et',
+    `"${course.name}" (${course.code || 'KODSUZ'}) kursu için kapatma işlemini iptal etmek istiyor musunuz?\n\n` +
+    `Bu işlem sonucunda:\n` +
+    `• Kurs durumu "Tamamlandı (Arşiv)"den çıkarılıp yeniden "Devam Eden Kurs" yapılacaktır.\n` +
+    `• Kursiyer ekleme, silme ve düzenleme kilitleri kalkacaktır.\n` +
+    `• Günlük devamsızlık girişleri ve modül sınav notları tekrar düzenlenebilir olacaktır.\n\n` +
+    `Kapatma işlemini iptal edip kursu düzenlemeye açmak istiyor musunuz?`,
+    '🔓 Kapatmayı İptal Et & Kursu Aç',
+    'Evet, Kapatmayı İptal Et',
     'Vazgeç',
     'warning'
   );
@@ -4264,8 +4282,14 @@ window.handleReopenCourseClick = async function() {
   DataStore.saveCourses(currentCourses);
 
   renderTeacherDashboard();
-  openCourseDetail(course.id);
-  alert('Kurs başarıyla yeniden aktif hale getirildi.');
+  if (typeof renderSupervisorCoursesTable === 'function') {
+    try { renderSupervisorCoursesTable(); } catch (e) {}
+  }
+  if (activeCourseForDetail && activeCourseForDetail.id === course.id) {
+    activeCourseForDetail = course;
+    openCourseDetail(course.id);
+  }
+  showAutoSaveToast('Kurs kapatma işlemi iptal edildi, kurs düzenlemeye açıldı');
 };
 
 function switchDetailTab(tab) {
@@ -13111,8 +13135,8 @@ function renderSupervisorCoursesTable() {
         ${statusBadgeHtml}
       </td>
 
-      <!-- 8. İşlem (İncele butonu) -->
-      <td class="px-4 py-3 text-right">
+      <!-- 8. İşlem (İncele butonu ve Geliştirici Kapatmayı İptal Et) -->
+      <td class="px-4 py-3 text-right whitespace-nowrap">
         <button
           type="button"
           onclick="openSupervisorCourseModal('${course.id}')"
@@ -13122,6 +13146,17 @@ function renderSupervisorCoursesTable() {
           <i data-lucide="file-search" class="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400"></i>
           <span>İncele</span>
         </button>
+        ${course.status === 'completed' && isDeveloper(currentUser) ? `
+        <button
+          type="button"
+          onclick="handleReopenCourseClick('${course.id}')"
+          class="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-bold text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/40 hover:bg-amber-100 dark:hover:bg-amber-900/50 border border-amber-300 dark:border-amber-800 rounded-xl shadow-2xs transition cursor-pointer ml-1"
+          title="Kapatmayı İptal Et / Kursu Yeniden Aç (Geliştirici)"
+        >
+          <i data-lucide="unlock" class="w-3.5 h-3.5 text-amber-600 dark:text-amber-400"></i>
+          <span>Kapatmayı İptal Et</span>
+        </button>
+        ` : ''}
       </td>
     `;
     supCoursesTableBody.appendChild(tr);
