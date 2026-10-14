@@ -4029,6 +4029,9 @@ window.openCourseDetail = function(courseId, push = true) {
   const offDayDates = new Set((activeCourseForDetail.offDays || []).map(o => o.date));
   let studentsChanged = false;
 
+  const courseTotalHours = Number(activeCourseForDetail.totalHours) || 0;
+  const courseMaxAllowed = Math.floor(courseTotalHours / 5);
+
   (activeCourseForDetail.students || []).forEach(std => {
     if (Array.isArray(std.dailyAbsences) && std.dailyAbsences.length > 0) {
       const origLen = std.dailyAbsences.length;
@@ -4042,6 +4045,23 @@ window.openCourseDetail = function(courseId, push = true) {
       if (std.dailyAbsences.length !== origLen) {
         studentsChanged = true;
         std.absentHours = std.dailyAbsences.reduce((sum, d) => sum + Number(d.hours || 0), 0);
+      }
+    }
+
+    // Uyumsuzluk Kontrolü: 54 saatlik kursun 48'ine gelmemişse 6 saat gelmiştir, "Hiç Gelmedi" olamaz
+    const sAbsent = Number(std.absentHours || 0);
+    if (courseTotalHours > 0 && sAbsent > 0 && sAbsent < courseTotalHours) {
+      if (std.attendance === 'Hiç Gelmedi') {
+        std.attendance = sAbsent > courseMaxAllowed ? 'Devamsız' : 'Devamlı';
+        studentsChanged = true;
+      }
+      if (std.result === 'Hiç Gelmedi') {
+        std.result = sAbsent > courseMaxAllowed ? 'Devamsız' : ((std.examScore !== null && Number(std.examScore) >= 50) ? 'Başarılı' : 'Devam Ediyor');
+        studentsChanged = true;
+      }
+      if (std.attendanceNote && std.attendanceNote.toLowerCase().includes('hiç gelme')) {
+        std.attendanceNote = '';
+        studentsChanged = true;
       }
     }
   });
@@ -4344,6 +4364,20 @@ function renderStudentTable() {
 
     const totalHours = Number(activeCourseForDetail.totalHours) || 0;
     const maxAllowed = Math.floor(totalHours / 5);
+    const sAbsent = Number(s.absentHours || 0);
+
+    if (totalHours > 0 && sAbsent > 0 && sAbsent < totalHours) {
+      if (s.attendance === 'Hiç Gelmedi') {
+        s.attendance = sAbsent > maxAllowed ? 'Devamsız' : 'Devamlı';
+      }
+      if (s.result === 'Hiç Gelmedi') {
+        s.result = sAbsent > maxAllowed ? 'Devamsız' : ((s.examScore !== null && Number(s.examScore) >= 50) ? 'Başarılı' : 'Devam Ediyor');
+      }
+      if (s.attendanceNote && s.attendanceNote.toLowerCase().includes('hiç gelme')) {
+        s.attendanceNote = '';
+      }
+    }
+
     const isHicGelmedi = isStudentHicGelmedi(s, activeCourseForDetail);
 
     const isDevamsiz = !isHicGelmedi && ((s.attendance === 'Devamsız') || (s.result === 'Devamsız') || (totalHours > 0 && Number(s.absentHours || 0) > maxAllowed));
@@ -5930,10 +5964,7 @@ function renderAttendanceTab() {
         </button>
       `;
 
-    const isStudentNeverAttended = (s.attendance === 'Hiç Gelmedi') || 
-                                   (s.result === 'Hiç Gelmedi') || 
-                                   (typeof s.attendanceNote === 'string' && s.attendanceNote.toLowerCase().includes('hiç gelme')) ||
-                                   (totalHours > 0 && Number(s.absentHours || 0) >= totalHours);
+    const isStudentNeverAttended = isStudentHicGelmedi(s, activeCourseForDetail);
 
     const neverAttendedBtnHtml = `
       <button
@@ -6163,13 +6194,23 @@ window.setStudentDateAbsenceHours = function(studentId, hours, shouldRefresh = t
   const totalHours = activeCourseForDetail.totalHours || 0;
   const maxAllowed = Math.floor(totalHours / 5);
 
-  if (totalAbsent > maxAllowed) {
+  if (totalHours > 0 && totalAbsent >= totalHours) {
+    std.attendance = 'Hiç Gelmedi';
+    std.result = 'Hiç Gelmedi';
+    std.attendanceNote = 'Kursa hiç gelmedi';
+  } else if (totalAbsent > maxAllowed) {
     std.attendance = 'Devamsız';
     std.result = 'Devamsız';
+    if (std.attendanceNote && std.attendanceNote.toLowerCase().includes('hiç gelme')) {
+      std.attendanceNote = '';
+    }
   } else {
-    std.attendance = totalAbsent > 0 ? 'Devamlı' : 'Devamlı';
-    if (std.result === 'Devamsız') {
+    std.attendance = 'Devamlı';
+    if (std.result === 'Devamsız' || std.result === 'Hiç Gelmedi') {
       std.result = (std.examScore !== null && std.examScore >= 50) ? 'Başarılı' : (std.examScore !== null ? 'Başarısız' : 'Devam Ediyor');
+    }
+    if (std.attendanceNote && std.attendanceNote.toLowerCase().includes('hiç gelme')) {
+      std.attendanceNote = '';
     }
   }
 
@@ -6259,17 +6300,23 @@ window.markStudentAbsentFromDateOnwards = async function(studentId) {
   const totalHours = activeCourseForDetail.totalHours || 0;
   const maxAllowed = Math.floor(totalHours / 5);
 
-  if (!allAlreadyAbsent && currentAttendanceDateIndex === 0) {
+  if (!allAlreadyAbsent && currentAttendanceDateIndex === 0 && totalHours > 0 && totalAbsent >= totalHours) {
     std.attendance = 'Hiç Gelmedi';
     std.result = 'Hiç Gelmedi';
     std.attendanceNote = 'Kursa hiç gelmedi';
   } else if (totalAbsent > maxAllowed) {
     std.attendance = 'Devamsız';
     std.result = 'Devamsız';
+    if (std.attendanceNote && std.attendanceNote.toLowerCase().includes('hiç gelme')) {
+      std.attendanceNote = '';
+    }
   } else {
-    std.attendance = totalAbsent > 0 ? 'Devamlı' : 'Devamlı';
+    std.attendance = 'Devamlı';
     if (std.result === 'Devamsız' || std.result === 'Hiç Gelmedi') {
       std.result = (std.examScore !== null && std.examScore >= 50) ? 'Başarılı' : (std.examScore !== null ? 'Başarısız' : 'Devam Ediyor');
+    }
+    if (std.attendanceNote && std.attendanceNote.toLowerCase().includes('hiç gelme')) {
+      std.attendanceNote = '';
     }
   }
 
@@ -6298,10 +6345,7 @@ window.markStudentNeverAttended = async function(studentId) {
   const dailyHours = Number(activeCourseForDetail.dailyHours) || 4;
   const validDates = getValidCourseDates(activeCourseForDetail);
 
-  const currentlyHicGelmedi = (std.attendance === 'Hiç Gelmedi') || 
-                              (std.result === 'Hiç Gelmedi') || 
-                              (typeof std.attendanceNote === 'string' && std.attendanceNote.toLowerCase().includes('hiç gelme')) ||
-                              (totalHours > 0 && Number(std.absentHours || 0) >= totalHours);
+  const currentlyHicGelmedi = isStudentHicGelmedi(std, activeCourseForDetail);
 
   if (currentlyHicGelmedi) {
     const confirmed = await showModalConfirm(`"${std.fullName}" için "Hiç Gelmedi" durumunu kaldırıp devamsızlık kayıtlarını sıfırlamak istiyor musunuz?`, '🔄 Durumu Sıfırla', 'Evet, Sıfırla', 'Vazgeç', 'warning');
@@ -6449,28 +6493,42 @@ window.getModuleExamInfo = getModuleExamInfo;
 // Kursiyerin kursa hiç gelmediğini tespit eden evrensel fonksiyon
 function isStudentHicGelmedi(student, course) {
   if (!student) return false;
+  const totalHours = Number(course?.totalHours || 0);
+  const absentHours = Number(student.absentHours || 0);
+
+  // 1. Kursiyerin kısmi katılımı varsa (örneğin 54 saatlik kursun 48'ine gelmemiş, 6 saatine gelmişse):
+  // Toplam saatten daha az devamsızlığı olan ve devamsızlığı > 0 olan kursiyer derse katılmıştır.
+  // Bu kursiyer KESİNLİKLE "Hiç Gelmedi" DEĞİLDİR! Devamsızlık sınırını aştıysa "Devamsız"dır.
+  if (totalHours > 0 && absentHours > 0 && absentHours < totalHours) {
+    return false;
+  }
+
+  // 2. Kursiyerin devamsızlık saati kursun toplam saatine eşit veya büyükse -> Kesinlikle Hiç Gelmedi
+  if (totalHours > 0 && absentHours >= totalHours) {
+    return true;
+  }
+
+  // 3. Kursun geçerli tüm ders günlerinde tam gün (dailyHours) devamsız yazılmış ve hiç gelinmemişse
+  const lessonDates = (typeof getValidCourseDates === 'function' && course) ? getValidCourseDates(course) : [];
+  const dailyHours = Number(course?.dailyHours || 4);
+  if (lessonDates.length > 0 && Array.isArray(student.dailyAbsences) && student.dailyAbsences.length >= lessonDates.length) {
+    const isAllDaysFullyAbsent = lessonDates.every(d => {
+      const rec = student.dailyAbsences.find(a => a.date === d);
+      return rec && Number(rec.hours) >= dailyHours;
+    });
+    if (isAllDaysFullyAbsent) return true;
+  }
+
+  // 4. Metinsel kontrol: Açıkça "Hiç Gelmedi" olarak işaretli mi?
   const attLower = String(student.attendance || '').trim().toLocaleLowerCase('tr-TR');
   const resLower = String(student.result || '').trim().toLocaleLowerCase('tr-TR');
   const noteLower = String(student.attendanceNote || '').trim().toLocaleLowerCase('tr-TR');
 
   if (attLower.includes('hiç gelme') || resLower.includes('hiç gelme') || noteLower.includes('hiç gelme')) {
+    if (totalHours > 0 && absentHours > 0 && absentHours < totalHours) {
+      return false;
+    }
     return true;
-  }
-
-  const totalHours = Number(course?.totalHours || 0);
-  const absentHours = Number(student.absentHours || 0);
-  if (totalHours > 0 && absentHours >= totalHours) {
-    return true;
-  }
-
-  // Kursun ders günlerinin tamamında devamsızlık yapılmış ve hiç gelinmemişse
-  const lessonDates = (typeof getValidCourseDates === 'function' && course) ? getValidCourseDates(course) : [];
-  if (lessonDates.length > 0 && Array.isArray(student.dailyAbsences) && student.dailyAbsences.length >= lessonDates.length) {
-    const isAllDaysAbsent = lessonDates.every(d => {
-      const rec = student.dailyAbsences.find(a => a.date === d);
-      return rec && Number(rec.hours) > 0;
-    });
-    if (isAllDaysAbsent) return true;
   }
 
   return false;
@@ -7198,13 +7256,23 @@ function handleSaveSingleAttModal() {
   const totalHours = activeCourseForDetail.totalHours || 0;
   const maxAllowed = Math.floor(totalHours / 5);
 
-  if (totalAbsent > maxAllowed) {
+  if (totalHours > 0 && totalAbsent >= totalHours) {
+    std.attendance = 'Hiç Gelmedi';
+    std.result = 'Hiç Gelmedi';
+    std.attendanceNote = 'Kursa hiç gelmedi';
+  } else if (totalAbsent > maxAllowed) {
     std.attendance = 'Devamsız';
     std.result = 'Devamsız';
+    if (std.attendanceNote && std.attendanceNote.toLowerCase().includes('hiç gelme')) {
+      std.attendanceNote = '';
+    }
   } else {
-    std.attendance = totalAbsent > 0 ? 'Devamlı' : 'Devamlı';
-    if (std.result === 'Devamsız') {
+    std.attendance = 'Devamlı';
+    if (std.result === 'Devamsız' || std.result === 'Hiç Gelmedi') {
       std.result = (std.examScore !== null && std.examScore >= 50) ? 'Başarılı' : (std.examScore !== null ? 'Başarısız' : 'Devam Ediyor');
+    }
+    if (std.attendanceNote && std.attendanceNote.toLowerCase().includes('hiç gelme')) {
+      std.attendanceNote = '';
     }
   }
 
@@ -12545,10 +12613,7 @@ function calculateDetailedCourseStats(course) {
       scoredCount++;
     }
 
-    const isHicGelmedi = (s.attendance === 'Hiç Gelmedi') || 
-                         (s.result === 'Hiç Gelmedi') || 
-                         (typeof s.attendanceNote === 'string' && s.attendanceNote.toLowerCase().includes('hiç gelme')) ||
-                         (totalHours > 0 && Number(s.absentHours || 0) >= totalHours);
+    const isHicGelmedi = isStudentHicGelmedi(s, course);
 
     const isDevamsiz = !isHicGelmedi && ((s.attendance === 'Devamsız') || (s.result === 'Devamsız') || (totalHours > 0 && maxAllowed > 0 && Number(s.absentHours || 0) > maxAllowed));
 

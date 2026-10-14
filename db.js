@@ -387,6 +387,9 @@ const DataStore = {
 
   _normalizeCourse(c) {
     const moduleCount = c.moduleCount ? Math.max(1, Number(c.moduleCount)) : 1;
+    const totalHours = Number(c.totalHours || c.total_hours || 0);
+    const maxAllowed = Math.floor(totalHours / 5);
+
     const students = (c.students || []).map(s => {
       const modScores = s.moduleScores || {};
       const fullName = s.fullName || `${s.firstName || ''} ${s.lastName || ''}`.trim() || 'İsimsiz Kursiyer';
@@ -394,14 +397,35 @@ const DataStore = {
       const lastName = s.lastName || (parts.length > 1 ? parts[parts.length - 1] : '');
       const firstName = s.firstName || (parts.length > 1 ? parts.slice(0, -1).join(' ') : fullName);
 
+      let absentHours = s.absentHours !== undefined ? Number(s.absentHours) : 0;
+      let attendance = s.attendance || 'Devamlı';
+      let result = s.result || '';
+      let attendanceNote = s.attendanceNote || '';
+
+      // KURSİYER DEVAMSIZLIK & HİÇ GELMEDİ UYUMSUZLUK DÜZELTMESİ:
+      // Kursiyer toplam saatten az devamsızlık yapmışsa (ör: 54 saatlik kursun 48'ine gelmemiş, 6 saatine gelmişse),
+      // bu kursiyer kursa katılmıştır, HİÇBİR ŞEKİLDE "Hiç Gelmedi" sayılamaz!
+      if (totalHours > 0 && absentHours > 0 && absentHours < totalHours) {
+        if (attendance === 'Hiç Gelmedi') {
+          attendance = absentHours > maxAllowed ? 'Devamsız' : 'Devamlı';
+        }
+        if (result === 'Hiç Gelmedi') {
+          result = absentHours > maxAllowed ? 'Devamsız' : ((s.examScore !== null && Number(s.examScore) >= 50) ? 'Başarılı' : 'Devam Ediyor');
+        }
+        if (attendanceNote && attendanceNote.toLowerCase().includes('hiç gelme')) {
+          attendanceNote = '';
+        }
+      }
+
       return {
         ...s,
         firstName,
         lastName,
         fullName,
-        absentHours: s.absentHours !== undefined ? Number(s.absentHours) : 0,
-        attendance: s.attendance || 'Devamlı',
-        attendanceNote: s.attendanceNote || '',
+        absentHours,
+        attendance,
+        result,
+        attendanceNote,
         moduleScores: modScores,
         dailyAbsences: Array.isArray(s.dailyAbsences) ? s.dailyAbsences : []
       };
@@ -690,7 +714,7 @@ const DataStore = {
           };
         })
       };
-      courseMap.set(key, mappedCourse);
+      courseMap.set(key, this._normalizeCourse(mappedCourse));
     });
 
     const newCourses = Array.from(courseMap.values());
