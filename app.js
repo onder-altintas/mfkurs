@@ -4431,9 +4431,9 @@ function renderStudentTable() {
         <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-mono mr-1 mb-0.5 border ${
           hasScore 
             ? (Number(score) >= 50 ? 'bg-purple-50 text-purple-800 border-purple-200 font-bold' : 'bg-rose-50 text-rose-700 border-rose-200 font-bold') 
-            : 'bg-slate-100 text-slate-400 border-slate-200'
-        }">
-          M${m}:${hasScore ? score : '-'}
+            : (isHicGelmedi ? 'bg-rose-50 text-rose-700 border-rose-200 font-bold' : 'bg-slate-100 text-slate-400 border-slate-200')
+        }" title="${isHicGelmedi ? 'Kursa hiç gelmedi (H)' : ''}">
+          M${m}:${hasScore ? score : (isHicGelmedi ? 'H' : '-')}
         </span>
       `;
     }
@@ -10042,8 +10042,8 @@ function generateNotCizelgesiHtml(course) {
           if (isHicGelmedi) {
             failedCount++;
             moduleCellsHtml += `
-              <td style="border: 1px solid black; text-align: center; vertical-align: middle; font-size: ${rowFontSize}; font-weight: bold; color: #b91c1c; padding: 0 1px; height: ${rowHeight};">
-                D
+              <td style="border: 1px solid black; text-align: center; vertical-align: middle; font-size: ${rowFontSize}; font-weight: bold; color: #b91c1c; padding: 0 1px; height: ${rowHeight};" title="Kursa Hiç Gelmedi">
+                H
               </td>
             `;
           } else if (hasScore && !lockStatus.locked) {
@@ -10217,7 +10217,7 @@ function generateNotCizelgesiHtml(course) {
           <div style="font-weight: bold; margin-bottom: 1px;">NOTLAR:</div>
           <div>1- Modüller, teorik ve uygulamalı içeriği kapsadığından tek değerlendirme yapılır.</div>
           <div>2- Modül sonu değerlendirmelerinin (yazılı, sözlü, uygulama) aritmetik ortalaması işlenir.</div>
-          <div>3- Kursiyerlerin devam etmediği modüllere (D), sınava girmediyse (G) harfi işlenir.</div>
+          <div>3- Kursa hiç gelmeyen kursiyerlere (H), devam etmediği modüllere (D), sınava girmediyse (G) harfi işlenir.</div>
           <div>4- Boş kalacak olan modüllerin not hücreleri (-) işareti konularak kapatılır.</div>
         </div>
 
