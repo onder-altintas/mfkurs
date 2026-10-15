@@ -18,6 +18,9 @@
   <!-- Chart.js (Zaman Grafikleri ve İstatistikler) -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   
+  <!-- html2pdf.js (Doğrudan PDF İndirme Motoru) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  
   <!-- Google Fonts: Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -3365,10 +3368,10 @@
                 <button
                   type="button"
                   onclick="downloadSingleDocument('Kurs Planı')"
-                  class="p-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-[#10191b] dark:hover:bg-[#19272c] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-[#2b3e45] rounded-xl text-xs font-bold transition cursor-pointer"
-                  title="HTML Olarak İndir"
+                  class="p-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-[#10191b] dark:hover:bg-[#19272c] text-rose-700 dark:text-rose-300 border border-slate-200 dark:border-[#2b3e45] rounded-xl text-xs font-bold transition cursor-pointer"
+                  title="PDF Olarak İndir"
                 >
-                  <i data-lucide="download" class="w-4 h-4 text-[#335C67] dark:text-[#FFF3B0]"></i>
+                  <i data-lucide="file-down" class="w-4 h-4 text-rose-600 dark:text-rose-400"></i>
                 </button>
               </div>
             </div>
@@ -3423,10 +3426,10 @@
                 <button
                   type="button"
                   onclick="downloadSingleDocument('İmza Listesi')"
-                  class="p-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-[#10191b] dark:hover:bg-[#19272c] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-[#2b3e45] rounded-xl text-xs font-bold transition cursor-pointer"
-                  title="HTML Olarak İndir"
+                  class="p-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-[#10191b] dark:hover:bg-[#19272c] text-rose-700 dark:text-rose-300 border border-slate-200 dark:border-[#2b3e45] rounded-xl text-xs font-bold transition cursor-pointer"
+                  title="PDF Olarak İndir"
                 >
-                  <i data-lucide="download" class="w-4 h-4 text-[#335C67] dark:text-[#FFF3B0]"></i>
+                  <i data-lucide="file-down" class="w-4 h-4 text-rose-600 dark:text-rose-400"></i>
                 </button>
               </div>
             </div>
@@ -3481,10 +3484,10 @@
                 <button
                   type="button"
                   onclick="downloadSingleDocument('Sınav Katılım Belgesi')"
-                  class="p-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-[#10191b] dark:hover:bg-[#19272c] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-[#2b3e45] rounded-xl text-xs font-bold transition cursor-pointer"
-                  title="HTML Olarak İndir"
+                  class="p-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-[#10191b] dark:hover:bg-[#19272c] text-rose-700 dark:text-rose-300 border border-slate-200 dark:border-[#2b3e45] rounded-xl text-xs font-bold transition cursor-pointer"
+                  title="PDF Olarak İndir"
                 >
-                  <i data-lucide="download" class="w-4 h-4 text-[#335C67] dark:text-[#FFF3B0]"></i>
+                  <i data-lucide="file-down" class="w-4 h-4 text-rose-600 dark:text-rose-400"></i>
                 </button>
               </div>
             </div>
@@ -3605,10 +3608,10 @@
                 <button
                   type="button"
                   onclick="downloadSingleDocument('Kursiyer Karar Durumu')"
-                  class="p-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-[#10191b] dark:hover:bg-[#19272c] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-[#2b3e45] rounded-xl text-xs font-bold transition cursor-pointer"
-                  title="HTML Olarak İndir"
+                  class="p-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-[#10191b] dark:hover:bg-[#19272c] text-rose-700 dark:text-rose-300 border border-slate-200 dark:border-[#2b3e45] rounded-xl text-xs font-bold transition cursor-pointer"
+                  title="PDF Olarak İndir"
                 >
-                  <i data-lucide="download" class="w-4 h-4 text-[#335C67] dark:text-[#FFF3B0]"></i>
+                  <i data-lucide="file-down" class="w-4 h-4 text-rose-600 dark:text-rose-400"></i>
                 </button>
               </div>
             </div>
@@ -3663,10 +3666,10 @@
                 <button
                   type="button"
                   onclick="downloadSingleDocument('Yoklama ve Ders Defteri')"
-                  class="p-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-[#10191b] dark:hover:bg-[#19272c] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-[#2b3e45] rounded-xl text-xs font-bold transition cursor-pointer"
-                  title="HTML Olarak İndir"
+                  class="p-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-[#10191b] dark:hover:bg-[#19272c] text-rose-700 dark:text-rose-300 border border-slate-200 dark:border-[#2b3e45] rounded-xl text-xs font-bold transition cursor-pointer"
+                  title="PDF Olarak İndir"
                 >
-                  <i data-lucide="download" class="w-4 h-4 text-[#335C67] dark:text-[#FFF3B0]"></i>
+                  <i data-lucide="file-down" class="w-4 h-4 text-rose-600 dark:text-rose-400"></i>
                 </button>
               </div>
             </div>
@@ -3721,10 +3724,10 @@
                 <button
                   type="button"
                   onclick="downloadSingleDocument('Modül Değerlendirme Çizelgesi')"
-                  class="p-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-[#10191b] dark:hover:bg-[#19272c] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-[#2b3e45] rounded-xl text-xs font-bold transition cursor-pointer"
-                  title="HTML Olarak İndir"
+                  class="p-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-[#10191b] dark:hover:bg-[#19272c] text-rose-700 dark:text-rose-300 border border-slate-200 dark:border-[#2b3e45] rounded-xl text-xs font-bold transition cursor-pointer"
+                  title="PDF Olarak İndir"
                 >
-                  <i data-lucide="download" class="w-4 h-4 text-[#335C67] dark:text-[#FFF3B0]"></i>
+                  <i data-lucide="file-down" class="w-4 h-4 text-rose-600 dark:text-rose-400"></i>
                 </button>
               </div>
             </div>
@@ -3962,11 +3965,11 @@
           <button
             type="button"
             onclick="downloadSingleDocument('Kurs Planı')"
-            class="flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-[#10191b] dark:hover:bg-[#19272c] text-slate-800 dark:text-slate-100 border border-slate-200 dark:border-[#2b3e45] rounded-xl text-xs font-bold transition cursor-pointer"
-            title="HTML Belgesi Olarak İndir"
+            class="flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-[#10191b] dark:hover:bg-[#19272c] text-rose-700 dark:text-rose-300 border border-slate-200 dark:border-[#2b3e45] rounded-xl text-xs font-bold transition cursor-pointer"
+            title="PDF Olarak İndir"
           >
-            <i data-lucide="download" class="w-4 h-4 text-teal-600 dark:text-teal-400"></i>
-            <span class="hidden sm:inline">İndir</span>
+            <i data-lucide="file-down" class="w-4 h-4 text-rose-600 dark:text-rose-400"></i>
+            <span class="hidden sm:inline">PDF İndir</span>
           </button>
           <button
             type="button"
@@ -4291,11 +4294,11 @@
             </div>
             <div>
               <div class="font-bold text-xs sm:text-sm text-white flex items-center gap-1.5">
-                <span>Hepsini Ayrı Dosya Olarak İndir</span>
-                <span class="px-1.5 py-0.2 bg-white/20 text-[10px] rounded">3 Belge</span>
+                <span>Tümünü Ayrı Ayrı PDF İndir</span>
+                <span class="px-1.5 py-0.2 bg-white/20 text-[10px] rounded">3 PDF</span>
               </div>
               <p class="text-[11px] text-teal-100 mt-0.5">
-                Plan, İmza Listesi ve Sınav Katılım Belgesi kendi ismi ve kurs no ile cihazınıza iner.
+                Plan, İmza Listesi ve Sınav Katılım Belgesi doğrudan .pdf dosyası olarak cihazınıza iner.
               </p>
             </div>
           </button>
@@ -4395,11 +4398,11 @@
             </div>
             <div>
               <div class="font-bold text-xs sm:text-sm text-white flex items-center gap-1.5">
-                <span>Hepsini Ayrı Dosya Olarak İndir</span>
-                <span class="px-1.5 py-0.2 bg-white/20 text-[10px] rounded">3 Belge</span>
+                <span>Tümünü Ayrı Ayrı PDF İndir</span>
+                <span class="px-1.5 py-0.2 bg-white/20 text-[10px] rounded">3 PDF</span>
               </div>
               <p class="text-[11px] text-emerald-100 mt-0.5">
-                Karar Durumu, Defter ve Not Çizelgesi belgeleri kendi ismi ve kurs no ile cihazınıza iner.
+                Karar Durumu, Defter ve Not Çizelgesi belgeleri doğrudan .pdf dosyası olarak cihazınıza iner.
               </p>
             </div>
           </button>
@@ -4502,10 +4505,10 @@
             <div>
               <div class="font-bold text-xs sm:text-sm text-white flex items-center gap-1.5">
                 <span>Tüm Boş Evrakları İndir</span>
-                <span class="px-1.5 py-0.2 bg-white/20 text-[10px] rounded">6 Belge (.html)</span>
+                <span class="px-1.5 py-0.2 bg-white/20 text-[10px] rounded">6 PDF Belgesi</span>
               </div>
               <p class="text-[11px] text-emerald-100 mt-0.5">
-                Tüm boş matbu evraklar bilgisayardan bağımsız doldurulmak üzere cihazınıza indirilir.
+                Tüm boş matbu evraklar bilgisayardan bağımsız doldurulmak üzere cihazınıza PDF olarak indirilir.
               </p>
             </div>
           </button>
@@ -4568,7 +4571,7 @@
                 type="button"
                 onclick="downloadSingleBlankDocument('plan')"
                 class="px-2.5 py-1.5 bg-sky-600 hover:bg-sky-700 text-white rounded-lg text-xs font-semibold transition cursor-pointer flex items-center gap-1"
-                title="İndir (.html)"
+                title="PDF İndir"
               >
                 <i data-lucide="download" class="w-3.5 h-3.5"></i>
                 <span>İndir</span>
@@ -4605,7 +4608,7 @@
                 type="button"
                 onclick="downloadSingleBlankDocument('karar')"
                 class="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold transition cursor-pointer flex items-center gap-1"
-                title="İndir (.html)"
+                title="PDF İndir"
               >
                 <i data-lucide="download" class="w-3.5 h-3.5"></i>
                 <span>İndir</span>
@@ -4642,7 +4645,7 @@
                 type="button"
                 onclick="downloadSingleBlankDocument('defter')"
                 class="px-2.5 py-1.5 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-xs font-semibold transition cursor-pointer flex items-center gap-1"
-                title="İndir (.html)"
+                title="PDF İndir"
               >
                 <i data-lucide="download" class="w-3.5 h-3.5"></i>
                 <span>İndir</span>
@@ -4679,7 +4682,7 @@
                 type="button"
                 onclick="downloadSingleBlankDocument('not')"
                 class="px-2.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-semibold transition cursor-pointer flex items-center gap-1"
-                title="İndir (.html)"
+                title="PDF İndir"
               >
                 <i data-lucide="download" class="w-3.5 h-3.5"></i>
                 <span>İndir</span>
@@ -4716,7 +4719,7 @@
                 type="button"
                 onclick="downloadSingleBlankDocument('sinav')"
                 class="px-2.5 py-1.5 bg-rose-600 hover:bg-rose-700 text-white rounded-lg text-xs font-semibold transition cursor-pointer flex items-center gap-1"
-                title="İndir (.html)"
+                title="PDF İndir"
               >
                 <i data-lucide="download" class="w-3.5 h-3.5"></i>
                 <span>İndir</span>
@@ -4753,7 +4756,7 @@
                 type="button"
                 onclick="downloadSingleBlankDocument('imza')"
                 class="px-2.5 py-1.5 bg-teal-600 hover:bg-teal-700 text-white rounded-lg text-xs font-semibold transition cursor-pointer flex items-center gap-1"
-                title="İndir (.html)"
+                title="PDF İndir"
               >
                 <i data-lucide="download" class="w-3.5 h-3.5"></i>
                 <span>İndir</span>
@@ -4814,8 +4817,8 @@
             id="blankDocPreviewDownloadBtn"
             class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold transition cursor-pointer flex items-center gap-1.5 shadow-xs"
           >
-            <i data-lucide="download" class="w-3.5 h-3.5"></i>
-            <span>İndir (.html)</span>
+            <i data-lucide="file-down" class="w-3.5 h-3.5"></i>
+            <span>PDF İndir</span>
           </button>
           <button
             type="button"

@@ -8839,18 +8839,6 @@ window.openKursPlaniConfigModal = async function() {
     return;
   }
 
-  // Kurs kapatılmamışsa uyarı mesajı ver
-  if (activeCourseForDetail.status !== 'completed' && !isDeveloper(currentUser)) {
-    const proceed = await showModalConfirm(
-      'Kurs Planı ve resmi evraklar kurs kapatma işlemi yapıldıktan sonra kesinleşmektedir. Kurs henüz kapatılmamış durumdadır.\n\nYine de devam etmek istiyor musunuz?',
-      '⚠️ Kurs Henüz Kapatılmadı',
-      'Evet, Devam Et',
-      'Vazgeç',
-      'warning'
-    );
-    if (!proceed) return;
-  }
-
   const course = activeCourseForDetail;
 
   // Başlık ve Kurs Bilgilerini Doldur
@@ -9208,6 +9196,67 @@ function downloadTextFile(filename, text, mimeType = 'text/html;charset=utf-8') 
   }, 300);
 }
 
+// Resmi Evrak Doğrudan PDF İndirme Motoru (html2pdf ile doğrudan PDF indirir, tarayıcıda yedek olarak safePrint kullanır)
+async function downloadDocumentAsPdf(filename, htmlContent, isLandscape = false) {
+  if (!htmlContent) {
+    if (typeof showModalAlert === 'function') {
+      showModalAlert('İndirilecek evrak içeriği bulunamadı.');
+    } else {
+      alert('İndirilecek evrak içeriği bulunamadı.');
+    }
+    return;
+  }
+
+  const cleanFilename = (filename || 'resmi-evrak').replace(/\.html$/i, '');
+  const pdfFilename = cleanFilename.endsWith('.pdf') ? cleanFilename : `${cleanFilename}.pdf`;
+
+  if (typeof window.html2pdf === 'function') {
+    if (typeof showAutoSaveToast === 'function') {
+      showAutoSaveToast(`"${pdfFilename}" PDF olarak oluşturuluyor...`);
+    }
+
+    const container = document.createElement('div');
+    container.style.position = 'fixed';
+    container.style.left = '-99999px';
+    container.style.top = '0';
+    container.style.width = isLandscape ? '287mm' : '200mm';
+    container.style.backgroundColor = '#ffffff';
+    container.style.color = '#000000';
+    container.style.fontFamily = 'Arial, Helvetica, sans-serif';
+    container.style.boxSizing = 'border-box';
+    container.style.padding = '0';
+    container.style.margin = '0';
+    container.innerHTML = htmlContent;
+    document.body.appendChild(container);
+
+    const opt = {
+      margin: isLandscape ? [4, 4, 4, 4] : [6, 6, 6, 6],
+      filename: pdfFilename,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true, logging: false },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: isLandscape ? 'landscape' : 'portrait' },
+      pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+    };
+
+    try {
+      await window.html2pdf().set(opt).from(container).save();
+      if (typeof showAutoSaveToast === 'function') {
+        showAutoSaveToast(`"${pdfFilename}" başarıyla indirildi`);
+      }
+    } catch (err) {
+      console.warn('html2pdf dönüştürme uyarısı, safePrint moduna aktarılıyor:', err);
+      safePrint(htmlContent, isLandscape, cleanFilename);
+    } finally {
+      if (container.parentNode) {
+        container.parentNode.removeChild(container);
+      }
+    }
+  } else {
+    // html2pdf kütüphanesi hazır değilse doğrudan tarayıcının yerel PDF motorunu tetikler
+    safePrint(htmlContent, isLandscape, cleanFilename);
+  }
+}
+
 // Güvenli ve Kararlı Yazdırma Motoru (Baskı önizlemesinin boş çıkmasını %100 önler ve PDF ismini tam ayarlar)
 function safePrint(htmlContent, isLandscape = false, documentTitle = 'Resmi Evrak Baskısı') {
   if (!htmlContent) {
@@ -9388,7 +9437,7 @@ window.openSaveOpeningDocumentsModal = function() {
             <div>
               <div class="font-bold text-xs sm:text-sm text-slate-800 dark:text-slate-100 flex items-center gap-1.5 flex-wrap">
                 <span>${escapeHtml(fileName)}</span>
-                <span class="text-[10px] px-1.5 py-0.2 bg-slate-100 dark:bg-[#10191b] text-slate-500 rounded font-mono">.pdf / .html</span>
+                <span class="text-[10px] px-1.5 py-0.2 bg-slate-100 dark:bg-[#10191b] text-slate-500 rounded font-mono">.pdf</span>
               </div>
               <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">${d.desc}</div>
             </div>
@@ -9406,11 +9455,11 @@ window.openSaveOpeningDocumentsModal = function() {
             <button
               type="button"
               onclick="downloadSingleDocument('${escapeHtml(d.name)}')"
-              class="flex items-center gap-1 px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-[#10191b] dark:hover:bg-[#19272c] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-[#2b3e45] rounded-lg text-xs font-semibold cursor-pointer transition"
-              title="HTML Belgesi Olarak İndir"
+              class="flex items-center gap-1 px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-[#10191b] dark:hover:bg-[#19272c] text-rose-700 dark:text-rose-300 border border-slate-200 dark:border-[#2b3e45] rounded-lg text-xs font-semibold cursor-pointer transition"
+              title="PDF Olarak İndir"
             >
-              <i data-lucide="download" class="w-3.5 h-3.5"></i>
-              <span>İndir</span>
+              <i data-lucide="file-down" class="w-3.5 h-3.5 text-rose-600 dark:text-rose-400"></i>
+              <span>PDF İndir</span>
             </button>
           </div>
         </div>
@@ -9429,7 +9478,7 @@ window.closeSaveOpeningDocumentsModal = function() {
   cleanupPrintArea();
 };
 
-window.downloadAllOpeningDocuments = function() {
+window.downloadAllOpeningDocuments = async function() {
   if (!activeCourseForDetail) return;
   const course = activeCourseForDetail;
   const courseNumber = getCourseNumber(course) || 'KODSUZ';
@@ -9440,15 +9489,16 @@ window.downloadAllOpeningDocuments = function() {
     { name: 'Sınav Katılım Belgesi', html: generateSinavTutanagiHtml(course), isLandscape: false }
   ];
 
-  docs.forEach((d, index) => {
-    setTimeout(() => {
-      const fileTitle = `${d.name} - ${courseNumber}`;
-      const fullHtml = generateStandaloneDocumentHtml(fileTitle, d.html, d.isLandscape);
-      downloadTextFile(`${fileTitle}.html`, fullHtml, 'text/html;charset=utf-8');
-    }, index * 200);
-  });
+  showAutoSaveToast(`3 açılış evrakı PDF olarak hazırlanıyor...`);
 
-  showAutoSaveToast(`3 açılış evrakı "${courseNumber}" numarasıyla indiriliyor`);
+  for (let i = 0; i < docs.length; i++) {
+    const d = docs[i];
+    const fileTitle = `${d.name} - ${courseNumber}`;
+    await downloadDocumentAsPdf(fileTitle, d.html, d.isLandscape);
+    if (i < docs.length - 1) {
+      await new Promise(res => setTimeout(res, 400));
+    }
+  }
 };
 
 window.printMergedOpeningDocuments = function() {
@@ -9522,7 +9572,7 @@ window.openSaveAllDocumentsModal = function() {
             <div>
               <div class="font-bold text-xs sm:text-sm text-slate-800 dark:text-slate-100 flex items-center gap-1.5 flex-wrap">
                 <span>${escapeHtml(fileName)}</span>
-                <span class="text-[10px] px-1.5 py-0.2 bg-slate-100 dark:bg-[#10191b] text-slate-500 rounded font-mono">.pdf / .html</span>
+                <span class="text-[10px] px-1.5 py-0.2 bg-slate-100 dark:bg-[#10191b] text-slate-500 rounded font-mono">.pdf</span>
               </div>
               <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">${d.desc}</div>
             </div>
@@ -9540,11 +9590,11 @@ window.openSaveAllDocumentsModal = function() {
             <button
               type="button"
               onclick="downloadSingleDocument('${escapeHtml(d.name)}')"
-              class="flex items-center gap-1 px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-[#10191b] dark:hover:bg-[#19272c] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-[#2b3e45] rounded-lg text-xs font-semibold cursor-pointer transition"
-              title="HTML Belgesi Olarak İndir"
+              class="flex items-center gap-1 px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-[#10191b] dark:hover:bg-[#19272c] text-rose-700 dark:text-rose-300 border border-slate-200 dark:border-[#2b3e45] rounded-lg text-xs font-semibold cursor-pointer transition"
+              title="PDF Olarak İndir"
             >
-              <i data-lucide="download" class="w-3.5 h-3.5"></i>
-              <span>İndir</span>
+              <i data-lucide="file-down" class="w-3.5 h-3.5 text-rose-600 dark:text-rose-400"></i>
+              <span>PDF İndir</span>
             </button>
           </div>
         </div>
@@ -9563,7 +9613,7 @@ window.closeSaveAllDocumentsModal = function() {
   cleanupPrintArea();
 };
 
-window.downloadSingleDocument = function(docName) {
+window.downloadSingleDocument = async function(docName) {
   if (!activeCourseForDetail) return;
   
   // Kurs Açılış Evrakları (Plan, İmza Listesi, Sınav Katılım Belgesi) her zaman erişilebilir.
@@ -9607,12 +9657,10 @@ window.downloadSingleDocument = function(docName) {
   }
 
   const fileTitle = `${docName} - ${courseNumber}`;
-  const fullHtml = generateStandaloneDocumentHtml(fileTitle, html, isLandscape);
-  downloadTextFile(`${fileTitle}.html`, fullHtml, 'text/html;charset=utf-8');
-  showAutoSaveToast(`"${fileTitle}" başarıyla indirildi`);
+  await downloadDocumentAsPdf(fileTitle, html, isLandscape);
 };
 
-window.downloadAllCourseDocuments = function() {
+window.downloadAllCourseDocuments = async function() {
   if (!activeCourseForDetail) return;
   if (!checkCourseClosedForDocuments('Tüm Kurs Sonu Evrakları')) return;
   const course = activeCourseForDetail;
@@ -9624,15 +9672,16 @@ window.downloadAllCourseDocuments = function() {
     { name: 'Modül Değerlendirme Çizelgesi', html: generateNotCizelgesiHtml(course), isLandscape: true }
   ];
 
-  docs.forEach((d, index) => {
-    setTimeout(() => {
-      const fileTitle = `${d.name} - ${courseNumber}`;
-      const fullHtml = generateStandaloneDocumentHtml(fileTitle, d.html, d.isLandscape);
-      downloadTextFile(`${fileTitle}.html`, fullHtml, 'text/html;charset=utf-8');
-    }, index * 200);
-  });
+  showAutoSaveToast(`3 resmi evrak PDF olarak hazırlanıyor...`);
 
-  showAutoSaveToast(`3 resmi evrak "${courseNumber}" numarasıyla indiriliyor`);
+  for (let i = 0; i < docs.length; i++) {
+    const d = docs[i];
+    const fileTitle = `${d.name} - ${courseNumber}`;
+    await downloadDocumentAsPdf(fileTitle, d.html, d.isLandscape);
+    if (i < docs.length - 1) {
+      await new Promise(res => setTimeout(res, 400));
+    }
+  }
 };
 
 window.printMergedAllDocuments = function() {
@@ -11622,16 +11671,14 @@ window.closeBlankDocPreviewModal = function() {
   cleanupPrintArea();
 };
 
-window.downloadSingleBlankDocument = function(docType) {
+window.downloadSingleBlankDocument = async function(docType) {
   const meta = getBlankDocMeta(docType);
   if (!meta) return;
 
-  const fullHtml = generateStandaloneDocumentHtml(meta.title, meta.html, meta.isLandscape);
-  downloadTextFile(`${meta.fileName}.html`, fullHtml, 'text/html;charset=utf-8');
-  showAutoSaveToast(`"${meta.title}" indirildi`);
+  await downloadDocumentAsPdf(meta.fileName, meta.html, meta.isLandscape);
 };
 
-window.downloadAllBlankDocuments = function() {
+window.downloadAllBlankDocuments = async function() {
   const docs = [
     getBlankDocMeta('plan'),
     getBlankDocMeta('karar'),
@@ -11641,14 +11688,15 @@ window.downloadAllBlankDocuments = function() {
     getBlankDocMeta('imza')
   ].filter(Boolean);
 
-  docs.forEach((d, index) => {
-    setTimeout(() => {
-      const fullHtml = generateStandaloneDocumentHtml(d.title, d.html, d.isLandscape);
-      downloadTextFile(`${d.fileName}.html`, fullHtml, 'text/html;charset=utf-8');
-    }, index * 200);
-  });
+  showAutoSaveToast('6 boş resmi evrak PDF olarak hazırlanıyor...');
 
-  showAutoSaveToast('6 boş resmi evrak indiriliyor');
+  for (let i = 0; i < docs.length; i++) {
+    const d = docs[i];
+    await downloadDocumentAsPdf(d.fileName, d.html, d.isLandscape);
+    if (i < docs.length - 1) {
+      await new Promise(res => setTimeout(res, 400));
+    }
+  }
 };
 
 window.printMergedAllBlankDocuments = function() {
