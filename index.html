@@ -2711,13 +2711,24 @@
         </button>
 
         <button
-          id="tabDocumentsBtn"
+          id="tabOpeningDocsBtn"
           class="flex items-center gap-2 px-4 sm:px-5 py-3 text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-200 hover:text-slate-950 dark:hover:text-white hover:bg-slate-300/60 dark:hover:bg-[#1c2c32] rounded-t-xl transition cursor-pointer whitespace-nowrap border-b-2 border-transparent"
         >
-          <i data-lucide="file-text" class="w-4 h-4 text-indigo-600 dark:text-indigo-400"></i>
-          <span>Resmi Evraklar & Kurs Planı</span>
-          <span class="px-2 py-0.5 bg-emerald-100 dark:bg-emerald-900/40 text-emerald-800 dark:text-emerald-300 text-[11px] font-bold rounded-full border border-emerald-200 dark:border-emerald-800/50">
-            6 Belge
+          <i data-lucide="folder-check" class="w-4 h-4 text-teal-600 dark:text-teal-400"></i>
+          <span>Kurs Açılış Evrakları</span>
+          <span class="px-2 py-0.5 bg-teal-100 dark:bg-teal-900/40 text-teal-800 dark:text-teal-300 text-[11px] font-bold rounded-full border border-teal-200 dark:border-teal-800/50">
+            3 Belge
+          </span>
+        </button>
+
+        <button
+          id="tabClosingDocsBtn"
+          class="flex items-center gap-2 px-4 sm:px-5 py-3 text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-200 hover:text-slate-950 dark:hover:text-white hover:bg-slate-300/60 dark:hover:bg-[#1c2c32] rounded-t-xl transition cursor-pointer whitespace-nowrap border-b-2 border-transparent"
+        >
+          <i data-lucide="folder-lock" class="w-4 h-4 text-amber-600 dark:text-amber-400" id="tabClosingDocsIcon"></i>
+          <span>Kurs Sonu Evrakları</span>
+          <span id="tabClosingDocsBadge" class="px-2 py-0.5 bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300 text-[11px] font-bold rounded-full border border-amber-200 dark:border-amber-800/50">
+            3 Belge
           </span>
         </button>
       </div>
@@ -3261,67 +3272,49 @@
         </div>
       </div>
 
-      <!-- Sekme 3: Evraklar & Şablonlar (Resmi Evraklar & Kurs Planı) -->
-      <div id="tabDocumentsContent" class="hidden p-5 overflow-y-auto flex-1 space-y-5">
+      <!-- Sekme 3: Kurs Açılış Evrakları -->
+      <div id="tabOpeningDocsContent" class="hidden p-5 overflow-y-auto flex-1 space-y-5">
         
         <!-- Üst Başlık & Açıklama & Hızlı İşlem Barı -->
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-200 dark:border-[#23353c]">
           <div>
             <h4 class="text-base font-extrabold text-slate-800 dark:text-slate-100 flex items-center gap-2">
               <i data-lucide="folder-check" class="w-5 h-5 text-teal-600 dark:text-teal-400"></i>
-              <span>Resmi Evraklar ve Kurs Planı</span>
+              <span>Kurs Açılış Evrakları</span>
               <span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-teal-100 text-teal-800 dark:bg-teal-950/60 dark:text-teal-300 border border-teal-200 dark:border-teal-800">
-                6 Resmi Belge
+                3 Resmi Belge
               </span>
             </h4>
             <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
-              Kursun açılış planı ve kurs kapanışında teslim edilecek tüm resmi evraklar sistem tarafından otomatik hazırlanır.
+              Kursun açılış planı, günlük ders katılım imza listesi ve sınav katılım belgesi kurs süresi boyunca <strong>her zaman erişilebilir ve yazdırılabilir</strong> durumdadır.
             </p>
           </div>
           <div class="flex items-center gap-2 self-start sm:self-auto flex-wrap">
             <button
               type="button"
-              id="saveAllCourseDocumentsBtn"
-              onclick="openSaveAllDocumentsModal()"
-              class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#335C67] via-[#284952] to-[#540B0E] hover:from-[#284952] hover:to-[#45090b] text-white rounded-xl text-xs font-bold shadow-md cursor-pointer transition transform hover:scale-[1.02]"
-              title="Tüm Kurs Sonu Evraklarını Kendi İsmi ve Kurs No ile Kaydet"
+              id="saveAllOpeningDocumentsBtn"
+              onclick="openSaveOpeningDocumentsModal()"
+              class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-teal-700 via-teal-800 to-emerald-800 hover:from-teal-800 hover:to-emerald-900 text-white rounded-xl text-xs font-bold shadow-md cursor-pointer transition transform hover:scale-[1.02]"
+              title="Tüm Kurs Açılış Evraklarını (Plan, İmza Listesi, Sınav Katılım Belgesi) İndir / Yazdır"
             >
               <i data-lucide="download" class="w-4 h-4 text-[#FFF3B0]"></i>
-              <span>Tüm Evrakları Toplu Kaydet</span>
+              <span>Açılış Evraklarını Toplu Kaydet</span>
             </button>
           </div>
         </div>
 
-        <!-- Kurs Kapatılmamışsa Gösterilecek Uyarı ve Bilgilendirme Kutusu -->
-        <div id="courseDocumentsLockedBanner" class="p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/30 border-2 border-amber-300 dark:border-amber-800/60 text-amber-950 dark:text-amber-200 shadow-sm flex items-start gap-3.5">
-          <div class="p-2.5 bg-amber-200/80 dark:bg-amber-900/60 rounded-xl shrink-0 mt-0.5">
-            <i data-lucide="alert-triangle" class="w-5 h-5 text-amber-800 dark:text-amber-300"></i>
+        <!-- Bilgi Kutusu -->
+        <div class="p-3.5 rounded-2xl bg-teal-50/70 dark:bg-teal-950/30 border border-teal-200 dark:border-teal-800/60 text-teal-950 dark:text-teal-200 shadow-2xs flex items-center gap-3">
+          <div class="p-2 bg-teal-100 dark:bg-teal-900/60 rounded-xl shrink-0 text-teal-800 dark:text-teal-300">
+            <i data-lucide="info" class="w-4 h-4"></i>
           </div>
-          <div class="space-y-1 flex-1 text-xs">
-            <h5 class="font-extrabold text-sm text-amber-900 dark:text-amber-100 flex items-center gap-1.5">
-              <span>Kurs Kapatılmadan Kurs Sonu Evrakları Görüntülenemez</span>
-              <span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-rose-100 text-rose-800 border border-rose-300">İşlem Gerekli</span>
-            </h5>
-            <p class="leading-relaxed">
-              Mevzuat gereği; <strong>Kursiyer Karar Durumu, Yoklama Defteri, Not Çizelgesi, Sınav Tutanağı ve İmza Listesi</strong> gibi resmi kurs sonu evraklarının kesinleşmesi için kursun tamamlanmış ve kapatılmış olması şarttır.
-            </p>
-            <p class="text-[11px] text-amber-800/90 dark:text-amber-300/90 pt-0.5">
-              💡 Kursu kapatmak için sağ üstteki <strong class="text-rose-700 dark:text-rose-400">"Kursu Kapat"</strong> butonuna tıklayınız. Kurs kapatıldığında tüm resmi evraklar otomatik olarak açılacak ve tek tıkla toplu olarak indirilebilecektir.
-            </p>
-          </div>
-          <button
-            type="button"
-            onclick="handleCloseCourseClick()"
-            class="px-3 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold shrink-0 shadow-xs cursor-pointer transition flex items-center gap-1.5"
-            title="Kursu Kapat ve Evrakları Aç"
-          >
-            <i data-lucide="lock" class="w-3.5 h-3.5 text-white"></i>
-            <span>Kursu Kapat</span>
-          </button>
+          <p class="text-xs leading-relaxed flex-1">
+            <strong>Açılış Evrakları Sürekli Erişilebilir:</strong> Çalışma Planı, Günlük İmza Listesi ve Sınav Katılım Belgesi kurs kapanışını beklemeden, kursun başlangıcından itibaren her an görüntülenebilir ve çıktısı alınabilir.
+          </p>
         </div>
 
-        <!-- 3 Sütunlu Kart Izgarası (6 Element / Belge) -->
-        <div id="courseDocumentsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 my-3">
+        <!-- 3 Sütunlu Kart Izgarası (Kurs Açılış Belgeleri: Plan, İmza Listesi, Sınav Katılım Belgesi) -->
+        <div id="courseOpeningDocumentsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 my-3">
 
           <!-- 1. Belge: Modüler Kurs Çerçeve ve Çalışma Planı -->
           <div class="flex flex-col justify-between p-6 sm:p-7 min-h-[300px] rounded-2xl border border-slate-200 dark:border-[#23353c] bg-white dark:bg-[#152125] shadow-xs hover:shadow-lg hover:border-[#335C67] dark:hover:border-[#FFF3B0]/60 transition-all duration-200 group">
@@ -3381,8 +3374,190 @@
             </div>
           </div>
 
-          <!-- 2. Belge: Kursiyer Karar Durumu -->
+          <!-- 2. Belge: İmza Listesi (Günlük İmza Çizelgesi) -->
           <div class="flex flex-col justify-between p-6 sm:p-7 min-h-[300px] rounded-2xl border border-slate-200 dark:border-[#23353c] bg-white dark:bg-[#152125] shadow-xs hover:shadow-lg hover:border-[#335C67] dark:hover:border-[#FFF3B0]/60 transition-all duration-200 group">
+            <div class="space-y-4">
+              <div class="flex items-start justify-between gap-3">
+                <div class="flex items-center gap-3.5">
+                  <div class="p-3.5 rounded-2xl bg-gradient-to-br from-[#335C67] via-[#284952] to-[#540B0E] text-white shadow-sm shrink-0 group-hover:scale-105 transition-transform">
+                    <i data-lucide="pen-tool" class="w-6 h-6 text-[#FFF3B0]"></i>
+                  </div>
+                  <div>
+                    <h5 class="font-extrabold text-base text-slate-800 dark:text-slate-100 leading-snug">
+                      İmza Listesi
+                    </h5>
+                    <div class="flex items-center gap-2 mt-1.5 flex-wrap">
+                      <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-[#FFF3B0] text-[#540B0E] border border-[#E09F3E]/40">Açılış Belgesi</span>
+                      <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-amber-100 text-amber-800 border border-amber-300">Yatay A4</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed pt-1">
+                Kursiyerlerin günlük ders oturumlarına fiili katılım imzalarının alındığı resmi tarihli ders imza sirküsü çizelgesidir. Kurs süresince her an yazdırılabilir.
+              </p>
+            </div>
+
+            <div class="pt-5 border-t border-slate-100 dark:border-[#23353c] mt-6">
+              <!-- Butonlar -->
+              <div class="flex items-center gap-2">
+                <button
+                  type="button"
+                  id="previewImzaListesiBtn"
+                  onclick="openImzaListesiPreview()"
+                  class="flex-1 flex items-center justify-center gap-1.5 px-3.5 py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-[#10191b] dark:hover:bg-[#19272c] text-slate-800 dark:text-slate-100 rounded-xl text-xs sm:text-sm font-bold transition cursor-pointer border border-slate-200 dark:border-[#2b3e45]"
+                  title="İmza Listesini Önizle"
+                >
+                  <i data-lucide="eye" class="w-4 h-4 text-[#335C67] dark:text-[#FFF3B0]"></i>
+                  <span>Önizle</span>
+                </button>
+                <button
+                  type="button"
+                  onclick="triggerPrintImzaListesi()"
+                  class="flex-1 flex items-center justify-center gap-1.5 px-3.5 py-2.5 bg-[#335C67] hover:bg-[#274851] text-white rounded-xl text-xs sm:text-sm font-bold shadow-xs transition cursor-pointer"
+                  title="Yazdır veya PDF Kaydet"
+                >
+                  <i data-lucide="printer" class="w-4 h-4 text-[#FFF3B0]"></i>
+                  <span>Yazdır</span>
+                </button>
+                <button
+                  type="button"
+                  onclick="downloadSingleDocument('İmza Listesi')"
+                  class="p-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-[#10191b] dark:hover:bg-[#19272c] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-[#2b3e45] rounded-xl text-xs font-bold transition cursor-pointer"
+                  title="HTML Olarak İndir"
+                >
+                  <i data-lucide="download" class="w-4 h-4 text-[#335C67] dark:text-[#FFF3B0]"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. Belge: Sınav Katılım Belgesi (Sınav Tutanağı) -->
+          <div class="flex flex-col justify-between p-6 sm:p-7 min-h-[300px] rounded-2xl border border-slate-200 dark:border-[#23353c] bg-white dark:bg-[#152125] shadow-xs hover:shadow-lg hover:border-[#335C67] dark:hover:border-[#FFF3B0]/60 transition-all duration-200 group">
+            <div class="space-y-4">
+              <div class="flex items-start justify-between gap-3">
+                <div class="flex items-center gap-3.5">
+                  <div class="p-3.5 rounded-2xl bg-gradient-to-br from-[#335C67] via-[#284952] to-[#540B0E] text-white shadow-sm shrink-0 group-hover:scale-105 transition-transform">
+                    <i data-lucide="clipboard-check" class="w-6 h-6 text-[#FFF3B0]"></i>
+                  </div>
+                  <div>
+                    <h5 class="font-extrabold text-base text-slate-800 dark:text-slate-100 leading-snug">
+                      Sınav Katılım Belgesi
+                    </h5>
+                    <div class="flex items-center gap-2 mt-1.5 flex-wrap">
+                      <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-[#FFF3B0] text-[#540B0E] border border-[#E09F3E]/40">Açılış Belgesi</span>
+                      <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-slate-100 dark:bg-[#10191b] text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-[#23353c]">Dikey A4</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed pt-1">
+                Kursiyerlerin sınav oturumlarına katılım imzalarının ve sınav komisyon onaylarının yer aldığı resmi sınav katılım tutanağıdır.
+              </p>
+            </div>
+
+            <div class="pt-5 border-t border-slate-100 dark:border-[#23353c] mt-6">
+              <!-- Butonlar -->
+              <div class="flex items-center gap-2">
+                <button
+                  type="button"
+                  id="previewSinavTutanagiBtn"
+                  onclick="openSinavTutanagiPreview()"
+                  class="flex-1 flex items-center justify-center gap-1.5 px-3.5 py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-[#10191b] dark:hover:bg-[#19272c] text-slate-800 dark:text-slate-100 rounded-xl text-xs sm:text-sm font-bold transition cursor-pointer border border-slate-200 dark:border-[#2b3e45]"
+                  title="Sınav Katılım Belgesini Önizle"
+                >
+                  <i data-lucide="eye" class="w-4 h-4 text-[#335C67] dark:text-[#FFF3B0]"></i>
+                  <span>Önizle</span>
+                </button>
+                <button
+                  type="button"
+                  onclick="triggerPrintSinavTutanagi()"
+                  class="flex-1 flex items-center justify-center gap-1.5 px-3.5 py-2.5 bg-[#335C67] hover:bg-[#274851] text-white rounded-xl text-xs sm:text-sm font-bold shadow-xs transition cursor-pointer"
+                  title="Yazdır veya PDF Kaydet"
+                >
+                  <i data-lucide="printer" class="w-4 h-4 text-[#FFF3B0]"></i>
+                  <span>Yazdır</span>
+                </button>
+                <button
+                  type="button"
+                  onclick="downloadSingleDocument('Sınav Katılım Belgesi')"
+                  class="p-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-[#10191b] dark:hover:bg-[#19272c] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-[#2b3e45] rounded-xl text-xs font-bold transition cursor-pointer"
+                  title="HTML Olarak İndir"
+                >
+                  <i data-lucide="download" class="w-4 h-4 text-[#335C67] dark:text-[#FFF3B0]"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Sekme 4: Kurs Sonu Evrakları -->
+      <div id="tabClosingDocsContent" class="hidden p-5 overflow-y-auto flex-1 space-y-5">
+        
+        <!-- Üst Başlık & Açıklama & Hızlı İşlem Barı -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-200 dark:border-[#23353c]">
+          <div>
+            <h4 class="text-base font-extrabold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+              <i data-lucide="folder-lock" class="w-5 h-5 text-indigo-600 dark:text-indigo-400"></i>
+              <span>Kurs Sonu Evrakları</span>
+              <span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300 border border-amber-200 dark:border-amber-800">
+                3 Resmi Belge
+              </span>
+            </h4>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+              Kurs tamamlanıp kapatıldıktan sonra resmi onay süreçlerine teslim edilecek olan nihai resmi evraklar sistem tarafından otomatik hazırlanır.
+            </p>
+          </div>
+          <div class="flex items-center gap-2 self-start sm:self-auto flex-wrap">
+            <button
+              type="button"
+              id="saveAllCourseDocumentsBtn"
+              onclick="openSaveAllDocumentsModal()"
+              class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#335C67] via-[#284952] to-[#540B0E] hover:from-[#284952] hover:to-[#45090b] text-white rounded-xl text-xs font-bold shadow-md cursor-pointer transition transform hover:scale-[1.02]"
+              title="Tüm Kurs Sonu Evraklarını Kendi İsmi ve Kurs No ile Kaydet"
+            >
+              <i data-lucide="download" class="w-4 h-4 text-[#FFF3B0]"></i>
+              <span>Tüm Evrakları Toplu Kaydet</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Kurs Kapatılmamışsa Gösterilecek Uyarı ve Bilgilendirme Kutusu -->
+        <div id="courseDocumentsLockedBanner" class="p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/30 border-2 border-amber-300 dark:border-amber-800/60 text-amber-950 dark:text-amber-200 shadow-sm flex items-start gap-3.5">
+          <div class="p-2.5 bg-amber-200/80 dark:bg-amber-900/60 rounded-xl shrink-0 mt-0.5">
+            <i data-lucide="lock" class="w-5 h-5 text-amber-800 dark:text-amber-300"></i>
+          </div>
+          <div class="space-y-1 flex-1 text-xs">
+            <h5 class="font-extrabold text-sm text-amber-900 dark:text-amber-100 flex items-center gap-1.5">
+              <span>Kurs Kapatılmadan Kurs Sonu Evrakları Görüntülenemez</span>
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-rose-100 text-rose-800 border border-rose-300">İşlem Gerekli</span>
+            </h5>
+            <p class="leading-relaxed">
+              Mevzuat gereği; <strong>Kursiyer Karar Durumu, Yoklama ve Ders Defteri ile Modül Değerlendirme Çizelgesi</strong> gibi resmi kurs sonu evraklarının kesinleşmesi için kursun tamamlanmış ve kapatılmış olması şarttır.
+            </p>
+            <p class="text-[11px] text-amber-800/90 dark:text-amber-300/90 pt-0.5">
+              💡 Kursu kapatmak için sağdaki <strong class="text-rose-700 dark:text-rose-400">"Kursu Kapat"</strong> butonuna tıklayınız. Kurs kapatıldığında bu resmi evraklar otomatik olarak açılacak ve tek tıkla toplu olarak indirilebilecektir.
+            </p>
+          </div>
+          <button
+            type="button"
+            onclick="handleCloseCourseClick()"
+            class="px-3 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold shrink-0 shadow-xs cursor-pointer transition flex items-center gap-1.5"
+            title="Kursu Kapat ve Evrakları Aç"
+          >
+            <i data-lucide="lock" class="w-3.5 h-3.5 text-white"></i>
+            <span>Kursu Kapat</span>
+          </button>
+        </div>
+
+        <!-- 3 Sütunlu Kart Izgarası (Kurs Sonu Belgeleri: Karar Durumu, Defter, Modül Değerlendirme Çizelgesi) -->
+        <div id="courseClosingDocumentsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 my-3">
+
+          <!-- 1. Belge: Kursiyer Karar Durumu -->
+          <div class="closing-doc-card flex flex-col justify-between p-6 sm:p-7 min-h-[300px] rounded-2xl border border-slate-200 dark:border-[#23353c] bg-white dark:bg-[#152125] shadow-xs hover:shadow-lg hover:border-[#335C67] dark:hover:border-[#FFF3B0]/60 transition-all duration-200 group">
             <div class="space-y-4">
               <div class="flex items-start justify-between gap-3">
                 <div class="flex items-center gap-3.5">
@@ -3413,6 +3588,7 @@
                   id="previewKararDurumuBtn"
                   onclick="openKararDurumuPreview()"
                   class="flex-1 flex items-center justify-center gap-1.5 px-3.5 py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-[#10191b] dark:hover:bg-[#19272c] text-slate-800 dark:text-slate-100 rounded-xl text-xs sm:text-sm font-bold transition cursor-pointer border border-slate-200 dark:border-[#2b3e45]"
+                  title="Karar Durumunu Önizle"
                 >
                   <i data-lucide="eye" class="w-4 h-4 text-[#335C67] dark:text-[#FFF3B0]"></i>
                   <span>Önizle</span>
@@ -3421,16 +3597,25 @@
                   type="button"
                   onclick="triggerPrintKararDurumu()"
                   class="flex-1 flex items-center justify-center gap-1.5 px-3.5 py-2.5 bg-[#335C67] hover:bg-[#274851] text-white rounded-xl text-xs sm:text-sm font-bold shadow-xs transition cursor-pointer"
+                  title="Yazdır veya PDF Kaydet"
                 >
                   <i data-lucide="printer" class="w-4 h-4 text-[#FFF3B0]"></i>
                   <span>Yazdır</span>
+                </button>
+                <button
+                  type="button"
+                  onclick="downloadSingleDocument('Kursiyer Karar Durumu')"
+                  class="p-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-[#10191b] dark:hover:bg-[#19272c] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-[#2b3e45] rounded-xl text-xs font-bold transition cursor-pointer"
+                  title="HTML Olarak İndir"
+                >
+                  <i data-lucide="download" class="w-4 h-4 text-[#335C67] dark:text-[#FFF3B0]"></i>
                 </button>
               </div>
             </div>
           </div>
 
-          <!-- 3. Belge: Yoklama ve Ders Defteri -->
-          <div class="flex flex-col justify-between p-6 sm:p-7 min-h-[300px] rounded-2xl border border-slate-200 dark:border-[#23353c] bg-white dark:bg-[#152125] shadow-xs hover:shadow-lg hover:border-[#335C67] dark:hover:border-[#FFF3B0]/60 transition-all duration-200 group">
+          <!-- 2. Belge: Yoklama ve Ders Defteri -->
+          <div class="closing-doc-card flex flex-col justify-between p-6 sm:p-7 min-h-[300px] rounded-2xl border border-slate-200 dark:border-[#23353c] bg-white dark:bg-[#152125] shadow-xs hover:shadow-lg hover:border-[#335C67] dark:hover:border-[#FFF3B0]/60 transition-all duration-200 group">
             <div class="space-y-4">
               <div class="flex items-start justify-between gap-3">
                 <div class="flex items-center gap-3.5">
@@ -3461,6 +3646,7 @@
                   id="previewDefterBtn"
                   onclick="openDefterPreview()"
                   class="flex-1 flex items-center justify-center gap-1.5 px-3.5 py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-[#10191b] dark:hover:bg-[#19272c] text-slate-800 dark:text-slate-100 rounded-xl text-xs sm:text-sm font-bold transition cursor-pointer border border-slate-200 dark:border-[#2b3e45]"
+                  title="Defteri Önizle"
                 >
                   <i data-lucide="eye" class="w-4 h-4 text-[#335C67] dark:text-[#FFF3B0]"></i>
                   <span>Önizle</span>
@@ -3469,16 +3655,25 @@
                   type="button"
                   onclick="triggerPrintDefter()"
                   class="flex-1 flex items-center justify-center gap-1.5 px-3.5 py-2.5 bg-[#335C67] hover:bg-[#274851] text-white rounded-xl text-xs sm:text-sm font-bold shadow-xs transition cursor-pointer"
+                  title="Yazdır veya PDF Kaydet"
                 >
                   <i data-lucide="printer" class="w-4 h-4 text-[#FFF3B0]"></i>
                   <span>Yazdır</span>
+                </button>
+                <button
+                  type="button"
+                  onclick="downloadSingleDocument('Yoklama ve Ders Defteri')"
+                  class="p-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-[#10191b] dark:hover:bg-[#19272c] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-[#2b3e45] rounded-xl text-xs font-bold transition cursor-pointer"
+                  title="HTML Olarak İndir"
+                >
+                  <i data-lucide="download" class="w-4 h-4 text-[#335C67] dark:text-[#FFF3B0]"></i>
                 </button>
               </div>
             </div>
           </div>
 
-          <!-- 4. Belge: Modül Değerlendirme (Not) Çizelgesi -->
-          <div class="flex flex-col justify-between p-6 sm:p-7 min-h-[300px] rounded-2xl border border-slate-200 dark:border-[#23353c] bg-white dark:bg-[#152125] shadow-xs hover:shadow-lg hover:border-[#335C67] dark:hover:border-[#FFF3B0]/60 transition-all duration-200 group">
+          <!-- 3. Belge: Modül Değerlendirme (Not) Çizelgesi -->
+          <div class="closing-doc-card flex flex-col justify-between p-6 sm:p-7 min-h-[300px] rounded-2xl border border-slate-200 dark:border-[#23353c] bg-white dark:bg-[#152125] shadow-xs hover:shadow-lg hover:border-[#335C67] dark:hover:border-[#FFF3B0]/60 transition-all duration-200 group">
             <div class="space-y-4">
               <div class="flex items-start justify-between gap-3">
                 <div class="flex items-center gap-3.5">
@@ -3509,6 +3704,7 @@
                   id="previewNotCizelgesiBtn"
                   onclick="openNotCizelgesiPreview()"
                   class="flex-1 flex items-center justify-center gap-1.5 px-3.5 py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-[#10191b] dark:hover:bg-[#19272c] text-slate-800 dark:text-slate-100 rounded-xl text-xs sm:text-sm font-bold transition cursor-pointer border border-slate-200 dark:border-[#2b3e45]"
+                  title="Modül Değerlendirme Çizelgesini Önizle"
                 >
                   <i data-lucide="eye" class="w-4 h-4 text-[#335C67] dark:text-[#FFF3B0]"></i>
                   <span>Önizle</span>
@@ -3517,105 +3713,18 @@
                   type="button"
                   onclick="triggerPrintNotCizelgesi()"
                   class="flex-1 flex items-center justify-center gap-1.5 px-3.5 py-2.5 bg-[#335C67] hover:bg-[#274851] text-white rounded-xl text-xs sm:text-sm font-bold shadow-xs transition cursor-pointer"
+                  title="Yazdır veya PDF Kaydet"
                 >
                   <i data-lucide="printer" class="w-4 h-4 text-[#FFF3B0]"></i>
                   <span>Yazdır</span>
                 </button>
-              </div>
-            </div>
-          </div>
-
-          <!-- 5. Belge: Sınav Tutanağı -->
-          <div class="flex flex-col justify-between p-6 sm:p-7 min-h-[300px] rounded-2xl border border-slate-200 dark:border-[#23353c] bg-white dark:bg-[#152125] shadow-xs hover:shadow-lg hover:border-[#335C67] dark:hover:border-[#FFF3B0]/60 transition-all duration-200 group">
-            <div class="space-y-4">
-              <div class="flex items-start justify-between gap-3">
-                <div class="flex items-center gap-3.5">
-                  <div class="p-3.5 rounded-2xl bg-gradient-to-br from-[#335C67] via-[#284952] to-[#540B0E] text-white shadow-sm shrink-0 group-hover:scale-105 transition-transform">
-                    <i data-lucide="clipboard-check" class="w-6 h-6 text-[#FFF3B0]"></i>
-                  </div>
-                  <div>
-                    <h5 class="font-extrabold text-base text-slate-800 dark:text-slate-100 leading-snug">
-                      Sınav Tutanağı
-                    </h5>
-                    <div class="flex items-center gap-2 mt-1.5 flex-wrap">
-                      <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-[#FFF3B0] text-[#540B0E] border border-[#E09F3E]/40">Kapanış Belgesi</span>
-                      <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-slate-100 dark:bg-[#10191b] text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-[#23353c]">Dikey A4</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed pt-1">
-                Kursiyerlerin sınav katılım imzalarının ve sınav komisyon onaylarının yer aldığı resmi sınav katılım tutanağıdır.
-              </p>
-            </div>
-
-            <div class="pt-5 border-t border-slate-100 dark:border-[#23353c] mt-6">
-              <!-- Butonlar -->
-              <div class="flex items-center gap-2">
                 <button
                   type="button"
-                  id="previewSinavTutanagiBtn"
-                  onclick="openSinavTutanagiPreview()"
-                  class="flex-1 flex items-center justify-center gap-1.5 px-3.5 py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-[#10191b] dark:hover:bg-[#19272c] text-slate-800 dark:text-slate-100 rounded-xl text-xs sm:text-sm font-bold transition cursor-pointer border border-slate-200 dark:border-[#2b3e45]"
+                  onclick="downloadSingleDocument('Modül Değerlendirme Çizelgesi')"
+                  class="p-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-[#10191b] dark:hover:bg-[#19272c] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-[#2b3e45] rounded-xl text-xs font-bold transition cursor-pointer"
+                  title="HTML Olarak İndir"
                 >
-                  <i data-lucide="eye" class="w-4 h-4 text-[#335C67] dark:text-[#FFF3B0]"></i>
-                  <span>Önizle</span>
-                </button>
-                <button
-                  type="button"
-                  onclick="triggerPrintSinavTutanagi()"
-                  class="flex-1 flex items-center justify-center gap-1.5 px-3.5 py-2.5 bg-[#335C67] hover:bg-[#274851] text-white rounded-xl text-xs sm:text-sm font-bold shadow-xs transition cursor-pointer"
-                >
-                  <i data-lucide="printer" class="w-4 h-4 text-[#FFF3B0]"></i>
-                  <span>Yazdır</span>
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <!-- 6. Belge: İmza Listesi (Günlük İmza Çizelgesi) -->
-          <div class="flex flex-col justify-between p-6 sm:p-7 min-h-[300px] rounded-2xl border border-slate-200 dark:border-[#23353c] bg-white dark:bg-[#152125] shadow-xs hover:shadow-lg hover:border-[#335C67] dark:hover:border-[#FFF3B0]/60 transition-all duration-200 group">
-            <div class="space-y-4">
-              <div class="flex items-start justify-between gap-3">
-                <div class="flex items-center gap-3.5">
-                  <div class="p-3.5 rounded-2xl bg-gradient-to-br from-[#335C67] via-[#284952] to-[#540B0E] text-white shadow-sm shrink-0 group-hover:scale-105 transition-transform">
-                    <i data-lucide="pen-tool" class="w-6 h-6 text-[#FFF3B0]"></i>
-                  </div>
-                  <div>
-                    <h5 class="font-extrabold text-base text-slate-800 dark:text-slate-100 leading-snug">
-                      İmza Listesi
-                    </h5>
-                    <div class="flex items-center gap-2 mt-1.5 flex-wrap">
-                      <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-[#FFF3B0] text-[#540B0E] border border-[#E09F3E]/40">Kapanış Belgesi</span>
-                      <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-amber-100 text-amber-800 border border-amber-300">Yatay A4</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed pt-1">
-                Kursiyerlerin günlük ders oturumlarına fiili katılım imzalarının alındığı resmi tarihli ders imza sirküsü çizelgesidir.
-              </p>
-            </div>
-
-            <div class="pt-5 border-t border-slate-100 dark:border-[#23353c] mt-6">
-              <!-- Butonlar -->
-              <div class="flex items-center gap-2">
-                <button
-                  type="button"
-                  id="previewImzaListesiBtn"
-                  onclick="openImzaListesiPreview()"
-                  class="flex-1 flex items-center justify-center gap-1.5 px-3.5 py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-[#10191b] dark:hover:bg-[#19272c] text-slate-800 dark:text-slate-100 rounded-xl text-xs sm:text-sm font-bold transition cursor-pointer border border-slate-200 dark:border-[#2b3e45]"
-                >
-                  <i data-lucide="eye" class="w-4 h-4 text-[#335C67] dark:text-[#FFF3B0]"></i>
-                  <span>Önizle</span>
-                </button>
-                <button
-                  type="button"
-                  onclick="triggerPrintImzaListesi()"
-                  class="flex-1 flex items-center justify-center gap-1.5 px-3.5 py-2.5 bg-[#335C67] hover:bg-[#274851] text-white rounded-xl text-xs sm:text-sm font-bold shadow-xs transition cursor-pointer"
-                >
-                  <i data-lucide="printer" class="w-4 h-4 text-[#FFF3B0]"></i>
-                  <span>Yazdır</span>
+                  <i data-lucide="download" class="w-4 h-4 text-[#335C67] dark:text-[#FFF3B0]"></i>
                 </button>
               </div>
             </div>
@@ -4137,6 +4246,110 @@
     </div>
   </div>
 
+  <!-- ================= MODAL: KURS AÇILIŞ EVRAKLARINI TOPLU KAYDET ================= -->
+  <div id="saveOpeningDocumentsModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-slate-900/75 backdrop-blur-sm">
+    <div class="bg-white dark:bg-[#152125] rounded-2xl w-full max-w-2xl max-h-[92vh] shadow-2xl border border-slate-200 dark:border-[#23353c] flex flex-col overflow-hidden">
+      
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between p-4 sm:p-5 border-b border-slate-200 dark:border-[#23353c] bg-slate-50 dark:bg-[#10191b] shrink-0">
+        <div class="flex items-center gap-3">
+          <div class="p-2.5 bg-gradient-to-tr from-teal-700 to-emerald-800 text-white rounded-xl shadow-md">
+            <i data-lucide="download" class="w-5 h-5 text-[#FFF3B0]"></i>
+          </div>
+          <div>
+            <h3 class="text-sm sm:text-base font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+              <span>Kurs Açılış Evraklarını Kaydet</span>
+              <span id="saveOpeningCourseCodeBadge" class="px-2 py-0.5 rounded text-[11px] font-mono font-bold bg-[#FFF3B0] text-[#540B0E] border border-[#E09F3E]/40"></span>
+            </h3>
+            <p id="saveOpeningCourseSubTitle" class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+              Tüm açılış evrakları kendi belge isimleri ve kurs no ile kaydedilir.
+            </p>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          onclick="closeSaveOpeningDocumentsModal()"
+          class="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-lg cursor-pointer"
+        >
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="p-4 sm:p-6 overflow-y-auto flex-1 space-y-4 bg-slate-50/50 dark:bg-[#0c1315]">
+        
+        <!-- Hızlı Toplu Aksiyon Kartları -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <button
+            type="button"
+            onclick="downloadAllOpeningDocuments()"
+            class="flex items-start gap-3 p-3.5 bg-gradient-to-r from-teal-600 to-emerald-700 hover:from-teal-700 hover:to-emerald-800 text-white rounded-xl text-left shadow-sm hover:shadow-md transition cursor-pointer group"
+          >
+            <div class="p-2 bg-white/20 rounded-lg shrink-0 mt-0.5 group-hover:scale-110 transition">
+              <i data-lucide="file-down" class="w-5 h-5 text-white"></i>
+            </div>
+            <div>
+              <div class="font-bold text-xs sm:text-sm text-white flex items-center gap-1.5">
+                <span>Hepsini Ayrı Dosya Olarak İndir</span>
+                <span class="px-1.5 py-0.2 bg-white/20 text-[10px] rounded">3 Belge</span>
+              </div>
+              <p class="text-[11px] text-teal-100 mt-0.5">
+                Plan, İmza Listesi ve Sınav Katılım Belgesi kendi ismi ve kurs no ile cihazınıza iner.
+              </p>
+            </div>
+          </button>
+
+          <button
+            type="button"
+            onclick="printMergedOpeningDocuments()"
+            class="flex items-start gap-3 p-3.5 bg-gradient-to-r from-[#335C67] to-teal-800 hover:from-[#284952] hover:to-teal-900 text-white rounded-xl text-left shadow-sm hover:shadow-md transition cursor-pointer group"
+          >
+            <div class="p-2 bg-white/20 rounded-lg shrink-0 mt-0.5 group-hover:scale-110 transition">
+              <i data-lucide="printer" class="w-5 h-5 text-[#FFF3B0]"></i>
+            </div>
+            <div>
+              <div class="font-bold text-xs sm:text-sm text-white flex items-center gap-1.5">
+                <span>Tümünü Tek PDF Olarak Kaydet</span>
+                <span class="px-1.5 py-0.2 bg-white/20 text-[10px] rounded text-[#FFF3B0]">Kitapçık</span>
+              </div>
+              <p class="text-[11px] text-slate-200 mt-0.5">
+                3 açılış belgesinin tümü sırasıyla tek bir PDF çıktısında birleştirilir.
+              </p>
+            </div>
+          </button>
+        </div>
+
+        <!-- Evrak Listesi Başlığı -->
+        <div class="pt-2 flex items-center justify-between border-t border-slate-200 dark:border-[#23353c]">
+          <span class="text-xs font-bold text-slate-700 dark:text-slate-300">Resmi Belge Listesi (3 Belge):</span>
+          <span class="text-[11px] text-slate-400">Her belge kendi ismi ve kurs numarası ile kaydedilir</span>
+        </div>
+
+        <!-- Belge Öğeleri Listesi -->
+        <div id="saveOpeningDocumentsList" class="space-y-2.5">
+          <!-- JS tarafından dinamik doldurulacak -->
+        </div>
+
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="p-3.5 sm:p-4 px-6 border-t border-slate-200 dark:border-[#23353c] bg-slate-50 dark:bg-[#10191b] flex items-center justify-between shrink-0">
+        <span class="text-[11px] text-slate-500 dark:text-slate-400">
+          Dosya adı formatı: <strong>[Belge İsmi] - [Kurs No]</strong>
+        </span>
+        <button
+          type="button"
+          onclick="closeSaveOpeningDocumentsModal()"
+          class="px-4 py-2 bg-slate-200 hover:bg-slate-300 dark:bg-[#23353c] dark:hover:bg-[#2c434c] text-slate-700 dark:text-slate-200 rounded-xl text-xs font-bold transition cursor-pointer"
+        >
+          Kapat
+        </button>
+      </div>
+
+    </div>
+  </div>
+
   <!-- ================= MODAL: KURS SONU EVRAKLARINI TOPLU KAYDET ================= -->
   <div id="saveAllDocumentsModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-slate-900/75 backdrop-blur-sm">
     <div class="bg-white dark:bg-[#152125] rounded-2xl w-full max-w-2xl max-h-[92vh] shadow-2xl border border-slate-200 dark:border-[#23353c] flex flex-col overflow-hidden">
@@ -4183,10 +4396,10 @@
             <div>
               <div class="font-bold text-xs sm:text-sm text-white flex items-center gap-1.5">
                 <span>Hepsini Ayrı Dosya Olarak İndir</span>
-                <span class="px-1.5 py-0.2 bg-white/20 text-[10px] rounded">5 Belge</span>
+                <span class="px-1.5 py-0.2 bg-white/20 text-[10px] rounded">3 Belge</span>
               </div>
               <p class="text-[11px] text-emerald-100 mt-0.5">
-                5 belgenin her biri kendi ismi ve kurs no ile ayrı dosya (.html) olarak cihazınıza iner.
+                Karar Durumu, Defter ve Not Çizelgesi belgeleri kendi ismi ve kurs no ile cihazınıza iner.
               </p>
             </div>
           </button>
@@ -4205,7 +4418,7 @@
                 <span class="px-1.5 py-0.2 bg-white/20 text-[10px] rounded text-[#FFF3B0]">Kitapçık</span>
               </div>
               <p class="text-[11px] text-slate-200 mt-0.5">
-                5 resmi belgenin tümü sırasıyla tek bir PDF çıktısında birleştirilir.
+                3 resmi kurs sonu belgesi sırasıyla tek bir PDF çıktısında birleştirilir.
               </p>
             </div>
           </button>
@@ -4213,7 +4426,7 @@
 
         <!-- Evrak Listesi Başlığı -->
         <div class="pt-2 flex items-center justify-between border-t border-slate-200 dark:border-[#23353c]">
-          <span class="text-xs font-bold text-slate-700 dark:text-slate-300">Resmi Belge Listesi (5 Belge):</span>
+          <span class="text-xs font-bold text-slate-700 dark:text-slate-300">Resmi Belge Listesi (3 Belge):</span>
           <span class="text-[11px] text-slate-400">Her belge kendi ismi ve kurs numarası ile kaydedilir</span>
         </div>
 

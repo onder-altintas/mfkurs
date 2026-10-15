@@ -566,13 +566,17 @@ const tabStudentsBtn = document.getElementById('tabStudentsBtn');
 const tabAttendanceBtn = document.getElementById('tabAttendanceBtn');
 const tabExamsBtn = document.getElementById('tabExamsBtn');
 const tabSyllabusBtn = document.getElementById('tabSyllabusBtn');
-const tabDocumentsBtn = document.getElementById('tabDocumentsBtn');
+const tabOpeningDocsBtn = document.getElementById('tabOpeningDocsBtn');
+const tabClosingDocsBtn = document.getElementById('tabClosingDocsBtn');
+const tabDocumentsBtn = document.getElementById('tabOpeningDocsBtn') || document.getElementById('tabDocumentsBtn');
 
 const tabStudentsContent = document.getElementById('tabStudentsContent');
 const tabAttendanceContent = document.getElementById('tabAttendanceContent');
 const tabExamsContent = document.getElementById('tabExamsContent');
 const tabSyllabusContent = document.getElementById('tabSyllabusContent');
-const tabDocumentsContent = document.getElementById('tabDocumentsContent');
+const tabOpeningDocsContent = document.getElementById('tabOpeningDocsContent');
+const tabClosingDocsContent = document.getElementById('tabClosingDocsContent');
+const tabDocumentsContent = document.getElementById('tabOpeningDocsContent') || document.getElementById('tabDocumentsContent');
 
 const toggleStudentFormBtn = document.getElementById('toggleStudentFormBtn');
 const toggleBulkStudentBtn = document.getElementById('toggleBulkStudentBtn');
@@ -1703,11 +1707,15 @@ function setupEventListeners() {
     if (activeCourseForDetail) openCourseModal(activeCourseForDetail);
   });
 
-  tabStudentsBtn.addEventListener('click', () => switchDetailTab('students'));
-  tabAttendanceBtn.addEventListener('click', () => switchDetailTab('attendance'));
-  tabExamsBtn.addEventListener('click', () => switchDetailTab('exams'));
-  tabSyllabusBtn.addEventListener('click', () => switchDetailTab('syllabus'));
-  tabDocumentsBtn.addEventListener('click', () => switchDetailTab('documents'));
+  tabStudentsBtn?.addEventListener('click', () => switchDetailTab('students'));
+  tabAttendanceBtn?.addEventListener('click', () => switchDetailTab('attendance'));
+  tabExamsBtn?.addEventListener('click', () => switchDetailTab('exams'));
+  tabSyllabusBtn?.addEventListener('click', () => switchDetailTab('syllabus'));
+  tabOpeningDocsBtn?.addEventListener('click', () => switchDetailTab('openingDocs'));
+  tabClosingDocsBtn?.addEventListener('click', () => switchDetailTab('closingDocs'));
+  if (tabDocumentsBtn && !tabOpeningDocsBtn) {
+    tabDocumentsBtn.addEventListener('click', () => switchDetailTab('openingDocs'));
+  }
 
   if (switchDirectToAttendanceBtn) {
     switchDirectToAttendanceBtn.addEventListener('click', () => switchDetailTab('attendance'));
@@ -4157,11 +4165,14 @@ window.openCourseDetail = function(courseId, push = true) {
   if (tabAttendanceContent && !tabAttendanceContent.classList.contains('hidden')) currentActiveTab = 'attendance';
   else if (tabExamsContent && !tabExamsContent.classList.contains('hidden')) currentActiveTab = 'exams';
   else if (tabSyllabusContent && !tabSyllabusContent.classList.contains('hidden')) currentActiveTab = 'syllabus';
-  else if (tabDocumentsContent && !tabDocumentsContent.classList.contains('hidden')) currentActiveTab = 'documents';
+  else if (tabOpeningDocsContent && !tabOpeningDocsContent.classList.contains('hidden')) currentActiveTab = 'openingDocs';
+  else if (tabClosingDocsContent && !tabClosingDocsContent.classList.contains('hidden')) currentActiveTab = 'closingDocs';
+  else if (tabDocumentsContent && !tabDocumentsContent.classList.contains('hidden')) currentActiveTab = 'openingDocs';
 
   switchDetailTab(currentActiveTab);
   renderDetailSyllabus();
-  renderDocumentsTab();
+  renderOpeningDocsTab();
+  renderClosingDocsTab();
 
   detailModal.classList.remove('hidden');
   if (push && window.history && window.history.pushState) {
@@ -4296,44 +4307,51 @@ function switchDetailTab(tab) {
   const inactiveTabClasses = 'flex items-center gap-2 px-4 sm:px-5 py-3 text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-200 hover:text-slate-950 dark:hover:text-white hover:bg-slate-300/60 dark:hover:bg-[#1c2c32] rounded-t-xl transition cursor-pointer whitespace-nowrap border-b-2 border-transparent';
   const activeTabClasses = 'flex items-center gap-2 px-4 sm:px-5 py-3 text-xs sm:text-sm font-extrabold border-b-2 border-[#335C67] dark:border-[#FFF3B0] text-[#335C67] dark:text-[#FFF3B0] bg-white dark:bg-[#152125] rounded-t-xl transition cursor-pointer whitespace-nowrap shadow-sm';
 
-  [tabStudentsBtn, tabAttendanceBtn, tabExamsBtn, tabSyllabusBtn, tabDocumentsBtn].forEach(btn => {
+  [tabStudentsBtn, tabAttendanceBtn, tabExamsBtn, tabSyllabusBtn, tabOpeningDocsBtn, tabClosingDocsBtn, tabDocumentsBtn].forEach(btn => {
     if (btn) {
       btn.className = inactiveTabClasses;
     }
   });
 
-  tabStudentsContent.classList.add('hidden');
-  tabAttendanceContent.classList.add('hidden');
-  tabExamsContent.classList.add('hidden');
-  tabSyllabusContent.classList.add('hidden');
-  tabDocumentsContent.classList.add('hidden');
+  if (tabStudentsContent) tabStudentsContent.classList.add('hidden');
+  if (tabAttendanceContent) tabAttendanceContent.classList.add('hidden');
+  if (tabExamsContent) tabExamsContent.classList.add('hidden');
+  if (tabSyllabusContent) tabSyllabusContent.classList.add('hidden');
+  if (tabOpeningDocsContent) tabOpeningDocsContent.classList.add('hidden');
+  if (tabClosingDocsContent) tabClosingDocsContent.classList.add('hidden');
+  if (tabDocumentsContent) tabDocumentsContent.classList.add('hidden');
 
   if (tab === 'students') {
-    tabStudentsBtn.className = activeTabClasses;
-    tabStudentsContent.classList.remove('hidden');
+    if (tabStudentsBtn) tabStudentsBtn.className = activeTabClasses;
+    if (tabStudentsContent) tabStudentsContent.classList.remove('hidden');
     renderStudentTable();
   } else if (tab === 'attendance') {
-    tabAttendanceBtn.className = activeTabClasses;
-    tabAttendanceContent.classList.remove('hidden');
+    if (tabAttendanceBtn) tabAttendanceBtn.className = activeTabClasses;
+    if (tabAttendanceContent) tabAttendanceContent.classList.remove('hidden');
     renderAttendanceTab();
   } else if (tab === 'exams') {
-    tabExamsBtn.className = activeTabClasses;
-    tabExamsContent.classList.remove('hidden');
+    if (tabExamsBtn) tabExamsBtn.className = activeTabClasses;
+    if (tabExamsContent) tabExamsContent.classList.remove('hidden');
     renderExamsTab();
   } else if (tab === 'syllabus') {
-    tabSyllabusBtn.className = activeTabClasses;
-    tabSyllabusContent.classList.remove('hidden');
+    if (tabSyllabusBtn) tabSyllabusBtn.className = activeTabClasses;
+    if (tabSyllabusContent) tabSyllabusContent.classList.remove('hidden');
     renderDetailSyllabus();
+  } else if (tab === 'closingDocs') {
+    if (tabClosingDocsBtn) tabClosingDocsBtn.className = activeTabClasses;
+    if (tabClosingDocsContent) tabClosingDocsContent.classList.remove('hidden');
+    renderClosingDocsTab();
   } else {
-    tabDocumentsBtn.className = activeTabClasses;
-    tabDocumentsContent.classList.remove('hidden');
-    
-    // Kurs kapatılmamışsa eğitmeni uyar
-    if (activeCourseForDetail && activeCourseForDetail.status !== 'completed' && !isDeveloper(currentUser)) {
-      alert('⚠️ DİKKAT: Kurs Henüz Kapatılmamıştır!\n\nResmi mevzuat gereği; Kursiyer Karar Durumu, Yoklama Defteri, Not Çizelgesi, Sınav Tutanağı ve İmza Listesi evrakları kurs kapatılmadan önce oluşturulamaz ve teslim edilemez.\n\nEvrakları görüntülemek ve indirmek için lütfen önce üst kısımdaki "Kursu Kapat" butonuna tıklayınız.');
+    // 'openingDocs' veya varsayılan evraklar
+    if (tabOpeningDocsBtn) {
+      tabOpeningDocsBtn.className = activeTabClasses;
+      if (tabOpeningDocsContent) tabOpeningDocsContent.classList.remove('hidden');
+      renderOpeningDocsTab();
+    } else if (tabDocumentsBtn) {
+      tabDocumentsBtn.className = activeTabClasses;
+      if (tabDocumentsContent) tabDocumentsContent.classList.remove('hidden');
+      renderDocumentsTab();
     }
-    
-    renderDocumentsTab();
   }
   refreshLucide();
 }
@@ -8395,42 +8413,16 @@ function generateKararDurumuHtml(course) {
   `;
 }
 
-function renderDocumentsTab() {
+function renderOpeningDocsTab() {
   if (!activeCourseForDetail) return;
   activeCourseForDetail.students = sortStudentsAlphabetically(activeCourseForDetail.students || []);
-
-  const isClosed = activeCourseForDetail.status === 'completed';
-  const isDev = isDeveloper(currentUser);
-
-  // Kurs Kapatılmamışsa Uyarı Bannerını Göster, Kapatılmışsa Gizle
-  const lockedBanner = document.getElementById('courseDocumentsLockedBanner');
-  if (lockedBanner) {
-    if (!isClosed && !isDev) {
-      lockedBanner.classList.remove('hidden');
-    } else {
-      lockedBanner.classList.add('hidden');
-    }
-  }
-
-  // Kurs Kapatılmamışsa Toplu Kaydet Butonunu Devre Dışı Bırak / Gizle
-  const saveAllBtn = document.getElementById('saveAllCourseDocumentsBtn');
-  if (saveAllBtn) {
-    if (!isClosed && !isDev) {
-      saveAllBtn.classList.add('opacity-50', 'cursor-not-allowed');
-      saveAllBtn.title = 'Kurs kapatılmadan tüm evraklar kaydedilemez. Lütfen önce "Kursu Kapat" işlemini yapınız.';
-    } else {
-      saveAllBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-      saveAllBtn.title = 'Tüm Kurs Sonu Evraklarını Kendi İsmi ve Kurs No ile Kaydet';
-    }
-  }
 
   const docType = (activeCourseForDetail && activeCourseForDetail.documentType) ? activeCourseForDetail.documentType : 'Sertifika';
   const isKatilim = docType.toLowerCase().includes('katılım') || docType.toLowerCase().includes('katilim');
   const students = activeCourseForDetail.students;
   const totalHours = Number(activeCourseForDetail.totalHours) || 0;
-  const maxAllowed = Math.floor(totalHours / 5);
 
-  // 0. Kurs Planı Özeti (Kurs Açılış Evrakı)
+  // 1. Kurs Planı Özeti (Açılış Belgesi)
   try {
     const kursPlaniStatsBar = document.getElementById('kursPlaniStatsBar');
     if (kursPlaniStatsBar) {
@@ -8470,6 +8462,124 @@ function renderDocumentsTab() {
   } catch (err) {
     console.error('Error rendering kursPlaniStatsBar:', err);
   }
+
+  // 2. İmza Listesi Özeti (Açılış Belgesi)
+  try {
+    const imzaListesiStatsBar = document.getElementById('imzaListesiStatsBar');
+    if (imzaListesiStatsBar) {
+      const validDates = getValidCourseDates(activeCourseForDetail);
+      const datePages = Math.max(1, Math.ceil(validDates.length / 9));
+      imzaListesiStatsBar.innerHTML = `
+        <div class="flex flex-wrap items-center justify-between gap-3 w-full">
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="font-bold text-slate-700 dark:text-slate-200">İmza Listesi:</span>
+            <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-white dark:bg-[#152125] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-[#2b3e45] rounded-lg font-bold">
+              <span>Toplam:</span> <strong class="text-purple-700 dark:text-purple-400">${students.length}</strong> Kursiyer
+            </span>
+            <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-purple-50 dark:bg-purple-950/40 text-purple-800 dark:text-purple-300 border border-purple-200 dark:border-purple-800 rounded-lg font-bold">
+              <span>Ders Günleri:</span> <strong>${validDates.length}</strong> Gün
+            </span>
+            <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800 rounded-lg font-bold">
+              <span>Sayfa:</span> <strong>${datePages}</strong> Sayfa
+            </span>
+          </div>
+          <div class="text-[11px] text-slate-400">
+            9 Günlük Sütunlar &bull; Yatay A4
+          </div>
+        </div>
+      `;
+    }
+  } catch (err) {
+    console.error('Error rendering imzaListesiStatsBar:', err);
+  }
+
+  // 3. Sınav Katılım Belgesi (Sınav Tutanağı) Özeti (Açılış Belgesi)
+  try {
+    const sinavTutanagiStatsBar = document.getElementById('sinavTutanagiStatsBar');
+    if (sinavTutanagiStatsBar) {
+      sinavTutanagiStatsBar.innerHTML = `
+        <div class="flex flex-wrap items-center justify-between gap-3 w-full">
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="font-bold text-slate-700 dark:text-slate-200">Tutanak Özeti:</span>
+            <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-white dark:bg-[#152125] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-[#2b3e45] rounded-lg font-bold">
+              <span>Toplam:</span> <strong class="text-rose-700 dark:text-rose-400">${students.length}</strong> Kursiyer
+            </span>
+            <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 rounded-lg font-bold">
+              <span>Şablon:</span> <strong>Sadece Kurs ve Kursiyer İsimleri</strong>
+            </span>
+            <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-blue-50 dark:bg-blue-950/40 text-blue-800 dark:text-blue-300 border border-blue-200 dark:border-blue-800 rounded-lg font-bold">
+              <span>İmza & Tarih:</span> <strong>Manuel (.... ibareli)</strong>
+            </span>
+          </div>
+          <div class="text-[11px] text-slate-400">
+            ${students.length <= 25 ? 'Resmi Tek Sayfa Sınav Tutanağı' : 'Resmi Sınav Tutanağı'} &bull; Dikey A4
+          </div>
+        </div>
+      `;
+    }
+  } catch (err) {
+    console.error('Error rendering sinavTutanagiStatsBar:', err);
+  }
+}
+
+function renderClosingDocsTab() {
+  if (!activeCourseForDetail) return;
+  activeCourseForDetail.students = sortStudentsAlphabetically(activeCourseForDetail.students || []);
+
+  const isClosed = activeCourseForDetail.status === 'completed';
+  const isDev = isDeveloper(currentUser);
+
+  // Sekme Rozeti & İkon Durumu
+  const tabBadge = document.getElementById('tabClosingDocsBadge');
+  if (tabBadge) {
+    tabBadge.textContent = isClosed ? '3 Belge' : 'Kilitli (3 Belge)';
+    tabBadge.className = isClosed
+      ? 'px-2 py-0.5 bg-emerald-100 dark:bg-emerald-900/40 text-emerald-800 dark:text-emerald-300 text-[11px] font-bold rounded-full border border-emerald-200 dark:border-emerald-800/50'
+      : 'px-2 py-0.5 bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300 text-[11px] font-bold rounded-full border border-amber-200 dark:border-amber-800/50';
+  }
+
+  const tabIcon = document.getElementById('tabClosingDocsIcon');
+  if (tabIcon) {
+    tabIcon.setAttribute('data-lucide', isClosed ? 'folder-check' : 'folder-lock');
+    tabIcon.className = isClosed ? 'w-4 h-4 text-emerald-600 dark:text-emerald-400' : 'w-4 h-4 text-amber-600 dark:text-amber-400';
+  }
+
+  // Kurs Kapatılmamışsa Uyarı Bannerını Göster, Kapatılmışsa Gizle
+  const lockedBanner = document.getElementById('courseClosingDocsLockedBanner') || document.getElementById('courseDocumentsLockedBanner');
+  if (lockedBanner) {
+    if (!isClosed && !isDev) {
+      lockedBanner.classList.remove('hidden');
+    } else {
+      lockedBanner.classList.add('hidden');
+    }
+  }
+
+  // Kurs Kapatılmamışsa Toplu Kaydet Butonunu Devre Dışı Bırak / Aktif Et
+  const saveAllBtn = document.getElementById('saveAllCourseDocumentsBtn');
+  if (saveAllBtn) {
+    if (!isClosed && !isDev) {
+      saveAllBtn.classList.add('opacity-50', 'cursor-not-allowed');
+      saveAllBtn.title = 'Kurs kapatılmadan kurs sonu evrakları kaydedilemez. Lütfen önce "Kursu Kapat" işlemini yapınız.';
+    } else {
+      saveAllBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+      saveAllBtn.title = 'Tüm Kurs Sonu Evraklarını Kendi İsmi ve Kurs No ile Kaydet';
+    }
+  }
+
+  // Kurs kapalı değilse kart butonlarına kilitli/açık bilgilendirmesi
+  const closingCards = document.querySelectorAll('.closing-doc-card');
+  closingCards.forEach(card => {
+    if (!isClosed && !isDev) {
+      card.classList.add('border-amber-200', 'dark:border-amber-900/40');
+    } else {
+      card.classList.remove('border-amber-200', 'dark:border-amber-900/40');
+    }
+  });
+
+  const docType = (activeCourseForDetail && activeCourseForDetail.documentType) ? activeCourseForDetail.documentType : 'Sertifika';
+  const students = activeCourseForDetail.students;
+  const totalHours = Number(activeCourseForDetail.totalHours) || 0;
+  const maxAllowed = Math.floor(totalHours / 5);
 
   // 1. Karar Durumu Özeti
   try {
@@ -8608,7 +8718,7 @@ function renderDocumentsTab() {
             </span>
           </div>
           <div class="text-[11px] text-slate-400">
-            Resmi Not Çizelgesi • ${moduleCount} Modüllü Yatay A4 Belgesi
+            Resmi Not Çizelgesi &bull; ${moduleCount} Modüllü Yatay A4 Belgesi
           </div>
         </div>
       `;
@@ -8616,64 +8726,11 @@ function renderDocumentsTab() {
   } catch (err) {
     console.error('Error rendering notCizelgesiStatsBar:', err);
   }
+}
 
-  // 4. Sınav Tutanağı Özeti
-  try {
-    const sinavTutanagiStatsBar = document.getElementById('sinavTutanagiStatsBar');
-    if (sinavTutanagiStatsBar) {
-      sinavTutanagiStatsBar.innerHTML = `
-        <div class="flex flex-wrap items-center justify-between gap-3 w-full">
-          <div class="flex flex-wrap items-center gap-2">
-            <span class="font-bold text-slate-700 dark:text-slate-200">Tutanak Özeti:</span>
-            <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-white dark:bg-[#152125] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-[#2b3e45] rounded-lg font-bold">
-              <span>Toplam:</span> <strong class="text-rose-700 dark:text-rose-400">${students.length}</strong> Kursiyer
-            </span>
-            <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 rounded-lg font-bold">
-              <span>Şablon:</span> <strong>Sadece Kurs ve Kursiyer İsimleri</strong>
-            </span>
-            <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-blue-50 dark:bg-blue-950/40 text-blue-800 dark:text-blue-300 border border-blue-200 dark:border-blue-800 rounded-lg font-bold">
-              <span>İmza & Tarih:</span> <strong>Manuel (.... ibareli)</strong>
-            </span>
-          </div>
-          <div class="text-[11px] text-slate-400">
-            ${students.length <= 25 ? 'Resmi Tek Sayfa Sınav Tutanağı' : 'Resmi Sınav Tutanağı'} • Dikey A4
-          </div>
-        </div>
-      `;
-    }
-  } catch (err) {
-    console.error('Error rendering sinavTutanagiStatsBar:', err);
-  }
-
-  // 5. İmza Listesi Özeti
-  try {
-    const imzaListesiStatsBar = document.getElementById('imzaListesiStatsBar');
-    if (imzaListesiStatsBar) {
-      const validDates = getValidCourseDates(activeCourseForDetail);
-      const datePages = Math.max(1, Math.ceil(validDates.length / 9));
-      imzaListesiStatsBar.innerHTML = `
-        <div class="flex flex-wrap items-center justify-between gap-3 w-full">
-          <div class="flex flex-wrap items-center gap-2">
-            <span class="font-bold text-slate-700 dark:text-slate-200">İmza Listesi:</span>
-            <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-white dark:bg-[#152125] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-[#2b3e45] rounded-lg font-bold">
-              <span>Toplam:</span> <strong class="text-purple-700 dark:text-purple-400">${students.length}</strong> Kursiyer
-            </span>
-            <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-purple-50 dark:bg-purple-950/40 text-purple-800 dark:text-purple-300 border border-purple-200 dark:border-purple-800 rounded-lg font-bold">
-              <span>Ders Günleri:</span> <strong>${validDates.length}</strong> Gün
-            </span>
-            <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800 rounded-lg font-bold">
-              <span>Sayfa:</span> <strong>${datePages}</strong> Sayfa
-            </span>
-          </div>
-          <div class="text-[11px] text-slate-400">
-            9 Günlük Sütunlar • Yatay A4
-          </div>
-        </div>
-      `;
-    }
-  } catch (err) {
-    console.error('Error rendering imzaListesiStatsBar:', err);
-  }
+function renderDocumentsTab() {
+  renderOpeningDocsTab();
+  renderClosingDocsTab();
 }
 
 // =================== KURS PLANI YAPILANDIRMA VE OLUŞTURMA İŞLEMLERİ ===================
@@ -8963,7 +9020,7 @@ function checkCourseClosedForDocuments(docName = 'Resmi Evrak') {
   if (activeCourseForDetail.status !== 'completed' && !isDeveloper(currentUser)) {
     alert(
       `⚠️ DİKKAT: Kurs Henüz Kapatılmamıştır!\n\n` +
-      `Resmi mevzuat gereği; "${docName}" ve diğer kurs sonu evrakları (Karar Durumu, Yoklama Defteri, Not Çizelgesi, Sınav Tutanağı ve İmza Listesi) kurs kapatılmadan önce oluşturulamaz ve teslim edilemez.\n\n` +
+      `Resmi mevzuat gereği; "${docName}" ve diğer kurs sonu evrakları (Kursiyer Karar Durumu, Yoklama Defteri ve Modül Değerlendirme Çizelgesi) kurs kapatılmadan önce oluşturulamaz ve teslim edilemez.\n\n` +
       `Kurs sonu evraklarını görüntülemek ve indirmek için lütfen önce kurs detayındaki "Kursu Kapat" butonuna tıklayınız.`
     );
     return false;
@@ -9294,6 +9351,134 @@ window.triggerPrintKararDurumu = function() {
   safePrint(generateKararDurumuHtml(activeCourseForDetail), false, title);
 };
 
+// =================== KURS AÇILIŞ EVRAKLARINI TOPLU KAYDETME YÖNETİMİ ===================
+
+window.openSaveOpeningDocumentsModal = function() {
+  if (!activeCourseForDetail) {
+    alert('Lütfen önce bir kurs seçiniz.');
+    return;
+  }
+
+  const course = activeCourseForDetail;
+  const courseNumber = getCourseNumber(course) || 'KODSUZ';
+  const courseName = course.name || course.title || 'Kurs';
+
+  const badge = document.getElementById('saveOpeningCourseCodeBadge');
+  if (badge) badge.textContent = `Kurs No: ${courseNumber}`;
+
+  const sub = document.getElementById('saveOpeningCourseSubTitle');
+  if (sub) sub.innerHTML = `<strong>${escapeHtml(courseName)}</strong> &bull; Kurs açılış evrakları her zaman erişilebilir ve indirilebilir durumdadır.`;
+
+  const container = document.getElementById('saveOpeningDocumentsList');
+  if (container) {
+    const docs = [
+      { id: 'plan', name: 'Kurs Planı', desc: '1. Belge &bull; Yatay A4 &bull; Modüler Kurs Çerçeve ve Çalışma Planı', icon: 'file-spreadsheet', color: 'text-teal-600 dark:text-teal-400', printFn: 'triggerPrintKursPlani()' },
+      { id: 'imza', name: 'İmza Listesi', desc: '2. Belge &bull; Yatay A4 &bull; Günlük Ders Katılım İmza Çizelgesi', icon: 'pen-tool', color: 'text-purple-600 dark:text-purple-400', printFn: 'triggerPrintImzaListesi()' },
+      { id: 'sinav', name: 'Sınav Katılım Belgesi', desc: '3. Belge &bull; Dikey A4 &bull; Kursiyer Sınav Katılım İmzaları ve Tutanağı', icon: 'clipboard-check', color: 'text-rose-600 dark:text-rose-400', printFn: 'triggerPrintSinavTutanagi()' }
+    ];
+
+    container.innerHTML = docs.map(d => {
+      const fileName = `${d.name} - ${courseNumber}`;
+      return `
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between p-3 bg-white dark:bg-[#152125] border border-slate-200 dark:border-[#23353c] rounded-xl hover:border-teal-500 dark:hover:border-teal-400 transition gap-2 shadow-2xs">
+          <div class="flex items-center gap-3">
+            <div class="p-2 rounded-lg bg-teal-50 dark:bg-teal-950/40 ${d.color} shrink-0">
+              <i data-lucide="${d.icon}" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <div class="font-bold text-xs sm:text-sm text-slate-800 dark:text-slate-100 flex items-center gap-1.5 flex-wrap">
+                <span>${escapeHtml(fileName)}</span>
+                <span class="text-[10px] px-1.5 py-0.2 bg-slate-100 dark:bg-[#10191b] text-slate-500 rounded font-mono">.pdf / .html</span>
+              </div>
+              <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">${d.desc}</div>
+            </div>
+          </div>
+          <div class="flex items-center gap-2 self-end sm:self-auto shrink-0">
+            <button
+              type="button"
+              onclick="${d.printFn}"
+              class="flex items-center gap-1 px-3 py-1.5 bg-teal-700 hover:bg-teal-800 text-white rounded-lg text-xs font-semibold shadow-2xs cursor-pointer transition"
+              title="PDF Olarak Kaydet / Yazdır"
+            >
+              <i data-lucide="printer" class="w-3.5 h-3.5 text-[#FFF3B0]"></i>
+              <span>PDF Kaydet</span>
+            </button>
+            <button
+              type="button"
+              onclick="downloadSingleDocument('${escapeHtml(d.name)}')"
+              class="flex items-center gap-1 px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-[#10191b] dark:hover:bg-[#19272c] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-[#2b3e45] rounded-lg text-xs font-semibold cursor-pointer transition"
+              title="HTML Belgesi Olarak İndir"
+            >
+              <i data-lucide="download" class="w-3.5 h-3.5"></i>
+              <span>İndir</span>
+            </button>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  const modal = document.getElementById('saveOpeningDocumentsModal');
+  modal?.classList.remove('hidden');
+  refreshLucide();
+};
+
+window.closeSaveOpeningDocumentsModal = function() {
+  const modal = document.getElementById('saveOpeningDocumentsModal');
+  modal?.classList.add('hidden');
+  cleanupPrintArea();
+};
+
+window.downloadAllOpeningDocuments = function() {
+  if (!activeCourseForDetail) return;
+  const course = activeCourseForDetail;
+  const courseNumber = getCourseNumber(course) || 'KODSUZ';
+
+  const docs = [
+    { name: 'Kurs Planı', html: generateKursPlaniHtml(course), isLandscape: true },
+    { name: 'İmza Listesi', html: generateImzaListesiHtml(course), isLandscape: true },
+    { name: 'Sınav Katılım Belgesi', html: generateSinavTutanagiHtml(course), isLandscape: false }
+  ];
+
+  docs.forEach((d, index) => {
+    setTimeout(() => {
+      const fileTitle = `${d.name} - ${courseNumber}`;
+      const fullHtml = generateStandaloneDocumentHtml(fileTitle, d.html, d.isLandscape);
+      downloadTextFile(`${fileTitle}.html`, fullHtml, 'text/html;charset=utf-8');
+    }, index * 200);
+  });
+
+  showAutoSaveToast(`3 açılış evrakı "${courseNumber}" numarasıyla indiriliyor`);
+};
+
+window.printMergedOpeningDocuments = function() {
+  if (!activeCourseForDetail) return;
+  const course = activeCourseForDetail;
+  const courseNumber = getCourseNumber(course) || 'KODSUZ';
+
+  const docTitle = `Tüm Kurs Açılış Evrakları - ${courseNumber}`;
+  const mergedHtml = `
+    <div class="merged-all-opening-documents">
+      <!-- 1. Kurs Planı -->
+      <div class="merged-doc-section" style="page-break-after: always; break-after: page;">
+        ${generateKursPlaniHtml(course)}
+      </div>
+
+      <!-- 2. İmza Listesi -->
+      <div class="merged-doc-section" style="page-break-after: always; break-after: page;">
+        ${generateImzaListesiHtml(course)}
+      </div>
+
+      <!-- 3. Sınav Katılım Belgesi -->
+      <div class="merged-doc-section">
+        ${generateSinavTutanagiHtml(course)}
+      </div>
+    </div>
+  `;
+
+  safePrint(mergedHtml, false, docTitle);
+};
+
 // =================== KURS SONU EVRAKLARINI TOPLU KAYDETME YÖNETİMİ ===================
 
 window.openSaveAllDocumentsModal = function() {
@@ -9304,7 +9489,7 @@ window.openSaveAllDocumentsModal = function() {
 
   // Kurs kapatılmamışsa kurs sonu evrakları açılamaz
   if (activeCourseForDetail.status !== 'completed' && !isDeveloper(currentUser)) {
-    alert('⚠️ DİKKAT: Kurs Henüz Kapatılmamıştır!\n\nResmi mevzuat gereği kurs kapatılmadan önce kurs sonu resmi evrakları (Karar Durumu, Yoklama Defteri, Not Çizelgesi, Sınav Tutanağı ve İmza Listesi) hazırlanamaz ve indirilemez.\n\nLütfen önce "Kursu Kapat" butonunu kullanarak kursu tamamlayınız.');
+    alert('⚠️ DİKKAT: Kurs Henüz Kapatılmamıştır!\n\nResmi mevzuat gereği kurs kapatılmadan önce kurs sonu resmi evrakları (Kursiyer Karar Durumu, Yoklama Defteri ve Modül Değerlendirme Çizelgesi) hazırlanamaz ve indirilemez.\n\nLütfen önce "Kursu Kapat" butonunu kullanarak kursu tamamlayınız.');
     return;
   }
 
@@ -9316,16 +9501,14 @@ window.openSaveAllDocumentsModal = function() {
   if (badge) badge.textContent = `Kurs No: ${courseNumber}`;
 
   const sub = document.getElementById('saveAllCourseSubTitle');
-  if (sub) sub.innerHTML = `<strong>${escapeHtml(courseName)}</strong> &bull; Tüm resmi evraklar kendi belge isimleri ve kurs no (${escapeHtml(courseNumber)}) ile kaydedilir.`;
+  if (sub) sub.innerHTML = `<strong>${escapeHtml(courseName)}</strong> &bull; Kurs sonu resmi evrakları kendi belge isimleri ve kurs no (${escapeHtml(courseNumber)}) ile kaydedilir.`;
 
   const container = document.getElementById('saveAllDocumentsList');
   if (container) {
     const docs = [
       { id: 'karar', name: 'Kursiyer Karar Durumu', desc: '1. Belge &bull; Dikey A4 &bull; Resmi Başarı ve Karar Tutanağı', icon: 'file-text', color: 'text-[#335C67] dark:text-[#FFF3B0]', printFn: 'triggerPrintKararDurumu()' },
       { id: 'defter', name: 'Yoklama ve Ders Defteri', desc: '2. Belge &bull; Dikey A4 &bull; Kapak, Yoklama ve Günlük Ders Sayfaları', icon: 'book-open', color: 'text-emerald-600 dark:text-emerald-400', printFn: 'triggerPrintDefter()' },
-      { id: 'not', name: 'Modül Değerlendirme Çizelgesi', desc: '3. Belge &bull; Yatay A4 &bull; Modül Sınav Notları ve Başarı Durumu', icon: 'graduation-cap', color: 'text-indigo-600 dark:text-indigo-400', printFn: 'triggerPrintNotCizelgesi()' },
-      { id: 'sinav', name: 'Sınav Tutanağı', desc: '4. Belge &bull; Dikey A4 &bull; Kursiyer Sınav Katılım İmzaları', icon: 'clipboard-check', color: 'text-rose-600 dark:text-rose-400', printFn: 'triggerPrintSinavTutanagi()' },
-      { id: 'imza', name: 'İmza Listesi', desc: '5. Belge &bull; Yatay A4 &bull; Günlük Ders Katılım İmza Çizelgesi', icon: 'pen-tool', color: 'text-purple-600 dark:text-purple-400', printFn: 'triggerPrintImzaListesi()' }
+      { id: 'not', name: 'Modül Değerlendirme Çizelgesi', desc: '3. Belge &bull; Yatay A4 &bull; Modül Sınav Notları ve Başarı Durumu', icon: 'graduation-cap', color: 'text-indigo-600 dark:text-indigo-400', printFn: 'triggerPrintNotCizelgesi()' }
     ];
 
     container.innerHTML = docs.map(d => {
@@ -9382,10 +9565,19 @@ window.closeSaveAllDocumentsModal = function() {
 
 window.downloadSingleDocument = function(docName) {
   if (!activeCourseForDetail) return;
-  // Kurs planı haricindeki tüm kurs sonu evrakları için kapatılma şartı
-  if (!docName.includes('Plan') && !docName.includes('plan')) {
+  
+  // Kurs Açılış Evrakları (Plan, İmza Listesi, Sınav Katılım Belgesi) her zaman erişilebilir.
+  // Kurs Sonu Evrakları ise sadece kurs kapatıldıktan sonra indirilebilir.
+  const isOpeningDoc = docName.includes('Plan') || docName.includes('plan') ||
+                       docName.includes('İmza') || docName.includes('imza') ||
+                       docName.includes('Sınav') || docName.includes('sinav') ||
+                       docName.includes('Katılım') || docName.includes('katilim') ||
+                       docName.includes('Tutanak') || docName.includes('tutanak');
+
+  if (!isOpeningDoc) {
     if (!checkCourseClosedForDocuments(docName)) return;
   }
+
   const course = activeCourseForDetail;
   const courseNumber = getCourseNumber(course) || 'KODSUZ';
   let html = '';
@@ -9403,7 +9595,7 @@ window.downloadSingleDocument = function(docName) {
   } else if (docName.includes('Modül') || docName.includes('Çizelge') || docName.includes('Not')) {
     html = generateNotCizelgesiHtml(course);
     isLandscape = true;
-  } else if (docName.includes('Sınav') || docName.includes('Tutanak')) {
+  } else if (docName.includes('Sınav') || docName.includes('Tutanak') || docName.includes('Katılım') || docName.includes('katilim')) {
     html = generateSinavTutanagiHtml(course);
     isLandscape = false;
   } else if (docName.includes('İmza') || docName.includes('imza')) {
@@ -9429,9 +9621,7 @@ window.downloadAllCourseDocuments = function() {
   const docs = [
     { name: 'Kursiyer Karar Durumu', html: generateKararDurumuHtml(course), isLandscape: false },
     { name: 'Yoklama ve Ders Defteri', html: generateDefterHtml(course), isLandscape: false },
-    { name: 'Modül Değerlendirme Çizelgesi', html: generateNotCizelgesiHtml(course), isLandscape: true },
-    { name: 'Sınav Tutanağı', html: generateSinavTutanagiHtml(course), isLandscape: false },
-    { name: 'İmza Listesi', html: generateImzaListesiHtml(course), isLandscape: true }
+    { name: 'Modül Değerlendirme Çizelgesi', html: generateNotCizelgesiHtml(course), isLandscape: true }
   ];
 
   docs.forEach((d, index) => {
@@ -9442,11 +9632,12 @@ window.downloadAllCourseDocuments = function() {
     }, index * 200);
   });
 
-  showAutoSaveToast(`5 resmi evrak "${courseNumber}" numarasıyla indiriliyor`);
+  showAutoSaveToast(`3 resmi evrak "${courseNumber}" numarasıyla indiriliyor`);
 };
 
 window.printMergedAllDocuments = function() {
   if (!activeCourseForDetail) return;
+  if (!checkCourseClosedForDocuments('Tüm Kurs Sonu Evrakları')) return;
   const course = activeCourseForDetail;
   const courseNumber = getCourseNumber(course) || 'KODSUZ';
 
@@ -9464,18 +9655,8 @@ window.printMergedAllDocuments = function() {
       </div>
 
       <!-- 3. Modül Değerlendirme Çizelgesi -->
-      <div class="merged-doc-section" style="page-break-after: always; break-after: page;">
-        ${generateNotCizelgesiHtml(course)}
-      </div>
-
-      <!-- 4. Sınav Tutanağı -->
-      <div class="merged-doc-section" style="page-break-after: always; break-after: page;">
-        ${generateSinavTutanagiHtml(course)}
-      </div>
-
-      <!-- 5. İmza Listesi -->
       <div class="merged-doc-section">
-        ${generateImzaListesiHtml(course)}
+        ${generateNotCizelgesiHtml(course)}
       </div>
     </div>
   `;
@@ -10366,7 +10547,6 @@ function generateSinavTutanagiHtml(course) {
 
 window.openSinavTutanagiPreview = function() {
   if (!activeCourseForDetail) return;
-  if (!checkCourseClosedForDocuments('Sınav Tutanağı')) return;
   const container = document.getElementById('sinavTutanagiPreviewContainer');
   const modal = document.getElementById('sinavTutanagiModal');
   if (container) {
@@ -10384,8 +10564,7 @@ window.closeSinavTutanagiPreview = function() {
 
 window.triggerPrintSinavTutanagi = function() {
   if (!activeCourseForDetail) return;
-  if (!checkCourseClosedForDocuments('Sınav Tutanağı')) return;
-  const title = getDocumentSaveTitle('Sınav Tutanağı', activeCourseForDetail);
+  const title = getDocumentSaveTitle('Sınav Katılım Belgesi', activeCourseForDetail);
   safePrint(generateSinavTutanagiHtml(activeCourseForDetail), false, title);
 };
 
@@ -10507,7 +10686,6 @@ function generateImzaListesiHtml(course) {
 
 window.openImzaListesiPreview = function() {
   if (!activeCourseForDetail) return;
-  if (!checkCourseClosedForDocuments('İmza Listesi')) return;
   const container = document.getElementById('imzaListesiPreviewContainer');
   const modal = document.getElementById('imzaListesiModal');
   if (container) {
@@ -10525,7 +10703,6 @@ window.closeImzaListesiPreview = function() {
 
 window.triggerPrintImzaListesi = function() {
   if (!activeCourseForDetail) return;
-  if (!checkCourseClosedForDocuments('İmza Listesi')) return;
   const title = getDocumentSaveTitle('İmza Listesi', activeCourseForDetail);
   safePrint(generateImzaListesiHtml(activeCourseForDetail), true, title);
 };
