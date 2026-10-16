@@ -14149,44 +14149,50 @@ function renderSupervisorCharts(coursesList) {
     });
   }
 
-  // --- GRAFİK 3: Kurs Merkezi Zaman Grafiği ---
+  // --- GRAFİK 3: Kurs Merkezi Zaman Grafiği (Sütun Grafik) ---
   const centerCanvas = document.getElementById('supCenterTimeChart');
   if (centerCanvas) {
     if (supCenterChartInstance) supCenterChartInstance.destroy();
 
-    // En çok kursu olan ilk 3 merkezi belirle
+    // En çok kursu olan ilk 5 merkezi belirle
     const centerTotals = {};
     sortedKeys.forEach(k => {
       Object.entries(monthMap[k].centers).forEach(([cName, count]) => {
         centerTotals[cName] = (centerTotals[cName] || 0) + count;
       });
     });
-    const topCenters = Object.entries(centerTotals).sort((a, b) => b[1] - a[1]).slice(0, 3).map(e => e[0]);
-    const palette = ['#0d9488', '#f59e0b', '#8b5cf6'];
-    const paletteBg = ['rgba(13, 148, 136, 0.1)', 'rgba(245, 158, 11, 0.1)', 'rgba(139, 92, 246, 0.1)'];
+    const topCenters = Object.entries(centerTotals).sort((a, b) => b[1] - a[1]).slice(0, 5).map(e => e[0]);
+    const palette = ['#0d9488', '#f59e0b', '#8b5cf6', '#0284c7', '#f43f5e'];
+    const paletteBg = [
+      'rgba(13, 148, 136, 0.82)',
+      'rgba(245, 158, 11, 0.82)',
+      'rgba(139, 92, 246, 0.82)',
+      'rgba(2, 132, 199, 0.82)',
+      'rgba(244, 63, 94, 0.82)'
+    ];
 
     const centerDatasets = topCenters.length > 0 ? topCenters.map((cName, idx) => ({
       label: cName,
       data: sortedKeys.map(k => monthMap[k].centers[cName] || 0),
       borderColor: palette[idx % palette.length],
       backgroundColor: paletteBg[idx % paletteBg.length],
-      fill: false,
-      tension: 0.35,
-      pointRadius: 4
+      borderWidth: 1,
+      borderRadius: 6,
+      maxBarThickness: 32
     })) : [
       {
         label: 'Aylık Merkez Kurs Hacmi',
         data: sortedKeys.map(k => Object.values(monthMap[k].centers).reduce((a, b) => a + b, 0)),
         borderColor: '#0d9488',
-        backgroundColor: 'rgba(13, 148, 136, 0.1)',
-        fill: true,
-        tension: 0.35,
-        pointRadius: 4
+        backgroundColor: 'rgba(13, 148, 136, 0.82)',
+        borderWidth: 1,
+        borderRadius: 6,
+        maxBarThickness: 32
       }
     ];
 
     supCenterChartInstance = new Chart(centerCanvas, {
-      type: 'line',
+      type: 'bar',
       data: {
         labels,
         datasets: centerDatasets
