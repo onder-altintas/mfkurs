@@ -1134,6 +1134,165 @@ window.isSupervisor = isSupervisor;
 window.isDepartmentHead = isDepartmentHead;
 window.isTeacher = isTeacher;
 
+// ==================== KVKK & T.C. KİMLİK MASKELEME YARDIMCILARI ====================
+window.__kvkkShowUnmaskedTc = false;
+
+function maskTcNo(tcNo) {
+  if (!tcNo || tcNo === '-') return '-';
+  const s = String(tcNo).trim();
+  if (!s) return '-';
+  if (s.length >= 6) {
+    return `${s.slice(0, 2)}******${s.slice(-3)}`;
+  }
+  return '***';
+}
+window.maskTcNo = maskTcNo;
+
+function renderMaskedTcHtml(tcNo) {
+  if (!tcNo || tcNo === '-') return '-';
+  const raw = String(tcNo).trim();
+  if (!raw) return '-';
+  const masked = maskTcNo(raw);
+  const isUnmasked = Boolean(window.__kvkkShowUnmaskedTc);
+  const displayVal = isUnmasked ? raw : masked;
+  const iconName = isUnmasked ? 'eye-off' : 'eye';
+  return `<span class="kvkk-tc-cell inline-flex items-center gap-1 cursor-pointer select-none hover:text-[#335C67] dark:hover:text-[#FFF3B0] transition" data-raw-tc="${escapeHtml(raw)}" data-masked-tc="${escapeHtml(masked)}" data-unmasked="${isUnmasked ? 'true' : 'false'}" onclick="toggleSingleTcMask(this, event)" title="KVKK Korumalı T.C. Kimlik No (Göster/Gizle için tıklayın)"><span class="kvkk-tc-text">${escapeHtml(displayVal)}</span><i data-lucide="${iconName}" class="w-3 h-3 opacity-60 shrink-0"></i></span>`;
+}
+window.renderMaskedTcHtml = renderMaskedTcHtml;
+
+window.toggleSingleTcMask = function(el, evt) {
+  if (evt) evt.stopPropagation();
+  if (!el) return;
+  const isUnmasked = el.getAttribute('data-unmasked') === 'true';
+  const raw = el.getAttribute('data-raw-tc') || '-';
+  const masked = el.getAttribute('data-masked-tc') || '-';
+  const textSpan = el.querySelector('.kvkk-tc-text');
+  if (textSpan) {
+    textSpan.textContent = isUnmasked ? masked : raw;
+  }
+  el.setAttribute('data-unmasked', isUnmasked ? 'false' : 'true');
+};
+
+window.toggleAllTcMask = function() {
+  window.__kvkkShowUnmaskedTc = !window.__kvkkShowUnmaskedTc;
+  const isUnmasked = window.__kvkkShowUnmaskedTc;
+  document.querySelectorAll('.kvkk-tc-cell').forEach(el => {
+    const raw = el.getAttribute('data-raw-tc') || '-';
+    const masked = el.getAttribute('data-masked-tc') || '-';
+    const textSpan = el.querySelector('.kvkk-tc-text');
+    if (textSpan) {
+      textSpan.textContent = isUnmasked ? raw : masked;
+    }
+    el.setAttribute('data-unmasked', isUnmasked ? 'true' : 'false');
+  });
+  showAutoSaveToast(isUnmasked ? '🔓 T.C. Kimlik numaraları görünür yapıldı (KVKK)' : '🔒 T.C. Kimlik numaraları maskelendi (KVKK)');
+};
+
+function showKvkkExportNotice(actionLabel = 'dışa aktarım') {
+  showAutoSaveToast(`🔒 KVKK Uyarısı: Bu ${actionLabel} çıktısı 6698 sayılı Kanun kapsamında kişisel veri içermektedir; yalnızca resmi dosyalamada kullanınız.`);
+}
+window.showKvkkExportNotice = showKvkkExportNotice;
+
+let _isKvkkModalMandatory = false;
+
+window.openKvkkModal = function(isMandatory = false) {
+  _isKvkkModalMandatory = Boolean(isMandatory);
+  const modal = document.getElementById('kvkkConsentModal');
+  const closeTopBtn = document.getElementById('kvkkModalCloseTopBtn');
+  const closeInfoBtn = document.getElementById('kvkkCloseInfoBtn');
+  const cancelLogoutBtn = document.getElementById('kvkkCancelLogoutBtn');
+  const approveBtn = document.getElementById('kvkkApproveBtn');
+  const cbWrapper = document.getElementById('kvkkConsentCheckboxWrapper');
+  const cb = document.getElementById('kvkkConsentCheckbox');
+  const statusText = document.getElementById('kvkkApprovalStatusText');
+
+  if (!modal) return;
+
+  if (_isKvkkModalMandatory) {
+    closeTopBtn?.classList.add('hidden');
+    closeInfoBtn?.classList.add('hidden');
+    cancelLogoutBtn?.classList.remove('hidden');
+    approveBtn?.classList.remove('hidden');
+    cbWrapper?.classList.remove('hidden');
+    if (cb) cb.checked = false;
+    if (statusText) statusText.textContent = '⚠️ Sisteme devam etmek için KVKK Taahhütnamesi onayı zorunludur.';
+  } else {
+    closeTopBtn?.classList.remove('hidden');
+    closeInfoBtn?.classList.remove('hidden');
+    cancelLogoutBtn?.classList.add('hidden');
+    if (currentUser && !currentUser.kvkkApprovedAt) {
+      approveBtn?.classList.remove('hidden');
+      cbWrapper?.classList.remove('hidden');
+      if (cb) cb.checked = false;
+    } else {
+      approveBtn?.classList.add('hidden');
+      if (cb) cb.checked = true;
+      if (currentUser?.kvkkApprovedAt && statusText) {
+        const dt = new Date(currentUser.kvkkApprovedAt);
+        const dtStr = !isNaN(dt.getTime()) ? dt.toLocaleString('tr-TR') : currentUser.kvkkApprovedAt;
+        statusText.textContent = `✅ KVKK Taahhütnamesi Onaylandı (${dtStr})`;
+      } else if (statusText) {
+        statusText.textContent = '🔒 6698 Sayılı KVKK Uyumlu Sistem';
+      }
+    }
+  }
+
+  modal.classList.remove('hidden');
+  refreshLucide();
+};
+
+window.closeKvkkModal = function() {
+  if (_isKvkkModalMandatory && currentUser && !currentUser.kvkkApprovedAt) {
+    return;
+  }
+  const modal = document.getElementById('kvkkConsentModal');
+  modal?.classList.add('hidden');
+};
+
+window.handleKvkkApprove = function() {
+  const cb = document.getElementById('kvkkConsentCheckbox');
+  if (cb && !cb.checked) {
+    showModalAlert('Devam etmek için lütfen "6698 Sayılı KVKK Aydınlatma Metnini okudum..." onay kutucuğunu işaretleyiniz.', '🔒 KVKK Onayı Gerekli', 'warning');
+    return;
+  }
+  const nowIso = new Date().toISOString();
+  if (currentUser) {
+    currentUser.kvkkApprovedAt = nowIso;
+    currentUsers = currentUsers.map(u => (u.id === currentUser.id || u.username === currentUser.username) ? { ...u, kvkkApprovedAt: nowIso } : u);
+    DataStore.saveUsers(currentUsers);
+    DataStore.setActiveUser(currentUser);
+  }
+  _isKvkkModalMandatory = false;
+  const modal = document.getElementById('kvkkConsentModal');
+  modal?.classList.add('hidden');
+  showAutoSaveToast('🔒 KVKK Aydınlatma ve Gizlilik Taahhütnamesi onayınız kaydedildi.');
+};
+
+window.handleKvkkDecline = function() {
+  _isKvkkModalMandatory = false;
+  const modal = document.getElementById('kvkkConsentModal');
+  modal?.classList.add('hidden');
+  currentUser = null;
+  DataStore.setActiveUser(null);
+  if (typeof DataStore.clearSensitiveCacheOnLogout === 'function') {
+    DataStore.clearSensitiveCacheOnLogout();
+  }
+  showLogin();
+};
+
+function checkAndEnforceKvkkConsent() {
+  if (!currentUser) return;
+  if (!currentUser.kvkkApprovedAt) {
+    const matched = currentUsers.find(u => u && u.username && currentUser.username && u.username.toLowerCase() === currentUser.username.toLowerCase());
+    if (matched && matched.kvkkApprovedAt) {
+      currentUser.kvkkApprovedAt = matched.kvkkApprovedAt;
+    }
+  }
+  if (!currentUser.kvkkApprovedAt) {
+    openKvkkModal(true);
+  }
+}
+
 // Beni Hatırla Bilgilerini Geri Yükleme
 function restoreRememberedCredentials() {
   const rememberVal = localStorage.getItem('kurs_sonu_remember_me');
@@ -1143,9 +1302,12 @@ function restoreRememberedCredentials() {
   }
   if (isRemembered) {
     const savedUName = localStorage.getItem('kurs_sonu_remembered_username') || '';
-    const savedPass = localStorage.getItem('kurs_sonu_remembered_password') || '';
+    const rawSavedPass = localStorage.getItem('kurs_sonu_remembered_password') || '';
+    const savedPass = (typeof window._decodePw === 'function') ? window._decodePw(rawSavedPass) : rawSavedPass;
     if (loginUsernameInput && savedUName) loginUsernameInput.value = savedUName;
-    if (loginPasswordInput && savedPass) loginPasswordInput.value = savedPass;
+    if (loginPasswordInput && savedPass && !(typeof window.isPasswordHashed === 'function' && window.isPasswordHashed(savedPass))) {
+      loginPasswordInput.value = savedPass;
+    }
   } else {
     if (loginUsernameInput) loginUsernameInput.value = '';
     if (loginPasswordInput) loginPasswordInput.value = '';
@@ -1171,6 +1333,7 @@ function showDashboard() {
 
   if (userFullName) userFullName.innerText = currentUser.fullName;
   if (welcomeUserName) welcomeUserName.innerText = currentUser.fullName;
+  checkAndEnforceKvkkConsent();
 
   // Sistem Yedeği İndir / Geri Yükle araçları yalnızca geliştiriciye görünür
   const backupTools = document.getElementById('navbarBackupToolsWrapper');
@@ -1406,7 +1569,15 @@ function openProfileModal() {
 
   if (profileFullName) profileFullName.value = currentUser.fullName || '';
   if (profileUsername) profileUsername.value = currentUser.username || '';
-  if (profilePassword) profilePassword.value = currentUser.password || '';
+  if (profilePassword) {
+    if (typeof window.isPasswordHashed === 'function' && window.isPasswordHashed(currentUser.password)) {
+      profilePassword.value = '';
+      profilePassword.placeholder = 'Değiştirmek istemiyorsanız boş bırakın (SHA-256 Korumalı)';
+    } else {
+      profilePassword.value = currentUser.password || '';
+      profilePassword.placeholder = 'Şifreniz';
+    }
+  }
   if (profileArea) profileArea.value = getUserArea(currentUser);
   if (profileArea2) profileArea2.value = currentUser.area2 || '';
 
@@ -1451,7 +1622,10 @@ function handleSaveProfile(e) {
 
   const fullName = toTurkishPersonName(profileFullName?.value || '');
   const username = profileUsername?.value.trim() || '';
-  const password = profilePassword?.value.trim() || '';
+  const rawPassword = profilePassword?.value.trim() || '';
+  const password = rawPassword
+    ? (typeof window.hashPasswordSync === 'function' ? window.hashPasswordSync(rawPassword) : rawPassword)
+    : (currentUser.password || '');
   const area = profileArea ? profileArea.value : getUserArea(currentUser);
   const area2 = profileArea2 ? profileArea2.value.trim() : (currentUser.area2 || '');
 
@@ -1535,7 +1709,7 @@ function setupEventListeners() {
     const users = DataStore.getUsers();
     const found = users.find((u) => 
       (u.username.toLowerCase() === uName || (typeof normalizeUsername === 'function' && normalizeUsername(u.username) === normalizeUsername(uName))) && 
-      u.password === pass
+      (typeof window.verifyPassword === 'function' ? window.verifyPassword(pass, u.password) : u.password === pass)
     );
 
     if (found) {
@@ -1545,7 +1719,8 @@ function setupEventListeners() {
       if (rememberMe) {
         localStorage.setItem('kurs_sonu_remember_me', 'true');
         localStorage.setItem('kurs_sonu_remembered_username', found.username);
-        localStorage.setItem('kurs_sonu_remembered_password', pass);
+        const encodedPass = (typeof window._encodePw === 'function') ? window._encodePw(pass) : pass;
+        localStorage.setItem('kurs_sonu_remembered_password', encodedPass);
         DataStore.setActiveUser(currentUser);
         sessionStorage.removeItem('kurs_sonu_session_user');
       } else {
@@ -2188,18 +2363,25 @@ function renderAdminUsers() {
         ${escapeHtml(user.username)}
       </td>
       <td class="px-4 py-3">
-        <button
-          type="button"
-          onclick="toggleUserRowPassword(this)"
-          data-pw="${escapeHtml(user.password || '')}"
-          data-visible="false"
-          class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-amber-50 dark:bg-amber-950/40 hover:bg-amber-100 dark:hover:bg-amber-900/50 border border-amber-200 dark:border-amber-800/60 rounded-lg text-[11px] font-mono font-bold text-amber-900 dark:text-amber-200 shadow-2xs transition cursor-pointer"
-          title="Şifreyi Göster / Gizle"
-        >
-          <i data-lucide="key" class="w-3 h-3 text-amber-600 dark:text-amber-400"></i>
-          <span class="pw-text">••••••</span>
-          <i data-lucide="eye" class="w-3 h-3 text-amber-600/70 dark:text-amber-400/70"></i>
-        </button>
+        ${isPasswordHashed(user.password) ? `
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60 rounded-lg text-[11px] font-mono font-bold text-emerald-800 dark:text-emerald-300 shadow-2xs" title="Şifre SHA-256 kriptografik algoritmasıyla korunmaktadır">
+            <i data-lucide="shield-check" class="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400"></i>
+            <span>SHA-256 Korumalı</span>
+          </span>
+        ` : `
+          <button
+            type="button"
+            onclick="toggleUserRowPassword(this)"
+            data-pw="${escapeHtml(user.password || '')}"
+            data-visible="false"
+            class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-amber-50 dark:bg-amber-950/40 hover:bg-amber-100 dark:hover:bg-amber-900/50 border border-amber-200 dark:border-amber-800/60 rounded-lg text-[11px] font-mono font-bold text-amber-900 dark:text-amber-200 shadow-2xs transition cursor-pointer"
+            title="Şifreyi Göster / Gizle"
+          >
+            <i data-lucide="key" class="w-3 h-3 text-amber-600 dark:text-amber-400"></i>
+            <span class="pw-text">••••••</span>
+            <i data-lucide="eye" class="w-3 h-3 text-amber-600/70 dark:text-amber-400/70"></i>
+          </button>
+        `}
       </td>
       <td class="px-4 py-3">
         ${roleBadgeHtml}
@@ -2239,11 +2421,12 @@ window.toggleUserRowPassword = function(btn) {
   const span = btn.querySelector('.pw-text');
   if (!span) return;
   const isVisible = btn.getAttribute('data-visible') === 'true';
+  const rawPw = btn.getAttribute('data-pw') || '';
   if (isVisible) {
     span.innerText = '••••••';
     btn.setAttribute('data-visible', 'false');
   } else {
-    span.innerText = btn.getAttribute('data-pw') || '';
+    span.innerText = isPasswordHashed(rawPw) ? 'SHA-256 Korumalı' : rawPw;
     btn.setAttribute('data-visible', 'true');
   }
 };
@@ -2274,7 +2457,11 @@ function openUserModal(userToEdit = null) {
     userFormId.value = userToEdit.id;
     userFormFullName.value = userToEdit.fullName;
     userFormUsername.value = userToEdit.username;
-    userFormPassword.value = userToEdit.password;
+    userFormPassword.value = '';
+    userFormPassword.placeholder = isPasswordHashed(userToEdit.password)
+      ? 'Değiştirmek istemiyorsanız boş bırakın (Mevcut şifre korunur)'
+      : 'Yeni şifre belirleyin';
+    userFormPassword.removeAttribute('required');
     if (userFormArea) userFormArea.value = getUserArea(userToEdit);
     if (userFormArea2) userFormArea2.value = userToEdit.area2 || '';
     userFormTitle.value = userToEdit.title || '';
@@ -2292,6 +2479,8 @@ function openUserModal(userToEdit = null) {
     userModalTitle.innerText = 'Yeni Kullanıcı Hesabı Ekle';
     userForm.reset();
     userFormId.value = '';
+    userFormPassword.placeholder = 'Giriş şifresi belirleyin';
+    userFormPassword.setAttribute('required', 'required');
     if (userFormArea && userFormArea.options.length > 0) userFormArea.selectedIndex = 0;
     if (userFormArea2) userFormArea2.value = '';
     if (roleTeacher) roleTeacher.checked = true;
@@ -2332,7 +2521,7 @@ function handleSaveUser(e) {
   const area2 = isSup ? '' : (userFormArea2 ? userFormArea2.value.trim() : '');
   const title = isSup ? '' : toTurkishTitleCase(userFormTitle.value);
 
-  if (!fullName || !username || !password) {
+  if (!fullName || !username || (!id && !password)) {
     showModalAlert('Lütfen Ad Soyad, Kullanıcı Adı ve Şifre alanlarını doldurunuz.');
     return;
   }
@@ -2350,11 +2539,15 @@ function handleSaveUser(e) {
     // Güncelleme
     currentUsers = currentUsers.map(u => {
       if (u.id === id) {
+        let finalPw = u.password;
+        if (password) {
+          finalPw = isPasswordHashed(password) ? password : hashPasswordSync(password);
+        }
         const updated = {
           ...u,
           fullName,
           username,
-          password,
+          password: finalPw,
           area: isSup ? '' : (area || u.area),
           area2: isSup ? '' : cleanArea2,
           title: isSup ? '' : title,
@@ -2376,11 +2569,12 @@ function handleSaveUser(e) {
     else if (role === 'supervisor') defaultTitle = '';
     else if (role === 'department_head') defaultTitle = 'Zümre Başkanı';
 
+    const finalPassword = isPasswordHashed(password) ? password : hashPasswordSync(password);
     const newUser = {
       id: `user_${Date.now()}`,
       fullName,
       username,
-      password,
+      password: finalPassword,
       area: isSup ? '' : (area || 'Bilişim Teknolojileri'),
       area2: isSup ? '' : cleanArea2,
       title: isSup ? '' : (title || defaultTitle),
@@ -4834,7 +5028,7 @@ function renderStudentTable() {
         <div>${escapeHtml(toTurkishStudentName(s.fullName || `${s.firstName || ''} ${s.lastName || ''}`))}</div>
         <div class="text-[10px] text-slate-400 font-normal">Kayıtlı Kursiyer</div>
       </td>
-      <td class="px-4 py-3 font-mono text-slate-500">${escapeHtml(s.tcNo || '-')}</td>
+      <td class="px-4 py-3 font-mono text-slate-500">${renderMaskedTcHtml(s.tcNo)}</td>
       <td class="px-4 py-3 text-slate-600 font-mono text-xs">${escapeHtml(s.phone || '-')}</td>
       <td class="px-4 py-3">
         ${attendanceHtml}
@@ -6435,7 +6629,7 @@ function renderAttendanceTab() {
         <span class="font-bold text-xs">${escapeHtml(s.fullName)}</span>
         ${s.phone ? `<span class="text-[10px] text-slate-400 font-mono ml-1">(${escapeHtml(s.phone)})</span>` : ''}
       </td>
-      <td class="px-3 py-1.5 font-mono text-[11px] text-slate-600 dark:text-slate-400">${escapeHtml(s.tcNo || '-')}</td>
+      <td class="px-3 py-1.5 font-mono text-[11px] text-slate-600 dark:text-slate-400">${renderMaskedTcHtml(s.tcNo)}</td>
       
       <!-- KUTUCUK: Seçili Tarihteki Devamsızlık Saati Girişi (İnce & Kompakt) -->
       <td class="px-3 py-1 text-center bg-[#335C67]/5 dark:bg-[#335C67]/10 border-x border-[#335C67]/20">
@@ -6614,7 +6808,7 @@ function renderMobileQuickAttendanceCards(selectedDate, dailyHours, maxAllowed) 
         <div class="flex items-start justify-between gap-2">
           <div>
             <div class="text-xs font-extrabold text-slate-800 dark:text-slate-100">${idx + 1}. ${escapeHtml(s.fullName)}</div>
-            <div class="text-[10px] font-mono text-slate-400 mt-0.5">${escapeHtml(s.tcNo || '-')} • Top. Devamsızlık: <strong class="${isExceeded ? 'text-rose-600' : 'text-slate-600 dark:text-slate-300'}">${totalAbsent}/${maxAllowed} Sa</strong></div>
+            <div class="text-[10px] font-mono text-slate-400 mt-0.5">${maskTcNo(s.tcNo)} • Top. Devamsızlık: <strong class="${isExceeded ? 'text-rose-600' : 'text-slate-600 dark:text-slate-300'}">${totalAbsent}/${maxAllowed} Sa</strong></div>
           </div>
           <span class="px-2 py-0.5 rounded-lg text-[10px] font-black ${
             isAbsentToday
@@ -7196,7 +7390,14 @@ function renderExamsTab() {
     <tr>
       <th class="px-3 py-3 w-10">#</th>
       <th class="px-4 py-3">Kursiyer Adı Soyadı</th>
-      <th class="px-3 py-3 font-mono">T.C. Kimlik No</th>
+      <th class="px-3 py-3 font-mono">
+        <div class="inline-flex items-center gap-1.5">
+          <span>T.C. Kimlik No</span>
+          <button type="button" onclick="toggleAllTcMask()" class="p-1 hover:bg-purple-100 dark:hover:bg-purple-950/50 rounded text-purple-700 dark:text-purple-300 transition cursor-pointer" title="Tüm T.C. Kimlik Numaralarını Göster / Maskele">
+            <i data-lucide="eye" class="w-3.5 h-3.5"></i>
+          </button>
+        </div>
+      </th>
   `;
 
   for (let m = 1; m <= moduleCount; m++) {
@@ -7327,7 +7528,7 @@ function renderExamsTab() {
         <div>${escapeHtml(s.fullName)}</div>
         <div class="text-[10px] text-slate-400 font-mono">${escapeHtml(s.phone || '-')}</div>
       </td>
-      <td class="px-3 py-3 font-mono text-slate-600 dark:text-slate-400 text-xs">${escapeHtml(s.tcNo || '-')}</td>
+      <td class="px-3 py-3 font-mono text-slate-600 dark:text-slate-400 text-xs">${renderMaskedTcHtml(s.tcNo)}</td>
       ${moduleInputsHtml}
       <td class="px-3 py-3 text-center">
         <span class="exam-row-avg text-sm font-extrabold ${isHicGelmedi ? 'text-rose-600' : (isDevamsiz ? 'text-amber-700 dark:text-amber-400' : 'text-purple-900 dark:text-purple-300')}" data-std-id="${s.id}">
@@ -9829,6 +10030,7 @@ function safePrint(htmlContent, isLandscape = false, documentTitle = 'Resmi Evra
     showModalAlert('Yazdırılacak evrak içeriği bulunamadı.');
     return;
   }
+  showKvkkExportNotice('resmi evrak yazdırma');
 
   // Baskı alanı temizleyicisi
   cleanupPrintArea();
@@ -12339,6 +12541,7 @@ function exportStudentsToExcel() {
     showModalAlert('Excel kütüphanesi henüz yüklenemedi. Lütfen internet bağlantınızı kontrol ediniz.');
     return;
   }
+  showKvkkExportNotice('kursiyer listesi Excel aktarımı');
 
   if (activeCourseForDetail.students) {
     sortStudentsAlphabetically(activeCourseForDetail.students);
@@ -14307,6 +14510,7 @@ window.exportSupervisorFilteredCoursesExcel = function() {
     showModalAlert('Dışa aktarılacak filtrelenmiş kurs bulunamadı.', 'ℹ️ Veri Yok', 'info');
     return;
   }
+  showKvkkExportNotice('kurs listesi Excel aktarımı');
 
   const rows = list.map((course, idx) => {
     const st = calculateDetailedCourseStats(course);
@@ -14444,7 +14648,7 @@ function openSupervisorCourseModal(courseId, push = true) {
           <tr class="hover:bg-slate-50 dark:hover:bg-[#1a292f] transition">
             <td class="px-3 py-2 text-center text-slate-400 font-mono text-[11px]">${idx + 1}</td>
             <td class="px-3 py-2 font-semibold text-slate-800 dark:text-slate-100">${escapeHtml(std.fullName || '-')}</td>
-            <td class="px-3 py-2 text-center font-mono text-slate-500 dark:text-slate-400">${escapeHtml(std.tcNo || std.tc || '-')}</td>
+            <td class="px-3 py-2 text-center font-mono text-slate-500 dark:text-slate-400">${renderMaskedTcHtml(std.tcNo || std.tc)}</td>
             <td class="px-3 py-2 text-center font-bold ${hasScore && std.examScore >= 50 ? 'text-emerald-600' : (hasScore ? 'text-rose-600' : 'text-slate-400')}">${scoreText}</td>
             <td class="px-3 py-2 text-center font-mono ${totalAbsent > 0 ? 'text-amber-600 font-bold' : 'text-slate-400'}">${totalAbsent} Saat</td>
             <td class="px-3 py-2 text-center">

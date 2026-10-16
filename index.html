@@ -494,6 +494,17 @@
               <span>Giriş Yap</span>
               <i data-lucide="arrow-right" class="w-4 h-4"></i>
             </button>
+
+            <div class="pt-1 text-center">
+              <button
+                type="button"
+                onclick="openKvkkModal(false)"
+                class="inline-flex items-center gap-1.5 text-[11px] font-semibold text-slate-500 dark:text-slate-400 hover:text-[#335C67] dark:hover:text-[#FFF3B0] transition cursor-pointer underline underline-offset-2"
+              >
+                <i data-lucide="shield-check" class="w-3.5 h-3.5 text-teal-600 dark:text-teal-400"></i>
+                <span>6698 Sayılı KVKK Aydınlatma Metni ve Gizlilik Taahhütnamesi</span>
+              </button>
+            </div>
           </form>
 
           <!-- Hazır Deneme Hesapları -->
@@ -3129,7 +3140,17 @@
                     </span>
                   </span>
                 </th>
-                <th class="px-4 py-3">T.C. Kimlik No</th>
+                <th class="px-4 py-3">
+                  <button
+                    type="button"
+                    onclick="toggleAllTcMask()"
+                    class="inline-flex items-center gap-1 hover:text-[#335C67] dark:hover:text-[#FFF3B0] transition cursor-pointer uppercase font-semibold"
+                    title="KVKK: Tüm T.C. Kimlik Numaralarını Göster / Gizle"
+                  >
+                    <span>T.C. Kimlik No</span>
+                    <i data-lucide="eye" class="w-3.5 h-3.5 text-teal-600 dark:text-teal-400"></i>
+                  </button>
+                </th>
                 <th class="px-4 py-3">Telefon</th>
                 <th class="px-4 py-3">Devamsızlık</th>
                 <th class="px-4 py-3">Modül Sınavları & Not</th>
@@ -3259,7 +3280,17 @@
               <tr>
                 <th class="px-2.5 py-2 w-10 text-center">#</th>
                 <th class="px-3 py-2">Kursiyer Adı Soyadı</th>
-                <th class="px-3 py-2 font-mono w-28">T.C. Kimlik No</th>
+                <th class="px-3 py-2 font-mono w-32">
+                  <button
+                    type="button"
+                    onclick="toggleAllTcMask()"
+                    class="inline-flex items-center gap-1 hover:text-[#335C67] dark:hover:text-[#FFF3B0] transition cursor-pointer uppercase font-bold"
+                    title="KVKK: Tüm T.C. Kimlik Numaralarını Göster / Gizle"
+                  >
+                    <span>T.C. Kimlik No</span>
+                    <i data-lucide="eye" class="w-3.5 h-3.5 text-teal-600 dark:text-teal-400"></i>
+                  </button>
+                </th>
                 <th class="px-3 py-2 text-center min-w-[340px] bg-[#335C67]/10 dark:bg-[#335C67]/20 border-x border-[#335C67]/20">
                   <div class="font-extrabold text-[#335C67] dark:text-[#FFF3B0] flex items-center justify-center gap-1">
                     <i data-lucide="edit-3" class="w-3 h-3"></i>
@@ -5392,7 +5423,17 @@
                 <tr>
                   <th class="px-3 py-2 text-center w-10">#</th>
                   <th class="px-3 py-2">Kursiyer Adı Soyadı</th>
-                  <th class="px-3 py-2 text-center">T.C. Kimlik</th>
+                  <th class="px-3 py-2 text-center">
+                    <button
+                      type="button"
+                      onclick="toggleAllTcMask()"
+                      class="inline-flex items-center gap-1 hover:text-[#335C67] dark:hover:text-[#FFF3B0] transition cursor-pointer uppercase font-bold"
+                      title="KVKK: Tüm T.C. Kimlik Numaralarını Göster / Gizle"
+                    >
+                      <span>T.C. Kimlik</span>
+                      <i data-lucide="eye" class="w-3 h-3 text-teal-600 dark:text-teal-400"></i>
+                    </button>
+                  </th>
                   <th class="px-3 py-2 text-center">Modül / Sınav Notu</th>
                   <th class="px-3 py-2 text-center">Devamsızlık</th>
                   <th class="px-3 py-2 text-center">Sonuç</th>
@@ -5643,6 +5684,110 @@
           </button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- ================= 6698 SAYILI KVKK AYDINLATMA METNİ VE GİZLİLİK TAAHHÜTNAMESİ MODALI ================= -->
+  <div id="kvkkConsentModal" class="hidden fixed inset-0 z-[9990] flex items-center justify-center p-3 sm:p-4 bg-slate-950/80 backdrop-blur-sm">
+    <div class="bg-white dark:bg-[#152125] rounded-3xl w-full max-w-2xl shadow-2xl border border-slate-200 dark:border-[#23353c] overflow-hidden flex flex-col max-h-[90vh]">
+      
+      <!-- Modal Header -->
+      <div class="p-5 border-b border-slate-200 dark:border-[#23353c] bg-gradient-to-r from-[#335C67] to-[#284952] text-white flex items-center justify-between gap-3 shrink-0">
+        <div class="flex items-center gap-3">
+          <div class="p-2.5 rounded-2xl bg-white/15 text-[#FFF3B0] shrink-0">
+            <i data-lucide="shield-check" class="w-6 h-6"></i>
+          </div>
+          <div>
+            <h3 class="text-sm sm:text-base font-extrabold tracking-tight">
+              6698 Sayılı KVKK Aydınlatma Metni ve Veri Güvenliği Taahhütnamesi
+            </h3>
+            <p class="text-[11px] text-teal-100 mt-0.5">
+              İzmir Büyükşehir Belediyesi Meslek Fabrikası • Kişisel Verilerin Korunması
+            </p>
+          </div>
+        </div>
+        <button
+          type="button"
+          id="kvkkModalCloseTopBtn"
+          onclick="closeKvkkModal()"
+          class="p-2 text-white/70 hover:text-white rounded-xl hover:bg-white/10 transition cursor-pointer"
+          title="Kapat"
+        >
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="p-5 sm:p-6 overflow-y-auto flex-1 space-y-4 text-xs sm:text-sm text-slate-700 dark:text-slate-200 leading-relaxed">
+        <div class="p-3.5 rounded-2xl bg-teal-50/80 dark:bg-teal-950/30 border border-teal-200 dark:border-teal-800/60 text-xs text-teal-900 dark:text-teal-200">
+          <strong>1. Veri Sorumlusu ve Kapsam:</strong><br/>
+          Bu sistemde yer alan kursiyerlere ait kimlik (Ad-Soyad, T.C. Kimlik Numarası), iletişim (Telefon) ve eğitim/sınav verileri ile eğitmen/personele ait özlük ve iletişim verileri, <strong>6698 sayılı Kişisel Verilerin Korunması Kanunu (KVKK)</strong> kapsamında yalnızca İzmir Büyükşehir Belediyesi Meslek Fabrikası eğitim, yoklama, sınav ve sertifikasyon faaliyetlerinin yürütülmesi amacıyla işlenmektedir.
+        </div>
+
+        <div class="space-y-2.5 text-xs">
+          <p>
+            <strong>2. Kişisel Verilerin İşlenme İlkeleri ve Güvenliği:</strong><br/>
+            Sistemde görüntülenen kursiyer T.C. Kimlik Numaraları ekran güvenliği amacıyla varsayılan olarak maskelenmiş (<code>12******890</code>) biçimde gösterilmektedir. Tam kimlik bilgileri yalnızca yetkili eğitmen/sorumlu tarafından kontrol veya resmi evrak basımı amacıyla görüntülenebilir.
+          </p>
+          <p>
+            <strong>3. Kullanıcı Gizlilik ve Veri Güvenliği Yükümlülükleri:</strong><br/>
+            Sistemi kullanan tüm eğitmen, zümre başkanı, eğitim sorumlusu ve yöneticiler:
+          </p>
+          <ul class="list-disc pl-5 space-y-1 text-slate-600 dark:text-slate-300">
+            <li>Yetkisi dahilinde eriştiği kursiyer T.C. Kimlik No, telefon ve başarı bilgilerini <strong>yalnızca resmi eğitim ve evrak süreçleri</strong> için kullanacağını,</li>
+            <li>Bu verileri görev amacı dışında <strong>üçüncü kişilerle, kurumlarla veya sosyal medya/mesajlaşma gruplarıyla paylaşmayacağını</strong>,</li>
+            <li>Sistemden alınan Excel listelerini ve resmi evrak çıktılarını KVKK hükümlerine uygun olarak muhafaza edeceğini ve işi bittiğinde güvenli şekilde imha/arşivleme yapacağını,</li>
+            <li>Kullanıcı giriş bilgilerini ve şifresini hiçbir kişiyle paylaşmayacağını kabul ve taahhüt eder.</li>
+          </ul>
+        </div>
+
+        <div id="kvkkConsentCheckboxWrapper" class="p-3.5 rounded-2xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/60">
+          <label class="flex items-start gap-2.5 cursor-pointer select-none">
+            <input
+              type="checkbox"
+              id="kvkkConsentCheckbox"
+              class="mt-0.5 w-4 h-4 rounded border-amber-400 text-[#335C67] focus:ring-[#335C67] cursor-pointer"
+            />
+            <span class="text-xs font-bold text-amber-950 dark:text-amber-200 leading-snug">
+              6698 Sayılı KVKK Aydınlatma Metnini okudum; kursiyerlere ve personele ait kişisel verileri yalnızca resmi eğitim süreçleri kapsamında kullanacağımı ve gizliliğini koruyacağımı kabul ve taahhüt ederim.
+            </span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="p-4 px-6 border-t border-slate-200 dark:border-[#23353c] bg-slate-50 dark:bg-[#10191b] flex items-center justify-between gap-2 shrink-0">
+        <span id="kvkkApprovalStatusText" class="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
+          🔒 6698 Sayılı KVKK Uyumlu Sistem
+        </span>
+        <div class="flex items-center gap-2">
+          <button
+            type="button"
+            id="kvkkCancelLogoutBtn"
+            onclick="handleKvkkDecline()"
+            class="hidden px-4 py-2 rounded-xl text-xs font-bold text-rose-700 dark:text-rose-300 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 hover:bg-rose-100 transition cursor-pointer"
+          >
+            Reddet ve Çıkış Yap
+          </button>
+          <button
+            type="button"
+            id="kvkkCloseInfoBtn"
+            onclick="closeKvkkModal()"
+            class="px-4 py-2 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-200 bg-slate-200 dark:bg-[#23353c] hover:bg-slate-300 transition cursor-pointer"
+          >
+            Kapat
+          </button>
+          <button
+            type="button"
+            id="kvkkApproveBtn"
+            onclick="handleKvkkApprove()"
+            class="hidden px-5 py-2.5 rounded-xl text-xs font-extrabold text-white bg-[#335C67] hover:bg-[#284952] shadow-md transition cursor-pointer flex items-center gap-1.5"
+          >
+            <i data-lucide="check-circle-2" class="w-4 h-4 text-[#FFF3B0]"></i>
+            <span>Onayla ve Sisteme Devam Et</span>
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 

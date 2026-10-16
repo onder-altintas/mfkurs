@@ -36,6 +36,147 @@ const STORAGE_KEYS = {
   THEME: 'kurs_sonu_theme'
 };
 
+// =====================================================================
+// SHA-256 ŞİFRE HASHLEME & KVKK VERİ GÜVENLİĞİ KATMANI
+// =====================================================================
+function sha256Pure(ascii) {
+  function rightRotate(value, amount) {
+    return (value >>> amount) | (value << (32 - amount));
+  }
+  const mathPow = Math.pow;
+  const maxWord = mathPow(2, 32);
+  const lengthProperty = 'length';
+  let i, j;
+  let result = '';
+  const words = [];
+  const utf8 = unescape(encodeURIComponent(String(ascii)));
+  const asciiBitLength = utf8[lengthProperty] * 8;
+  let hash = sha256Pure.h = sha256Pure.h || [];
+  const k = sha256Pure.k = sha256Pure.k || [];
+  let primeCounter = k[lengthProperty];
+  const isComposite = {};
+  for (let candidate = 2; primeCounter < 64; candidate++) {
+    if (!isComposite[candidate]) {
+      for (i = 0; i < 313; i += candidate) {
+        isComposite[i] = candidate;
+      }
+      hash[primeCounter] = (mathPow(candidate, 0.5) * maxWord) | 0;
+      k[primeCounter++] = (mathPow(candidate, 1 / 3) * maxWord) | 0;
+    }
+  }
+  hash = hash.slice(0, 8);
+  let str = utf8 + '\x80';
+  while (str[lengthProperty] % 64 - 56) str += '\x00';
+  for (i = 0; i < str[lengthProperty]; i++) {
+    j = str.charCodeAt(i);
+    words[i >> 2] |= j << ((3 - i) % 4) * 8;
+  }
+  words[words[lengthProperty]] = ((asciiBitLength / maxWord) | 0);
+  words[words[lengthProperty]] = (asciiBitLength);
+  for (j = 0; j < words[lengthProperty];) {
+    const w = words.slice(j, j += 16);
+    const oldHash = hash;
+    hash = hash.slice(0, 8);
+    for (i = 0; i < 64; i++) {
+      const w15 = w[i - 15], w2 = w[i - 2];
+      const a = hash[0], e = hash[4];
+      const temp1 = hash[7]
+        + (rightRotate(e, 6) ^ rightRotate(e, 11) ^ rightRotate(e, 25))
+        + ((e & hash[5]) ^ ((~e) & hash[6]))
+        + k[i]
+        + (w[i] = (i < 16) ? w[i] : (
+            w[i - 16]
+            + (rightRotate(w15, 7) ^ rightRotate(w15, 18) ^ (w15 >>> 3))
+            + w[i - 7]
+            + (rightRotate(w2, 17) ^ rightRotate(w2, 19) ^ (w2 >>> 10))
+          ) | 0
+        );
+      const temp2 = (rightRotate(a, 2) ^ rightRotate(a, 13) ^ rightRotate(a, 22))
+        + ((a & hash[1]) ^ (a & hash[2]) ^ (hash[1] & hash[2]));
+      hash = [(temp1 + temp2) | 0].concat(hash);
+      hash[4] = (hash[4] + temp1) | 0;
+    }
+    for (i = 0; i < 8; i++) {
+      hash[i] = (hash[i] + oldHash[i]) | 0;
+    }
+  }
+  for (i = 0; i < 8; i++) {
+    for (j = 3; j + 1; j--) {
+      const b = (hash[i] >> (j * 8)) & 255;
+      result += ((b < 16) ? 0 : '') + b.toString(16);
+    }
+  }
+  return result;
+}
+
+function isPasswordHashed(pw) {
+  return typeof pw === 'string' && pw.startsWith('sha256$') && pw.length === 71;
+}
+
+function hashPasswordSync(plain) {
+  if (!plain) return '';
+  const str = String(plain).trim();
+  if (isPasswordHashed(str)) return str;
+  return 'sha256$' + sha256Pure(str);
+}
+
+function verifyPassword(inputPass, storedPass) {
+  if (!inputPass || !storedPass) return false;
+  const inp = String(inputPass).trim();
+  const sto = String(storedPass).trim();
+  if (sto === inp) return true;
+  if (sto === hashPasswordSync(inp)) return true;
+  return false;
+}
+
+window.isPasswordHashed = isPasswordHashed;
+window.hashPasswordSync = hashPasswordSync;
+window.verifyPassword = verifyPassword;
+
+// KVKK Onay Durumu Yardımcıları (avatar URL fragment + localStorage senkron)
+const KVKK_STORAGE_KEY = 'kurs_sonu_kvkk_approvals_v1';
+function _getLocalKvkkMap() {
+  try {
+    return JSON.parse(localStorage.getItem(KVKK_STORAGE_KEY) || '{}') || {};
+  } catch (e) {
+    return {};
+  }
+}
+function _setLocalKvkkApproval(username, isoDate) {
+  if (!username || !isoDate) return;
+  try {
+    const map = _getLocalKvkkMap();
+    map[String(username).toLowerCase()] = isoDate;
+    localStorage.setItem(KVKK_STORAGE_KEY, JSON.stringify(map));
+  } catch (e) {}
+}
+function _extractAvatarAndKvkk(rawAvatar, username) {
+  let cleanAvatar = rawAvatar || '';
+  let kvkkApprovedAt = null;
+  if (typeof cleanAvatar === 'string' && cleanAvatar.includes('#kvkk=')) {
+    const idx = cleanAvatar.indexOf('#kvkk=');
+    kvkkApprovedAt = decodeURIComponent(cleanAvatar.slice(idx + 6));
+    cleanAvatar = cleanAvatar.slice(0, idx);
+  }
+  if (!kvkkApprovedAt && username) {
+    const map = _getLocalKvkkMap();
+    kvkkApprovedAt = map[String(username).toLowerCase()] || null;
+  }
+  if (kvkkApprovedAt && username) {
+    _setLocalKvkkApproval(username, kvkkApprovedAt);
+  }
+  return { cleanAvatar, kvkkApprovedAt };
+}
+function _packAvatarWithKvkk(cleanAvatar, kvkkApprovedAt, username) {
+  let base = (cleanAvatar || '').split('#kvkk=')[0];
+  const approved = kvkkApprovedAt || (username ? _getLocalKvkkMap()[String(username).toLowerCase()] : null);
+  if (approved) {
+    _setLocalKvkkApproval(username, approved);
+    return `${base}#kvkk=${encodeURIComponent(approved)}`;
+  }
+  return base;
+}
+
 // Yerel depolama (localStorage) için şifre maskeleme / çözme yardımcıları (KVKK & Güvenlik)
 const _PW_SALT = 'MEFPORTAL_IZMIR_2026_KEY';
 function _encodePw(plain) {
@@ -68,11 +209,15 @@ function _decodePw(encoded) {
   }
 }
 
+window._encodePw = _encodePw;
+window._decodePw = _decodePw;
+
 function _serializeUsersForStorage(users) {
   if (!Array.isArray(users)) return '[]';
   const safeList = users.map(u => {
     if (!u) return u;
-    const copy = { ...u, _pwToken: _encodePw(u.password || '') };
+    const hashedPw = hashPasswordSync(u.password || '123');
+    const copy = { ...u, _pwToken: _encodePw(hashedPw) };
     delete copy.password;
     return copy;
   });
@@ -87,8 +232,15 @@ function _deserializeUsersFromStorage(raw) {
     if (!u) return u;
     const copy = { ...u };
     if (copy._pwToken !== undefined) {
-      copy.password = _decodePw(copy._pwToken);
+      copy.password = hashPasswordSync(_decodePw(copy._pwToken));
       delete copy._pwToken;
+    } else if (copy.password) {
+      copy.password = hashPasswordSync(copy.password);
+    }
+    const { cleanAvatar, kvkkApprovedAt } = _extractAvatarAndKvkk(copy.avatar, copy.username);
+    copy.avatar = cleanAvatar;
+    if (kvkkApprovedAt && !copy.kvkkApprovedAt) {
+      copy.kvkkApprovedAt = kvkkApprovedAt;
     }
     return copy;
   });
@@ -158,6 +310,10 @@ const DataStore = {
         users.forEach(u => {
           if (u && u.username) {
             u.id = stringToUuid(u.id || u.username);
+            u.password = hashPasswordSync(u.password || '123');
+            if (u.kvkkApprovedAt) {
+              _setLocalKvkkApproval(u.username, u.kvkkApprovedAt);
+            }
             currentUuids.add(u.id);
           }
         });
@@ -169,10 +325,12 @@ const DataStore = {
       if (client && Array.isArray(users)) {
         users.forEach(async (u) => {
           if (!u || !u.username) return;
+          const hashedPassword = hashPasswordSync(u.password || '123');
+          const packedAvatar = _packAvatarWithKvkk(u.avatar || '', u.kvkkApprovedAt, u.username);
           const userPayload = {
             id: stringToUuid(u.id || u.username),
             username: u.username,
-            password: u.password || '123',
+            password: hashedPassword,
             full_name: u.fullName || u.full_name || u.username,
             role: u.role || 'teacher',
             title: u.title || '',
@@ -180,7 +338,7 @@ const DataStore = {
             area2: u.area2 || '',
             institution: u.institution || '',
             email: u.email || '',
-            avatar: u.avatar || ''
+            avatar: packedAvatar
           };
           await client.from('users').upsert(userPayload, { onConflict: 'username' });
         });
@@ -1081,15 +1239,20 @@ const DataStore = {
         if (typeof window.onCloudSync === 'function') window.onCloudSync('templates', MemoryStore.templates);
       }
 
-      // 4. Kullanıcıları İşle (Şifreler localStorage'a maskeli/kodlu yazılır)
+      // 4. Kullanıcıları İşle (Şifreler SHA-256 ile özetlenir ve localStorage'a maskeli/kodlu yazılır)
       if (Array.isArray(users) && users.length > 0) {
         const userIdSet = new Set();
+        let needsHashUpgrade = false;
         MemoryStore.users = users.map(u => {
           if (u.id) userIdSet.add(u.id);
+          if (u.password && !isPasswordHashed(u.password)) {
+            needsHashUpgrade = true;
+          }
+          const { cleanAvatar, kvkkApprovedAt } = _extractAvatarAndKvkk(u.avatar, u.username);
           return {
             id: u.id,
             username: u.username,
-            password: u.password,
+            password: hashPasswordSync(u.password || '123'),
             fullName: u.full_name,
             role: u.role,
             title: u.title,
@@ -1097,11 +1260,15 @@ const DataStore = {
             area2: u.area2,
             institution: u.institution,
             email: u.email,
-            avatar: u.avatar
+            avatar: cleanAvatar,
+            kvkkApprovedAt: kvkkApprovedAt || null
           };
         });
         MemoryStore.knownUserIds = userIdSet;
         localStorage.setItem(STORAGE_KEYS.USERS, _serializeUsersForStorage(MemoryStore.users));
+        if (needsHashUpgrade) {
+          this.saveUsers(MemoryStore.users);
+        }
         if (typeof window.onCloudSync === 'function') window.onCloudSync('users', MemoryStore.users);
       }
 
