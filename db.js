@@ -47,7 +47,12 @@ const MemoryStore = {
   activeUser: null,
   knownCourseIds: new Set(),
   knownStudentIds: new Set(),
-  deletedStudentIds: new Set()
+  deletedStudentIds: new Set(),
+  knownUserIds: new Set(),
+  knownCenterIds: new Set(),
+  knownAreaIds: new Set(),
+  knownTemplateIds: new Set(),
+  knownTodoIds: new Set()
 };
 
 const DataStore = {
@@ -72,8 +77,31 @@ const DataStore = {
     }
   },
 
+  async deleteUser(userId) {
+    try {
+      if (!userId) return;
+      const targetId = stringToUuid(userId);
+      MemoryStore.knownUserIds.delete(targetId);
+      const client = getSupabase();
+      if (client) {
+        await client.from('users').delete().eq('id', targetId);
+      }
+    } catch (e) {
+      console.error("Kullanıcı silme hatası:", e);
+    }
+  },
+
   saveUsers(users) {
     try {
+      const currentUuids = new Set();
+      if (Array.isArray(users)) {
+        users.forEach(u => {
+          if (u && u.username) {
+            u.id = stringToUuid(u.id || u.username);
+            currentUuids.add(u.id);
+          }
+        });
+      }
       MemoryStore.users = users;
       localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(users));
 
@@ -96,6 +124,15 @@ const DataStore = {
           };
           await client.from('users').upsert(userPayload, { onConflict: 'username' });
         });
+
+        if (MemoryStore.knownUserIds && MemoryStore.knownUserIds.size > 0) {
+          MemoryStore.knownUserIds.forEach(async (oldId) => {
+            if (!currentUuids.has(oldId)) {
+              await client.from('users').delete().eq('id', oldId);
+            }
+          });
+        }
+        MemoryStore.knownUserIds = currentUuids;
       }
     } catch (e) {
       console.error("Kullanıcı kaydetme hatası:", e);
@@ -141,8 +178,31 @@ const DataStore = {
     }
   },
 
+  async deleteCenter(centerId) {
+    try {
+      if (!centerId) return;
+      const targetId = stringToUuid(centerId);
+      MemoryStore.knownCenterIds.delete(targetId);
+      const client = getSupabase();
+      if (client) {
+        await client.from('centers').delete().eq('id', targetId);
+      }
+    } catch (e) {
+      console.error("Merkez silme hatası:", e);
+    }
+  },
+
   saveCenters(centers) {
     try {
+      const currentUuids = new Set();
+      if (Array.isArray(centers)) {
+        centers.forEach(c => {
+          if (c && c.name) {
+            c.id = stringToUuid(c.id || c.name);
+            currentUuids.add(c.id);
+          }
+        });
+      }
       MemoryStore.centers = centers;
       localStorage.setItem(STORAGE_KEYS.CENTERS, JSON.stringify(centers));
 
@@ -154,6 +214,15 @@ const DataStore = {
           const storedName = c.supervisor ? `${c.name} ::: ${c.supervisor}` : c.name;
           await client.from('centers').upsert({ id, name: storedName });
         });
+
+        if (MemoryStore.knownCenterIds && MemoryStore.knownCenterIds.size > 0) {
+          MemoryStore.knownCenterIds.forEach(async (oldId) => {
+            if (!currentUuids.has(oldId)) {
+              await client.from('centers').delete().eq('id', oldId);
+            }
+          });
+        }
+        MemoryStore.knownCenterIds = currentUuids;
       }
     } catch (e) {
       console.error("Merkez kaydetme hatası:", e);
@@ -174,8 +243,33 @@ const DataStore = {
     }
   },
 
+  async deleteArea(areaId) {
+    try {
+      if (!areaId) return;
+      const targetId = stringToUuid(areaId);
+      MemoryStore.knownAreaIds.delete(targetId);
+      const client = getSupabase();
+      if (client) {
+        await client.from('areas').delete().eq('id', targetId);
+      }
+    } catch (e) {
+      console.error("Alan silme hatası:", e);
+    }
+  },
+
   saveAreas(areas) {
     try {
+      const currentUuids = new Set();
+      if (Array.isArray(areas)) {
+        areas.forEach(a => {
+          if (!a) return;
+          const name = typeof a === 'string' ? a : a.name;
+          if (!name) return;
+          const id = stringToUuid((typeof a === 'object' ? a.id : null) || name);
+          if (typeof a === 'object') a.id = id;
+          currentUuids.add(id);
+        });
+      }
       MemoryStore.areas = areas;
       localStorage.setItem(STORAGE_KEYS.AREAS, JSON.stringify(areas));
 
@@ -188,6 +282,15 @@ const DataStore = {
           const id = stringToUuid(a.id || name);
           await client.from('areas').upsert({ id, name });
         });
+
+        if (MemoryStore.knownAreaIds && MemoryStore.knownAreaIds.size > 0) {
+          MemoryStore.knownAreaIds.forEach(async (oldId) => {
+            if (!currentUuids.has(oldId)) {
+              await client.from('areas').delete().eq('id', oldId);
+            }
+          });
+        }
+        MemoryStore.knownAreaIds = currentUuids;
       }
     } catch (e) {
       console.error("Alan kaydetme hatası:", e);
@@ -215,8 +318,31 @@ const DataStore = {
     }
   },
 
+  async deleteCourseTemplate(tmplId) {
+    try {
+      if (!tmplId) return;
+      const targetId = stringToUuid(tmplId);
+      MemoryStore.knownTemplateIds.delete(targetId);
+      const client = getSupabase();
+      if (client) {
+        await client.from('course_templates').delete().eq('id', targetId);
+      }
+    } catch (e) {
+      console.error("Şablon silme hatası:", e);
+    }
+  },
+
   saveCourseTemplates(templates) {
     try {
+      const currentUuids = new Set();
+      if (Array.isArray(templates)) {
+        templates.forEach(t => {
+          if (t && t.name) {
+            t.id = stringToUuid(t.id || t.code || t.name);
+            currentUuids.add(t.id);
+          }
+        });
+      }
       const sorted = (templates || []).slice().sort((a, b) => (a.name || '').localeCompare(b.name || '', 'tr', { sensitivity: 'base' }));
       MemoryStore.templates = sorted;
       localStorage.setItem(STORAGE_KEYS.TEMPLATES, JSON.stringify(sorted));
@@ -238,6 +364,15 @@ const DataStore = {
           };
           await client.from('course_templates').upsert(payload);
         });
+
+        if (MemoryStore.knownTemplateIds && MemoryStore.knownTemplateIds.size > 0) {
+          MemoryStore.knownTemplateIds.forEach(async (oldId) => {
+            if (!currentUuids.has(oldId)) {
+              await client.from('course_templates').delete().eq('id', oldId);
+            }
+          });
+        }
+        MemoryStore.knownTemplateIds = currentUuids;
       }
     } catch (e) {
       console.error("Şablon kaydetme hatası:", e);
@@ -577,6 +712,26 @@ const DataStore = {
     };
   },
 
+  async deleteCourse(courseId) {
+    try {
+      if (!courseId) return;
+      const targetId = stringToUuid(courseId);
+      MemoryStore.knownCourseIds.delete(targetId);
+      this._activeSaveCount = (this._activeSaveCount || 0) + 1;
+      this._lastSaveTime = Date.now();
+      const client = getSupabase();
+      if (client) {
+        await client.from('students').delete().eq('course_id', targetId);
+        await client.from('courses').delete().eq('id', targetId);
+      }
+    } catch (e) {
+      console.error("Kurs silme hatası:", e);
+    } finally {
+      this._activeSaveCount = Math.max(0, (this._activeSaveCount || 1) - 1);
+      this._lastSaveTime = Date.now();
+    }
+  },
+
   // 7. GELİŞTİRİCİ TODO LİSTESİ
   getTodos() {
     try {
@@ -591,8 +746,31 @@ const DataStore = {
     }
   },
 
+  async deleteTodo(todoId) {
+    try {
+      if (!todoId) return;
+      const targetId = stringToUuid(todoId);
+      MemoryStore.knownTodoIds.delete(targetId);
+      const client = getSupabase();
+      if (client) {
+        await client.from('system_todos').delete().eq('id', targetId);
+      }
+    } catch (e) {
+      console.error("Todo silme hatası:", e);
+    }
+  },
+
   saveTodos(todos) {
     try {
+      const currentUuids = new Set();
+      if (Array.isArray(todos)) {
+        todos.forEach(t => {
+          if (t && t.text) {
+            t.id = stringToUuid(t.id || t.text);
+            currentUuids.add(t.id);
+          }
+        });
+      }
       MemoryStore.todos = todos;
       localStorage.setItem(STORAGE_KEYS.TODOS, JSON.stringify(todos));
 
@@ -609,6 +787,15 @@ const DataStore = {
           };
           await client.from('system_todos').upsert(payload);
         });
+
+        if (MemoryStore.knownTodoIds && MemoryStore.knownTodoIds.size > 0) {
+          MemoryStore.knownTodoIds.forEach(async (oldId) => {
+            if (!currentUuids.has(oldId)) {
+              await client.from('system_todos').delete().eq('id', oldId);
+            }
+          });
+        }
+        MemoryStore.knownTodoIds = currentUuids;
       }
     } catch (e) {
       console.error("Todo kaydetme hatası:", e);
@@ -663,7 +850,9 @@ const DataStore = {
       // 1. Merkezleri İşle
       if (Array.isArray(centers)) {
         const centerMap = new Map();
+        const centerIdSet = new Set();
         centers.forEach(c => {
+          if (c.id) centerIdSet.add(c.id);
           let name = c.name || '';
           let supervisor = '';
           if (name.includes(' ::: ')) {
@@ -677,6 +866,7 @@ const DataStore = {
             centerMap.set(name, { id: c.id, name, supervisor });
           }
         });
+        MemoryStore.knownCenterIds = centerIdSet;
         MemoryStore.centers = Array.from(centerMap.values());
         localStorage.setItem(STORAGE_KEYS.CENTERS, JSON.stringify(MemoryStore.centers));
         if (typeof window.onCloudSync === 'function') window.onCloudSync('centers', MemoryStore.centers);
@@ -685,12 +875,15 @@ const DataStore = {
       // 2. Alanları İşle
       if (Array.isArray(areas)) {
         const areaMap = new Map();
+        const areaIdSet = new Set();
         areas.forEach(a => {
+          if (a.id) areaIdSet.add(a.id);
           const name = typeof a === 'string' ? a.trim() : (a.name || '').trim();
           if (name && !areaMap.has(name.toLowerCase())) {
             areaMap.set(name.toLowerCase(), { id: a.id, name });
           }
         });
+        MemoryStore.knownAreaIds = areaIdSet;
         MemoryStore.areas = Array.from(areaMap.values());
         localStorage.setItem(STORAGE_KEYS.AREAS, JSON.stringify(MemoryStore.areas));
         if (typeof window.onCloudSync === 'function') window.onCloudSync('areas', MemoryStore.areas);
@@ -699,9 +892,39 @@ const DataStore = {
       // 3. Şablonları İşle
       if (Array.isArray(templates)) {
         const tmplMap = new Map();
+        const tmplIdSet = new Set();
         templates.forEach(t => {
+          if (t.id) tmplIdSet.add(t.id);
           const key = (t.code || t.name || t.id || '').trim().toLowerCase();
           if (!tmplMap.has(key)) {
+            const syllabus = Array.isArray(t.syllabus) ? t.syllabus : [];
+            let reconstructedModules = Array.isArray(t.modules) ? t.modules : [];
+            if (reconstructedModules.length === 0 && syllabus.length > 0 && syllabus.some(item => item && item.moduleNumber)) {
+              const modGroupMap = new Map();
+              syllabus.forEach(item => {
+                const mNum = Number(item.moduleNumber) || 1;
+                if (!modGroupMap.has(mNum)) {
+                  modGroupMap.set(mNum, {
+                    id: `mod_${t.id}_${mNum}`,
+                    number: mNum,
+                    name: item.moduleName || `${mNum}. Modül`,
+                    totalHours: 0,
+                    lessonHours: 0,
+                    examHours: 0,
+                    topics: []
+                  });
+                }
+                const grp = modGroupMap.get(mNum);
+                grp.totalHours++;
+                if (item.isExam) {
+                  grp.examHours++;
+                } else {
+                  grp.lessonHours++;
+                  if (item.topic) grp.topics.push(item.topic);
+                }
+              });
+              reconstructedModules = Array.from(modGroupMap.values()).sort((a, b) => a.number - b.number);
+            }
             tmplMap.set(key, {
               id: t.id,
               name: t.name,
@@ -710,10 +933,12 @@ const DataStore = {
               area: t.area,
               totalHours: t.total_hours,
               moduleCount: t.module_count,
-              syllabus: t.syllabus || []
+              modules: reconstructedModules,
+              syllabus
             });
           }
         });
+        MemoryStore.knownTemplateIds = tmplIdSet;
         MemoryStore.templates = Array.from(tmplMap.values()).sort((a, b) => (a.name || '').localeCompare(b.name || '', 'tr', { sensitivity: 'base' }));
         localStorage.setItem(STORAGE_KEYS.TEMPLATES, JSON.stringify(MemoryStore.templates));
         if (typeof window.onCloudSync === 'function') window.onCloudSync('templates', MemoryStore.templates);
@@ -721,19 +946,24 @@ const DataStore = {
 
       // 4. Kullanıcıları İşle
       if (Array.isArray(users) && users.length > 0) {
-        MemoryStore.users = users.map(u => ({
-          id: u.id,
-          username: u.username,
-          password: u.password,
-          fullName: u.full_name,
-          role: u.role,
-          title: u.title,
-          area: u.area,
-          area2: u.area2,
-          institution: u.institution,
-          email: u.email,
-          avatar: u.avatar
-        }));
+        const userIdSet = new Set();
+        MemoryStore.users = users.map(u => {
+          if (u.id) userIdSet.add(u.id);
+          return {
+            id: u.id,
+            username: u.username,
+            password: u.password,
+            fullName: u.full_name,
+            role: u.role,
+            title: u.title,
+            area: u.area,
+            area2: u.area2,
+            institution: u.institution,
+            email: u.email,
+            avatar: u.avatar
+          };
+        });
+        MemoryStore.knownUserIds = userIdSet;
         localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(MemoryStore.users));
         if (typeof window.onCloudSync === 'function') window.onCloudSync('users', MemoryStore.users);
       }
@@ -745,12 +975,17 @@ const DataStore = {
 
       // 6. Todo Listesini İşle
       if (Array.isArray(todos)) {
-        MemoryStore.todos = todos.map(t => ({
-          id: t.id,
-          text: t.title,
-          completed: t.completed,
-          createdBy: t.created_by
-        }));
+        const todoIdSet = new Set();
+        MemoryStore.todos = todos.map(t => {
+          if (t.id) todoIdSet.add(t.id);
+          return {
+            id: t.id,
+            text: t.title,
+            completed: t.completed,
+            createdBy: t.created_by
+          };
+        });
+        MemoryStore.knownTodoIds = todoIdSet;
         localStorage.setItem(STORAGE_KEYS.TODOS, JSON.stringify(MemoryStore.todos));
         if (typeof window.onCloudSync === 'function') window.onCloudSync('todos', MemoryStore.todos);
       }

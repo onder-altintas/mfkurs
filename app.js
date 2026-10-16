@@ -2226,12 +2226,12 @@ function handleSaveUser(e) {
 }
 
 window.editUserAccount = function(userId) {
-  const user = currentUsers.find(u => u.id === userId);
+  const user = currentUsers.find(u => isSameEntityId(u.id, userId));
   if (user) openUserModal(user);
 };
 
 window.toggleUserAdminRole = function(userId) {
-  const user = currentUsers.find(u => u.id === userId);
+  const user = currentUsers.find(u => isSameEntityId(u.id, userId));
   if (user) openUserModal(user);
 };
 
@@ -2240,12 +2240,12 @@ window.deleteUserAccount = async function(userId) {
     showModalAlert('Kullanıcı hesabı silme yetkisi yalnızca sistem geliştiricisine aittir.');
     return;
   }
-  if (userId === currentUser?.id) {
+  if (isSameEntityId(userId, currentUser?.id)) {
     showModalAlert('Kendi hesabınızı silemezsiniz.');
     return;
   }
 
-  const user = currentUsers.find(u => u.id === userId);
+  const user = currentUsers.find(u => isSameEntityId(u.id, userId));
   if (!user) return;
 
   const confirmed = await showModalConfirm(
@@ -2256,7 +2256,10 @@ window.deleteUserAccount = async function(userId) {
     'danger'
   );
   if (confirmed) {
-    currentUsers = currentUsers.filter(u => u.id !== userId);
+    currentUsers = currentUsers.filter(u => !isSameEntityId(u.id, userId));
+    if (typeof DataStore !== 'undefined' && typeof DataStore.deleteUser === 'function') {
+      DataStore.deleteUser(user.id || userId);
+    }
     DataStore.saveUsers(currentUsers);
     renderAdminUsers();
   }
@@ -2354,10 +2357,10 @@ function handleSaveCenter(e) {
   if (!name) return;
 
   if (id) {
-    currentCenters = currentCenters.map(c => c.id === id ? { ...c, name, supervisor } : c);
+    currentCenters = currentCenters.map(c => isSameEntityId(c.id, id) ? { ...c, name, supervisor } : c);
   } else {
     const newCenter = {
-      id: `center_${Date.now()}`,
+      id: typeof stringToUuid === 'function' ? stringToUuid(name) : `center_${Date.now()}`,
       name,
       supervisor
     };
@@ -2370,7 +2373,7 @@ function handleSaveCenter(e) {
 }
 
 window.editCenter = function(centerId) {
-  const center = currentCenters.find(c => c.id === centerId);
+  const center = currentCenters.find(c => isSameEntityId(c.id, centerId));
   if (center) openCenterModal(center);
 };
 
@@ -2381,7 +2384,10 @@ window.deleteCenter = async function(centerId) {
   }
   const confirmed = await showModalConfirm('Bu kurs merkezini silmek istediğinize emin misiniz?', '🗑️ Kurs Merkezini Sil', 'Evet, Sil', 'Vazgeç', 'danger');
   if (confirmed) {
-    currentCenters = currentCenters.filter(c => c.id !== centerId);
+    currentCenters = currentCenters.filter(c => !isSameEntityId(c.id, centerId));
+    if (typeof DataStore !== 'undefined' && typeof DataStore.deleteCenter === 'function') {
+      DataStore.deleteCenter(centerId);
+    }
     DataStore.saveCenters(currentCenters);
     renderAdminCenters();
   }
@@ -2660,7 +2666,7 @@ function handleSaveArea(e) {
 }
 
 window.editArea = function(areaId) {
-  const found = currentAreas.find(a => (typeof a === 'string' ? a : a.id) === areaId);
+  const found = currentAreas.find(a => isSameEntityId(typeof a === 'string' ? a : a.id, areaId));
   if (found) openAreaModal(found);
 };
 
@@ -2669,12 +2675,15 @@ window.deleteArea = async function(areaId) {
     showModalAlert('Kurs alanı silme yetkisi yalnızca sistem geliştiricisine aittir.');
     return;
   }
-  const found = currentAreas.find(a => (typeof a === 'string' ? a : a.id) === areaId);
+  const found = currentAreas.find(a => isSameEntityId(typeof a === 'string' ? a : a.id, areaId));
   const areaName = found ? (typeof found === 'string' ? found : found.name) : '';
 
   const confirmed = await showModalConfirm(`"${areaName || 'Bu'}" kurs alanını silmek istediğinize emin misiniz?`, '🗑️ Kurs Alanını Sil', 'Evet, Sil', 'Vazgeç', 'danger');
   if (confirmed) {
-    currentAreas = currentAreas.filter(a => (typeof a === 'string' ? a : a.id) !== areaId);
+    currentAreas = currentAreas.filter(a => !isSameEntityId(typeof a === 'string' ? a : a.id, areaId));
+    if (typeof DataStore !== 'undefined' && typeof DataStore.deleteArea === 'function') {
+      DataStore.deleteArea(areaId);
+    }
     DataStore.saveAreas(currentAreas);
     renderAdminAreas();
     populateAllAreaDropdowns();
@@ -3187,7 +3196,7 @@ function handleSaveCourseTemplate(e) {
 }
 
 window.editCourseTemplate = function(tmplId) {
-  const tmpl = currentTemplates.find(t => t.id === tmplId);
+  const tmpl = currentTemplates.find(t => isSameEntityId(t.id, tmplId));
   if (tmpl) openCourseTmplModal(tmpl);
 };
 
@@ -3198,8 +3207,11 @@ window.deleteCourseTemplate = async function(tmplId) {
   }
   const confirmed = await showModalConfirm('Bu kurs şablonunu ve müfredatını silmek istediğinize emin misiniz?', '🗑️ Müfredat Planını Sil', 'Evet, Sil', 'Vazgeç', 'danger');
   if (confirmed) {
-    currentTemplates = currentTemplates.filter(t => t.id !== tmplId);
+    currentTemplates = currentTemplates.filter(t => !isSameEntityId(t.id, tmplId));
     currentTemplates.sort((a, b) => (a.name || '').localeCompare(b.name || '', 'tr', { sensitivity: 'base' }));
+    if (typeof DataStore !== 'undefined' && typeof DataStore.deleteCourseTemplate === 'function') {
+      DataStore.deleteCourseTemplate(tmplId);
+    }
     DataStore.saveCourseTemplates(currentTemplates);
     renderAdminTemplates();
   }
@@ -3991,7 +4003,7 @@ window.editCourse = function(courseId) {
     alert('Eğitim sorumluları kurs düzenleyemez. Salt okunur denetim yetkiniz bulunmaktadır.');
     return;
   }
-  const course = currentCourses.find(c => c.id === courseId);
+  const course = currentCourses.find(c => isSameEntityId(c.id, courseId));
   if (!course) return;
   if (!isCourseRelatedToUser(course, currentUser) && !isDeveloper(currentUser)) {
     alert('Yalnızca kendinizle ilgili kursları düzenleyebilirsiniz.');
@@ -4010,7 +4022,7 @@ window.deleteCourse = async function(courseId) {
     showModalAlert('Yetki Hatası:\n\nKurs silme işlemi sistem güvenliği ve resmi evrak bütünlüğü gereği yalnızca sistem geliştiricisine aittir. Kursu tamamlamak veya arşive almak için "Kursu Kapat" özelliğini kullanabilirsiniz.', '⛔ Yetki Hatası', 'danger');
     return;
   }
-  const course = currentCourses.find(c => c.id === courseId);
+  const course = currentCourses.find(c => isSameEntityId(c.id, courseId));
   if (!course) return;
   const confirmed = await showModalConfirm(
     `"${course.name}" (${course.code || ''}) kursunu ve bağlı tüm kursiyer, devamsızlık ve not kayıtlarını silmek istediğinize emin misiniz?\n\nBu işlem geri alınamaz!`,
@@ -4020,7 +4032,10 @@ window.deleteCourse = async function(courseId) {
     'danger'
   );
   if (confirmed) {
-    currentCourses = currentCourses.filter(c => c.id !== courseId);
+    currentCourses = currentCourses.filter(c => !isSameEntityId(c.id, courseId));
+    if (typeof DataStore !== 'undefined' && typeof DataStore.deleteCourse === 'function') {
+      DataStore.deleteCourse(course.id || courseId);
+    }
     DataStore.saveCourses(currentCourses);
     renderTeacherDashboard();
   }
@@ -4033,7 +4048,7 @@ window.openCourseDetail = function(courseId, push = true) {
     openSupervisorCourseModal(courseId);
     return;
   }
-  activeCourseForDetail = currentCourses.find(c => c.id === courseId);
+  activeCourseForDetail = currentCourses.find(c => isSameEntityId(c.id, courseId));
   if (!activeCourseForDetail) return;
 
   // Standart orijinal planı güvenceye al
@@ -12706,7 +12721,7 @@ function renderDevTodos() {
 
 window.toggleDevTodo = function(id) {
   const todos = DataStore.getTodos();
-  const todo = todos.find(t => t.id === id);
+  const todo = todos.find(t => isSameEntityId(t.id, id));
   if (todo) {
     todo.completed = !todo.completed;
     if (todo.completed) {
@@ -12731,7 +12746,10 @@ window.deleteDevTodo = async function(id) {
   );
   if (!confirmed) return;
   let todos = DataStore.getTodos();
-  todos = todos.filter(t => t.id !== id);
+  todos = todos.filter(t => !isSameEntityId(t.id, id));
+  if (typeof DataStore !== 'undefined' && typeof DataStore.deleteTodo === 'function') {
+    DataStore.deleteTodo(id);
+  }
   DataStore.saveTodos(todos);
   renderDevTodos();
 };
@@ -12765,7 +12783,7 @@ window.saveEditDevTodo = function(id) {
   }
 
   const todos = DataStore.getTodos();
-  const todo = todos.find(t => t.id === id);
+  const todo = todos.find(t => isSameEntityId(t.id, id));
   if (todo) {
     todo.text = newText;
     if (prioritySelect) todo.priority = prioritySelect.value;
