@@ -9982,14 +9982,14 @@ window.openSaveOpeningDocumentsModal = function() {
   if (badge) badge.textContent = `Kurs No: ${courseNumber}`;
 
   const sub = document.getElementById('saveOpeningCourseSubTitle');
-  if (sub) sub.innerHTML = `<strong>${escapeHtml(courseName)}</strong> &bull; Kurs açılış evrakları her zaman erişilebilir ve indirilebilir durumdadır.`;
+  if (sub) sub.innerHTML = `<strong>${escapeHtml(courseName)}</strong> &bull; Kurs açılış evraklarını önizleyebilir veya yazdırabilirsiniz.`;
 
   const container = document.getElementById('saveOpeningDocumentsList');
   if (container) {
     const docs = [
-      { id: 'plan', name: 'Kurs Planı', desc: '1. Belge &bull; Yatay A4 &bull; Modüler Kurs Çerçeve ve Çalışma Planı', icon: 'file-spreadsheet', color: 'text-teal-600 dark:text-teal-400', printFn: 'triggerPrintKursPlani()' },
-      { id: 'imza', name: 'İmza Listesi', desc: '2. Belge &bull; Yatay A4 &bull; Günlük Ders Katılım İmza Çizelgesi', icon: 'pen-tool', color: 'text-purple-600 dark:text-purple-400', printFn: 'triggerPrintImzaListesi()' },
-      { id: 'sinav', name: 'Sınav Katılım Belgesi', desc: '3. Belge &bull; Dikey A4 &bull; Kursiyer Sınav Katılım İmzaları ve Tutanağı', icon: 'clipboard-check', color: 'text-rose-600 dark:text-rose-400', printFn: 'triggerPrintSinavTutanagi()' }
+      { id: 'plan', name: 'Kurs Planı', desc: '1. Belge &bull; Yatay A4 &bull; Modüler Kurs Çerçeve ve Çalışma Planı', icon: 'file-spreadsheet', color: 'text-teal-600 dark:text-teal-400', previewFn: 'openKursPlaniPreview()', printFn: 'triggerPrintKursPlani()' },
+      { id: 'imza', name: 'İmza Listesi', desc: '2. Belge &bull; Yatay A4 &bull; Günlük Ders Katılım İmza Çizelgesi', icon: 'pen-tool', color: 'text-purple-600 dark:text-purple-400', previewFn: 'openImzaListesiPreview()', printFn: 'triggerPrintImzaListesi()' },
+      { id: 'sinav', name: 'Sınav Katılım Belgesi', desc: '3. Belge &bull; Dikey A4 &bull; Kursiyer Sınav Katılım İmzaları ve Tutanağı', icon: 'clipboard-check', color: 'text-rose-600 dark:text-rose-400', previewFn: 'openSinavTutanagiPreview()', printFn: 'triggerPrintSinavTutanagi()' }
     ];
 
     container.innerHTML = docs.map(d => {
@@ -10003,7 +10003,6 @@ window.openSaveOpeningDocumentsModal = function() {
             <div>
               <div class="font-bold text-xs sm:text-sm text-slate-800 dark:text-slate-100 flex items-center gap-1.5 flex-wrap">
                 <span>${escapeHtml(fileName)}</span>
-                <span class="text-[10px] px-1.5 py-0.2 bg-slate-100 dark:bg-[#10191b] text-slate-500 rounded font-mono">.pdf</span>
               </div>
               <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">${d.desc}</div>
             </div>
@@ -10011,21 +10010,21 @@ window.openSaveOpeningDocumentsModal = function() {
           <div class="flex items-center gap-2 self-end sm:self-auto shrink-0">
             <button
               type="button"
-              onclick="${d.printFn}"
-              class="flex items-center gap-1 px-3 py-1.5 bg-teal-700 hover:bg-teal-800 text-white rounded-lg text-xs font-semibold shadow-2xs cursor-pointer transition"
-              title="PDF Olarak Kaydet / Yazdır"
+              onclick="${d.previewFn}"
+              class="flex items-center gap-1 px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-[#10191b] dark:hover:bg-[#19272c] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-[#2b3e45] rounded-lg text-xs font-semibold cursor-pointer transition"
+              title="Belgeyi Önizle"
             >
-              <i data-lucide="printer" class="w-3.5 h-3.5 text-[#FFF3B0]"></i>
-              <span>PDF Kaydet</span>
+              <i data-lucide="eye" class="w-3.5 h-3.5 text-teal-600 dark:text-teal-400"></i>
+              <span>Önizle</span>
             </button>
             <button
               type="button"
-              onclick="downloadSingleDocument('${escapeHtml(d.name)}')"
-              class="flex items-center gap-1 px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-[#10191b] dark:hover:bg-[#19272c] text-rose-700 dark:text-rose-300 border border-slate-200 dark:border-[#2b3e45] rounded-lg text-xs font-semibold cursor-pointer transition"
-              title="PDF Olarak İndir"
+              onclick="${d.printFn}"
+              class="flex items-center gap-1 px-3 py-1.5 bg-teal-700 hover:bg-teal-800 text-white rounded-lg text-xs font-semibold shadow-2xs cursor-pointer transition"
+              title="Yazdır"
             >
-              <i data-lucide="file-down" class="w-3.5 h-3.5 text-rose-600 dark:text-rose-400"></i>
-              <span>PDF İndir</span>
+              <i data-lucide="printer" class="w-3.5 h-3.5 text-[#FFF3B0]"></i>
+              <span>Yazdır</span>
             </button>
           </div>
         </div>
@@ -10105,7 +10104,7 @@ window.openSaveAllDocumentsModal = function() {
 
   // Kurs kapatılmamışsa kurs sonu evrakları açılamaz
   if (activeCourseForDetail.status !== 'completed' && !isDeveloper(currentUser)) {
-    showModalAlert('⚠️ DİKKAT: Kurs Henüz Kapatılmamıştır!\n\nResmi mevzuat gereği kurs kapatılmadan önce kurs sonu resmi evrakları (Kursiyer Karar Durumu, Yoklama Defteri ve Modül Değerlendirme Çizelgesi) hazırlanamaz ve indirilemez.\n\nLütfen önce "Kursu Kapat" butonunu kullanarak kursu tamamlayınız.');
+    showModalAlert('⚠️ DİKKAT: Kurs Henüz Kapatılmamıştır!\n\nResmi mevzuat gereği kurs kapatılmadan önce kurs sonu resmi evrakları (Kursiyer Karar Durumu, Yoklama Defteri ve Modül Değerlendirme Çizelgesi) hazırlanamaz.\n\nLütfen önce "Kursu Kapat" butonunu kullanarak kursu tamamlayınız.');
     return;
   }
 
@@ -10117,14 +10116,14 @@ window.openSaveAllDocumentsModal = function() {
   if (badge) badge.textContent = `Kurs No: ${courseNumber}`;
 
   const sub = document.getElementById('saveAllCourseSubTitle');
-  if (sub) sub.innerHTML = `<strong>${escapeHtml(courseName)}</strong> &bull; Kurs sonu resmi evrakları kendi belge isimleri ve kurs no (${escapeHtml(courseNumber)}) ile kaydedilir.`;
+  if (sub) sub.innerHTML = `<strong>${escapeHtml(courseName)}</strong> &bull; Kurs sonu resmi evraklarını önizleyebilir veya yazdırabilirsiniz.`;
 
   const container = document.getElementById('saveAllDocumentsList');
   if (container) {
     const docs = [
-      { id: 'karar', name: 'Kursiyer Karar Durumu', desc: '1. Belge &bull; Dikey A4 &bull; Resmi Başarı ve Karar Tutanağı', icon: 'file-text', color: 'text-[#335C67] dark:text-[#FFF3B0]', printFn: 'triggerPrintKararDurumu()' },
-      { id: 'defter', name: 'Yoklama ve Ders Defteri', desc: '2. Belge &bull; Dikey A4 &bull; Kapak, Yoklama ve Günlük Ders Sayfaları', icon: 'book-open', color: 'text-emerald-600 dark:text-emerald-400', printFn: 'triggerPrintDefter()' },
-      { id: 'not', name: 'Modül Değerlendirme Çizelgesi', desc: '3. Belge &bull; Yatay A4 &bull; Modül Sınav Notları ve Başarı Durumu', icon: 'graduation-cap', color: 'text-indigo-600 dark:text-indigo-400', printFn: 'triggerPrintNotCizelgesi()' }
+      { id: 'karar', name: 'Kursiyer Karar Durumu', desc: '1. Belge &bull; Dikey A4 &bull; Resmi Başarı ve Karar Tutanağı', icon: 'file-text', color: 'text-[#335C67] dark:text-[#FFF3B0]', previewFn: 'openKararDurumuPreview()', printFn: 'triggerPrintKararDurumu()' },
+      { id: 'defter', name: 'Yoklama ve Ders Defteri', desc: '2. Belge &bull; Dikey A4 &bull; Kapak, Yoklama ve Günlük Ders Sayfaları', icon: 'book-open', color: 'text-emerald-600 dark:text-emerald-400', previewFn: 'openDefterPreview()', printFn: 'triggerPrintDefter()' },
+      { id: 'not', name: 'Modül Değerlendirme Çizelgesi', desc: '3. Belge &bull; Yatay A4 &bull; Modül Sınav Notları ve Başarı Durumu', icon: 'graduation-cap', color: 'text-indigo-600 dark:text-indigo-400', previewFn: 'openNotCizelgesiPreview()', printFn: 'triggerPrintNotCizelgesi()' }
     ];
 
     container.innerHTML = docs.map(d => {
@@ -10138,7 +10137,6 @@ window.openSaveAllDocumentsModal = function() {
             <div>
               <div class="font-bold text-xs sm:text-sm text-slate-800 dark:text-slate-100 flex items-center gap-1.5 flex-wrap">
                 <span>${escapeHtml(fileName)}</span>
-                <span class="text-[10px] px-1.5 py-0.2 bg-slate-100 dark:bg-[#10191b] text-slate-500 rounded font-mono">.pdf</span>
               </div>
               <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">${d.desc}</div>
             </div>
@@ -10146,21 +10144,21 @@ window.openSaveAllDocumentsModal = function() {
           <div class="flex items-center gap-2 self-end sm:self-auto shrink-0">
             <button
               type="button"
-              onclick="${d.printFn}"
-              class="flex items-center gap-1 px-3 py-1.5 bg-[#335C67] hover:bg-[#284952] text-white rounded-lg text-xs font-semibold shadow-2xs cursor-pointer transition"
-              title="PDF Olarak Kaydet / Yazdır"
+              onclick="${d.previewFn}"
+              class="flex items-center gap-1 px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-[#10191b] dark:hover:bg-[#19272c] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-[#2b3e45] rounded-lg text-xs font-semibold cursor-pointer transition"
+              title="Belgeyi Önizle"
             >
-              <i data-lucide="printer" class="w-3.5 h-3.5 text-[#FFF3B0]"></i>
-              <span>PDF Kaydet</span>
+              <i data-lucide="eye" class="w-3.5 h-3.5 text-[#335C67] dark:text-[#FFF3B0]"></i>
+              <span>Önizle</span>
             </button>
             <button
               type="button"
-              onclick="downloadSingleDocument('${escapeHtml(d.name)}')"
-              class="flex items-center gap-1 px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-[#10191b] dark:hover:bg-[#19272c] text-rose-700 dark:text-rose-300 border border-slate-200 dark:border-[#2b3e45] rounded-lg text-xs font-semibold cursor-pointer transition"
-              title="PDF Olarak İndir"
+              onclick="${d.printFn}"
+              class="flex items-center gap-1 px-3 py-1.5 bg-[#335C67] hover:bg-[#284952] text-white rounded-lg text-xs font-semibold shadow-2xs cursor-pointer transition"
+              title="Yazdır"
             >
-              <i data-lucide="file-down" class="w-3.5 h-3.5 text-rose-600 dark:text-rose-400"></i>
-              <span>PDF İndir</span>
+              <i data-lucide="printer" class="w-3.5 h-3.5 text-[#FFF3B0]"></i>
+              <span>Yazdır</span>
             </button>
           </div>
         </div>
