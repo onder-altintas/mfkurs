@@ -742,18 +742,29 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
-// Firebase Gerçek Zamanlı Bulut Senkronizasyon Olayı
+function isSameEntityId(id1, id2) {
+  if (!id1 || !id2) return false;
+  const s1 = String(id1).trim();
+  const s2 = String(id2).trim();
+  if (s1 === s2) return true;
+  if (typeof stringToUuid === 'function') {
+    return stringToUuid(s1) === stringToUuid(s2);
+  }
+  return false;
+}
+
+// Gerçek Zamanlı Bulut Senkronizasyon Olayı
 window.onCloudSync = function(type, data) {
   console.log(`[CloudSync] ${type} buluttan güncellendi:`, data ? (data.length || 'nesne') : 0);
   
   if (type === 'courses') {
     currentCourses = data;
     if (activeCourseForDetail) {
-      const refreshed = currentCourses.find(c => c.id === activeCourseForDetail.id);
+      const refreshed = currentCourses.find(c => isSameEntityId(c.id, activeCourseForDetail.id));
       if (refreshed) {
         activeCourseForDetail = refreshed;
-        if (typeof renderStudentsTable === 'function' && courseDetailView && !courseDetailView.classList.contains('hidden')) {
-          renderStudentsTable();
+        if (typeof renderStudentTable === 'function' && typeof detailModal !== 'undefined' && detailModal && !detailModal.classList.contains('hidden')) {
+          renderStudentTable();
           if (typeof updateDetailHeaderStats === 'function') updateDetailHeaderStats();
         }
       }
@@ -5106,7 +5117,7 @@ function handleAddStudent(e) {
 
   // Aynı İsim ve TC Kimlik Kontrolü (Mükerrer Kaydı Engelleme)
   const existingSameName = (activeCourseForDetail.students || []).find(s => {
-    if (editId && s.id === editId) return false;
+    if (editId && isSameEntityId(s.id, editId)) return false;
     const existingFull = (s.fullName || `${s.firstName || ''} ${s.lastName || ''}`).trim().toLocaleLowerCase('tr-TR');
     return existingFull === fullName.trim().toLocaleLowerCase('tr-TR');
   });
@@ -5118,7 +5129,7 @@ function handleAddStudent(e) {
 
   if (tcNo) {
     const existingSameTc = (activeCourseForDetail.students || []).find(s => {
-      if (editId && s.id === editId) return false;
+      if (editId && isSameEntityId(s.id, editId)) return false;
       return s.tcNo && s.tcNo.trim() === tcNo.trim();
     });
 
@@ -5130,7 +5141,7 @@ function handleAddStudent(e) {
 
   if (editId) {
     // Kursiyer Güncelleme
-    const existing = (activeCourseForDetail.students || []).find(s => s.id === editId);
+    const existing = (activeCourseForDetail.students || []).find(s => isSameEntityId(s.id, editId));
     if (existing) {
       existing.firstName = firstName;
       existing.lastName = lastName;
@@ -5146,8 +5157,9 @@ function handleAddStudent(e) {
       initialModuleScores[m] = null;
     }
 
+    const rawNewId = `std_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
     const newStudent = {
-      id: `std_${Date.now()}`,
+      id: typeof stringToUuid === 'function' ? stringToUuid(rawNewId) : rawNewId,
       firstName,
       lastName,
       fullName,
@@ -5169,7 +5181,7 @@ function handleAddStudent(e) {
   // Kursiyerleri alfabetik sırala (A-Z)
   sortStudentsAlphabetically(activeCourseForDetail.students);
 
-  currentCourses = currentCourses.map(c => c.id === activeCourseForDetail.id ? activeCourseForDetail : c);
+  currentCourses = currentCourses.map(c => isSameEntityId(c.id, activeCourseForDetail.id) ? activeCourseForDetail : c);
   DataStore.saveCourses(currentCourses);
 
   const stdEditId = document.getElementById('stdEditId');
@@ -5215,7 +5227,7 @@ window.editStudent = function(studentId) {
     alert('Bu kurs kapatılmıştır. Kapatılmış kurslarda kursiyer bilgileri düzenlenemez.');
     return;
   }
-  const std = activeCourseForDetail.students?.find(s => s.id === studentId);
+  const std = activeCourseForDetail.students?.find(s => isSameEntityId(s.id, studentId));
   if (!std) return;
 
   const stdEditId = document.getElementById('stdEditId');
@@ -5247,11 +5259,19 @@ window.deleteStudent = async function(studentId) {
   }
   const confirmed = await showModalConfirm('Bu kursiyeri silmek istediğinize emin misiniz?', '🗑️ Kursiyeri Sil', 'Evet, Sil', 'Vazgeç', 'danger');
   if (confirmed) {
-    activeCourseForDetail.students = activeCourseForDetail.students.filter(s => s.id !== studentId);
-    currentCourses = currentCourses.map(c => c.id === activeCourseForDetail.id ? activeCourseForDetail : c);
+    if (!activeCourseForDetail) return;
+    activeCourseForDetail.students = (activeCourseForDetail.students || []).filter(s => !isSameEntityId(s.id, studentId));
+    currentCourses = currentCourses.map(c => isSameEntityId(c.id, activeCourseForDetail.id) ? activeCourseForDetail : c);
+    if (typeof DataStore !== 'undefined' && typeof DataStore.deleteStudent === 'function') {
+      DataStore.deleteStudent(activeCourseForDetail.id, studentId);
+    }
     DataStore.saveCourses(currentCourses);
     renderStudentTable();
+    if (typeof renderAttendanceTab === 'function') renderAttendanceTab();
+    if (typeof renderExamsTab === 'function') renderExamsTab();
+    if (typeof renderDocumentsTab === 'function') renderDocumentsTab();
     renderTeacherDashboard();
+    if (typeof showAutoSaveToast === 'function') showAutoSaveToast('Kursiyer silindi');
   }
 };
 
@@ -5444,8 +5464,9 @@ function handleSaveBulkStudents() {
       initialModuleScores[m] = null;
     }
 
+    const rawBulkId = `std_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
     const newStudent = {
-      id: `std_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`,
+      id: typeof stringToUuid === 'function' ? stringToUuid(rawBulkId) : rawBulkId,
       firstName: s.firstName,
       lastName: s.lastName,
       fullName: s.fullName,
@@ -5472,7 +5493,7 @@ function handleSaveBulkStudents() {
   // Kursiyerleri alfabetik sırala (A-Z)
   sortStudentsAlphabetically(activeCourseForDetail.students);
 
-  currentCourses = currentCourses.map(c => c.id === activeCourseForDetail.id ? activeCourseForDetail : c);
+  currentCourses = currentCourses.map(c => isSameEntityId(c.id, activeCourseForDetail.id) ? activeCourseForDetail : c);
   DataStore.saveCourses(currentCourses);
 
   // Formu temizle ve kapat
@@ -6194,7 +6215,7 @@ window.setStudentDateAbsenceHours = function(studentId, hours, shouldRefresh = t
     alert('Bu kurs kapatılmıştır. Kapatılmış kurslarda devamsızlık girişi veya düzenlemesi yapılamaz.');
     return;
   }
-  const std = activeCourseForDetail.students.find(s => s.id === studentId);
+  const std = activeCourseForDetail.students.find(s => isSameEntityId(s.id, studentId));
   if (!std) return;
 
   const selectedDate = currentCourseLessonDates[currentAttendanceDateIndex];
@@ -6257,7 +6278,7 @@ window.setStudentDateAbsenceHours = function(studentId, hours, shouldRefresh = t
   }
 
   // Kaydet
-  currentCourses = currentCourses.map(c => c.id === activeCourseForDetail.id ? activeCourseForDetail : c);
+  currentCourses = currentCourses.map(c => isSameEntityId(c.id, activeCourseForDetail.id) ? activeCourseForDetail : c);
   DataStore.saveCourses(currentCourses);
 
   if (shouldRefresh) {
@@ -6275,7 +6296,7 @@ window.markStudentAbsentFromDateOnwards = async function(studentId) {
     showModalAlert('Bu kurs kapatılmıştır. Kapatılmış kurslarda devamsızlık girişi yapılamaz.');
     return;
   }
-  const std = activeCourseForDetail.students?.find(s => s.id === studentId);
+  const std = activeCourseForDetail.students?.find(s => isSameEntityId(s.id, studentId));
   if (!std) return;
 
   if (currentAttendanceDateIndex < 0 || currentAttendanceDateIndex >= currentCourseLessonDates.length) {
@@ -6363,7 +6384,7 @@ window.markStudentAbsentFromDateOnwards = async function(studentId) {
   }
 
   // Kaydet
-  currentCourses = currentCourses.map(c => c.id === activeCourseForDetail.id ? activeCourseForDetail : c);
+  currentCourses = currentCourses.map(c => isSameEntityId(c.id, activeCourseForDetail.id) ? activeCourseForDetail : c);
   DataStore.saveCourses(currentCourses);
 
   renderAttendanceTab();
@@ -6380,7 +6401,7 @@ window.markStudentNeverAttended = async function(studentId) {
     showModalAlert('Bu kurs kapatılmıştır. Kapatılmış kurslarda devamsızlık durumu değiştirilemez.');
     return;
   }
-  const std = (activeCourseForDetail.students || []).find(s => s.id === studentId);
+  const std = (activeCourseForDetail.students || []).find(s => isSameEntityId(s.id, studentId));
   if (!std) return;
 
   const totalHours = Number(activeCourseForDetail.totalHours) || 0;
@@ -13832,12 +13853,12 @@ function startAutoDataRefresh() {
     }
 
     // 3. Kurs Detay Ekranı Açıksa
-    if (activeCourseForDetail && typeof courseDetailView !== 'undefined' && courseDetailView && !courseDetailView.classList.contains('hidden')) {
-      const refreshed = currentCourses.find(c => c.id === activeCourseForDetail.id);
+    if (activeCourseForDetail && typeof detailModal !== 'undefined' && detailModal && !detailModal.classList.contains('hidden')) {
+      const refreshed = currentCourses.find(c => isSameEntityId(c.id, activeCourseForDetail.id));
       if (refreshed) {
         activeCourseForDetail = refreshed;
         if (!isUserTyping) {
-          if (typeof renderStudentsTable === 'function') renderStudentsTable();
+          if (typeof renderStudentTable === 'function') renderStudentTable();
           if (typeof updateDetailHeaderStats === 'function') updateDetailHeaderStats();
         }
       }

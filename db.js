@@ -23,6 +23,8 @@ function stringToUuid(str) {
   return `${fullHex.slice(0, 8)}-${fullHex.slice(8, 12)}-4${fullHex.slice(13, 16)}-a${fullHex.slice(17, 20)}-${fullHex.slice(20, 32)}`;
 }
 
+window.stringToUuid = stringToUuid;
+
 const STORAGE_KEYS = {
   COURSES: 'kurs_sonu_courses_v8',
   USERS: 'kurs_sonu_users_v4',
@@ -43,12 +45,16 @@ const MemoryStore = {
   users: [],
   todos: [],
   activeUser: null,
-  knownCourseIds: new Set()
+  knownCourseIds: new Set(),
+  knownStudentIds: new Set(),
+  deletedStudentIds: new Set()
 };
 
 const DataStore = {
   _cloudInitialized: false,
   _realtimeSubscribed: false,
+  _activeSaveCount: 0,
+  _lastSaveTime: 0,
 
   // 1. KULLANICILAR
   getUsers() {
@@ -242,20 +248,78 @@ const DataStore = {
   getCourses() {
     try {
       const raw = localStorage.getItem(STORAGE_KEYS.COURSES);
+      let list = [];
       if (raw) {
         const parsed = JSON.parse(raw);
         if (Array.isArray(parsed)) {
-          return parsed.map(c => this._normalizeCourse(c));
+          list = parsed.map(c => this._normalizeCourse(c));
         }
+      } else {
+        list = (MemoryStore.courses || []).map(c => this._normalizeCourse(c));
       }
-      return (MemoryStore.courses || []).map(c => this._normalizeCourse(c));
+      list.forEach(c => {
+        if (c && c.id) MemoryStore.knownCourseIds.add(c.id);
+        if (c && Array.isArray(c.students)) {
+          c.students.forEach(s => {
+            if (s && s.id) MemoryStore.knownStudentIds.add(s.id);
+          });
+        }
+      });
+      return list;
     } catch (e) {
       return [];
     }
   },
 
+  async deleteStudent(courseId, studentId) {
+    try {
+      if (!studentId) return;
+      const targetStudentUuid = stringToUuid(studentId);
+      const rawStudentId = String(studentId).trim();
+      MemoryStore.deletedStudentIds.add(targetStudentUuid);
+      MemoryStore.deletedStudentIds.add(rawStudentId);
+      if (MemoryStore.knownStudentIds) {
+        MemoryStore.knownStudentIds.delete(targetStudentUuid);
+        MemoryStore.knownStudentIds.delete(rawStudentId);
+      }
+
+      this._activeSaveCount = (this._activeSaveCount || 0) + 1;
+      this._lastSaveTime = Date.now();
+
+      const client = getSupabase();
+      if (client) {
+        const { error } = await client.from('students').delete().eq('id', targetStudentUuid);
+        if (error) {
+          console.error("Supabase kursiyer silme hatası:", error);
+        }
+      }
+    } catch (e) {
+      console.error("Kursiyer silme hatası:", e);
+    } finally {
+      this._activeSaveCount = Math.max(0, (this._activeSaveCount || 1) - 1);
+      this._lastSaveTime = Date.now();
+    }
+  },
+
   saveCourses(courses) {
     try {
+      if (Array.isArray(courses)) {
+        courses.forEach(c => {
+          if (!c) return;
+          const courseId = stringToUuid(c.id || c.code || c.name);
+          c.id = courseId;
+          if (Array.isArray(c.students)) {
+            c.students.forEach(s => {
+              if (!s) return;
+              const fullName = s.fullName || `${s.firstName || ''} ${s.lastName || ''}`.trim() || 'İsimsiz Kursiyer';
+              const studentId = stringToUuid(s.id || (courseId + '_' + (s.tcNo || fullName)));
+              s.id = studentId;
+              MemoryStore.deletedStudentIds.delete(studentId);
+            });
+          }
+        });
+      }
+
       MemoryStore.courses = courses;
       localStorage.setItem(STORAGE_KEYS.COURSES, JSON.stringify(courses));
 
@@ -263,106 +327,156 @@ const DataStore = {
       if (!client || !Array.isArray(courses)) return;
 
       const currentUuids = new Set();
+      const currentStudentUuids = new Set();
 
-      courses.forEach(async (c) => {
-        if (!c || !c.name) return;
-        const courseId = stringToUuid(c.id || c.code || c.name);
-        currentUuids.add(courseId);
+      this._activeSaveCount = (this._activeSaveCount || 0) + 1;
+      this._lastSaveTime = Date.now();
 
-        const studentAbsencesMap = {};
-        if (Array.isArray(c.students)) {
-          c.students.forEach(s => {
-            if (s && s.id && Array.isArray(s.dailyAbsences) && s.dailyAbsences.length > 0) {
-              studentAbsencesMap[s.id] = s.dailyAbsences;
+      (async () => {
+        try {
+          await Promise.all(courses.map(async (c) => {
+            if (!c || !c.name) return;
+            const courseId = stringToUuid(c.id || c.code || c.name);
+            c.id = courseId;
+            currentUuids.add(courseId);
+
+            const studentAbsencesMap = {};
+            if (Array.isArray(c.students)) {
+              c.students.forEach(s => {
+                if (!s) return;
+                const fullName = s.fullName || `${s.firstName || ''} ${s.lastName || ''}`.trim() || 'İsimsiz Kursiyer';
+                const studentId = stringToUuid(s.id || (courseId + '_' + (s.tcNo || fullName)));
+                s.id = studentId;
+                currentStudentUuids.add(studentId);
+                if (Array.isArray(s.dailyAbsences) && s.dailyAbsences.length > 0) {
+                  studentAbsencesMap[studentId] = s.dailyAbsences;
+                }
+              });
             }
-          });
-        }
 
-        const lessonDaysPayload = {
-          days: c.days || [],
-          extra: {
-            modules: c.modules || [],
-            moduleCount: c.moduleCount || 1,
-            planSettings: c.planSettings || null,
-            offDays: c.offDays || [],
-            startTime: c.startTime || '',
-            endTime: c.endTime || '',
-            supervisor: c.supervisor || '',
-            closedAt: c.closedAt || null,
-            closedBy: c.closedBy || null,
-            baseSyllabus: c.baseSyllabus || null,
-            studentAbsences: studentAbsencesMap
-          }
-        };
-
-        const coursePayload = {
-          id: courseId,
-          name: c.name,
-          code: c.code || '',
-          instructor_username: c.instructorUsername || c.instructor || '',
-          instructor_name: c.instructor || c.instructorName || '',
-          center_name: c.center || c.center_name || '',
-          classroom: c.classroom || '',
-          area: c.area || '',
-          status: c.status || 'active',
-          start_date: c.startDate || null,
-          end_date: c.endDate || null,
-          total_hours: Number(c.totalHours || 120),
-          daily_hours: Number(c.dailyHours || 4),
-          lesson_days: lessonDaysPayload,
-          document_type: c.documentType || 'Sertifika',
-          syllabus: c.syllabus || []
-        };
-
-        const { data: savedCourse, error: cErr } = await client
-          .from('courses')
-          .upsert(coursePayload)
-          .select()
-          .single();
-
-        if (cErr) {
-          console.error("Supabase kurs kayıt hatası:", cErr);
-          return;
-        }
-
-        // İlişkisel Kursiyerleri toplu (batch) olarak students tablosuna kaydet (20x hızlanma)
-        if (savedCourse && Array.isArray(c.students) && c.students.length > 0) {
-          const studentPayloads = c.students.map(s => {
-            const studentId = stringToUuid(s.id || (courseId + '_' + (s.tcNo || s.fullName)));
-            const fullName = s.fullName || `${s.firstName || ''} ${s.lastName || ''}`.trim() || 'İsimsiz Kursiyer';
-            const parts = fullName.split(' ');
-            const lastName = s.lastName || (parts.length > 1 ? parts[parts.length - 1] : '');
-            const firstName = s.firstName || (parts.length > 1 ? parts.slice(0, -1).join(' ') : fullName);
-
-            return {
-              id: studentId,
-              course_id: courseId,
-              first_name: firstName,
-              last_name: lastName,
-              full_name: fullName,
-              tc_no: s.tcNo || '',
-              phone: s.phone || '',
-              attendance: s.attendance || 'Devamlı',
-              result: s.result || '',
-              absent_hours: Number(s.absentHours || 0),
-              module_scores: s.moduleScores || {},
-              note: s.attendanceNote || ''
+            const lessonDaysPayload = {
+              days: c.days || [],
+              extra: {
+                modules: c.modules || [],
+                moduleCount: c.moduleCount || 1,
+                planSettings: c.planSettings || null,
+                offDays: c.offDays || [],
+                startTime: c.startTime || '',
+                endTime: c.endTime || '',
+                supervisor: c.supervisor || '',
+                closedAt: c.closedAt || null,
+                closedBy: c.closedBy || null,
+                baseSyllabus: c.baseSyllabus || null,
+                studentAbsences: studentAbsencesMap
+              }
             };
-          });
 
-          await client.from('students').upsert(studentPayloads);
-        }
-      });
+            const coursePayload = {
+              id: courseId,
+              name: c.name,
+              code: c.code || '',
+              instructor_username: c.instructorUsername || c.instructor || '',
+              instructor_name: c.instructor || c.instructorName || '',
+              center_name: c.center || c.center_name || '',
+              classroom: c.classroom || '',
+              area: c.area || '',
+              status: c.status || 'active',
+              start_date: c.startDate || null,
+              end_date: c.endDate || null,
+              total_hours: Number(c.totalHours || 120),
+              daily_hours: Number(c.dailyHours || 4),
+              lesson_days: lessonDaysPayload,
+              document_type: c.documentType || 'Sertifika',
+              syllabus: c.syllabus || []
+            };
 
-      // Silinen kurs varsa Supabase'den de sil
-      if (MemoryStore.knownCourseIds && MemoryStore.knownCourseIds.size > 0) {
-        MemoryStore.knownCourseIds.forEach(async (oldId) => {
-          if (!currentUuids.has(oldId)) {
-            await client.from('courses').delete().eq('id', oldId);
+            const { data: savedCourse, error: cErr } = await client
+              .from('courses')
+              .upsert(coursePayload)
+              .select()
+              .single();
+
+            if (cErr) {
+              console.error("Supabase kurs kayıt hatası:", cErr);
+              return;
+            }
+
+            // İlişkisel Kursiyerleri toplu (batch) olarak students tablosuna kaydet ve silinenleri temizle
+            if (savedCourse) {
+              if (Array.isArray(c.students) && c.students.length > 0) {
+                const studentPayloads = c.students.map(s => {
+                  const fullName = s.fullName || `${s.firstName || ''} ${s.lastName || ''}`.trim() || 'İsimsiz Kursiyer';
+                  const studentId = stringToUuid(s.id || (courseId + '_' + (s.tcNo || fullName)));
+                  s.id = studentId;
+                  const parts = fullName.split(' ');
+                  const lastName = s.lastName || (parts.length > 1 ? parts[parts.length - 1] : '');
+                  const firstName = s.firstName || (parts.length > 1 ? parts.slice(0, -1).join(' ') : fullName);
+
+                  return {
+                    id: studentId,
+                    course_id: courseId,
+                    first_name: firstName,
+                    last_name: lastName,
+                    full_name: fullName,
+                    tc_no: s.tcNo || '',
+                    phone: s.phone || '',
+                    attendance: s.attendance || 'Devamlı',
+                    result: s.result || '',
+                    absent_hours: Number(s.absentHours || 0),
+                    module_scores: s.moduleScores || {},
+                    note: s.attendanceNote || ''
+                  };
+                });
+
+                await client.from('students').upsert(studentPayloads);
+
+                const keepIds = studentPayloads.map(p => p.id);
+                await client
+                  .from('students')
+                  .delete()
+                  .eq('course_id', courseId)
+                  .not('id', 'in', `(${keepIds.join(',')})`);
+              } else {
+                // Kursta hiç kursiyer kalmadıysa bu kursa ait tüm kursiyerleri Supabase'den sil
+                await client.from('students').delete().eq('course_id', courseId);
+              }
+            }
+          }));
+
+          // Silinen kursiyer varsa Supabase'den de sil
+          if (MemoryStore.knownStudentIds && MemoryStore.knownStudentIds.size > 0) {
+            const removedStudentIds = [];
+            MemoryStore.knownStudentIds.forEach((oldStudentId) => {
+              if (!currentStudentUuids.has(oldStudentId)) {
+                removedStudentIds.push(oldStudentId);
+              }
+            });
+            if (removedStudentIds.length > 0) {
+              await client.from('students').delete().in('id', removedStudentIds);
+            }
           }
-        });
-      }
-      MemoryStore.knownCourseIds = currentUuids;
+          MemoryStore.knownStudentIds = currentStudentUuids;
+
+          // Silinen kurs varsa Supabase'den de sil
+          if (MemoryStore.knownCourseIds && MemoryStore.knownCourseIds.size > 0) {
+            const removedCourseIds = [];
+            MemoryStore.knownCourseIds.forEach((oldId) => {
+              if (!currentUuids.has(oldId)) {
+                removedCourseIds.push(oldId);
+              }
+            });
+            if (removedCourseIds.length > 0) {
+              await client.from('courses').delete().in('id', removedCourseIds);
+            }
+          }
+          MemoryStore.knownCourseIds = currentUuids;
+        } catch (innerErr) {
+          console.error("Supabase senkron kayıt hatası:", innerErr);
+        } finally {
+          this._activeSaveCount = Math.max(0, (this._activeSaveCount || 1) - 1);
+          this._lastSaveTime = Date.now();
+        }
+      })();
 
     } catch (e) {
       console.error("Kurs kaydetme hatası:", e);
@@ -380,12 +494,14 @@ const DataStore = {
         });
       }
       MemoryStore.knownCourseIds = new Set();
+      MemoryStore.knownStudentIds = new Set();
     } catch (e) {
       console.error("clearAllCourses hatası:", e);
     }
   },
 
   _normalizeCourse(c) {
+    const courseId = stringToUuid(c.id || c.code || c.name);
     const moduleCount = c.moduleCount ? Math.max(1, Number(c.moduleCount)) : 1;
     const totalHours = Number(c.totalHours || c.total_hours || 0);
     const maxAllowed = Math.floor(totalHours / 5);
@@ -393,6 +509,7 @@ const DataStore = {
     const students = (c.students || []).map(s => {
       const modScores = s.moduleScores || {};
       const fullName = s.fullName || `${s.firstName || ''} ${s.lastName || ''}`.trim() || 'İsimsiz Kursiyer';
+      const studentId = stringToUuid(s.id || (courseId + '_' + (s.tcNo || fullName)));
       const parts = fullName.split(' ');
       const lastName = s.lastName || (parts.length > 1 ? parts[parts.length - 1] : '');
       const firstName = s.firstName || (parts.length > 1 ? parts.slice(0, -1).join(' ') : fullName);
@@ -402,6 +519,22 @@ const DataStore = {
       let result = s.result || '';
       let attendanceNote = s.attendanceNote || '';
 
+      let examScore = s.examScore !== undefined ? s.examScore : null;
+      if (examScore === null && modScores && typeof modScores === 'object') {
+        let sum = 0;
+        let count = 0;
+        for (let m = 1; m <= moduleCount; m++) {
+          const val = modScores[m];
+          if (val !== null && val !== undefined && val !== '' && !isNaN(Number(val))) {
+            sum += Number(val);
+            count++;
+          }
+        }
+        if (count > 0) {
+          examScore = Math.round((sum / count) * 10) / 10;
+        }
+      }
+
       // KURSİYER DEVAMSIZLIK & HİÇ GELMEDİ UYUMSUZLUK DÜZELTMESİ:
       // Kursiyer toplam saatten az devamsızlık yapmışsa (ör: 54 saatlik kursun 48'ine gelmemiş, 6 saatine gelmişse),
       // bu kursiyer kursa katılmıştır, HİÇBİR ŞEKİLDE "Hiç Gelmedi" sayılamaz!
@@ -410,7 +543,7 @@ const DataStore = {
           attendance = absentHours > maxAllowed ? 'Devamsız' : 'Devamlı';
         }
         if (result === 'Hiç Gelmedi') {
-          result = absentHours > maxAllowed ? 'Devamsız' : ((s.examScore !== null && Number(s.examScore) >= 50) ? 'Başarılı' : 'Devam Ediyor');
+          result = absentHours > maxAllowed ? 'Devamsız' : ((examScore !== null && Number(examScore) >= 50) ? 'Başarılı' : 'Devam Ediyor');
         }
         if (attendanceNote && attendanceNote.toLowerCase().includes('hiç gelme')) {
           attendanceNote = '';
@@ -419,6 +552,7 @@ const DataStore = {
 
       return {
         ...s,
+        id: studentId,
         firstName,
         lastName,
         fullName,
@@ -426,6 +560,7 @@ const DataStore = {
         attendance,
         result,
         attendanceNote,
+        examScore,
         moduleScores: modScores,
         dailyAbsences: Array.isArray(s.dailyAbsences) ? s.dailyAbsences : []
       };
@@ -437,6 +572,7 @@ const DataStore = {
       offDays: [],
       moduleCount,
       ...c,
+      id: courseId,
       students
     };
   },
@@ -649,7 +785,12 @@ const DataStore = {
   },
 
   _processCoursesData(courses) {
+    if (this._activeSaveCount > 0 || (Date.now() - (this._lastSaveTime || 0) < 3000)) {
+      return;
+    }
+
     const idSet = new Set();
+    const studentIdSet = new Set();
     const courseMap = new Map();
     courses.forEach(c => {
       const key = (c.code || c.name || c.id || '').trim().toLowerCase();
@@ -663,6 +804,15 @@ const DataStore = {
         days = c.lesson_days.days || [];
         extra = c.lesson_days.extra || {};
       }
+
+      const rawStudents = (c.students || []).filter(s => {
+        if (!s) return false;
+        const sid = stringToUuid(s.id);
+        if (MemoryStore.deletedStudentIds && (MemoryStore.deletedStudentIds.has(sid) || MemoryStore.deletedStudentIds.has(String(s.id)))) {
+          return false;
+        }
+        return true;
+      });
 
       const mappedCourse = {
         id: c.id,
@@ -692,7 +842,7 @@ const DataStore = {
         closedAt: extra.closedAt || null,
         closedBy: extra.closedBy || null,
         baseSyllabus: extra.baseSyllabus || null,
-        students: (c.students || []).map(s => {
+        students: rawStudents.map(s => {
           const studentAbsencesMap = extra.studentAbsences || {};
           const dailyAbs = (Array.isArray(s.dailyAbsences) && s.dailyAbsences.length > 0)
             ? s.dailyAbsences
@@ -714,16 +864,22 @@ const DataStore = {
           };
         })
       };
-      courseMap.set(key, this._normalizeCourse(mappedCourse));
+      const normalized = this._normalizeCourse(mappedCourse);
+      normalized.students.forEach(s => {
+        if (s && s.id) studentIdSet.add(s.id);
+      });
+      courseMap.set(key, normalized);
     });
 
     const newCourses = Array.from(courseMap.values());
     const oldJson = JSON.stringify(MemoryStore.courses || []);
     const newJson = JSON.stringify(newCourses);
 
+    MemoryStore.knownCourseIds = idSet;
+    MemoryStore.knownStudentIds = studentIdSet;
+
     if (oldJson !== newJson) {
       MemoryStore.courses = newCourses;
-      MemoryStore.knownCourseIds = idSet;
       localStorage.setItem(STORAGE_KEYS.COURSES, newJson);
       if (typeof window.onCloudSync === 'function') {
         window.onCloudSync('courses', MemoryStore.courses);
@@ -732,6 +888,10 @@ const DataStore = {
   },
 
   async syncCoursesOnly() {
+    if (this._activeSaveCount > 0 || (Date.now() - (this._lastSaveTime || 0) < 3000)) {
+      return;
+    }
+
     const client = getSupabase();
     if (!client) return;
 
