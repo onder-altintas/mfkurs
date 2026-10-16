@@ -255,12 +255,40 @@ function showCustomDialog(options = {}) {
   });
 }
 
+window.hideCustomDialog = function(result = false) {
+  const modal = document.getElementById('customDialogModal');
+  if (modal) modal.classList.add('hidden');
+  if (typeof currentDialogResolve === 'function') {
+    const r = currentDialogResolve;
+    currentDialogResolve = null;
+    r(result);
+  }
+};
+
 // Global alert & confirm wrapper
-window.showModalAlert = function(message, title = '⚠️ Önemli Uyarı', type = 'warning') {
+window.showModalAlert = function(message, title = null, type = null) {
+  const str = String(message || '');
+  let resolvedType = type;
+  let resolvedTitle = title;
+  if (!resolvedType) {
+    if (str.includes('Yetki') || str.includes('Engellendi') || str.includes('Hata') || str.includes('hata')) {
+      resolvedType = 'danger';
+    } else if (str.includes('başarıyla') || str.includes('kaydedildi') || str.includes('✓') || str.includes('eklendi') || str.includes('tamamlandı')) {
+      resolvedType = 'success';
+    } else {
+      resolvedType = 'warning';
+    }
+  }
+  if (!resolvedTitle) {
+    if (resolvedType === 'danger') resolvedTitle = '⛔ Yetki ve İşlem Hatası';
+    else if (resolvedType === 'success') resolvedTitle = '✓ İşlem Başarılı';
+    else if (resolvedType === 'info') resolvedTitle = 'ℹ️ Bilgilendirme';
+    else resolvedTitle = '⚠️ Önemli Uyarı';
+  }
   return showCustomDialog({
-    title,
-    message,
-    type,
+    title: resolvedTitle,
+    message: str,
+    type: resolvedType,
     showCancel: false,
     confirmText: 'Anladım / Tamam'
   });
@@ -282,23 +310,7 @@ window.__nativeAlert = window.alert;
 window.__nativeConfirm = window.confirm;
 
 window.alert = function(msg) {
-  let title = '⚠️ Uyarı';
-  let type = 'warning';
-  const str = String(msg || '');
-  if (str.includes('Yetki') || str.includes('Engellendi') || str.includes('Hata')) {
-    title = '⛔ Yetki ve İşlem Hatası';
-    type = 'danger';
-  } else if (str.includes('başarıyla') || str.includes('kaydedildi') || str.includes('✓')) {
-    title = '✓ İşlem Başarılı';
-    type = 'success';
-  }
-  return showCustomDialog({
-    title,
-    message: str,
-    type,
-    showCancel: false,
-    confirmText: 'Tamam'
-  });
+  return window.showModalAlert(msg);
 };
 
 window.confirm = function(msg) {
@@ -768,6 +780,45 @@ function isSameEntityId(id1, id2) {
   }
   return false;
 }
+
+// Resmi T.C. Kimlik Numarası Algoritmik Doğrulaması (10. ve 11. Hane Checksum Kontrolü)
+function validateTurkishIdentityNumber(tc) {
+  if (!tc) return { valid: true, isChecksumValid: true, empty: true, message: '' };
+  const cleaned = String(tc).trim().replace(/\s+/g, '');
+  if (!/^\d{11}$/.test(cleaned)) {
+    return {
+      valid: false,
+      isChecksumValid: false,
+      empty: false,
+      message: 'T.C. Kimlik Numarası tam 11 haneli rakamlardan oluşmalıdır.'
+    };
+  }
+  if (cleaned[0] === '0') {
+    return {
+      valid: false,
+      isChecksumValid: false,
+      empty: false,
+      message: 'T.C. Kimlik Numarası 0 (sıfır) ile başlayamaz.'
+    };
+  }
+  const digits = cleaned.split('').map(Number);
+  const oddSum = digits[0] + digits[2] + digits[4] + digits[6] + digits[8];
+  const evenSum = digits[1] + digits[3] + digits[5] + digits[7];
+  const tenthDigit = (((oddSum * 7) - evenSum) % 10 + 10) % 10;
+  const firstTenSum = digits.slice(0, 10).reduce((a, b) => a + b, 0);
+  const eleventhDigit = firstTenSum % 10;
+
+  const isChecksumValid = (digits[9] === tenthDigit && digits[10] === eleventhDigit);
+  return {
+    valid: true,
+    isChecksumValid,
+    empty: false,
+    message: isChecksumValid
+      ? 'Geçerli T.C. Kimlik Numarası'
+      : 'Girilen 11 haneli numara resmi T.C. Kimlik algoritması (10. ve 11. hane kontrolü) ile uyuşmuyor.'
+  };
+}
+window.validateTurkishIdentityNumber = validateTurkishIdentityNumber;
 
 // Gerçek Zamanlı Bulut Senkronizasyon Olayı
 window.onCloudSync = function(type, data) {
@@ -1405,14 +1456,14 @@ function handleSaveProfile(e) {
   const area2 = profileArea2 ? profileArea2.value.trim() : (currentUser.area2 || '');
 
   if (!fullName || !username || !password) {
-    alert('Lütfen Ad Soyad, Kullanıcı Adı ve Şifre alanlarını eksiksiz doldurunuz.');
+    showModalAlert('Lütfen Ad Soyad, Kullanıcı Adı ve Şifre alanlarını eksiksiz doldurunuz.');
     return;
   }
 
   // Kullanıcı adı benzersizlik kontrolü (başka biri kullanıyor mu?)
   const isUsernameTaken = currentUsers.some(u => u.username.toLowerCase() === username.toLowerCase() && u.id !== currentUser.id);
   if (isUsernameTaken) {
-    alert('Bu kullanıcı adı başka bir kullanıcı tarafından kullanılıyor. Lütfen farklı bir kullanıcı adı seçiniz.');
+    showModalAlert('Bu kullanıcı adı başka bir kullanıcı tarafından kullanılıyor. Lütfen farklı bir kullanıcı adı seçiniz.');
     return;
   }
 
@@ -1468,7 +1519,7 @@ function handleSaveProfile(e) {
   }
 
   closeProfileModal();
-  alert('Profil bilgileriniz başarıyla güncellendi!');
+  showModalAlert('Profil bilgileriniz başarıyla güncellendi!');
 }
 
 // Event Dinleyicileri
@@ -1577,6 +1628,9 @@ function setupEventListeners() {
     if (confirmed) {
       currentUser = null;
       DataStore.setActiveUser(null);
+      if (typeof DataStore !== 'undefined' && typeof DataStore.clearSensitiveCacheOnLogout === 'function') {
+        DataStore.clearSensitiveCacheOnLogout();
+      }
       if (typeof DataStore !== 'undefined' && typeof DataStore.stopAutoSync === 'function') {
         DataStore.stopAutoSync();
       }
@@ -1811,6 +1865,8 @@ function setupEventListeners() {
     bulkStudentForm?.classList.add('hidden');
     const stdEditId = document.getElementById('stdEditId');
     if (stdEditId) stdEditId.value = '';
+    const tcHint = document.getElementById('stdTcNoValidationHint');
+    if (tcHint) tcHint.classList.add('hidden');
     const studentFormTitle = document.getElementById('studentFormTitle');
     if (studentFormTitle) studentFormTitle.innerText = 'Yeni Kursiyer Ekleme';
     const studentFormSubmitText = document.getElementById('studentFormSubmitText');
@@ -1821,6 +1877,35 @@ function setupEventListeners() {
   closeStudentFormBtn.addEventListener('click', () => studentAddForm.classList.add('hidden'));
   cancelStudentAddBtn.addEventListener('click', () => studentAddForm.classList.add('hidden'));
   studentAddForm.addEventListener('submit', handleAddStudent);
+
+  // T.C. Kimlik No Canlı Algoritma Doğrulama Geri Bildirimi
+  const stdTcNoInput = document.getElementById('stdTcNo');
+  if (stdTcNoInput) {
+    stdTcNoInput.addEventListener('input', (e) => {
+      const cleaned = e.target.value.replace(/\D/g, '').slice(0, 11);
+      if (e.target.value !== cleaned) e.target.value = cleaned;
+      const hint = document.getElementById('stdTcNoValidationHint');
+      if (!hint) return;
+      if (!cleaned) {
+        hint.classList.add('hidden');
+        return;
+      }
+      hint.classList.remove('hidden');
+      if (cleaned.length < 11) {
+        hint.className = 'text-[10px] font-bold text-slate-400';
+        hint.innerText = `${cleaned.length}/11 hane`;
+      } else {
+        const res = validateTurkishIdentityNumber(cleaned);
+        if (res.valid && res.isChecksumValid) {
+          hint.className = 'text-[10px] font-bold text-emerald-600 dark:text-emerald-400';
+          hint.innerText = '✓ Doğrulandı';
+        } else {
+          hint.className = 'text-[10px] font-bold text-amber-600 dark:text-amber-400';
+          hint.innerText = '⚠️ Algoritma Uyarısı';
+        }
+      }
+    });
+  }
 
   // Toplu Kursiyer Ekleme Dinleyicileri
   toggleBulkStudentBtn?.addEventListener('click', () => {
@@ -2089,24 +2174,32 @@ function renderAdminUsers() {
             class="w-8 h-8 rounded-full object-cover ring-2 ring-slate-200"
           />
           <div>
-            <div class="font-bold text-slate-800 text-xs">${escapeHtml(user.fullName)} ${isCurrentActiveUser ? '<span class="text-[10px] text-purple-600 font-bold">(Siz)</span>' : ''}</div>
+            <div class="font-bold text-slate-800 dark:text-slate-100 text-xs">${escapeHtml(user.fullName)} ${isCurrentActiveUser ? '<span class="text-[10px] text-purple-600 dark:text-purple-400 font-bold">(Siz)</span>' : ''}</div>
             ${user.role === 'supervisor' ? '' : `
             <div class="text-[11px] text-slate-400 flex items-center gap-1 mt-0.5">
               <span>${escapeHtml(user.title || '-')}</span>
-              <span class="text-slate-300">•</span>
-              <span class="text-purple-600 font-medium" title="Tanımlı Kurs Alanı / Branşlar">${escapeHtml(areasBadgeText)}</span>
+              <span class="text-slate-300 dark:text-slate-600">•</span>
+              <span class="text-purple-600 dark:text-purple-400 font-medium" title="Tanımlı Kurs Alanı / Branşlar">${escapeHtml(areasBadgeText)}</span>
             </div>`}
           </div>
         </div>
       </td>
-      <td class="px-4 py-3 font-mono text-slate-700 font-bold">
+      <td class="px-4 py-3 font-mono text-slate-700 dark:text-slate-200 font-bold">
         ${escapeHtml(user.username)}
       </td>
       <td class="px-4 py-3">
-        <div class="inline-flex items-center gap-1.5 px-2 py-1 bg-amber-50 border border-amber-200 rounded-lg text-[11px] font-mono font-bold text-amber-900 shadow-2xs">
-          <i data-lucide="key" class="w-3 h-3 text-amber-600"></i>
-          <span>${escapeHtml(user.password)}</span>
-        </div>
+        <button
+          type="button"
+          onclick="toggleUserRowPassword(this)"
+          data-pw="${escapeHtml(user.password || '')}"
+          data-visible="false"
+          class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-amber-50 dark:bg-amber-950/40 hover:bg-amber-100 dark:hover:bg-amber-900/50 border border-amber-200 dark:border-amber-800/60 rounded-lg text-[11px] font-mono font-bold text-amber-900 dark:text-amber-200 shadow-2xs transition cursor-pointer"
+          title="Şifreyi Göster / Gizle"
+        >
+          <i data-lucide="key" class="w-3 h-3 text-amber-600 dark:text-amber-400"></i>
+          <span class="pw-text">••••••</span>
+          <i data-lucide="eye" class="w-3 h-3 text-amber-600/70 dark:text-amber-400/70"></i>
+        </button>
       </td>
       <td class="px-4 py-3">
         ${roleBadgeHtml}
@@ -2115,7 +2208,7 @@ function renderAdminUsers() {
         <div class="flex items-center justify-end gap-1.5">
           <button
             onclick="editUserAccount('${user.id}')"
-            class="px-2.5 py-1 text-xs font-semibold text-purple-700 bg-purple-50 hover:bg-purple-100 rounded-lg border border-purple-200 transition cursor-pointer flex items-center gap-1"
+            class="px-2.5 py-1 text-xs font-semibold text-purple-700 dark:text-purple-300 bg-purple-50 dark:bg-purple-950/40 hover:bg-purple-100 dark:hover:bg-purple-900/50 rounded-lg border border-purple-200 dark:border-purple-800 transition cursor-pointer flex items-center gap-1"
             title="Yetki ve Bilgileri Düzenle"
           >
             <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
@@ -2124,7 +2217,7 @@ function renderAdminUsers() {
 
           <button
             onclick="deleteUserAccount('${user.id}')"
-            class="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition cursor-pointer ${
+            class="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-lg transition cursor-pointer ${
               isCurrentActiveUser ? 'opacity-30 pointer-events-none' : ''
             }"
             title="Kullanıcıyı Sil"
@@ -2140,6 +2233,20 @@ function renderAdminUsers() {
 
   refreshLucide();
 }
+
+window.toggleUserRowPassword = function(btn) {
+  if (!btn) return;
+  const span = btn.querySelector('.pw-text');
+  if (!span) return;
+  const isVisible = btn.getAttribute('data-visible') === 'true';
+  if (isVisible) {
+    span.innerText = '••••••';
+    btn.setAttribute('data-visible', 'false');
+  } else {
+    span.innerText = btn.getAttribute('data-pw') || '';
+    btn.setAttribute('data-visible', 'true');
+  }
+};
 
 function toggleUserModalRoleFields() {
   const isSup = roleSupervisor && roleSupervisor.checked;
@@ -2157,7 +2264,7 @@ function toggleUserModalRoleFields() {
 
 function openUserModal(userToEdit = null) {
   if (!isDeveloper(currentUser)) {
-    alert('Kullanıcı hesabı oluşturma ve düzenleme yetkisi yalnızca sistem geliştiricisine aittir.');
+    showModalAlert('Kullanıcı hesabı oluşturma ve düzenleme yetkisi yalnızca sistem geliştiricisine aittir.');
     return;
   }
   userModal.classList.remove('hidden');
@@ -2202,7 +2309,7 @@ function closeUserModal() {
 function handleSaveUser(e) {
   e.preventDefault();
   if (!isDeveloper(currentUser)) {
-    alert('Kullanıcı hesabı kaydetme yetkisi yalnızca sistem geliştiricisine aittir.');
+    showModalAlert('Kullanıcı hesabı kaydetme yetkisi yalnızca sistem geliştiricisine aittir.');
     return;
   }
   const id = userFormId.value;
@@ -2226,14 +2333,14 @@ function handleSaveUser(e) {
   const title = isSup ? '' : toTurkishTitleCase(userFormTitle.value);
 
   if (!fullName || !username || !password) {
-    alert('Lütfen Ad Soyad, Kullanıcı Adı ve Şifre alanlarını doldurunuz.');
+    showModalAlert('Lütfen Ad Soyad, Kullanıcı Adı ve Şifre alanlarını doldurunuz.');
     return;
   }
 
   // Kullanıcı adı çakışma kontrolü
   const existingUser = currentUsers.find(u => u.username.toLowerCase() === username && u.id !== id);
   if (existingUser) {
-    alert(`"${username}" kullanıcı adı zaten kullanımda! Lütfen farklı bir kullanıcı adı belirleyin.`);
+    showModalAlert(`"${username}" kullanıcı adı zaten kullanımda! Lütfen farklı bir kullanıcı adı belirleyin.`);
     return;
   }
 
@@ -2386,7 +2493,7 @@ function renderAdminCenters() {
 
 function openCenterModal(centerToEdit = null) {
   if (!isDeveloper(currentUser)) {
-    alert('Kurs merkezi yönetimi yetkisi yalnızca sistem geliştiricisine aittir.');
+    showModalAlert('Kurs merkezi yönetimi yetkisi yalnızca sistem geliştiricisine aittir.');
     return;
   }
   centerModal.classList.remove('hidden');
@@ -2413,7 +2520,7 @@ function closeCenterModal() {
 function handleSaveCenter(e) {
   e.preventDefault();
   if (!isDeveloper(currentUser)) {
-    alert('Kurs merkezi kaydetme yetkisi yalnızca sistem geliştiricisine aittir.');
+    showModalAlert('Kurs merkezi kaydetme yetkisi yalnızca sistem geliştiricisine aittir.');
     return;
   }
   const id = centerFormId.value;
@@ -2650,7 +2757,7 @@ window.renderAdminAreas = renderAdminAreas;
 
 function openAreaModal(areaToEdit = null) {
   if (!isDeveloper(currentUser)) {
-    alert('Kurs alanı yönetimi yetkisi yalnızca sistem geliştiricisine aittir.');
+    showModalAlert('Kurs alanı yönetimi yetkisi yalnızca sistem geliştiricisine aittir.');
     return;
   }
   if (!areaModal) return;
@@ -2681,7 +2788,7 @@ window.closeAreaModal = closeAreaModal;
 function handleSaveArea(e) {
   e.preventDefault();
   if (!isDeveloper(currentUser)) {
-    alert('Kurs alanı kaydetme yetkisi yalnızca sistem geliştiricisine aittir.');
+    showModalAlert('Kurs alanı kaydetme yetkisi yalnızca sistem geliştiricisine aittir.');
     return;
   }
   const id = areaFormId ? areaFormId.value : '';
@@ -2697,7 +2804,7 @@ function handleSaveArea(e) {
   });
 
   if (exists) {
-    alert(`"${name}" adında bir kurs alanı zaten mevcut.`);
+    showModalAlert(`"${name}" adında bir kurs alanı zaten mevcut.`);
     return;
   }
 
@@ -2989,7 +3096,7 @@ function renderTmplModules() {
 
     removeBtn?.addEventListener('click', () => {
       if (editingTmplModules.length <= 1) {
-        alert('En az 1 modül tanımlanmalıdır.');
+        showModalAlert('En az 1 modül tanımlanmalıdır.');
         return;
       }
       editingTmplModules = editingTmplModules.filter(m => m.id !== mod.id);
@@ -3042,7 +3149,7 @@ function updateTmplLiveSummary() {
 
 function openCourseTmplModal(tmplToEdit = null) {
   if (!isDeveloper(currentUser) && !isDepartmentHead(currentUser)) {
-    alert('Müfredat planı ekleme ve düzenleme yetkisi yalnızca Zümre Başkanı ve Geliştiricilere aittir.');
+    showModalAlert('Müfredat planı ekleme ve düzenleme yetkisi yalnızca Zümre Başkanı ve Geliştiricilere aittir.');
     return;
   }
   courseTmplModal.classList.remove('hidden');
@@ -3112,7 +3219,7 @@ function closeCourseTmplModal() {
 function handleSaveCourseTemplate(e) {
   e.preventDefault();
   if (!isDeveloper(currentUser) && !isDepartmentHead(currentUser)) {
-    alert('Yetkisiz işlem! Yalnızca Geliştirici ve Zümre Başkanları müfredat tanımlayabilir veya düzenleyebilir.');
+    showModalAlert('Yetkisiz işlem! Yalnızca Geliştirici ve Zümre Başkanları müfredat tanımlayabilir veya düzenleyebilir.');
     return;
   }
   const id = tmplFormId.value;
@@ -3120,13 +3227,13 @@ function handleSaveCourseTemplate(e) {
   const code = toTurkishUpper(tmplFormCode.value);
 
   if (!name) {
-    alert('Lütfen kurs adını giriniz.');
+    showModalAlert('Lütfen kurs adını giriniz.');
     tmplFormName.focus();
     return;
   }
 
   if (!code) {
-    alert('Lütfen kurs için benzersiz bir kurs kodu giriniz. (Örn: BLG-160 veya DKS)');
+    showModalAlert('Lütfen kurs için benzersiz bir kurs kodu giriniz. (Örn: BLG-160 veya DKS)');
     tmplFormCode.focus();
     return;
   }
@@ -3134,13 +3241,13 @@ function handleSaveCourseTemplate(e) {
   // Başka bir kurs şablonuyla aynı kod olamaz (benzersizlik kontrolü)
   const duplicateTmpl = currentTemplates.find(t => t.id !== id && (t.code || '').trim().toUpperCase() === code);
   if (duplicateTmpl) {
-    alert(`"${code}" kurs kodu zaten "${duplicateTmpl.name}" kursunda kullanılmaktadır!\nLütfen başka bir kursla aynı olmayan, benzersiz bir kurs kodu giriniz.`);
+    showModalAlert(`"${code}" kurs kodu zaten "${duplicateTmpl.name}" kursunda kullanılmaktadır!\nLütfen başka bir kursla aynı olmayan, benzersiz bir kurs kodu giriniz.`);
     tmplFormCode.focus();
     return;
   }
 
   if (editingTmplModules.length === 0) {
-    alert('Lütfen kurs için en az 1 modül tanımlayınız.');
+    showModalAlert('Lütfen kurs için en az 1 modül tanımlayınız.');
     return;
   }
 
@@ -3154,7 +3261,7 @@ function handleSaveCourseTemplate(e) {
     const mNum = idx + 1;
     const modName = toTurkishTitleCase(mod.name || '');
     if (!modName) {
-      alert(`Lütfen ${mNum}. modülün adını giriniz.`);
+      showModalAlert(`Lütfen ${mNum}. modülün adını giriniz.`);
       return;
     }
 
@@ -3216,7 +3323,7 @@ function handleSaveCourseTemplate(e) {
     const userAreas = getUserAreas(currentUser).map(a => toTurkishLower(a)).filter(Boolean);
     const catLower = toTurkishLower(category);
     if (!userAreas.some(ua => ua === catLower || catLower.includes(ua) || ua.includes(catLower))) {
-      alert(`Yetki Hatası: Yalnızca yetkili olduğunuz kendi alan(lar)ınız (${userAreas.join(', ')}) için müfredat planı tanımlayabilirsiniz!`);
+      showModalAlert(`Yetki Hatası: Yalnızca yetkili olduğunuz kendi alan(lar)ınız (${userAreas.join(', ')}) için müfredat planı tanımlayabilirsiniz!`);
       tmplFormCategory.focus();
       return;
     }
@@ -3711,7 +3818,7 @@ function handleAddOffDay() {
   const dateVal = offDayDateInput.value;
   let reasonVal = offDayReasonInput.value.trim();
   if (!dateVal) {
-    alert('Lütfen ders yapılmayan tarihi seçiniz.');
+    showModalAlert('Lütfen ders yapılmayan tarihi seçiniz.');
     offDayDateInput.focus();
     return;
   }
@@ -3721,7 +3828,7 @@ function handleAddOffDay() {
   }
 
   if (currentOffDays.some(d => d.date === dateVal)) {
-    alert('Bu tarih zaten tatil günleri listesinde ekli.');
+    showModalAlert('Bu tarih zaten tatil günleri listesinde ekli.');
     return;
   }
 
@@ -3741,7 +3848,7 @@ function handleAddOffDay() {
 window.autoLoadHolidaysIntoForm = function() {
   const startVal = courseFormStartDate.value;
   if (!startVal) {
-    alert('Lütfen önce kurs başlangıç tarihini seçin.');
+    showModalAlert('Lütfen önce kurs başlangıç tarihini seçin.');
     courseFormStartDate.focus();
     return;
   }
@@ -3766,7 +3873,7 @@ window.autoLoadHolidaysIntoForm = function() {
   });
 
   if (holidays.length === 0) {
-    alert('Seçilen tarih aralığında ve kurs günlerinde herhangi bir resmi tatil bulunamadı.');
+    showModalAlert('Seçilen tarih aralığında ve kurs günlerinde herhangi bir resmi tatil bulunamadı.');
     return;
   }
 
@@ -3785,7 +3892,7 @@ window.autoLoadHolidaysIntoForm = function() {
   currentOffDays.sort((a, b) => new Date(a.date) - new Date(b.date));
   renderOffDays();
 
-  alert(`Kurs günlerine denk gelen ${addedCount} adet Türkiye resmi tatili listeye eklendi.`);
+  showModalAlert(`Kurs günlerine denk gelen ${addedCount} adet Türkiye resmi tatili listeye eklendi.`);
 };
 
 /**
@@ -4038,7 +4145,7 @@ function handleSaveCourse(e) {
 
   const selectedTmplId = courseFormTemplateSelect.value;
   if (!selectedTmplId) {
-    alert('Lütfen açılır listeden bir kurs adı seçiniz.');
+    showModalAlert('Lütfen açılır listeden bir kurs adı seçiniz.');
     courseFormTemplateSelect.focus();
     return;
   }
@@ -4050,7 +4157,7 @@ function handleSaveCourse(e) {
 
   const rawInstitution = courseFormInstitutionSelect.value;
   if (!rawInstitution) {
-    alert('Lütfen bir kurs merkezi seçiniz.');
+    showModalAlert('Lütfen bir kurs merkezi seçiniz.');
     courseFormInstitutionSelect.focus();
     return;
   }
@@ -4069,7 +4176,7 @@ function handleSaveCourse(e) {
   // Kurs kodunun tekil ve benzersiz olduğunu doğrula
   const duplicateCourse = currentCourses.find(c => c.id !== id && c.code && c.code.trim().toLowerCase() === code.toLowerCase());
   if (duplicateCourse) {
-    alert(`"${code}" kurs numarası/kodu zaten "${duplicateCourse.name}" (${duplicateCourse.institution || ''}) kursunda kayıtlı!\nLütfen her kurs için benzersiz bir kurs numarası kullanınız.`);
+    showModalAlert(`"${code}" kurs numarası/kodu zaten "${duplicateCourse.name}" (${duplicateCourse.institution || ''}) kursunda kayıtlı!\nLütfen her kurs için benzersiz bir kurs numarası kullanınız.`);
     courseFormCode.focus();
     return;
   }
@@ -4079,7 +4186,7 @@ function handleSaveCourse(e) {
   // GÜVENLİK / YETKİ KONTROLÜ: Kullanıcılar yalnızca tanımlı branşlarında kurs açabilir (Geliştirici hariç)!
   const userAreas = getUserAreas(currentUser);
   if (!isDeveloper(currentUser) && !userAreas.some(a => a.trim().toLowerCase() === category.trim().toLowerCase())) {
-    alert(`Yetki Hatası: Bu kursun alanı "${category}". Siz yalnızca yetkili olduğunuz branş(lar)ınız (${userAreas.join(', ')}) kapsamında kurs açabilirsiniz!`);
+    showModalAlert(`Yetki Hatası: Bu kursun alanı "${category}". Siz yalnızca yetkili olduğunuz branş(lar)ınız (${userAreas.join(', ')}) kapsamında kurs açabilirsiniz!`);
     return;
   }
   const startDate = courseFormStartDate.value;
@@ -4161,7 +4268,7 @@ function handleSaveCourse(e) {
     // YENİ KURS AÇILIŞ ONAYI VE SİLİNEMEZ BİLGİLENDİRMESİ
     const confirmAccuracyCb = document.getElementById('courseFormConfirmAccuracy');
     if (confirmAccuracyCb && !confirmAccuracyCb.checked) {
-      alert('⚠️ Kurs Açılış Onayı Gereklidir:\n\nLütfen formun altındaki "Kurs bilgilerinin doğruluğunu onaylıyorum. Kursun sonradan silinemeyeceğini biliyorum." kutucuğunu işaretleyiniz.');
+      showModalAlert('⚠️ Kurs Açılış Onayı Gereklidir:\n\nLütfen formun altındaki "Kurs bilgilerinin doğruluğunu onaylıyorum. Kursun sonradan silinemeyeceğini biliyorum." kutucuğunu işaretleyiniz.');
       confirmAccuracyCb.focus();
       return;
     }
@@ -4218,17 +4325,17 @@ function handleSaveCourse(e) {
 
 window.editCourse = function(courseId) {
   if (isSupervisor(currentUser)) {
-    alert('Eğitim sorumluları kurs düzenleyemez. Salt okunur denetim yetkiniz bulunmaktadır.');
+    showModalAlert('Eğitim sorumluları kurs düzenleyemez. Salt okunur denetim yetkiniz bulunmaktadır.');
     return;
   }
   const course = currentCourses.find(c => isSameEntityId(c.id, courseId));
   if (!course) return;
   if (!isCourseRelatedToUser(course, currentUser) && !isDeveloper(currentUser)) {
-    alert('Yalnızca kendinizle ilgili kursları düzenleyebilirsiniz.');
+    showModalAlert('Yalnızca kendinizle ilgili kursları düzenleyebilirsiniz.');
     return;
   }
   if (course.status === 'completed' && !isDeveloper(currentUser)) {
-    alert('Bu kurs kapatılmıştır. Kapatılmış kurslar üzerinde düzenleme yapılamaz. Kurs sonu evraklarını görüntüleyebilir ve indirebilirsiniz.');
+    showModalAlert('Bu kurs kapatılmıştır. Kapatılmış kurslar üzerinde düzenleme yapılamaz. Kurs sonu evraklarını görüntüleyebilir ve indirebilirsiniz.');
     return;
   }
   openCourseModal(course);
@@ -4276,7 +4383,7 @@ window.openCourseDetail = function(courseId, push = true) {
   activeCourseForDetail.syllabus = getEffectiveCourseSyllabus(activeCourseForDetail);
 
   if (!isCourseRelatedToUser(activeCourseForDetail, currentUser) && !isDeveloper(currentUser)) {
-    alert('Bu kursu görüntüleme yetkiniz bulunmamaktadır.');
+    showModalAlert('Bu kursu görüntüleme yetkiniz bulunmamaktadır.');
     return;
   }
 
@@ -5142,7 +5249,7 @@ window.saveEditSyllabusHour = function(e) {
   const hourNumber = Number(document.getElementById('editSyllabusHourNumber')?.value);
   const topic = (document.getElementById('editSyllabusTopicInput')?.value || '').trim();
   if (!topic) {
-    alert('Lütfen bu ders saatinde işlenen konuyu yazınız.');
+    showModalAlert('Lütfen bu ders saatinde işlenen konuyu yazınız.');
     return;
   }
 
@@ -5324,12 +5431,12 @@ function isValidTcKimlikNo(tc) {
 }
 
 // Kursiyer Ekleme / Güncelleme Formu: Sadece Adı, Soyadı, Telefon ve TC Bilgileri
-function handleAddStudent(e) {
+async function handleAddStudent(e) {
   e.preventDefault();
   if (!activeCourseForDetail) return;
 
   if (activeCourseForDetail.status === 'completed' && !isDeveloper(currentUser)) {
-    alert('Bu kurs kapatılmıştır. Kapatılmış kurslara yeni kursiyer eklenemez veya mevcut kursiyer bilgileri değiştirilemez.');
+    showModalAlert('Bu kurs kapatılmıştır. Kapatılmış kurslara yeni kursiyer eklenemez veya mevcut kursiyer bilgileri değiştirilemez.', '🔒 Kurs Kapatılmış', 'warning');
     return;
   }
 
@@ -5340,8 +5447,30 @@ function handleAddStudent(e) {
   const phone = (document.getElementById('stdPhone')?.value || '').trim();
 
   if (!rawFirstName || !rawLastName) {
-    alert('Lütfen Kursiyer Adı ve Soyadı alanlarını doldurunuz.');
+    showModalAlert('Lütfen Kursiyer Adı ve Soyadı alanlarını doldurunuz.', '⚠️ Eksik Bilgi', 'warning');
     return;
+  }
+
+  // T.C. Kimlik Numarası Format ve Algoritma Doğrulaması
+  if (tcNo) {
+    const tcCheck = validateTurkishIdentityNumber(tcNo);
+    if (!tcCheck.valid) {
+      showModalAlert(tcCheck.message, '⚠️ Geçersiz T.C. Kimlik Numarası', 'warning');
+      return;
+    }
+    if (!tcCheck.isChecksumValid) {
+      const proceedWithInvalidChecksum = await showModalConfirm(
+        `Girilen "${tcNo}" numarası 11 hanelidir ancak resmi T.C. Kimlik Numarası (10. ve 11. hane) algoritmasıyla uyuşmamaktadır.\n\nYazım hatası yapmış olabilirsiniz. Yine de bu numara ile kaydetmek istiyor musunuz?`,
+        '⚠️ T.C. Kimlik Algoritma Uyarısı',
+        'Yine de Kaydet',
+        'Düzeltmek İçin Geri Dön',
+        'warning'
+      );
+      if (!proceedWithInvalidChecksum) {
+        document.getElementById('stdTcNo')?.focus();
+        return;
+      }
+    }
   }
 
   const firstName = toTurkishTitleCase(rawFirstName);
@@ -5356,7 +5485,7 @@ function handleAddStudent(e) {
   });
 
   if (existingSameName) {
-    alert(`⚠️ Kayıt Engellendi:\n\n"${fullName}" adında bir kursiyer bu kursta zaten kayıtlı bulunmaktadır!\nAynı isimde mükerrer kursiyer eklenemez.`);
+    showModalAlert(`"${fullName}" adında bir kursiyer bu kursta zaten kayıtlı bulunmaktadır!\nAynı isimde mükerrer kursiyer eklenemez.`, '⚠️ Mükerrer Kayıt Engellendi', 'warning');
     return;
   }
 
@@ -5367,7 +5496,7 @@ function handleAddStudent(e) {
     });
 
     if (existingSameTc) {
-      alert(`⚠️ Kayıt Engellendi:\n\n${tcNo} T.C. Kimlik numaralı kursiyer (${existingSameTc.fullName}) bu kursta zaten kayıtlıdır!`);
+      showModalAlert(`${tcNo} T.C. Kimlik numaralı kursiyer (${existingSameTc.fullName}) bu kursta zaten kayıtlıdır!`, '⚠️ Mükerrer T.C. Kimlik No', 'warning');
       return;
     }
   }
@@ -5419,6 +5548,8 @@ function handleAddStudent(e) {
 
   const stdEditId = document.getElementById('stdEditId');
   if (stdEditId) stdEditId.value = '';
+  const tcHint = document.getElementById('stdTcNoValidationHint');
+  if (tcHint) tcHint.classList.add('hidden');
   studentAddForm.reset();
 
   if (editId) {
@@ -5457,7 +5588,7 @@ function handleAddStudent(e) {
 window.editStudent = function(studentId) {
   if (!activeCourseForDetail) return;
   if (activeCourseForDetail.status === 'completed' && !isDeveloper(currentUser)) {
-    alert('Bu kurs kapatılmıştır. Kapatılmış kurslarda kursiyer bilgileri düzenlenemez.');
+    showModalAlert('Bu kurs kapatılmıştır. Kapatılmış kurslarda kursiyer bilgileri düzenlenemez.');
     return;
   }
   const std = activeCourseForDetail.students?.find(s => isSameEntityId(s.id, studentId));
@@ -5611,15 +5742,25 @@ function handleBulkStudentInput() {
     if (bulkStudentPreviewContainer) bulkStudentPreviewContainer.classList.remove('hidden');
     if (bulkParsedCount) bulkParsedCount.innerText = parsed.length;
     if (bulkStudentPreviewTbody) {
-      bulkStudentPreviewTbody.innerHTML = parsed.map((s, idx) => `
+      bulkStudentPreviewTbody.innerHTML = parsed.map((s, idx) => {
+        let tcCellHtml = '<span class="text-slate-300 dark:text-slate-600 italic">-</span>';
+        if (s.tcNo) {
+          const tcCheck = validateTurkishIdentityNumber(s.tcNo);
+          const badge = (tcCheck.valid && tcCheck.isChecksumValid)
+            ? '<span class="ml-1 text-[10px] font-bold text-emerald-600 dark:text-emerald-400" title="Resmi T.C. Kimlik Algoritması Doğrulandı">✓</span>'
+            : '<span class="ml-1 px-1 py-0.2 rounded bg-amber-100 dark:bg-amber-950/60 text-[9px] font-bold text-amber-700 dark:text-amber-300" title="T.C. Kimlik algoritması ile uyuşmuyor, kontrol ediniz">⚠️ Kontrol</span>';
+          tcCellHtml = `<span>${escapeHtml(s.tcNo)}</span>${badge}`;
+        }
+        return `
         <tr class="border-b border-slate-100 dark:border-[#23353c] transition-colors">
           <td class="px-3 py-1.5 text-slate-400 font-mono text-[11px]">${idx + 1}</td>
           <td class="px-3 py-1.5 font-bold text-slate-800 dark:text-slate-100">${escapeHtml(s.firstName)}</td>
           <td class="px-3 py-1.5 text-slate-700 dark:text-slate-200">${escapeHtml(s.lastName || '-')}</td>
-          <td class="px-3 py-1.5 font-mono text-slate-600 dark:text-slate-300">${s.tcNo ? escapeHtml(s.tcNo) : '<span class="text-slate-300 dark:text-slate-600 italic">-</span>'}</td>
+          <td class="px-3 py-1.5 font-mono text-slate-600 dark:text-slate-300">${tcCellHtml}</td>
           <td class="px-3 py-1.5 font-mono text-slate-600 dark:text-slate-300">${s.phone ? escapeHtml(s.phone) : '<span class="text-slate-300 dark:text-slate-600 italic">-</span>'}</td>
         </tr>
-      `).join('');
+      `;
+      }).join('');
     }
     if (saveBulkStudentBtn) saveBulkStudentBtn.disabled = false;
     if (saveBulkBtnText) saveBulkBtnText.innerText = `${parsed.length} Kursiyeri Kursa Ekle`;
@@ -5636,12 +5777,12 @@ function handleBulkStudentInput() {
 
 function handleSaveBulkStudents() {
   if (!activeCourseForDetail) {
-    alert('Aktif bir kurs bulunamadı.');
+    showModalAlert('Aktif bir kurs bulunamadı.');
     return;
   }
 
   if (activeCourseForDetail.status === 'completed' && !isDeveloper(currentUser)) {
-    alert('Bu kurs kapatılmıştır. Kapatılmış kurslara toplu kursiyer eklenemez.');
+    showModalAlert('Bu kurs kapatılmıştır. Kapatılmış kurslara toplu kursiyer eklenemez.');
     return;
   }
 
@@ -5657,7 +5798,7 @@ function handleSaveBulkStudents() {
   });
 
   if (parsed.length === 0) {
-    alert('Lütfen eklenecek en az bir geçerli kursiyer giriniz.');
+    showModalAlert('Lütfen eklenecek en az bir geçerli kursiyer giriniz.');
     return;
   }
 
@@ -5719,7 +5860,7 @@ function handleSaveBulkStudents() {
   });
 
   if (addedStudents.length === 0) {
-    alert(`⚠️ Hiçbir yeni kursiyer eklenmedi!\n\nBelirtilen kursiyerlerin tümü (${duplicateNames.join(', ')}) bu sınıfta zaten kayıtlı bulunmaktadır.`);
+    showModalAlert(`⚠️ Hiçbir yeni kursiyer eklenmedi!\n\nBelirtilen kursiyerlerin tümü (${duplicateNames.join(', ')}) bu sınıfta zaten kayıtlı bulunmaktadır.`);
     return;
   }
 
@@ -5750,9 +5891,9 @@ function handleSaveBulkStudents() {
   }
 
   if (duplicateNames.length > 0) {
-    alert(`✓ ${addedStudents.length} yeni kursiyer başarıyla eklendi.\n\n⚠️ Aşağıdaki mükerrer kursiyerler zaten kayıtlı olduğu için atlandı ve eklenmedi:\n• ${duplicateNames.join('\n• ')}`);
+    showModalAlert(`✓ ${addedStudents.length} yeni kursiyer başarıyla eklendi.\n\n⚠️ Aşağıdaki mükerrer kursiyerler zaten kayıtlı olduğu için atlandı ve eklenmedi:\n• ${duplicateNames.join('\n• ')}`);
   } else {
-    alert(`${addedStudents.length} kursiyer başarıyla kursa eklendi!`);
+    showModalAlert(`${addedStudents.length} kursiyer başarıyla kursa eklendi!`);
   }
 }
 
@@ -6372,8 +6513,30 @@ function renderAttendanceTab() {
     DataStore.saveCourses(currentCourses);
   }
 
-  // Kutucuk saat değişikliklerini dinle
+  // Mobil Hızlı Yoklama Kart Görünümünü Doldur
+  renderMobileQuickAttendanceCards(selectedDate, dailyHours, maxAllowed);
+
+  // Kutucuk saat değişikliklerini ve klavye gezinmesini (Enter / Ok tuşları) dinle
+  const allAttInputs = Array.from(attendanceTableBody.querySelectorAll('.att-day-hour-input:not(:disabled)'));
   attendanceTableBody.querySelectorAll('.att-day-hour-input').forEach(input => {
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === 'ArrowDown') {
+        e.preventDefault();
+        const idx = allAttInputs.indexOf(input);
+        if (idx !== -1 && idx + 1 < allAttInputs.length) {
+          allAttInputs[idx + 1].focus();
+          allAttInputs[idx + 1].select();
+        }
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        const idx = allAttInputs.indexOf(input);
+        if (idx > 0) {
+          allAttInputs[idx - 1].focus();
+          allAttInputs[idx - 1].select();
+        }
+      }
+    });
+
     input.addEventListener('change', (e) => {
       const stdId = e.target.dataset.stdId;
       let val = e.target.value.trim();
@@ -6384,7 +6547,7 @@ function renderAttendanceTab() {
         hours = 0;
         e.target.value = '';
       } else if (hours > dailyHours) {
-        alert(`Devamsızlık saati kursun günlük ders saatinden (${dailyHours} saat) fazla olamaz. Değer ${dailyHours} saate sınırlandı.`);
+        showModalAlert(`Devamsızlık saati kursun günlük ders saatinden (${dailyHours} saat) fazla olamaz. Değer ${dailyHours} saate sınırlandı.`, '⚠️ Günlük Saat Sınırı', 'warning');
         hours = dailyHours;
         e.target.value = dailyHours;
       }
@@ -6395,6 +6558,125 @@ function renderAttendanceTab() {
 
   refreshLucide();
 }
+
+let isMobileQuickAttMode = false;
+
+window.toggleMobileQuickAttendanceMode = function() {
+  isMobileQuickAttMode = !isMobileQuickAttMode;
+  const grid = document.getElementById('mobileQuickAttendanceGrid');
+  const tableWrap = document.getElementById('attendanceTableWrapper');
+  const btnText = document.getElementById('toggleQuickAttModeText');
+  if (grid && tableWrap) {
+    grid.classList.toggle('hidden', !isMobileQuickAttMode);
+    tableWrap.classList.toggle('hidden', isMobileQuickAttMode);
+  }
+  if (btnText) {
+    btnText.innerText = isMobileQuickAttMode
+      ? 'Tablo Görünümüne Dön'
+      : 'Hızlı Kart Yoklama Modu (Mobil)';
+  }
+};
+
+function renderMobileQuickAttendanceCards(selectedDate, dailyHours, maxAllowed) {
+  const grid = document.getElementById('mobileQuickAttendanceGrid');
+  const tableWrap = document.getElementById('attendanceTableWrapper');
+  const markAllBtn = document.getElementById('markAllPresentTodayBtn');
+  if (!grid || !activeCourseForDetail) return;
+
+  const isLocked = activeCourseForDetail.status === 'completed' && !isDeveloper(currentUser);
+  if (markAllBtn) {
+    markAllBtn.classList.toggle('hidden', isLocked);
+  }
+  if (tableWrap) {
+    grid.classList.toggle('hidden', !isMobileQuickAttMode);
+    tableWrap.classList.toggle('hidden', isMobileQuickAttMode);
+  }
+
+  const students = activeCourseForDetail.students || [];
+  if (students.length === 0 || !selectedDate) {
+    grid.innerHTML = `<div class="col-span-full text-center py-6 text-xs text-slate-400">Bu kursta henüz kayıtlı kursiyer bulunmuyor.</div>`;
+    return;
+  }
+
+  grid.innerHTML = students.map((s, idx) => {
+    const dayEntry = (s.dailyAbsences || []).find(d => d.date === selectedDate);
+    const hoursOnDate = dayEntry ? Number(dayEntry.hours) : 0;
+    const totalAbsent = Number(s.absentHours || 0);
+    const isExceeded = totalAbsent > maxAllowed;
+    const isAbsentToday = hoursOnDate > 0;
+
+    return `
+      <div class="p-3.5 rounded-2xl border-2 transition-all flex flex-col justify-between gap-2.5 ${
+        isAbsentToday
+          ? 'bg-rose-50/70 dark:bg-rose-950/30 border-rose-300 dark:border-rose-800'
+          : 'bg-white dark:bg-[#152125] border-slate-200 dark:border-[#23353c]'
+      }">
+        <div class="flex items-start justify-between gap-2">
+          <div>
+            <div class="text-xs font-extrabold text-slate-800 dark:text-slate-100">${idx + 1}. ${escapeHtml(s.fullName)}</div>
+            <div class="text-[10px] font-mono text-slate-400 mt-0.5">${escapeHtml(s.tcNo || '-')} • Top. Devamsızlık: <strong class="${isExceeded ? 'text-rose-600' : 'text-slate-600 dark:text-slate-300'}">${totalAbsent}/${maxAllowed} Sa</strong></div>
+          </div>
+          <span class="px-2 py-0.5 rounded-lg text-[10px] font-black ${
+            isAbsentToday
+              ? 'bg-rose-600 text-white'
+              : 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800'
+          }">
+            ${isAbsentToday ? `${hoursOnDate} Sa Yok` : '✓ Geldi'}
+          </span>
+        </div>
+
+        ${isLocked ? `
+          <div class="text-[10px] text-center py-1 rounded bg-slate-100 dark:bg-[#10191b] text-slate-400 font-semibold">Kurs Kapatıldı (Kilitli)</div>
+        ` : `
+          <div class="grid grid-cols-2 gap-2 pt-1">
+            <button
+              type="button"
+              onclick="setStudentDateAbsenceHours('${s.id}', 0)"
+              class="py-2 px-3 rounded-xl text-xs font-extrabold transition cursor-pointer flex items-center justify-center gap-1 ${
+                !isAbsentToday
+                  ? 'bg-emerald-600 text-white shadow-xs'
+                  : 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800'
+              }"
+            >
+              <span>✓ Geldi (0 Sa)</span>
+            </button>
+            <button
+              type="button"
+              onclick="setStudentDateAbsenceHours('${s.id}', ${dailyHours})"
+              class="py-2 px-3 rounded-xl text-xs font-extrabold transition cursor-pointer flex items-center justify-center gap-1 ${
+                isAbsentToday
+                  ? 'bg-rose-600 text-white shadow-xs'
+                  : 'bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800'
+              }"
+            >
+              <span>✕ Yok (${dailyHours} Sa)</span>
+            </button>
+          </div>
+        `}
+      </div>
+    `;
+  }).join('');
+}
+
+window.markAllStudentsPresentOnSelectedDate = function() {
+  if (!activeCourseForDetail) return;
+  if (activeCourseForDetail.status === 'completed' && !isDeveloper(currentUser)) {
+    showModalAlert('Bu kurs kapatılmıştır. Kapatılmış kurslarda devamsızlık değiştirilemez.', '🔒 Kurs Kapatılmış', 'warning');
+    return;
+  }
+  const selectedDate = currentCourseLessonDates[currentAttendanceDateIndex];
+  if (!selectedDate) return;
+  const students = activeCourseForDetail.students || [];
+  if (students.length === 0) return;
+
+  students.forEach(s => {
+    setStudentDateAbsenceHours(s.id, 0, false);
+  });
+  renderAttendanceTab();
+  renderStudentTable();
+  renderTeacherDashboard();
+  showAutoSaveToast('Seçili günde tüm kursiyerler Geldi (0 Sa) olarak kaydedildi');
+};
 
 // Tarih Gezinme: Önceki Kurs Günü (<)
 function handleAttPrevDate() {
@@ -6445,7 +6727,7 @@ function showAutoSaveToast(message = 'Değişiklik anında kaydedildi') {
 window.setStudentDateAbsenceHours = function(studentId, hours, shouldRefresh = true) {
   if (!activeCourseForDetail) return;
   if (activeCourseForDetail.status === 'completed' && !isDeveloper(currentUser)) {
-    alert('Bu kurs kapatılmıştır. Kapatılmış kurslarda devamsızlık girişi veya düzenlemesi yapılamaz.');
+    showModalAlert('Bu kurs kapatılmıştır. Kapatılmış kurslarda devamsızlık girişi veya düzenlemesi yapılamaz.');
     return;
   }
   const std = activeCourseForDetail.students.find(s => isSameEntityId(s.id, studentId));
@@ -7061,11 +7343,41 @@ function renderExamsTab() {
     examsMatrixTbody.appendChild(tr);
   });
 
-  // Not değiştiğinde canlı ortalama ve durum hesaplama & 3 haneli (100 üstü) girişi kesin olarak engelleme
+  // Not değiştiğinde canlı ortalama ve durum hesaplama & Enter / Ok tuşlarıyla alt/üst satıra geçiş
   examsMatrixTbody.querySelectorAll('.exam-cell-score').forEach(input => {
     input.addEventListener('wheel', (e) => e.preventDefault(), { passive: false });
 
     input.addEventListener('keydown', (e) => {
+      // Enter veya Aşağı Ok: Aynı modül sütunundaki bir alt satırdaki kursiyerin not kutusuna geç
+      if (e.key === 'Enter' || e.key === 'ArrowDown') {
+        e.preventDefault();
+        const mod = input.dataset.module;
+        const sameModInputs = Array.from(
+          examsMatrixTbody.querySelectorAll(`.exam-cell-score[data-module="${mod}"]:not(:disabled)`)
+        );
+        const curIdx = sameModInputs.indexOf(input);
+        if (curIdx !== -1 && curIdx + 1 < sameModInputs.length) {
+          sameModInputs[curIdx + 1].focus();
+          sameModInputs[curIdx + 1].select();
+        }
+        return;
+      }
+
+      // Yukarı Ok: Aynı modül sütunundaki bir üst satırdaki kursiyerin not kutusuna geç
+      if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        const mod = input.dataset.module;
+        const sameModInputs = Array.from(
+          examsMatrixTbody.querySelectorAll(`.exam-cell-score[data-module="${mod}"]:not(:disabled)`)
+        );
+        const curIdx = sameModInputs.indexOf(input);
+        if (curIdx > 0) {
+          sameModInputs[curIdx - 1].focus();
+          sameModInputs[curIdx - 1].select();
+        }
+        return;
+      }
+
       // Kontrol tuşlarına izin ver (Backspace, Delete, Tab, Arrow, vb.)
       if (e.key === 'Backspace' || e.key === 'Delete' || e.key === 'Tab' || e.key === 'ArrowLeft' || e.key === 'ArrowRight' || e.ctrlKey || e.metaKey) {
         return;
@@ -7216,7 +7528,7 @@ function recalculateStudentExamRowLive(stdId) {
 function handleSaveAllExams() {
   if (!activeCourseForDetail) return;
   if (activeCourseForDetail.status === 'completed' && !isDeveloper(currentUser)) {
-    alert('Bu kurs kapatılmıştır. Kapatılmış kurslarda sınav notları değiştirilemez.');
+    showModalAlert('Bu kurs kapatılmıştır. Kapatılmış kurslarda sınav notları değiştirilemez.');
     return;
   }
   const moduleCount = activeCourseForDetail.moduleCount ? Math.max(1, Number(activeCourseForDetail.moduleCount)) : 1;
@@ -7297,7 +7609,7 @@ function handleSaveAllExams() {
   renderExamsTab();
   renderStudentTable();
   renderTeacherDashboard();
-  alert('Tüm modül sınav notları ve başarı ortalamaları kaydedildi.');
+  showModalAlert('Tüm modül sınav notları ve başarı ortalamaları kaydedildi.');
 }
 
 // =================== TEKİL KURSİYER DEVAMSIZLIK MODALI (GÜN GÜN DEVAMSIZLIK) ===================
@@ -7754,7 +8066,7 @@ function handleSaveSingleExam(e) {
   e.preventDefault();
   if (!activeCourseForDetail) return;
   if (activeCourseForDetail.status === 'completed' && !isDeveloper(currentUser)) {
-    alert('Bu kurs kapatılmıştır. Kapatılmış kurslarda sınav notları değiştirilemez.');
+    showModalAlert('Bu kurs kapatılmıştır. Kapatılmış kurslarda sınav notları değiştirilemez.');
     return;
   }
 
@@ -9175,7 +9487,7 @@ window.closeKursPlaniConfigModal = function() {
 
 window.submitPlanConfigAndGenerate = function() {
   if (!activeCourseForDetail) {
-    alert('Lütfen önce bir kurs seçiniz.');
+    showModalAlert('Lütfen önce bir kurs seçiniz.');
     return;
   }
 
@@ -9189,15 +9501,15 @@ window.submitPlanConfigAndGenerate = function() {
   const customEval = (document.getElementById('kpCustomEvalInput')?.value || '').trim();
 
   if (selectedMethods.length === 0 && !customMethods) {
-    alert('Lütfen kursta kullanılacak en az bir öğretim yöntem ve tekniği seçiniz veya yazınız.');
+    showModalAlert('Lütfen kursta kullanılacak en az bir öğretim yöntem ve tekniği seçiniz veya yazınız.');
     return;
   }
   if (selectedTools.length === 0 && !customTools) {
-    alert('Lütfen kursta kullanılacak en az bir eğitim araç ve gereci seçiniz veya yazınız.');
+    showModalAlert('Lütfen kursta kullanılacak en az bir eğitim araç ve gereci seçiniz veya yazınız.');
     return;
   }
   if (selectedEval.length === 0 && !customEval) {
-    alert('Lütfen kursta uygulanacak en az bir ölçme ve değerlendirme yöntemi seçiniz veya yazınız.');
+    showModalAlert('Lütfen kursta uygulanacak en az bir ölçme ve değerlendirme yöntemi seçiniz veya yazınız.');
     return;
   }
 
@@ -9232,7 +9544,7 @@ window.submitPlanConfigAndGenerate = function() {
 
 window.openKursPlaniPreview = function() {
   if (!activeCourseForDetail) {
-    alert('Lütfen önce bir kurs seçiniz.');
+    showModalAlert('Lütfen önce bir kurs seçiniz.');
     return;
   }
   const container = document.getElementById('kursPlaniPreviewContainer');
@@ -9260,7 +9572,7 @@ window.triggerPrintKursPlani = function() {
 function checkCourseClosedForDocuments(docName = 'Resmi Evrak') {
   if (!activeCourseForDetail) return false;
   if (activeCourseForDetail.status !== 'completed' && !isDeveloper(currentUser)) {
-    alert(
+    showModalAlert(
       `⚠️ DİKKAT: Kurs Henüz Kapatılmamıştır!\n\n` +
       `Resmi mevzuat gereği; "${docName}" ve diğer kurs sonu evrakları (Kursiyer Karar Durumu, Yoklama Defteri ve Modül Değerlendirme Çizelgesi) kurs kapatılmadan önce oluşturulamaz ve teslim edilemez.\n\n` +
       `Kurs sonu evraklarını görüntülemek ve indirmek için lütfen önce kurs detayındaki "Kursu Kapat" butonuna tıklayınız.`
@@ -9456,7 +9768,7 @@ async function downloadDocumentAsPdf(filename, htmlContent, isLandscape = false)
     if (typeof showModalAlert === 'function') {
       showModalAlert('İndirilecek evrak içeriği bulunamadı.');
     } else {
-      alert('İndirilecek evrak içeriği bulunamadı.');
+      showModalAlert('İndirilecek evrak içeriği bulunamadı.');
     }
     return;
   }
@@ -9514,7 +9826,7 @@ async function downloadDocumentAsPdf(filename, htmlContent, isLandscape = false)
 // Güvenli ve Kararlı Yazdırma Motoru (Baskı önizlemesinin boş çıkmasını %100 önler ve PDF ismini tam ayarlar)
 function safePrint(htmlContent, isLandscape = false, documentTitle = 'Resmi Evrak Baskısı') {
   if (!htmlContent) {
-    alert('Yazdırılacak evrak içeriği bulunamadı.');
+    showModalAlert('Yazdırılacak evrak içeriği bulunamadı.');
     return;
   }
 
@@ -9658,7 +9970,7 @@ window.triggerPrintKararDurumu = function() {
 
 window.openSaveOpeningDocumentsModal = function() {
   if (!activeCourseForDetail) {
-    alert('Lütfen önce bir kurs seçiniz.');
+    showModalAlert('Lütfen önce bir kurs seçiniz.');
     return;
   }
 
@@ -9787,13 +10099,13 @@ window.printMergedOpeningDocuments = function() {
 
 window.openSaveAllDocumentsModal = function() {
   if (!activeCourseForDetail) {
-    alert('Lütfen önce bir kurs seçiniz.');
+    showModalAlert('Lütfen önce bir kurs seçiniz.');
     return;
   }
 
   // Kurs kapatılmamışsa kurs sonu evrakları açılamaz
   if (activeCourseForDetail.status !== 'completed' && !isDeveloper(currentUser)) {
-    alert('⚠️ DİKKAT: Kurs Henüz Kapatılmamıştır!\n\nResmi mevzuat gereği kurs kapatılmadan önce kurs sonu resmi evrakları (Kursiyer Karar Durumu, Yoklama Defteri ve Modül Değerlendirme Çizelgesi) hazırlanamaz ve indirilemez.\n\nLütfen önce "Kursu Kapat" butonunu kullanarak kursu tamamlayınız.');
+    showModalAlert('⚠️ DİKKAT: Kurs Henüz Kapatılmamıştır!\n\nResmi mevzuat gereği kurs kapatılmadan önce kurs sonu resmi evrakları (Kursiyer Karar Durumu, Yoklama Defteri ve Modül Değerlendirme Çizelgesi) hazırlanamaz ve indirilemez.\n\nLütfen önce "Kursu Kapat" butonunu kullanarak kursu tamamlayınız.');
     return;
   }
 
@@ -12026,7 +12338,7 @@ window.autoCalculateCourseEndDate = autoCalculateCourseEndDate;
 function exportStudentsToExcel() {
   if (!activeCourseForDetail) return;
   if (typeof XLSX === 'undefined') {
-    alert('Excel kütüphanesi henüz yüklenemedi. Lütfen internet bağlantınızı kontrol ediniz.');
+    showModalAlert('Excel kütüphanesi henüz yüklenemedi. Lütfen internet bağlantınızı kontrol ediniz.');
     return;
   }
 
@@ -12073,7 +12385,7 @@ function handleImportStudentsFromExcel(e) {
   if (!file || !activeCourseForDetail) return;
 
   if (typeof XLSX === 'undefined') {
-    alert('Excel kütüphanesi henüz yüklenemedi.');
+    showModalAlert('Excel kütüphanesi henüz yüklenemedi.');
     return;
   }
 
@@ -12087,7 +12399,7 @@ function handleImportStudentsFromExcel(e) {
       const rows = XLSX.utils.sheet_to_json(worksheet, { defval: '' });
 
       if (!rows || rows.length === 0) {
-        alert('Excel dosyasında veri bulunamadı.');
+        showModalAlert('Excel dosyasında veri bulunamadı.');
         return;
       }
 
@@ -12174,10 +12486,10 @@ function handleImportStudentsFromExcel(e) {
 
       renderStudentTable();
       renderTeacherDashboard();
-      alert(`Excel aktarımı tamamlandı!\n• ${addedCount} yeni kursiyer eklendi.\n• ${updatedCount} kursiyer güncellendi.`);
+      showModalAlert(`Excel aktarımı tamamlandı!\n• ${addedCount} yeni kursiyer eklendi.\n• ${updatedCount} kursiyer güncellendi.`);
     } catch (err) {
       console.error('Excel okuma hatası:', err);
-      alert('Excel dosyası işlenirken hata oluştu: ' + err.message);
+      showModalAlert('Excel dosyası işlenirken hata oluştu: ' + err.message);
     } finally {
       e.target.value = '';
     }
@@ -12189,7 +12501,7 @@ function handleImportStudentsFromExcel(e) {
 
 function exportSystemBackupJson() {
   if (!isDeveloper(currentUser)) {
-    alert('Bu işlem yalnızca geliştirici yetkisine sahip kullanıcılar tarafından yapılabilir.');
+    showModalAlert('Bu işlem yalnızca geliştirici yetkisine sahip kullanıcılar tarafından yapılabilir.');
     return;
   }
 
@@ -12242,7 +12554,7 @@ async function handleImportSystemBackupJson(e) {
     try {
       const data = JSON.parse(evt.target.result);
       if (!data || (!data.courses && !data.users)) {
-        alert('Geçersiz yedek dosyası formatı!');
+        showModalAlert('Geçersiz yedek dosyası formatı!');
         return;
       }
 
@@ -12254,9 +12566,9 @@ async function handleImportSystemBackupJson(e) {
       loadData();
       renderTeacherDashboard();
       if (typeof renderAdminPanel === 'function') renderAdminPanel();
-      alert('Sistem yedeği başarıyla geri yüklendi!');
+      showModalAlert('Sistem yedeği başarıyla geri yüklendi!');
     } catch (err) {
-      alert('Yedek dosyası okunurken hata oluştu: ' + err.message);
+      showModalAlert('Yedek dosyası okunurken hata oluştu: ' + err.message);
     } finally {
       e.target.value = '';
     }
@@ -12996,7 +13308,7 @@ window.saveEditDevTodo = function(id) {
 
   const newText = input.value.trim();
   if (!newText) {
-    alert('Görev metni boş olamaz!');
+    showModalAlert('Görev metni boş olamaz!');
     return;
   }
 
@@ -13402,6 +13714,7 @@ function renderSupervisorCoursesTable() {
 
   // Tarihe göre azalan sıralama (En yeni kurs en üstte)
   filtered.sort((a, b) => new Date(b.startDate || 0) - new Date(a.startDate || 0));
+  window.__lastSupervisorFilteredCourses = filtered;
 
   // Sayaç ve özet metin
   if (supCourseCountText) {
@@ -13930,6 +14243,76 @@ function resetSupervisorFilters() {
   renderSupervisorCoursesTable();
 }
 
+window.exportSupervisorFilteredCoursesExcel = function() {
+  if (typeof XLSX === 'undefined') {
+    showModalAlert('Excel kütüphanesi henüz yüklenemedi. Lütfen internet bağlantınızı kontrol ediniz.', '⚠️ Excel Hatası', 'error');
+    return;
+  }
+
+  const list = Array.isArray(window.__lastSupervisorFilteredCourses)
+    ? window.__lastSupervisorFilteredCourses
+    : currentCourses;
+
+  if (!list || list.length === 0) {
+    showModalAlert('Dışa aktarılacak filtrelenmiş kurs bulunamadı.', 'ℹ️ Veri Yok', 'info');
+    return;
+  }
+
+  const rows = list.map((course, idx) => {
+    const st = calculateDetailedCourseStats(course);
+    const instName = course.instructor || getCourseInstructorName(course);
+    const centerName = getCourseCenterName(course);
+    const statusLabel = course.status === 'active'
+      ? 'Devam Ediyor'
+      : (course.status === 'cancelled' ? 'İptal Edildi' : 'Tamamlandı (Biten)');
+
+    return {
+      'Sıra No': idx + 1,
+      'Kurs Merkezi': centerName,
+      'Kurs Kodu': course.code || '-',
+      'Kurs Adı': course.name || '-',
+      'Alan / Branş': course.category || course.area || '-',
+      'Eğitmen': instName || '-',
+      'Başlama Tarihi': course.startDate ? formatDate(course.startDate) : '-',
+      'Bitiş Tarihi': course.endDate ? formatDate(course.endDate) : '-',
+      'Toplam Süre (Saat)': Number(course.totalHours) || 0,
+      'Belge Türü': course.documentType || 'Sertifika',
+      'Toplam Kursiyer': st.total,
+      'Devam Eden Kursiyer': st.continuing,
+      'Başarılı Kursiyer': st.passed,
+      'Kalan / Devamsız': st.absent,
+      'Hiç Gelmeyen': st.neverAttended,
+      'Kurs Durumu': statusLabel
+    };
+  });
+
+  const ws = XLSX.utils.json_to_sheet(rows);
+  ws['!cols'] = [
+    { wch: 8 },
+    { wch: 28 },
+    { wch: 14 },
+    { wch: 34 },
+    { wch: 24 },
+    { wch: 24 },
+    { wch: 15 },
+    { wch: 15 },
+    { wch: 16 },
+    { wch: 16 },
+    { wch: 15 },
+    { wch: 18 },
+    { wch: 16 },
+    { wch: 16 },
+    { wch: 14 },
+    { wch: 18 }
+  ];
+
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Denetim Raporu');
+  const todayStr = new Date().toISOString().slice(0, 10);
+  XLSX.writeFile(wb, `Izmir_Meslek_Fabrikasi_Kurs_Denetim_Raporu_${todayStr}.xlsx`);
+  showAutoSaveToast(`${rows.length} kursluk Excel raporu indirildi`);
+};
+
 function openSupervisorCourseModal(courseId, push = true) {
   const course = currentCourses.find(c => c.id === courseId);
   if (!course) return;
@@ -13988,19 +14371,19 @@ function openSupervisorCourseModal(courseId, push = true) {
         const isPassed = (hasScore && Number(std.examScore) >= 50) || (std.result && (std.result.includes('Başarılı') || std.result.includes('Belge') || std.result.includes('Sertifika') || std.result.includes('Katılım')));
         const isFailed = (hasScore && Number(std.examScore) < 50) || (std.result && std.result.includes('Başarısız'));
 
-        let badgeClass = 'bg-slate-100 text-slate-600';
+        let badgeClass = 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300';
         let badgeLabel = 'Devam Ediyor';
         if (isPassed) {
-          badgeClass = 'bg-emerald-100 text-emerald-800';
+          badgeClass = 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300';
           badgeLabel = 'Başarılı';
         } else if (isFailed) {
-          badgeClass = 'bg-rose-100 text-rose-800';
+          badgeClass = 'bg-rose-100 dark:bg-rose-950/60 text-rose-800 dark:text-rose-300';
           badgeLabel = 'Başarısız';
         }
 
         // Toplam devamsızlık saati
-        let totalAbsent = 0;
-        if (std.attendance) {
+        let totalAbsent = Number(std.absentHours || 0);
+        if (!totalAbsent && std.attendance && typeof std.attendance === 'object') {
           Object.values(std.attendance).forEach(val => {
             if (typeof val === 'number') totalAbsent += val;
             else if (val === 'absent') totalAbsent += (Number(course.dailyHours) || 2);
@@ -14011,7 +14394,7 @@ function openSupervisorCourseModal(courseId, push = true) {
           <tr class="hover:bg-slate-50 dark:hover:bg-[#1a292f] transition">
             <td class="px-3 py-2 text-center text-slate-400 font-mono text-[11px]">${idx + 1}</td>
             <td class="px-3 py-2 font-semibold text-slate-800 dark:text-slate-100">${escapeHtml(std.fullName || '-')}</td>
-            <td class="px-3 py-2 text-center font-mono text-slate-500">${escapeHtml(std.tc || '-')}</td>
+            <td class="px-3 py-2 text-center font-mono text-slate-500 dark:text-slate-400">${escapeHtml(std.tcNo || std.tc || '-')}</td>
             <td class="px-3 py-2 text-center font-bold ${hasScore && std.examScore >= 50 ? 'text-emerald-600' : (hasScore ? 'text-rose-600' : 'text-slate-400')}">${scoreText}</td>
             <td class="px-3 py-2 text-center font-mono ${totalAbsent > 0 ? 'text-amber-600 font-bold' : 'text-slate-400'}">${totalAbsent} Saat</td>
             <td class="px-3 py-2 text-center">
@@ -14046,7 +14429,7 @@ function closeSupervisorCourseModal(push = true) {
   }
 }
 
-// Sayfa Yenilemeden Otomatik Veri Senkronizasyonu (5 Saniyede Bir)
+// Sayfa Yenilemeden Otomatik Veri Senkronizasyonu (Realtime WebSocket + 30 Saniyelik Hafif Kontrol)
 let autoDataRefreshTimer = null;
 function startAutoDataRefresh() {
   if (autoDataRefreshTimer) return;
@@ -14099,7 +14482,7 @@ function startAutoDataRefresh() {
         }
       }
     }
-  }, 5000);
+  }, 30000);
 }
 
 window.initSupervisorDashboard = initSupervisorDashboard;

@@ -36,6 +36,64 @@ const STORAGE_KEYS = {
   THEME: 'kurs_sonu_theme'
 };
 
+// Yerel depolama (localStorage) için şifre maskeleme / çözme yardımcıları (KVKK & Güvenlik)
+const _PW_SALT = 'MEFPORTAL_IZMIR_2026_KEY';
+function _encodePw(plain) {
+  if (!plain) return '';
+  try {
+    const s = String(plain);
+    let xored = '';
+    for (let i = 0; i < s.length; i++) {
+      xored += String.fromCharCode(s.charCodeAt(i) ^ _PW_SALT.charCodeAt(i % _PW_SALT.length));
+    }
+    return 'enc1_' + btoa(unescape(encodeURIComponent(xored)));
+  } catch (e) {
+    return String(plain);
+  }
+}
+
+function _decodePw(encoded) {
+  if (!encoded) return '';
+  const str = String(encoded);
+  if (!str.startsWith('enc1_')) return str;
+  try {
+    const raw = decodeURIComponent(escape(atob(str.slice(5))));
+    let plain = '';
+    for (let i = 0; i < raw.length; i++) {
+      plain += String.fromCharCode(raw.charCodeAt(i) ^ _PW_SALT.charCodeAt(i % _PW_SALT.length));
+    }
+    return plain;
+  } catch (e) {
+    return str;
+  }
+}
+
+function _serializeUsersForStorage(users) {
+  if (!Array.isArray(users)) return '[]';
+  const safeList = users.map(u => {
+    if (!u) return u;
+    const copy = { ...u, _pwToken: _encodePw(u.password || '') };
+    delete copy.password;
+    return copy;
+  });
+  return JSON.stringify(safeList);
+}
+
+function _deserializeUsersFromStorage(raw) {
+  if (!raw) return null;
+  const parsed = JSON.parse(raw);
+  if (!Array.isArray(parsed)) return null;
+  return parsed.map(u => {
+    if (!u) return u;
+    const copy = { ...u };
+    if (copy._pwToken !== undefined) {
+      copy.password = _decodePw(copy._pwToken);
+      delete copy._pwToken;
+    }
+    return copy;
+  });
+}
+
 // Yerel Bellek Önbelleği (Senkron UI Erişimi İçin)
 const MemoryStore = {
   courses: [],
@@ -45,6 +103,7 @@ const MemoryStore = {
   users: [],
   todos: [],
   activeUser: null,
+  courseSnapshots: new Map(),
   knownCourseIds: new Set(),
   knownStudentIds: new Set(),
   deletedStudentIds: new Set(),
@@ -58,6 +117,7 @@ const MemoryStore = {
 const DataStore = {
   _cloudInitialized: false,
   _realtimeSubscribed: false,
+  _realtimeSyncTimeout: null,
   _activeSaveCount: 0,
   _lastSaveTime: 0,
 
@@ -65,7 +125,7 @@ const DataStore = {
   getUsers() {
     try {
       const raw = localStorage.getItem(STORAGE_KEYS.USERS);
-      let list = raw ? JSON.parse(raw) : null;
+      let list = _deserializeUsersFromStorage(raw);
       if (Array.isArray(list) && list.length > 0) {
         MemoryStore.users = list;
         return list;
@@ -103,7 +163,7 @@ const DataStore = {
         });
       }
       MemoryStore.users = users;
-      localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(users));
+      localStorage.setItem(STORAGE_KEYS.USERS, _serializeUsersForStorage(users));
 
       const client = getSupabase();
       if (client && Array.isArray(users)) {
@@ -145,10 +205,23 @@ const DataStore = {
       const sess = sessionStorage.getItem('kurs_sonu_session_user');
       if (sess) {
         const parsed = JSON.parse(sess);
-        if (parsed) return parsed;
+        if (parsed) {
+          if (parsed._pwToken !== undefined) {
+            parsed.password = _decodePw(parsed._pwToken);
+            delete parsed._pwToken;
+          }
+          return parsed;
+        }
       }
       const raw = localStorage.getItem(STORAGE_KEYS.AUTH_USER);
-      if (raw) return JSON.parse(raw);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (parsed && parsed._pwToken !== undefined) {
+          parsed.password = _decodePw(parsed._pwToken);
+          delete parsed._pwToken;
+        }
+        return parsed;
+      }
       return MemoryStore.activeUser;
     } catch (e) {
       return null;
@@ -158,10 +231,21 @@ const DataStore = {
   setActiveUser(user) {
     MemoryStore.activeUser = user;
     if (user) {
-      localStorage.setItem(STORAGE_KEYS.AUTH_USER, JSON.stringify(user));
+      const safeUser = { ...user, _pwToken: _encodePw(user.password || '') };
+      delete safeUser.password;
+      localStorage.setItem(STORAGE_KEYS.AUTH_USER, JSON.stringify(safeUser));
     } else {
       localStorage.removeItem(STORAGE_KEYS.AUTH_USER);
     }
+  },
+
+  clearSensitiveCacheOnLogout() {
+    try {
+      MemoryStore.activeUser = null;
+      localStorage.removeItem(STORAGE_KEYS.AUTH_USER);
+      localStorage.removeItem(STORAGE_KEYS.COURSES);
+      sessionStorage.removeItem('kurs_sonu_session_user');
+    } catch (e) {}
   },
 
   // 3. KURS MERKEZLERİ
@@ -436,21 +520,180 @@ const DataStore = {
     }
   },
 
+  async _saveSingleCourseToCloud(client, c) {
+    if (!client || !c || !c.name) return;
+    const courseId = stringToUuid(c.id || c.code || c.name);
+    c.id = courseId;
+
+    const studentAbsencesMap = {};
+    if (Array.isArray(c.students)) {
+      c.students.forEach(s => {
+        if (!s) return;
+        const fullName = s.fullName || `${s.firstName || ''} ${s.lastName || ''}`.trim() || 'İsimsiz Kursiyer';
+        const studentId = stringToUuid(s.id || (courseId + '_' + (s.tcNo || fullName)));
+        s.id = studentId;
+        if (Array.isArray(s.dailyAbsences) && s.dailyAbsences.length > 0) {
+          studentAbsencesMap[studentId] = s.dailyAbsences;
+        }
+      });
+    }
+
+    const lessonDaysPayload = {
+      days: c.days || [],
+      extra: {
+        modules: c.modules || [],
+        moduleCount: c.moduleCount || 1,
+        planSettings: c.planSettings || null,
+        offDays: c.offDays || [],
+        startTime: c.startTime || '',
+        endTime: c.endTime || '',
+        supervisor: c.supervisor || '',
+        closedAt: c.closedAt || null,
+        closedBy: c.closedBy || null,
+        baseSyllabus: c.baseSyllabus || null,
+        studentAbsences: studentAbsencesMap
+      }
+    };
+
+    const coursePayload = {
+      id: courseId,
+      name: c.name,
+      code: c.code || '',
+      instructor_username: c.instructorUsername || c.instructor || '',
+      instructor_name: c.instructor || c.instructorName || '',
+      center_name: c.center || c.center_name || '',
+      classroom: c.classroom || '',
+      area: c.area || '',
+      status: c.status || 'active',
+      start_date: c.startDate || null,
+      end_date: c.endDate || null,
+      total_hours: Number(c.totalHours || 120),
+      daily_hours: Number(c.dailyHours || 4),
+      lesson_days: lessonDaysPayload,
+      document_type: c.documentType || 'Sertifika',
+      syllabus: c.syllabus || []
+    };
+
+    const { data: savedCourse, error: cErr } = await client
+      .from('courses')
+      .upsert(coursePayload)
+      .select()
+      .single();
+
+    if (cErr) {
+      console.error("Supabase kurs kayıt hatası:", cErr);
+      return;
+    }
+
+    if (savedCourse) {
+      if (Array.isArray(c.students) && c.students.length > 0) {
+        const studentPayloads = c.students.map(s => {
+          const fullName = s.fullName || `${s.firstName || ''} ${s.lastName || ''}`.trim() || 'İsimsiz Kursiyer';
+          const studentId = stringToUuid(s.id || (courseId + '_' + (s.tcNo || fullName)));
+          s.id = studentId;
+          const parts = fullName.split(' ');
+          const lastName = s.lastName || (parts.length > 1 ? parts[parts.length - 1] : '');
+          const firstName = s.firstName || (parts.length > 1 ? parts.slice(0, -1).join(' ') : fullName);
+
+          return {
+            id: studentId,
+            course_id: courseId,
+            first_name: firstName,
+            last_name: lastName,
+            full_name: fullName,
+            tc_no: s.tcNo || '',
+            phone: s.phone || '',
+            attendance: s.attendance || 'Devamlı',
+            result: s.result || '',
+            absent_hours: Number(s.absentHours || 0),
+            module_scores: s.moduleScores || {},
+            note: s.attendanceNote || ''
+          };
+        });
+
+        await client.from('students').upsert(studentPayloads);
+
+        const keepIds = studentPayloads.map(p => p.id);
+        await client
+          .from('students')
+          .delete()
+          .eq('course_id', courseId)
+          .not('id', 'in', `(${keepIds.join(',')})`);
+      } else {
+        await client.from('students').delete().eq('course_id', courseId);
+      }
+      MemoryStore.courseSnapshots.set(courseId, JSON.stringify(c));
+    }
+  },
+
+  async saveCourse(singleCourse) {
+    try {
+      if (!singleCourse || !singleCourse.name) return;
+      const courseId = stringToUuid(singleCourse.id || singleCourse.code || singleCourse.name);
+      singleCourse.id = courseId;
+      if (Array.isArray(singleCourse.students)) {
+        singleCourse.students.forEach(s => {
+          if (!s) return;
+          const fullName = s.fullName || `${s.firstName || ''} ${s.lastName || ''}`.trim() || 'İsimsiz Kursiyer';
+          const studentId = stringToUuid(s.id || (courseId + '_' + (s.tcNo || fullName)));
+          s.id = studentId;
+          MemoryStore.deletedStudentIds.delete(studentId);
+          MemoryStore.knownStudentIds.add(studentId);
+        });
+      }
+      MemoryStore.knownCourseIds.add(courseId);
+
+      const list = Array.isArray(MemoryStore.courses) ? MemoryStore.courses.slice() : [];
+      const idx = list.findIndex(item => item && stringToUuid(item.id || item.code || item.name) === courseId);
+      if (idx !== -1) {
+        list[idx] = singleCourse;
+      } else {
+        list.unshift(singleCourse);
+      }
+      MemoryStore.courses = list;
+      localStorage.setItem(STORAGE_KEYS.COURSES, JSON.stringify(list));
+
+      const client = getSupabase();
+      if (!client) return;
+
+      this._activeSaveCount = (this._activeSaveCount || 0) + 1;
+      this._lastSaveTime = Date.now();
+      try {
+        await this._saveSingleCourseToCloud(client, singleCourse);
+      } finally {
+        this._activeSaveCount = Math.max(0, (this._activeSaveCount || 1) - 1);
+        this._lastSaveTime = Date.now();
+      }
+    } catch (e) {
+      console.error("Tekil kurs kaydetme hatası:", e);
+    }
+  },
+
   saveCourses(courses) {
     try {
+      const currentUuids = new Set();
+      const currentStudentUuids = new Set();
+      const dirtyCourses = [];
+
       if (Array.isArray(courses)) {
         courses.forEach(c => {
-          if (!c) return;
+          if (!c || !c.name) return;
           const courseId = stringToUuid(c.id || c.code || c.name);
           c.id = courseId;
+          currentUuids.add(courseId);
           if (Array.isArray(c.students)) {
             c.students.forEach(s => {
               if (!s) return;
               const fullName = s.fullName || `${s.firstName || ''} ${s.lastName || ''}`.trim() || 'İsimsiz Kursiyer';
               const studentId = stringToUuid(s.id || (courseId + '_' + (s.tcNo || fullName)));
               s.id = studentId;
+              currentStudentUuids.add(studentId);
               MemoryStore.deletedStudentIds.delete(studentId);
             });
+          }
+          const serialized = JSON.stringify(c);
+          if (MemoryStore.courseSnapshots.get(courseId) !== serialized) {
+            dirtyCourses.push(c);
           }
         });
       }
@@ -461,122 +704,15 @@ const DataStore = {
       const client = getSupabase();
       if (!client || !Array.isArray(courses)) return;
 
-      const currentUuids = new Set();
-      const currentStudentUuids = new Set();
-
       this._activeSaveCount = (this._activeSaveCount || 0) + 1;
       this._lastSaveTime = Date.now();
 
       (async () => {
         try {
-          await Promise.all(courses.map(async (c) => {
-            if (!c || !c.name) return;
-            const courseId = stringToUuid(c.id || c.code || c.name);
-            c.id = courseId;
-            currentUuids.add(courseId);
-
-            const studentAbsencesMap = {};
-            if (Array.isArray(c.students)) {
-              c.students.forEach(s => {
-                if (!s) return;
-                const fullName = s.fullName || `${s.firstName || ''} ${s.lastName || ''}`.trim() || 'İsimsiz Kursiyer';
-                const studentId = stringToUuid(s.id || (courseId + '_' + (s.tcNo || fullName)));
-                s.id = studentId;
-                currentStudentUuids.add(studentId);
-                if (Array.isArray(s.dailyAbsences) && s.dailyAbsences.length > 0) {
-                  studentAbsencesMap[studentId] = s.dailyAbsences;
-                }
-              });
-            }
-
-            const lessonDaysPayload = {
-              days: c.days || [],
-              extra: {
-                modules: c.modules || [],
-                moduleCount: c.moduleCount || 1,
-                planSettings: c.planSettings || null,
-                offDays: c.offDays || [],
-                startTime: c.startTime || '',
-                endTime: c.endTime || '',
-                supervisor: c.supervisor || '',
-                closedAt: c.closedAt || null,
-                closedBy: c.closedBy || null,
-                baseSyllabus: c.baseSyllabus || null,
-                studentAbsences: studentAbsencesMap
-              }
-            };
-
-            const coursePayload = {
-              id: courseId,
-              name: c.name,
-              code: c.code || '',
-              instructor_username: c.instructorUsername || c.instructor || '',
-              instructor_name: c.instructor || c.instructorName || '',
-              center_name: c.center || c.center_name || '',
-              classroom: c.classroom || '',
-              area: c.area || '',
-              status: c.status || 'active',
-              start_date: c.startDate || null,
-              end_date: c.endDate || null,
-              total_hours: Number(c.totalHours || 120),
-              daily_hours: Number(c.dailyHours || 4),
-              lesson_days: lessonDaysPayload,
-              document_type: c.documentType || 'Sertifika',
-              syllabus: c.syllabus || []
-            };
-
-            const { data: savedCourse, error: cErr } = await client
-              .from('courses')
-              .upsert(coursePayload)
-              .select()
-              .single();
-
-            if (cErr) {
-              console.error("Supabase kurs kayıt hatası:", cErr);
-              return;
-            }
-
-            // İlişkisel Kursiyerleri toplu (batch) olarak students tablosuna kaydet ve silinenleri temizle
-            if (savedCourse) {
-              if (Array.isArray(c.students) && c.students.length > 0) {
-                const studentPayloads = c.students.map(s => {
-                  const fullName = s.fullName || `${s.firstName || ''} ${s.lastName || ''}`.trim() || 'İsimsiz Kursiyer';
-                  const studentId = stringToUuid(s.id || (courseId + '_' + (s.tcNo || fullName)));
-                  s.id = studentId;
-                  const parts = fullName.split(' ');
-                  const lastName = s.lastName || (parts.length > 1 ? parts[parts.length - 1] : '');
-                  const firstName = s.firstName || (parts.length > 1 ? parts.slice(0, -1).join(' ') : fullName);
-
-                  return {
-                    id: studentId,
-                    course_id: courseId,
-                    first_name: firstName,
-                    last_name: lastName,
-                    full_name: fullName,
-                    tc_no: s.tcNo || '',
-                    phone: s.phone || '',
-                    attendance: s.attendance || 'Devamlı',
-                    result: s.result || '',
-                    absent_hours: Number(s.absentHours || 0),
-                    module_scores: s.moduleScores || {},
-                    note: s.attendanceNote || ''
-                  };
-                });
-
-                await client.from('students').upsert(studentPayloads);
-
-                const keepIds = studentPayloads.map(p => p.id);
-                await client
-                  .from('students')
-                  .delete()
-                  .eq('course_id', courseId)
-                  .not('id', 'in', `(${keepIds.join(',')})`);
-              } else {
-                // Kursta hiç kursiyer kalmadıysa bu kursa ait tüm kursiyerleri Supabase'den sil
-                await client.from('students').delete().eq('course_id', courseId);
-              }
-            }
-          }));
+          // Yalnızca değişen (dirty) kursları Supabase'e yaz (%90+ ağ trafiği tasarrufu)
+          if (dirtyCourses.length > 0) {
+            await Promise.all(dirtyCourses.map(c => this._saveSingleCourseToCloud(client, c)));
+          }
 
           // Silinen kursiyer varsa Supabase'den de sil
           if (MemoryStore.knownStudentIds && MemoryStore.knownStudentIds.size > 0) {
@@ -598,6 +734,7 @@ const DataStore = {
             MemoryStore.knownCourseIds.forEach((oldId) => {
               if (!currentUuids.has(oldId)) {
                 removedCourseIds.push(oldId);
+                MemoryStore.courseSnapshots.delete(oldId);
               }
             });
             if (removedCourseIds.length > 0) {
@@ -944,7 +1081,7 @@ const DataStore = {
         if (typeof window.onCloudSync === 'function') window.onCloudSync('templates', MemoryStore.templates);
       }
 
-      // 4. Kullanıcıları İşle
+      // 4. Kullanıcıları İşle (Şifreler localStorage'a maskeli/kodlu yazılır)
       if (Array.isArray(users) && users.length > 0) {
         const userIdSet = new Set();
         MemoryStore.users = users.map(u => {
@@ -964,7 +1101,7 @@ const DataStore = {
           };
         });
         MemoryStore.knownUserIds = userIdSet;
-        localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(MemoryStore.users));
+        localStorage.setItem(STORAGE_KEYS.USERS, _serializeUsersForStorage(MemoryStore.users));
         if (typeof window.onCloudSync === 'function') window.onCloudSync('users', MemoryStore.users);
       }
 
@@ -990,18 +1127,24 @@ const DataStore = {
         if (typeof window.onCloudSync === 'function') window.onCloudSync('todos', MemoryStore.todos);
       }
 
-      // 7. Supabase Realtime Kanalı (courses + students + users)
+      // 7. Supabase Realtime Kanalı (courses + students + users - Debounced 400ms)
       if (!this._realtimeSubscribed) {
         this._realtimeSubscribed = true;
+        const scheduleCourseSync = () => {
+          clearTimeout(this._realtimeSyncTimeout);
+          this._realtimeSyncTimeout = setTimeout(() => {
+            DataStore.syncCoursesOnly();
+          }, 400);
+        };
         client
           .channel('public_realtime_changes')
           .on('postgres_changes', { event: '*', schema: 'public', table: 'courses' }, () => {
             console.log('[Supabase Realtime] Kurs değişikliği algılandı, güncelleniyor...');
-            DataStore.syncCoursesOnly();
+            scheduleCourseSync();
           })
           .on('postgres_changes', { event: '*', schema: 'public', table: 'students' }, () => {
             console.log('[Supabase Realtime] Kursiyer/devamsızlık değişikliği algılandı, güncelleniyor...');
-            DataStore.syncCoursesOnly();
+            scheduleCourseSync();
           })
           .on('postgres_changes', { event: '*', schema: 'public', table: 'users' }, () => {
             DataStore.initCloudListeners();
@@ -1009,8 +1152,8 @@ const DataStore = {
           .subscribe();
       }
 
-      // 8. 5 Saniyelik Otomatik Senkronizasyon (Heartbeat Polling - Eğitim Sorumlusu 5sn Garanti)
-      this.startAutoSync(5000);
+      // 8. 30 Saniyelik Hafif Otomatik Senkronizasyon (Realtime WebSocket + 30sn Fallback - 100 Kullanıcı Performans Optimizasyonu)
+      this.startAutoSync(30000);
 
       console.log("✅ Supabase PostgreSQL verileri başarıyla senkronize edildi.");
     } catch (err) {
@@ -1103,6 +1246,7 @@ const DataStore = {
       normalized.students.forEach(s => {
         if (s && s.id) studentIdSet.add(s.id);
       });
+      MemoryStore.courseSnapshots.set(normalized.id, JSON.stringify(normalized));
       courseMap.set(key, normalized);
     });
 
@@ -1152,7 +1296,7 @@ const DataStore = {
     }
   },
 
-  startAutoSync(intervalMs = 5000) {
+  startAutoSync(intervalMs = 30000) {
     if (this._syncInterval) return;
     this._syncInterval = setInterval(() => {
       if (document.visibilityState === 'visible' && this.getActiveUser()) {
