@@ -375,6 +375,22 @@ const countAll = document.getElementById('countAll');
 const countActive = document.getElementById('countActive');
 const countCompleted = document.getElementById('countCompleted');
 
+// Geliştirici Kurs Filtreleme & Sıralama Paneli Elemanları
+const devCourseFiltersPanel = document.getElementById('devCourseFiltersPanel');
+const devCourseFilterCenter = document.getElementById('devCourseFilterCenter');
+const devCourseFilterArea = document.getElementById('devCourseFilterArea');
+const devCourseFilterInstructor = document.getElementById('devCourseFilterInstructor');
+const devCourseFilterDocType = document.getElementById('devCourseFilterDocType');
+const devCourseSortSelect = document.getElementById('devCourseSortSelect');
+const devCourseResetFiltersBtn = document.getElementById('devCourseResetFiltersBtn');
+const devCourseFilterResultBadge = document.getElementById('devCourseFilterResultBadge');
+
+let devFilterCenter = 'all';
+let devFilterArea = 'all';
+let devFilterInstructor = 'all';
+let devFilterDocType = 'all';
+let devCourseSort = 'startDate_desc';
+
 const courseListGrid = document.getElementById('courseListGrid');
 const noCoursesState = document.getElementById('noCoursesState');
 const openNewCourseModalBtn = document.getElementById('openNewCourseModalBtn');
@@ -1656,6 +1672,55 @@ function setupEventListeners() {
   filterAllBtn.addEventListener('click', () => setCourseFilter('all'));
   filterActiveBtn.addEventListener('click', () => setCourseFilter('active'));
   filterCompletedBtn.addEventListener('click', () => setCourseFilter('completed'));
+
+  // Geliştirici Kurs Filtreleme & Sıralama Olay Dinleyicileri
+  if (devCourseFilterCenter) {
+    devCourseFilterCenter.addEventListener('change', (e) => {
+      devFilterCenter = e.target.value;
+      renderCourseList();
+    });
+  }
+  if (devCourseFilterArea) {
+    devCourseFilterArea.addEventListener('change', (e) => {
+      devFilterArea = e.target.value;
+      renderCourseList();
+    });
+  }
+  if (devCourseFilterInstructor) {
+    devCourseFilterInstructor.addEventListener('change', (e) => {
+      devFilterInstructor = e.target.value;
+      renderCourseList();
+    });
+  }
+  if (devCourseFilterDocType) {
+    devCourseFilterDocType.addEventListener('change', (e) => {
+      devFilterDocType = e.target.value;
+      renderCourseList();
+    });
+  }
+  if (devCourseSortSelect) {
+    devCourseSortSelect.addEventListener('change', (e) => {
+      devCourseSort = e.target.value;
+      renderCourseList();
+    });
+  }
+  if (devCourseResetFiltersBtn) {
+    devCourseResetFiltersBtn.addEventListener('click', () => {
+      devFilterCenter = 'all';
+      devFilterArea = 'all';
+      devFilterInstructor = 'all';
+      devFilterDocType = 'all';
+      devCourseSort = 'startDate_desc';
+      searchQuery = '';
+      if (searchCourseInput) searchCourseInput.value = '';
+      if (devCourseFilterCenter) devCourseFilterCenter.value = 'all';
+      if (devCourseFilterArea) devCourseFilterArea.value = 'all';
+      if (devCourseFilterInstructor) devCourseFilterInstructor.value = 'all';
+      if (devCourseFilterDocType) devCourseFilterDocType.value = 'all';
+      if (devCourseSortSelect) devCourseSortSelect.value = 'startDate_desc';
+      setCourseFilter('all');
+    });
+  }
 
   // Eğitmen Yeni Kurs Modalı
   openNewCourseModalBtn.addEventListener('click', () => openCourseModal());
@@ -3237,6 +3302,84 @@ function setCourseFilter(filter) {
   renderCourseList();
 }
 
+function populateDevCourseFilterOptions(userCourses) {
+  if (!devCourseFiltersPanel) return;
+
+  const isDev = isDeveloper(currentUser);
+  if (!isDev) {
+    devCourseFiltersPanel.classList.add('hidden');
+    return;
+  }
+  devCourseFiltersPanel.classList.remove('hidden');
+
+  // 1) Kurs Merkezleri
+  if (devCourseFilterCenter) {
+    const centerSet = new Set();
+    (currentCenters || []).forEach(c => {
+      if (c && c.name && c.name.trim()) centerSet.add(c.name.trim());
+    });
+    (userCourses || []).forEach(c => {
+      const centerName = (typeof getCourseInstitutionName === 'function' ? getCourseInstitutionName(c) : (c.center || c.institution || '')).trim();
+      if (centerName && centerName !== 'Belirtilmemiş') centerSet.add(centerName);
+    });
+    const sortedCenters = Array.from(centerSet).sort((a, b) => a.localeCompare(b, 'tr'));
+    const prevCenter = devFilterCenter;
+    devCourseFilterCenter.innerHTML = `<option value="all">Tüm Merkezler (${sortedCenters.length})</option>` +
+      sortedCenters.map(name => `<option value="${escapeHtml(name)}">${escapeHtml(name)}</option>`).join('');
+    if (prevCenter !== 'all' && sortedCenters.includes(prevCenter)) {
+      devCourseFilterCenter.value = prevCenter;
+    } else {
+      devFilterCenter = 'all';
+      devCourseFilterCenter.value = 'all';
+    }
+  }
+
+  // 2) Kurs Alanları / Branşlar
+  if (devCourseFilterArea) {
+    const areaSet = new Set();
+    (currentAreas || []).forEach(a => {
+      if (a && a.name && a.name.trim()) areaSet.add(a.name.trim());
+    });
+    (userCourses || []).forEach(c => {
+      const areaName = String(c.category || c.area || '').trim();
+      if (areaName) areaSet.add(areaName);
+    });
+    const sortedAreas = Array.from(areaSet).sort((a, b) => a.localeCompare(b, 'tr'));
+    const prevArea = devFilterArea;
+    devCourseFilterArea.innerHTML = `<option value="all">Tüm Alanlar / Branşlar (${sortedAreas.length})</option>` +
+      sortedAreas.map(name => `<option value="${escapeHtml(name)}">${escapeHtml(name)}</option>`).join('');
+    if (prevArea !== 'all' && sortedAreas.includes(prevArea)) {
+      devCourseFilterArea.value = prevArea;
+    } else {
+      devFilterArea = 'all';
+      devCourseFilterArea.value = 'all';
+    }
+  }
+
+  // 3) Eğitmenler
+  if (devCourseFilterInstructor) {
+    const instructorSet = new Set();
+    (userCourses || []).forEach(c => {
+      const instName = (typeof getCourseInstructorName === 'function' ? getCourseInstructorName(c) : (c.instructor || c.teacherName || '')).trim();
+      if (instName && instName !== 'Atanmadı') instructorSet.add(instName);
+    });
+    (currentUsers || []).forEach(u => {
+      const fullName = `${u.firstName || ''} ${u.lastName || ''}`.trim() || (u.name || '').trim();
+      if (fullName) instructorSet.add(fullName);
+    });
+    const sortedInstructors = Array.from(instructorSet).sort((a, b) => a.localeCompare(b, 'tr'));
+    const prevInst = devFilterInstructor;
+    devCourseFilterInstructor.innerHTML = `<option value="all">Tüm Eğitmenler (${sortedInstructors.length})</option>` +
+      sortedInstructors.map(name => `<option value="${escapeHtml(name)}">${escapeHtml(name)}</option>`).join('');
+    if (prevInst !== 'all' && sortedInstructors.includes(prevInst)) {
+      devCourseFilterInstructor.value = prevInst;
+    } else {
+      devFilterInstructor = 'all';
+      devCourseFilterInstructor.value = 'all';
+    }
+  }
+}
+
 function renderTeacherDashboard() {
   loadData();
   try {
@@ -3275,24 +3418,99 @@ function renderTeacherDashboard() {
   countActive.innerText = active;
   countCompleted.innerText = completed;
 
+  populateDevCourseFilterOptions(userCourses);
   renderCourseList();
 }
 
 function renderCourseList() {
+  const isDev = isDeveloper(currentUser);
+  if (devCourseFiltersPanel) {
+    devCourseFiltersPanel.classList.toggle('hidden', !isDev);
+  }
+
   // Geliştirici kullanıcılar tüm kursları görebilir; normal kullanıcılar yalnızca kendisiyle ilgili kursları görür
-  const userCourses = isDeveloper(currentUser)
+  const userCourses = isDev
     ? currentCourses
     : currentCourses.filter(c => isCourseRelatedToUser(c, currentUser));
 
-  const filtered = userCourses.filter(course => {
-    const matchesFilter = (currentFilter === 'all') || (course.status === currentFilter);
-    const matchesSearch = 
-      course.name.toLowerCase().includes(searchQuery) ||
-      (course.code && course.code.toLowerCase().includes(searchQuery)) ||
-      (course.category && course.category.toLowerCase().includes(searchQuery));
+  // Önce geliştirici alt filtrelerini ve arama sorgusunu uygula (Durum sekmesi sayaçlarını da dinamik güncellemek için)
+  const preStatusFiltered = userCourses.filter(course => {
+    const centerName = (typeof getCourseInstitutionName === 'function' ? getCourseInstitutionName(course) : (course.center || course.institution || '')).trim();
+    const areaName = String(course.category || course.area || '').trim();
+    const instructorName = (typeof getCourseInstructorName === 'function' ? getCourseInstructorName(course) : (course.instructor || course.teacherName || '')).trim();
+    const docType = String(course.documentType || 'Sertifika').trim();
 
-    return matchesFilter && matchesSearch;
+    const matchesSearch = !searchQuery ||
+      (course.name && course.name.toLowerCase().includes(searchQuery)) ||
+      (course.code && course.code.toLowerCase().includes(searchQuery)) ||
+      (areaName && areaName.toLowerCase().includes(searchQuery)) ||
+      (isDev && instructorName && instructorName.toLowerCase().includes(searchQuery)) ||
+      (isDev && centerName && centerName.toLowerCase().includes(searchQuery));
+
+    if (!matchesSearch) return false;
+
+    if (isDev) {
+      if (devFilterCenter !== 'all' && centerName !== devFilterCenter) return false;
+      if (devFilterArea !== 'all' && areaName !== devFilterArea) return false;
+      if (devFilterInstructor !== 'all' && instructorName !== devFilterInstructor) return false;
+      if (devFilterDocType !== 'all' && docType !== devFilterDocType) return false;
+    }
+
+    return true;
   });
+
+  // Sekme sayaçlarını aktif filtrelere göre güncelle
+  if (countAll) countAll.innerText = preStatusFiltered.length;
+  if (countActive) countActive.innerText = preStatusFiltered.filter(c => c.status === 'active').length;
+  if (countCompleted) countCompleted.innerText = preStatusFiltered.filter(c => c.status === 'completed').length;
+
+  const filtered = preStatusFiltered.filter(course => {
+    return (currentFilter === 'all') || (course.status === currentFilter);
+  });
+
+  // Geliştirici sıralama ölçütünü uygula
+  if (isDev && devCourseSort) {
+    filtered.sort((a, b) => {
+      switch (devCourseSort) {
+        case 'startDate_desc':
+          return String(b.startDate || '').localeCompare(String(a.startDate || ''));
+        case 'startDate_asc':
+          return String(a.startDate || '9999-99-99').localeCompare(String(b.startDate || '9999-99-99'));
+        case 'endDate_asc':
+          return String(a.endDate || '9999-99-99').localeCompare(String(b.endDate || '9999-99-99'));
+        case 'endDate_desc':
+          return String(b.endDate || '').localeCompare(String(a.endDate || ''));
+        case 'name_asc':
+          return String(a.name || '').localeCompare(String(b.name || ''), 'tr');
+        case 'name_desc':
+          return String(b.name || '').localeCompare(String(a.name || ''), 'tr');
+        case 'instructor_asc': {
+          const instA = typeof getCourseInstructorName === 'function' ? getCourseInstructorName(a) : (a.instructor || '');
+          const instB = typeof getCourseInstructorName === 'function' ? getCourseInstructorName(b) : (b.instructor || '');
+          return String(instA).localeCompare(String(instB), 'tr');
+        }
+        case 'center_asc': {
+          const centA = typeof getCourseInstitutionName === 'function' ? getCourseInstitutionName(a) : (a.center || '');
+          const centB = typeof getCourseInstitutionName === 'function' ? getCourseInstitutionName(b) : (b.center || '');
+          return String(centA).localeCompare(String(centB), 'tr');
+        }
+        case 'students_desc':
+          return (b.students?.length || 0) - (a.students?.length || 0);
+        case 'students_asc':
+          return (a.students?.length || 0) - (b.students?.length || 0);
+        case 'hours_desc':
+          return (Number(b.totalHours) || 0) - (Number(a.totalHours) || 0);
+        default:
+          return 0;
+      }
+    });
+  }
+
+  // Geliştirici sonuç rozetini güncelle
+  if (isDev && devCourseFilterResultBadge) {
+    const filteredStudentsCount = filtered.reduce((sum, c) => sum + (c.students?.length || 0), 0);
+    devCourseFilterResultBadge.innerText = `${filtered.length} Kurs (${filteredStudentsCount} Kursiyer) Listeleniyor`;
+  }
 
   courseListGrid.innerHTML = '';
 
