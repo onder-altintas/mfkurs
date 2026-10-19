@@ -1706,11 +1706,13 @@ function setupEventListeners() {
     const uName = loginUsernameInput.value.trim().toLowerCase();
     const pass = loginPasswordInput.value.trim();
 
-    const users = DataStore.getUsers();
-    const found = users.find((u) => 
-      (u.username.toLowerCase() === uName || (typeof normalizeUsername === 'function' && normalizeUsername(u.username) === normalizeUsername(uName))) && 
-      (typeof window.verifyPassword === 'function' ? window.verifyPassword(pass, u.password) : u.password === pass)
-    );
+    const found = users.find((u) => {
+      const dbUser = (u.username || '').toLowerCase();
+      const matchUser = (dbUser === uName) ||
+        (typeof normalizeUsername === 'function' && normalizeUsername(u.username) === normalizeUsername(uName)) ||
+        ((uName === 'egitimsorumlusu' || uName === 'kurssorumlusu') && (dbUser === 'egitimsorumlusu' || dbUser === 'kurssorumlusu' || u.role === 'supervisor'));
+      return matchUser && (typeof window.verifyPassword === 'function' ? window.verifyPassword(pass, u.password) : u.password === pass);
+    });
 
     if (found) {
       currentUser = found;
