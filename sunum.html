@@ -1,0 +1,1652 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Meslek Fabrikası - Kurs & Resmi Evrak Yönetim Sistemi (MEFPORTAL) Yönetici Sunumu</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #335C67;
+      --primary-dark: #1d353c;
+      --accent: #540B0E;
+      --gold: #E09F3E;
+      --cream: #FFF3B0;
+      --bg-slate: #f8fafc;
+      --text-main: #0f172a;
+      --text-muted: #475569;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #0f172a;
+      color: var(--text-main);
+      overflow-x: hidden;
+    }
+
+    /* Interactive Presentation Toolbar (Hidden in Print/PDF) */
+    .deck-toolbar {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 9999;
+      background: rgba(15, 23, 42, 0.92);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 8px 16px;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: #fff;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    }
+
+    .deck-toolbar button {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #fff;
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .deck-toolbar button:hover {
+      background: var(--gold);
+      color: #0f172a;
+    }
+
+    .deck-toolbar .print-btn {
+      background: linear-gradient(135deg, #E09F3E, #d97706);
+      color: #0f172a;
+      border: none;
+    }
+
+    .deck- status {
+      font-size: 13px;
+      font-weight: 700;
+      min-width: 90px;
+      text-align: center;
+    }
+
+    /* Slide Container: 16:9 Widescreen (1600x900 logical layout) */
+    .deck-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 32px;
+      padding: 32px 16px 100px;
+    }
+
+    .slide {
+      width: 1600px;
+      height: 900px;
+      background: #ffffff;
+      border-radius: 24px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      padding: 44px 56px;
+      position: relative;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.45);
+      page-break-after: always;
+      break-after: page;
+    }
+
+    .slide::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 8px;
+      background: linear-gradient(90deg, var(--primary) 0%, var(--gold) 50%, var(--accent) 100%);
+    }
+
+    /* Cover Slide */
+    .slide-cover {
+      background: radial-gradient(circle at 85% 20%, #2a4d57 0%, #16262b 55%, #0f191c 100%);
+      color: #ffffff;
+      padding: 56px 64px;
+      justify-content: center;
+    }
+
+    .cover-layout {
+      display: grid;
+      grid-template-columns: 1.05fr 1.15fr;
+      gap: 44px;
+      align-items: center;
+      height: 100%;
+    }
+
+    .cover-tag {
+      display: inline-block;
+      background: rgba(255, 243, 176, 0.14);
+      border: 1px solid rgba(255, 243, 176, 0.35);
+      color: var(--cream);
+      padding: 8px 16px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      margin-bottom: 22px;
+    }
+
+    .cover-title {
+      font-size: 44px;
+      font-weight: 800;
+      line-height: 1.15;
+      margin-bottom: 18px;
+      color: #ffffff;
+    }
+
+    .cover-subtitle {
+      font-size: 18px;
+      line-height: 1.55;
+      color: #cbd5e1;
+      margin-bottom: 32px;
+    }
+
+    .cover-kpi-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+
+    .cover-kpi-card {
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 16px;
+      padding: 18px 20px;
+    }
+
+    .cover-kpi-val {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--cream);
+      margin-bottom: 4px;
+    }
+
+    .cover-kpi-label {
+      font-size: 13.5px;
+      color: #e2e8f0;
+      line-height: 1.35;
+    }
+
+    .cover-footer-note {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 14px;
+      color: #94a3b8;
+    }
+
+    .cover-footer-note strong {
+      color: #fff;
+    }
+
+    /* Standard Slide Header */
+    .slide-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 24px;
+      padding-bottom: 20px;
+      border-bottom: 2px solid #e2e8f0;
+      margin-bottom: 26px;
+      flex-shrink: 0;
+    }
+
+    .slide-badge {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--primary);
+      background: #e6f0f2;
+      padding: 5px 12px;
+      border-radius: 8px;
+      margin-bottom: 8px;
+    }
+
+    .slide-title {
+      font-size: 30px;
+      font-weight: 800;
+      color: #0f172a;
+      line-height: 1.2;
+      margin-bottom: 6px;
+    }
+
+    .slide-subtitle {
+      font-size: 15.5px;
+      color: #475569;
+      line-height: 1.45;
+      max-width: 1120px;
+    }
+
+    .header-right {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .brand-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #0f172a;
+      color: #fff;
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 11.5px;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+    }
+
+    .brand-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--gold);
+    }
+
+    .slide-counter {
+      font-size: 13px;
+      font-weight: 700;
+      color: #64748b;
+    }
+
+    .slide-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    /* Browser & Phone Mockup Frames */
+    .browser-frame {
+      background: #ffffff;
+      border: 2px solid #cbd5e1;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 16px 36px rgba(15, 23, 42, 0.12);
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .browser-bar {
+      background: #f1f5f9;
+      border-bottom: 1px solid #cbd5e1;
+      padding: 8px 14px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      flex-shrink: 0;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+    .dot.red { background: #ef4444; }
+    .dot.yellow { background: #f59e0b; }
+    .dot.green { background: #10b981; }
+
+    .browser-url {
+      margin-left: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #475569;
+      background: #ffffff;
+      padding: 3px 12px;
+      border-radius: 6px;
+      border: 1px solid #e2e8f0;
+    }
+
+    .browser-frame img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      background: #f8fafc;
+      min-height: 0;
+    }
+
+    /* Comparison Layout */
+    .comparison-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+      height: 100%;
+    }
+
+    .comp-card {
+      border-radius: 20px;
+      padding: 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+    }
+
+    .comp-problem {
+      background: #fff1f2;
+      border: 2px solid #fecdd3;
+    }
+
+    .comp-solution {
+      background: #ecfdf5;
+      border: 2px solid #a7f3d0;
+    }
+
+    .comp-card-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .comp-icon {
+      font-size: 28px;
+    }
+
+    .comp-card-header h2 {
+      font-size: 22px;
+      font-weight: 800;
+      color: #0f172a;
+    }
+
+    .comp-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .comp-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      font-size: 16.5px;
+      line-height: 1.5;
+      color: #1e293b;
+      font-weight: 500;
+    }
+
+    .bullet-cross, .bullet-check {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .bullet-cross {
+      background: #ffe4e6;
+      color: #e11d48;
+    }
+
+    .bullet-check {
+      background: #d1fae5;
+      color: #059669;
+    }
+
+    /* Single Screenshot + Sidebar Layout */
+    .single-shot-layout {
+      display: grid;
+      grid-template-columns: 430px 1fr;
+      gap: 28px;
+      height: 100%;
+      min-height: 0;
+    }
+
+    .feature-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      justify-content: center;
+    }
+
+    .feature-box {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-left: 5px solid var(--primary);
+      border-radius: 14px;
+      padding: 18px 20px;
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+    }
+
+    .feature-num {
+      width: 30px;
+      height: 30px;
+      border-radius: 9px;
+      background: var(--primary);
+      color: #fff;
+      font-weight: 800;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .feature-box h3 {
+      font-size: 16.5px;
+      font-weight: 800;
+      color: #0f172a;
+      margin-bottom: 5px;
+    }
+
+    .feature-box p {
+      font-size: 14px;
+      line-height: 1.45;
+      color: #475569;
+    }
+
+    .shot-main {
+      height: 100%;
+      min-height: 0;
+    }
+
+    /* Dual Screenshot Layout (Desktop + Mobile) */
+    .dual-shot-layout {
+      display: grid;
+      grid-template-columns: 400px 1fr;
+      gap: 28px;
+      height: 100%;
+      min-height: 0;
+    }
+
+    .dual-shots-container {
+      display: grid;
+      grid-template-columns: 1fr 270px;
+      gap: 20px;
+      height: 100%;
+      min-height: 0;
+      align-items: center;
+    }
+
+    .phone-frame {
+      background: #0f172a;
+      border-radius: 32px;
+      padding: 12px;
+      box-shadow: 0 20px 40px rgba(15, 23, 42, 0.25);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      height: 100%;
+      max-height: 620px;
+      position: relative;
+    }
+
+    .phone-notch {
+      width: 90px;
+      height: 14px;
+      background: #0f172a;
+      border-radius: 0 0 10px 10px;
+      margin-bottom: 4px;
+      flex-shrink: 0;
+    }
+
+    .phone-frame img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      border-radius: 22px;
+      background: #fff;
+      min-height: 0;
+    }
+
+    .phone-caption {
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      margin-top: 8px;
+    }
+
+    /* Two Screenshots Vertical Layout */
+    .two-shots-vertical {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      height: 100%;
+      min-height: 0;
+    }
+
+    .top-bullets-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      flex-shrink: 0;
+    }
+
+    .feature-box.compact {
+      padding: 14px 18px;
+    }
+
+    .two-shots-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      flex: 1;
+      min-height: 0;
+    }
+
+    /* Mobile Showcase Layout */
+    .mobile-showcase-layout {
+      display: grid;
+      grid-template-columns: 480px 1fr;
+      gap: 36px;
+      height: 100%;
+      min-height: 0;
+      align-items: center;
+    }
+
+    .phones-comparison {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 48px;
+      height: 100%;
+      min-height: 0;
+    }
+
+    .phone-showcase-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      height: 100%;
+      max-height: 630px;
+    }
+
+    .phone-frame.large {
+      width: 310px;
+      height: 100%;
+    }
+
+    .phone-frame.highlight {
+      border: 4px solid var(--gold);
+    }
+
+    .phone-label {
+      font-size: 14px;
+      font-weight: 800;
+      color: #334155;
+      background: #f1f5f9;
+      padding: 6px 16px;
+      border-radius: 999px;
+    }
+
+    .phone-label.highlight-text {
+      background: #fef3c7;
+      color: #92400e;
+      border: 1px solid #f59e0b;
+    }
+
+    /* Roadmap Layout */
+    .roadmap-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 24px;
+      height: 100%;
+    }
+
+    .roadmap-card {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 20px;
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .roadmap-phase {
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+    }
+
+    .roadmap-title {
+      font-size: 21px;
+      font-weight: 800;
+      color: #0f172a;
+      line-height: 1.3;
+    }
+
+    .roadmap-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-top: 6px;
+    }
+
+    .roadmap-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      font-size: 15px;
+      line-height: 1.45;
+      color: #334155;
+      font-weight: 500;
+    }
+
+    .roadmap-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      margin-top: 7px;
+    }
+
+    /* Conclusion Layout */
+    .conclusion-layout {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 28px;
+      height: 100%;
+    }
+
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+      flex: 1;
+    }
+
+    .metric-card {
+      background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+      border: 2px solid #e2e8f0;
+      border-radius: 22px;
+      padding: 32px 26px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .metric-val {
+      font-size: 52px;
+      font-weight: 800;
+      color: var(--primary);
+      margin-bottom: 12px;
+    }
+
+    .metric-title {
+      font-size: 21px;
+      font-weight: 800;
+      color: #0f172a;
+      margin-bottom: 10px;
+    }
+
+    .metric-desc {
+      font-size: 15px;
+      line-height: 1.5;
+      color: #475569;
+    }
+
+    .conclusion-banner {
+      background: linear-gradient(135deg, #1d353c 0%, #335C67 60%, #540B0E 100%);
+      border-radius: 22px;
+      padding: 34px 42px;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 32px;
+    }
+
+    .conclusion-banner h2 {
+      font-size: 26px;
+      font-weight: 800;
+      margin-bottom: 8px;
+      color: var(--cream);
+    }
+
+    .conclusion-banner p {
+      font-size: 16px;
+      color: #e2e8f0;
+      max-width: 900px;
+      line-height: 1.5;
+    }
+
+    .cta-pill {
+      background: var(--gold);
+      color: #0f172a;
+      font-weight: 800;
+      font-size: 16px;
+      padding: 16px 28px;
+      border-radius: 14px;
+      white-space: nowrap;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+    }
+
+    @media print {
+      @page {
+        size: 1600px 900px;
+        margin: 0;
+      }
+      body {
+        background: #ffffff;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      .deck-toolbar {
+        display: none !important;
+      }
+      .deck-container {
+        padding: 0;
+        gap: 0;
+      }
+      .slide {
+        border-radius: 0;
+        box-shadow: none;
+        margin: 0;
+        page-break-after: always;
+        break-after: page;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="deck-toolbar">
+    <button onclick="prevSlide()">← Önceki</button>
+    <span class="deck-status" id="slideIndicator">1 / 14</span>
+    <button onclick="nextSlide()">Sonraki →</button>
+    <button class="print-btn" onclick="window.print()">🖨️ PDF Olarak Kaydet / Yazdır</button>
+  </div>
+
+  <div class="deck-container">
+    <section class="slide slide-cover" id="slide-1">
+      <div class="cover-layout">
+        <div class="cover-left">
+          <div class="cover-tag">İZMİR BÜYÜKŞEHİR BELEDİYESİ • MESLEK FABRİKASI SUNUMU</div>
+          <h1 class="cover-title">Meslek Fabrikası Dijital Kurs, Müfredat ve Resmi Evrak Yönetim Sistemi</h1>
+          <p class="cover-subtitle">Eğitim Süreçlerinde Uçtan Uca Dijital Dönüşüm, Kurumsal Standartlaşma, Mobil Yoklama Ergonomisi ve Canlı Denetim Platformu (MEFPORTAL)</p>
+          <div class="cover-kpi-grid">
+            
+              <div class="cover-kpi-card">
+                <div class="cover-kpi-val">%100</div>
+                <div class="cover-kpi-label">Otomatik Resmi Evrak ve Ders Defteri Üretimi</div>
+              </div>
+            
+              <div class="cover-kpi-card">
+                <div class="cover-kpi-val">Mobil + Web</div>
+                <div class="cover-kpi-label">Sınıfta Cep Telefonundan Tek Dokunuşla Yoklama</div>
+              </div>
+            
+              <div class="cover-kpi-card">
+                <div class="cover-kpi-val">4 Katmanlı</div>
+                <div class="cover-kpi-label">Kurumsal Rol, Yetki ve Denetim Mimarisi</div>
+              </div>
+            
+              <div class="cover-kpi-card">
+                <div class="cover-kpi-val">KVKK Tam Uyum</div>
+                <div class="cover-kpi-label">Veri Maskeleme, Doğrulama ve Bulut Senkronizasyonu</div>
+              </div>
+            
+          </div>
+          <div class="cover-footer-note">
+            <span>Hazırlayan: <strong>Önder ALTINTAŞ</strong></span>
+            <span>•</span>
+            <span>Canlı Sistem: <strong>onder-altintas.github.io/mfkurs</strong></span>
+          </div>
+        </div>
+        <div class="cover-right">
+          <div class="browser-frame">
+            <div class="browser-bar">
+              <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+              <span class="browser-url">mefportal.meslekfabrikasi.izmir / Kurs Yönetim Sistemi</span>
+            </div>
+            <img src="sunum_gorseller/03_teacher_dashboard.png" alt="MEFPORTAL Ana Ekran" class="cover-img" />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" id="slide-2">
+      
+    <div class="slide-header">
+      <div class="header-left">
+        <span class="slide-badge">1. MEVCUT DURUM ANALİZİ VE İHTİYAÇ</span>
+        <h1 class="slide-title">Neden Dijital Bir Kurs Yönetim Sistemine İhtiyaç Duyuldu?</h1>
+        <p class="slide-subtitle">Çok merkezli mesleki eğitim operasyonlarında manuel dosya, Excel ve Word şablonlarıyla yürütülen süreçlerin yarattığı iş yükü ve hata risklerinin ortadan kaldırılması.</p>
+      </div>
+      <div class="header-right">
+        <div class="brand-pill">
+          <span class="brand-dot"></span>
+          <span>MESLEK FABRİKASI • MEFPORTAL</span>
+        </div>
+        <div class="slide-counter">Slayt 2 / 14</div>
+      </div>
+    </div>
+  
+      <div class="slide-body">
+        
+      <div class="comparison-grid">
+        <div class="comp-card comp-problem">
+          <div class="comp-card-header">
+            <span class="comp-icon">⚠️</span>
+            <h2>Geleneksel (Manuel) Süreçteki Zorluklar</h2>
+          </div>
+          <ul class="comp-list">
+            <li><span class="bullet-cross">✕</span><span>Farklı kurs merkezlerinde birbirinden farklı formatlarda hazırlanan Word/Excel evrakları ve tipografi uyumsuzlukları</span></li><li><span class="bullet-cross">✕</span><span>Kurs açılış/bitiş tarihlerinin resmi tatiller ve ders günleriyle manuel eşleştirilmesi sırasında yaşanan takvim hataları</span></li><li><span class="bullet-cross">✕</span><span>MEB 1/5 devamsızlık sınırının, kursu bırakan veya hiç gelmeyen kursiyerlerin manuel hesaplanmasından doğan hatalar</span></li><li><span class="bullet-cross">✕</span><span>Eğitim sorumlularının kurs durumunu, başarı oranlarını ve evrakları denetlemek için fiziki dosya beklemek zorunda kalması</span></li><li><span class="bullet-cross">✕</span><span>Atölye ve sınıf ortamında kağıt listelerle yoklama alınması ve verilerin sonradan tekrar bilgisayara geçirilmesi</span></li>
+          </ul>
+        </div>
+        <div class="comp-card comp-solution">
+          <div class="comp-card-header">
+            <span class="comp-icon">✅</span>
+            <h2>MEFPORTAL İle Gelen Dijital Çözüm</h2>
+          </div>
+          <ul class="comp-list">
+            <li><span class="bullet-check">✓</span><span>Tüm kurs merkezlerinde tek bir resmi kalemden çıkmış gibi %100 standart A4 resmi evrak ve Türkçe tipografi motoru</span></li><li><span class="bullet-check">✓</span><span>Resmi tatil ve ders yapılmayan günleri otomatik düşerek saatlik ders defterini ve bitiş tarihini anında hesaplayan akıllı takvim</span></li><li><span class="bullet-check">✓</span><span>MEB 1/5 devamsızlık kuralını, sınav barajını (50 puan) ve kurs sonu karar durumunu sıfır hatayla hesaplayan algoritma</span></li><li><span class="bullet-check">✓</span><span>Eğitim sorumluları ve birim amirleri için tüm merkezleri, branşları ve eğitmenleri canlı grafiklerle izleyen denetim paneli</span></li><li><span class="bullet-check">✓</span><span>Mobil öncelikli tasarım sayesinde eğitmenlerin sınıfta cep telefonundan saniyeler içinde yoklama ve not girebilmesi</span></li>
+          </ul>
+        </div>
+      </div>
+    
+      </div>
+    </section>
+  
+
+    <section class="slide" id="slide-3">
+      
+    <div class="slide-header">
+      <div class="header-left">
+        <span class="slide-badge">2. KURUMSAL MİMARİ VE GÜVENLİK</span>
+        <h1 class="slide-title">Rol Bazlı Yetkilendirme, Mobil Uyum ve KVKK Güvenliği</h1>
+        <p class="slide-subtitle">Her kullanıcı yalnızca kendi görev alanına giren ekranlara erişir; tüm kişisel veriler 6698 sayılı KVKK standartlarında korunur.</p>
+      </div>
+      <div class="header-right">
+        <div class="brand-pill">
+          <span class="brand-dot"></span>
+          <span>MESLEK FABRİKASI • MEFPORTAL</span>
+        </div>
+        <div class="slide-counter">Slayt 3 / 14</div>
+      </div>
+    </div>
+  
+      <div class="slide-body">
+        
+      <div class="dual-shot-layout">
+        <div class="feature-sidebar">
+          
+            <div class="feature-box">
+              <div class="feature-num">1</div>
+              <div>
+                <h3>4 Katmanlı Kurumsal Rol Yapısı</h3>
+                <p>Eğitmen, Zümre Başkanı, Eğitim Sorumlusu ve Sistem Yöneticisi (Geliştirici / Birim Amiri) rolleriyle net görev ayrımı.</p>
+              </div>
+            </div>
+          
+            <div class="feature-box">
+              <div class="feature-num">2</div>
+              <div>
+                <h3>6698 Sayılı KVKK Tam Uyumu</h3>
+                <p>T.C. Kimlik numaraları ekranda otomatik maskelenir (10*******46), resmi 11 hane algoritmasıyla doğrulanır ve taahhütname onayı ile kayıt altına alınır.</p>
+              </div>
+            </div>
+          
+            <div class="feature-box">
+              <div class="feature-num">3</div>
+              <div>
+                <h3>Masaüstü ve Cep Telefonu Ergonomisi</h3>
+                <p>Giriş ekranından itibaren telefon ekranlarına özel önceliklendirilmiş (Mobile-First) arayüz ve hızlı erişim mimarisi.</p>
+              </div>
+            </div>
+          
+        </div>
+        <div class="dual-shots-container">
+          <div class="browser-frame dual-main">
+            <div class="browser-bar">
+              <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+              <span class="browser-url">Masaüstü Giriş ve Kurumsal Rol Mimarisi</span>
+            </div>
+            <img src="sunum_gorseller/01_login_desktop.png" alt="Masaüstü Giriş ve Kurumsal Rol Mimarisi" />
+          </div>
+          <div class="phone-frame dual-side">
+            <div class="phone-notch"></div>
+            <img src="sunum_gorseller/02_login_mobile.png" alt="Mobil Telefon Görünümü" />
+            <div class="phone-caption">Mobil Telefon Görünümü</div>
+          </div>
+        </div>
+      </div>
+    
+      </div>
+    </section>
+  
+
+    <section class="slide" id="slide-4">
+      
+    <div class="slide-header">
+      <div class="header-left">
+        <span class="slide-badge">3. MERKEZİ YÖNETİM VE STANDARTLAŞMA</span>
+        <h1 class="slide-title">Kurs Merkezleri, Branşlar ve Standart Müfredat Havuzu</h1>
+        <p class="slide-subtitle">Meslek Fabrikası bünyesindeki tüm kurs merkezleri, branşlar ve saatlik ders müfredatları merkezi olarak tanımlanır ve standartlaştırılır.</p>
+      </div>
+      <div class="header-right">
+        <div class="brand-pill">
+          <span class="brand-dot"></span>
+          <span>MESLEK FABRİKASI • MEFPORTAL</span>
+        </div>
+        <div class="slide-counter">Slayt 4 / 14</div>
+      </div>
+    </div>
+  
+      <div class="slide-body">
+        
+      <div class="two-shots-vertical">
+        <div class="top-bullets-row">
+          
+            <div class="feature-box compact">
+              <div class="feature-num">1</div>
+              <div>
+                <h3>Çoklu Kurs Merkezi Yönetimi</h3>
+                <p>Halkapınar, Çamdibi, Buca, Karabağlar, Bayraklı gibi tüm merkezler ve atölyeler sisteme tanımlanır.</p>
+              </div>
+            </div>
+          
+            <div class="feature-box compact">
+              <div class="feature-num">2</div>
+              <div>
+                <h3>Standart Müfredat Şablonları</h3>
+                <p>Zümre başkanları ve yöneticiler tarafından hazırlanan saatlik ders planları şablon havuzuna eklenir; eğitmenler kurs açarken müfredatı tek tıkla yükler.</p>
+              </div>
+            </div>
+          
+        </div>
+        <div class="two-shots-grid">
+          <div class="browser-frame">
+            <div class="browser-bar">
+              <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+              <span class="browser-url">Kurs Merkezleri ve Birim Tanımlama Ekranı</span>
+            </div>
+            <img src="sunum_gorseller/13_admin_centers.png" alt="Kurs Merkezleri ve Birim Tanımlama Ekranı" />
+          </div>
+          <div class="browser-frame">
+            <div class="browser-bar">
+              <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+              <span class="browser-url">Standart Kurs ve Saatlik Müfredat Şablonları Havuzu</span>
+            </div>
+            <img src="sunum_gorseller/12_admin_templates.png" alt="Standart Kurs ve Saatlik Müfredat Şablonları Havuzu" />
+          </div>
+        </div>
+      </div>
+    
+      </div>
+    </section>
+  
+
+    <section class="slide" id="slide-5">
+      
+    <div class="slide-header">
+      <div class="header-left">
+        <span class="slide-badge">4. EĞİTMEN ÇALIŞMA ALANI</span>
+        <h1 class="slide-title">Eğitmen Paneli: Tüm Kurslar ve İstatistikler Tek Ekranda</h1>
+        <p class="slide-subtitle">Eğitmenler aktif ve tamamlanan kurslarını, kursiyer sayılarını, ders günlerini ve resmi tatil bilgilerini tek bakışta yönetir.</p>
+      </div>
+      <div class="header-right">
+        <div class="brand-pill">
+          <span class="brand-dot"></span>
+          <span>MESLEK FABRİKASI • MEFPORTAL</span>
+        </div>
+        <div class="slide-counter">Slayt 5 / 14</div>
+      </div>
+    </div>
+  
+      <div class="slide-body">
+        
+      <div class="single-shot-layout">
+        <div class="feature-sidebar">
+          
+            <div class="feature-box">
+              <div class="feature-num">1</div>
+              <div>
+                <h3>Hızlı Kurs Açılışı ve Şablon Seçimi</h3>
+                <p>Eğitmen kendi branşına ait hazır şablonu seçtiğinde toplam saat, modüller ve saatlik konular otomatik olarak kursa aktarılır.</p>
+              </div>
+            </div>
+          
+            <div class="feature-box">
+              <div class="feature-num">2</div>
+              <div>
+                <h3>Gelişmiş Filtreleme ve Arama</h3>
+                <p>Merkez, branş, eğitmen, belge türü ve başlangıç tarihine göre anlık filtreleme.</p>
+              </div>
+            </div>
+          
+            <div class="feature-box">
+              <div class="feature-num">3</div>
+              <div>
+                <h3>Boş Resmi Evrak Şablonları</h3>
+                <p>İhtiyaç halinde sahada kullanılmak üzere boş resmi tutanak ve çizelgelerin tek tıkla yazdırılması.</p>
+              </div>
+            </div>
+          
+            <div class="feature-box">
+              <div class="feature-num">4</div>
+              <div>
+                <h3>Sade ve Vurgulu UI/UX Tasarımı</h3>
+                <p>Mükerrer butonlardan arındırılmış, birincil aksiyonların ("Yeni Kurs Ekle") öne çıkarıldığı kullanıcı dostu arayüz.</p>
+              </div>
+            </div>
+          
+        </div>
+        <div class="shot-main">
+          <div class="browser-frame">
+            <div class="browser-bar">
+              <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+              <span class="browser-url">Eğitmen Kurs Yönetim Paneli ve Kurs Özet Kartları</span>
+            </div>
+            <img src="sunum_gorseller/03_teacher_dashboard.png" alt="Eğitmen Kurs Yönetim Paneli ve Kurs Özet Kartları" />
+          </div>
+        </div>
+      </div>
+    
+      </div>
+    </section>
+  
+
+    <section class="slide" id="slide-6">
+      
+    <div class="slide-header">
+      <div class="header-left">
+        <span class="slide-badge">5. AKILLI TAKVİM VE MÜFREDAT MOTORU</span>
+        <h1 class="slide-title">Saatlik Ders Planı ve Resmi Tatil / İzin Otomasyonu</h1>
+        <p class="slide-subtitle">Kursun haftalık ders günleri ve günlük ders saatine göre tüm eğitim takvimi saniyeler içinde otomatik oluşturulur.</p>
+      </div>
+      <div class="header-right">
+        <div class="brand-pill">
+          <span class="brand-dot"></span>
+          <span>MESLEK FABRİKASI • MEFPORTAL</span>
+        </div>
+        <div class="slide-counter">Slayt 6 / 14</div>
+      </div>
+    </div>
+  
+      <div class="slide-body">
+        
+      <div class="single-shot-layout">
+        <div class="feature-sidebar">
+          
+            <div class="feature-box">
+              <div class="feature-num">1</div>
+              <div>
+                <h3>Resmi Tatil ve Ders Dışı Gün Yönetimi</h3>
+                <p>Resmi tatiller, bakım günleri veya eğitmen izinleri işaretlendiğinde o günler ders saatinden sayılmaz ve kurs bitiş tarihi otomatik ötelenir.</p>
+              </div>
+            </div>
+          
+            <div class="feature-box">
+              <div class="feature-num">2</div>
+              <div>
+                <h3>Saatlik Konu Düzenleme & Toplu Yapıştırma</h3>
+                <p>Her ders saati için anlatılan konular tek tek veya Word/Excel listesinden toplu yapıştırılarak düzenlenebilir.</p>
+              </div>
+            </div>
+          
+            <div class="feature-box">
+              <div class="feature-num">3</div>
+              <div>
+                <h3>Resmi Ders Defteri Entegrasyonu</h3>
+                <p>Burada tanımlanan her ders saati ve konu, kurs sonunda üretilen "Resmi Ders Defteri" evrakına tarih ve saatleriyle otomatik basılır.</p>
+              </div>
+            </div>
+          
+        </div>
+        <div class="shot-main">
+          <div class="browser-frame">
+            <div class="browser-bar">
+              <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+              <span class="browser-url">Kurs Detayı — Saatlik Konu Planı ve Ders Yapılmayan Günler Yönetimi</span>
+            </div>
+            <img src="sunum_gorseller/04_course_syllabus.png" alt="Kurs Detayı — Saatlik Konu Planı ve Ders Yapılmayan Günler Yönetimi" />
+          </div>
+        </div>
+      </div>
+    
+      </div>
+    </section>
+  
+
+    <section class="slide" id="slide-7">
+      
+    <div class="slide-header">
+      <div class="header-left">
+        <span class="slide-badge">6. KURSİYER YÖNETİMİ VE VERİ KALİTESİ</span>
+        <h1 class="slide-title">Toplu Kursiyer Aktarımı ve Türkçe Tipografi Motoru</h1>
+        <p class="slide-subtitle">Kursiyer listeleri Excel veya e-Yaygın formatından saniyeler içinde aktarılır; tüm isimler resmi evrak standardına otomatik dönüştürülür.</p>
+      </div>
+      <div class="header-right">
+        <div class="brand-pill">
+          <span class="brand-dot"></span>
+          <span>MESLEK FABRİKASI • MEFPORTAL</span>
+        </div>
+        <div class="slide-counter">Slayt 7 / 14</div>
+      </div>
+    </div>
+  
+      <div class="slide-body">
+        
+      <div class="single-shot-layout">
+        <div class="feature-sidebar">
+          
+            <div class="feature-box">
+              <div class="feature-num">1</div>
+              <div>
+                <h3>Excel İle Toplu Yükleme & Dışa Aktarım</h3>
+                <p>Onlarca kursiyeri tek tek yazmak yerine Excel tablosundan veya kopyala-yapıştır ile saniyeler içinde kursa ekleme.</p>
+              </div>
+            </div>
+          
+            <div class="feature-box">
+              <div class="feature-num">2</div>
+              <div>
+                <h3>Otomatik Türkçe Tipografi Motoru</h3>
+                <p>Kullanıcı nasıl yazarsa yazsın kursiyer adları otomatik olarak "Ad SOYAD" (Örn: Ayşe Gül ŞAHİN) formatına çevrilir; tüm resmi evraklar kusursuz görünür.</p>
+              </div>
+            </div>
+          
+            <div class="feature-box">
+              <div class="feature-num">3</div>
+              <div>
+                <h3>Canlı Durum Özeti</h3>
+                <p>Her kursiyerin toplam devamsızlık saati, modül sınav ortalaması ve nihai kurs sonu kararı ("Başarılı", "Devamsız", "Hiç Gelmedi") tabloda canlı izlenir.</p>
+              </div>
+            </div>
+          
+        </div>
+        <div class="shot-main">
+          <div class="browser-frame">
+            <div class="browser-bar">
+              <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+              <span class="browser-url">Kayıtlı Kursiyerler Tablosu, KVKK Maskeleme ve Canlı Başarı Durumu</span>
+            </div>
+            <img src="sunum_gorseller/05_course_students.png" alt="Kayıtlı Kursiyerler Tablosu, KVKK Maskeleme ve Canlı Başarı Durumu" />
+          </div>
+        </div>
+      </div>
+    
+      </div>
+    </section>
+  
+
+    <section class="slide" id="slide-8">
+      
+    <div class="slide-header">
+      <div class="header-left">
+        <span class="slide-badge">7. DEVAMSIZLIK VE MEB 1/5 KURALI OTOMASYONU</span>
+        <h1 class="slide-title">Günlük Yoklama, Kursu Bırakan ve Hiç Gelmeyen Kursiyer Takibi</h1>
+        <p class="slide-subtitle">MEB yönetmeliğindeki 1/5 devamsızlık sınırı sistem tarafından anlık hesaplanır; sınırı aşan kursiyerler otomatik olarak "Devamsız" statüsüne alınır.</p>
+      </div>
+      <div class="header-right">
+        <div class="brand-pill">
+          <span class="brand-dot"></span>
+          <span>MESLEK FABRİKASI • MEFPORTAL</span>
+        </div>
+        <div class="slide-counter">Slayt 8 / 14</div>
+      </div>
+    </div>
+  
+      <div class="slide-body">
+        
+      <div class="single-shot-layout">
+        <div class="feature-sidebar">
+          
+            <div class="feature-box">
+              <div class="feature-num">1</div>
+              <div>
+                <h3>Otomatik 1/5 Yasal Sınır Hesabı</h3>
+                <p>Örneğin 40 saatlik bir kursta 8 saatlik (1/5) yasal devamsızlık sınırı otomatik belirlenir; kalan hak saat bazında gösterilir.</p>
+              </div>
+            </div>
+          
+            <div class="feature-box">
+              <div class="feature-num">2</div>
+              <div>
+                <h3>"Tümünü Geldi İşaretle" Kolaylığı</h3>
+                <p>Tek tıkla o günkü tüm kursiyerler tam katılımlı (0 saat devamsız) olarak işaretlenir; yalnızca gelmeyenler seçilir.</p>
+              </div>
+            </div>
+          
+            <div class="feature-box">
+              <div class="feature-num">3</div>
+              <div>
+                <h3>"Sonrasını Devamsız Gir" ve "Hiç Gelmedi"</h3>
+                <p>Kursu yarıda bırakan kursiyerin kalan tüm günleri veya kursa hiç başlamayan kursiyerin tüm kurs süresi tek tıkla resmi tutanaklara uygun işlenir.</p>
+              </div>
+            </div>
+          
+        </div>
+        <div class="shot-main">
+          <div class="browser-frame">
+            <div class="browser-bar">
+              <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+              <span class="browser-url">Masaüstü Yoklama Cetveli ve Otomatik MEB 1/5 Devamsızlık Hesaplama Ekranı</span>
+            </div>
+            <img src="sunum_gorseller/06_attendance_desktop.png" alt="Masaüstü Yoklama Cetveli ve Otomatik MEB 1/5 Devamsızlık Hesaplama Ekranı" />
+          </div>
+        </div>
+      </div>
+    
+      </div>
+    </section>
+  
+
+    <section class="slide" id="slide-9">
+      
+    <div class="slide-header">
+      <div class="header-left">
+        <span class="slide-badge">8. MOBİL ÖNCELİKLİ (TELEFON İLE) KULLANIM</span>
+        <h1 class="slide-title">Sınıfta ve Atölyede Cep Telefonundan Tek Dokunuşla Yoklama</h1>
+        <p class="slide-subtitle">Eğitmenler atölyede bilgisayar açmaya gerek duymadan, cep telefonlarından "Hızlı Kart Yoklama Modu" ile saniyeler içinde yoklama alır.</p>
+      </div>
+      <div class="header-right">
+        <div class="brand-pill">
+          <span class="brand-dot"></span>
+          <span>MESLEK FABRİKASI • MEFPORTAL</span>
+        </div>
+        <div class="slide-counter">Slayt 9 / 14</div>
+      </div>
+    </div>
+  
+      <div class="slide-body">
+        
+      <div class="mobile-showcase-layout">
+        <div class="feature-sidebar">
+          
+            <div class="feature-box">
+              <div class="feature-num">1</div>
+              <div>
+                <h3>Telefon Ekranında Otomatik Kart Görünümü</h3>
+                <p>Sistem cep telefonu ekranından girildiğini otomatik algılar ve yatay kaydırma gerektiren tablo yerine dokunmatik "Yoklama Kartları"nı açar.</p>
+              </div>
+            </div>
+          
+            <div class="feature-box">
+              <div class="feature-num">2</div>
+              <div>
+                <h3>Tek Parmakla Hızlı İşaretleme</h3>
+                <p>Her kursiyer kartında bulunan geniş "✓ Geldi (0 Sa)" ve "✕ Yok (4 Sa)" butonları ile hatasız ve hızlı veri girişi.</p>
+              </div>
+            </div>
+          
+            <div class="feature-box">
+              <div class="feature-num">3</div>
+              <div>
+                <h3>Kompakt Tek Satır Tarih Gezgini</h3>
+                <p>Ders günleri arasında ileri/geri oklarla veya açılır listeden tek dokunuşla geçiş ve anlık bulut kaydı.</p>
+              </div>
+            </div>
+          
+        </div>
+        <div class="phones-comparison">
+          <div class="phone-showcase-card">
+            <div class="phone-frame large">
+              <div class="phone-notch"></div>
+              <img src="sunum_gorseller/02_login_mobile.png" alt="Mobil Hızlı Giriş Ekranı" />
+            </div>
+            <div class="phone-label">Mobil Hızlı Giriş Ekranı</div>
+          </div>
+          <div class="phone-showcase-card">
+            <div class="phone-frame large highlight">
+              <div class="phone-notch"></div>
+              <img src="sunum_gorseller/07_attendance_mobile.png" alt="Mobil Hızlı Kart Yoklama Modu (Telefon Ekranı)" />
+            </div>
+            <div class="phone-label highlight-text">Mobil Hızlı Kart Yoklama Modu (Telefon Ekranı)</div>
+          </div>
+        </div>
+      </div>
+    
+      </div>
+    </section>
+  
+
+    <section class="slide" id="slide-10">
+      
+    <div class="slide-header">
+      <div class="header-left">
+        <span class="slide-badge">9. ÖLÇME VE DEĞERLENDİRME MODÜLÜ</span>
+        <h1 class="slide-title">Modül Sınavları, Otomatik Kilit ve Başarı Hesaplama</h1>
+        <p class="slide-subtitle">Modül sınav tarihleri ders planına göre otomatik belirlenir; devamsızlıktan kalan kursiyerlere sehven not girilmesi sistem tarafından engellenir.</p>
+      </div>
+      <div class="header-right">
+        <div class="brand-pill">
+          <span class="brand-dot"></span>
+          <span>MESLEK FABRİKASI • MEFPORTAL</span>
+        </div>
+        <div class="slide-counter">Slayt 10 / 14</div>
+      </div>
+    </div>
+  
+      <div class="slide-body">
+        
+      <div class="single-shot-layout">
+        <div class="feature-sidebar">
+          
+            <div class="feature-box">
+              <div class="feature-num">1</div>
+              <div>
+                <h3>Otomatik Sınav Takvimi Eşleştirmesi</h3>
+                <p>Her modülün sınav tarihi ve saati, müfredat planındaki son ders saatlerine göre otomatik hesaplanır.</p>
+              </div>
+            </div>
+          
+            <div class="feature-box">
+              <div class="feature-num">2</div>
+              <div>
+                <h3>Akıllı Not Giriş Kilidi ("Giremez")</h3>
+                <p>Devamsızlık sınırını aşan veya kursa hiç gelmeyen kursiyerlerin sınav kutucukları otomatik kilitlenir; idari hata yapılması önlenir.</p>
+              </div>
+            </div>
+          
+            <div class="feature-box">
+              <div class="feature-num">3</div>
+              <div>
+                <h3>Klavye Ergonomisi ve Otomatik Ortalama</h3>
+                <p>Enter veya yön tuşlarıyla alt satıra hızlı geçiş; 50 ve üzeri puan alanların otomatik "Başarılı" olarak tescillenmesi.</p>
+              </div>
+            </div>
+          
+        </div>
+        <div class="shot-main">
+          <div class="browser-frame">
+            <div class="browser-bar">
+              <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+              <span class="browser-url">Modül Sınavları, Otomatik Sınav Takvimi ve Akıllı Kilit Sistemi</span>
+            </div>
+            <img src="sunum_gorseller/08_course_exams.png" alt="Modül Sınavları, Otomatik Sınav Takvimi ve Akıllı Kilit Sistemi" />
+          </div>
+        </div>
+      </div>
+    
+      </div>
+    </section>
+  
+
+    <section class="slide" id="slide-11">
+      
+    <div class="slide-header">
+      <div class="header-left">
+        <span class="slide-badge">10. RESMİ EVRAK OTOMASYONU</span>
+        <h1 class="slide-title">Açılış ve Kurs Sonu Resmi Evraklarının Tek Tıkla Üretimi</h1>
+        <p class="slide-subtitle">Saatler süren evrak hazırlama işlemi saniyelere iner; tüm belgeler imza blokları, mühür alanları ve resmi A4 mizanpajıyla yazdırmaya hazır üretilir.</p>
+      </div>
+      <div class="header-right">
+        <div class="brand-pill">
+          <span class="brand-dot"></span>
+          <span>MESLEK FABRİKASI • MEFPORTAL</span>
+        </div>
+        <div class="slide-counter">Slayt 11 / 14</div>
+      </div>
+    </div>
+  
+      <div class="slide-body">
+        
+      <div class="two-shots-vertical">
+        <div class="top-bullets-row">
+          
+            <div class="feature-box compact">
+              <div class="feature-num">1</div>
+              <div>
+                <h3>Kurs Açılış Evrakları (3 Resmi Belge)</h3>
+                <p>Kurs Planı ve Müfredat Programı, Kursiyer Kayıt & Açılış Listesi ve Günlük İmza Sirküleri tek tıkla yazdırılır.</p>
+              </div>
+            </div>
+          
+            <div class="feature-box compact">
+              <div class="feature-num">2</div>
+              <div>
+                <h3>Kurs Sonu Kapanış Evrakları (3 Ana Döküm)</h3>
+                <p>Kursiyer Karar Durumu Tutanağı, Resmi Yoklama Cetveli & Saatlik Ders Defteri ve Modül Değerlendirme Çizelgesi otomatik hazırlanır.</p>
+              </div>
+            </div>
+          
+        </div>
+        <div class="two-shots-grid">
+          <div class="browser-frame">
+            <div class="browser-bar">
+              <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+              <span class="browser-url">Kurs Açılış Evrakları Merkezi</span>
+            </div>
+            <img src="sunum_gorseller/09_opening_docs.png" alt="Kurs Açılış Evrakları Merkezi" />
+          </div>
+          <div class="browser-frame">
+            <div class="browser-bar">
+              <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+              <span class="browser-url">Kurs Sonu Resmi Kapanış Evrakları Merkezi</span>
+            </div>
+            <img src="sunum_gorseller/10_closing_docs.png" alt="Kurs Sonu Resmi Kapanış Evrakları Merkezi" />
+          </div>
+        </div>
+      </div>
+    
+      </div>
+    </section>
+  
+
+    <section class="slide" id="slide-12">
+      
+    <div class="slide-header">
+      <div class="header-left">
+        <span class="slide-badge">11. YÖNETİCİ VE EĞİTİM SORUMLUSU DENETİM PANELİ</span>
+        <h1 class="slide-title">Canlı Analitik Grafikler ve Uzaktan Evrak Denetimi</h1>
+        <p class="slide-subtitle">Eğitim sorumluları ve yöneticiler tüm merkezlerdeki kurs ve kursiyer hareketlerini canlı grafiklerle izler, evrakları uzaktan denetler.</p>
+      </div>
+      <div class="header-right">
+        <div class="brand-pill">
+          <span class="brand-dot"></span>
+          <span>MESLEK FABRİKASI • MEFPORTAL</span>
+        </div>
+        <div class="slide-counter">Slayt 12 / 14</div>
+      </div>
+    </div>
+  
+      <div class="slide-body">
+        
+      <div class="single-shot-layout">
+        <div class="feature-sidebar">
+          
+            <div class="feature-box">
+              <div class="feature-num">1</div>
+              <div>
+                <h3>Çok Boyutlu Yönetici Filtreleri</h3>
+                <p>Merkez, branş, ders, eğitmen, kurs durumu (Aktif/Biten) ve zaman periyoduna (Bu Ay, Son 3 Ay, Son 6 Ay, Bu Yıl) göre anlık analiz.</p>
+              </div>
+            </div>
+          
+            <div class="feature-box">
+              <div class="feature-num">2</div>
+              <div>
+                <h3>4 Canlı Performans Grafiği</h3>
+                <p>Kursiyer Zaman Grafiği (Kayıt/Başarı/Devamsız), Kurs Zaman Grafiği, Kurs Merkezleri Saat Dağılımı ve Eğitmen Performans Eğrisi.</p>
+              </div>
+            </div>
+          
+            <div class="feature-box">
+              <div class="feature-num">3</div>
+              <div>
+                <h3>Fiziki Dosya Beklemeden Denetim</h3>
+                <p>Eğitim sorumlusu listedeki herhangi bir kursun içine girerek yoklama, sınav ve resmi evraklarını anında inceleyebilir ve yazdırabilir.</p>
+              </div>
+            </div>
+          
+        </div>
+        <div class="shot-main">
+          <div class="browser-frame">
+            <div class="browser-bar">
+              <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+              <span class="browser-url">Eğitim Sorumlusu Canlı Analitik ve Denetim Paneli</span>
+            </div>
+            <img src="sunum_gorseller/11_supervisor_dashboard.png" alt="Eğitim Sorumlusu Canlı Analitik ve Denetim Paneli" />
+          </div>
+        </div>
+      </div>
+    
+      </div>
+    </section>
+  
+
+    <section class="slide" id="slide-13">
+      
+    <div class="slide-header">
+      <div class="header-left">
+        <span class="slide-badge">12. GENİŞLETİLEBİLİRLİK VE GELECEK YOL HARİTASI</span>
+        <h1 class="slide-title">Meslek Fabrikası İçin Modüler Genişleme Vizyonu</h1>
+        <p class="slide-subtitle">Esnek ve modern web mimarisi sayesinde sistem, Meslek Fabrikası'nın gelecekteki tüm dijital ihtiyaçlarına hızla entegre olabilecek yapıda tasarlanmıştır.</p>
+      </div>
+      <div class="header-right">
+        <div class="brand-pill">
+          <span class="brand-dot"></span>
+          <span>MESLEK FABRİKASI • MEFPORTAL</span>
+        </div>
+        <div class="slide-counter">Slayt 13 / 14</div>
+      </div>
+    </div>
+  
+      <div class="slide-body">
+        
+      <div class="roadmap-grid">
+        
+          <div class="roadmap-card" style="border-top: 6px solid #0f766e">
+            <div class="roadmap-phase" style="color: #0f766e">FAZ 1 • MEVCUT DURUM (HAZIR & AKTİF)</div>
+            <h2 class="roadmap-title">Çekirdek Kurs, Müfredat ve Resmi Evrak Platformu</h2>
+            <ul class="roadmap-list">
+              <li><span class="roadmap-dot" style="background:#0f766e"></span><span>Çok merkezli kurs, branş ve standart müfredat şablon havuzu</span></li><li><span class="roadmap-dot" style="background:#0f766e"></span><span>Mobil Hızlı Kart Yoklama ve MEB 1/5 devamsızlık otomasyonu</span></li><li><span class="roadmap-dot" style="background:#0f766e"></span><span>Modül sınavları ve otomatik başarı kararı hesaplama motoru</span></li><li><span class="roadmap-dot" style="background:#0f766e"></span><span>Açılış ve kurs sonu resmi A4 evraklarının tek tıkla üretimi</span></li><li><span class="roadmap-dot" style="background:#0f766e"></span><span>Eğitim Sorumlusu analitik grafik ve uzaktan denetim paneli</span></li>
+            </ul>
+          </div>
+        
+          <div class="roadmap-card" style="border-top: 6px solid #1d4ed8">
+            <div class="roadmap-phase" style="color: #1d4ed8">FAZ 2 • KISA VADELİ GENİŞLEME ÖNERİLERİ</div>
+            <h2 class="roadmap-title">Vatandaş Etkileşimi ve Dijital Doğrulama</h2>
+            <ul class="roadmap-list">
+              <li><span class="roadmap-dot" style="background:#1d4ed8"></span><span>QR Kodlu Dijital Sertifika / Katılım Belgesi doğrulama sistemi</span></li><li><span class="roadmap-dot" style="background:#1d4ed8"></span><span>Online Vatandaş Başvuru, Ön Kayıt ve Kontenjan/Yedek Liste modülü</span></li><li><span class="roadmap-dot" style="background:#1d4ed8"></span><span>SMS / WhatsApp / E-posta ile kursiyerlere otomatik ders ve sınav bildirimi</span></li><li><span class="roadmap-dot" style="background:#1d4ed8"></span><span>Kursiyer memnuniyet anketleri ve eğitmen geri bildirim modülü</span></li><li><span class="roadmap-dot" style="background:#1d4ed8"></span><span>Atölye derslik çakışma kontrolü ve haftalık mekan doluluk takvimi</span></li>
+            </ul>
+          </div>
+        
+          <div class="roadmap-card" style="border-top: 6px solid #7c2d12">
+            <div class="roadmap-phase" style="color: #7c2d12">FAZ 3 • ORTA & UZUN VADELİ STRATEJİK ENTEGRASYON</div>
+            <h2 class="roadmap-title">İstihdam Ekosistemi ve Kurumsal ERP Entegrasyonu</h2>
+            <ul class="roadmap-list">
+              <li><span class="roadmap-dot" style="background:#7c2d12"></span><span>Meslek Fabrikası İstihdam Portalı: Mezun kursiyerler ile İzmir'deki işverenlerin eşleştirilmesi</span></li><li><span class="roadmap-dot" style="background:#7c2d12"></span><span>Atölye sarf malzeme, makine-teçhizat bakımı ve demirbaş envanter takibi</span></li><li><span class="roadmap-dot" style="background:#7c2d12"></span><span>Belediye Coğrafi Bilgi Sistemi (CBS) haritası üzerinde ilçe bazlı eğitim etki analizi</span></li><li><span class="roadmap-dot" style="background:#7c2d12"></span><span>Kurumsal EBYS / Elektronik İmza (e-İmza) ve MEB e-Yaygın veri köprüsü</span></li><li><span class="roadmap-dot" style="background:#7c2d12"></span><span>Yapay zeka destekli bölgesel kurs talebi ve istihdam oranı tahminleme raporları</span></li>
+            </ul>
+          </div>
+        
+      </div>
+    
+      </div>
+    </section>
+  
+
+    <section class="slide" id="slide-14">
+      
+    <div class="slide-header">
+      <div class="header-left">
+        <span class="slide-badge">13. SONUÇ VE KURUMSAL KAZANIMLAR</span>
+        <h1 class="slide-title">Meslek Fabrikası'na Sağlayacağı Stratejik Değer</h1>
+        <p class="slide-subtitle">MEFPORTAL, Meslek Fabrikası'nın eğitim kalitesini ve kurumsal hafızasını güçlendiren, sıfır lisans maliyetli ve tamamen kurum ihtiyaçlarına göre özelleştirilebilir yerli bir çözümdür.</p>
+      </div>
+      <div class="header-right">
+        <div class="brand-pill">
+          <span class="brand-dot"></span>
+          <span>MESLEK FABRİKASI • MEFPORTAL</span>
+        </div>
+        <div class="slide-counter">Slayt 14 / 14</div>
+      </div>
+    </div>
+  
+      <div class="slide-body">
+        
+      <div class="conclusion-layout">
+        <div class="metrics-grid">
+          
+            <div class="metric-card">
+              <div class="metric-val">%85</div>
+              <h3 class="metric-title">Zaman Tasarrufu</h3>
+              <p class="metric-desc">Eğitmenlerin ve sorumluların evrak hazırlama, kontrol ve arşivleme sürelerinde azalma.</p>
+            </div>
+          
+            <div class="metric-card">
+              <div class="metric-val">%100</div>
+              <h3 class="metric-title">Kurumsal Standart</h3>
+              <p class="metric-desc">Tüm kurs merkezlerinde aynı kalitede, hatasız ve tek tip resmi evrak üretimi.</p>
+            </div>
+          
+            <div class="metric-card">
+              <div class="metric-val">Sıfır Hata</div>
+              <h3 class="metric-title">Yönetmelik Uyumu</h3>
+              <p class="metric-desc">Devamsızlık (1/5), resmi tatil, ders saati ve sınav barajı hesaplamalarında tam doğruluk.</p>
+            </div>
+          
+            <div class="metric-card">
+              <div class="metric-val">7/24 Canlı</div>
+              <h3 class="metric-title">Şeffaf Denetim</h3>
+              <p class="metric-desc">Yöneticiler için tüm merkezlerin performansını anlık grafiklerle izleme imkanı.</p>
+            </div>
+          
+        </div>
+        <div class="conclusion-banner">
+          <div class="conclusion-banner-left">
+            <h2>Meslek Fabrikası İçin Bugün Kullanıma Hazır, Yarın İçin Genişletilebilir</h2>
+            <p>Pilot bir kurs merkezinde veya tüm Meslek Fabrikası kurs merkezlerinde anında devreye alınabilir; kurum içi geri bildirimlerle yeni modüller hızla eklenebilir.</p>
+          </div>
+          <div class="conclusion-banner-right">
+            <div class="cta-pill">Canlı Sistem: onder-altintas.github.io/mfkurs</div>
+          </div>
+        </div>
+      </div>
+    
+      </div>
+    </section>
+  
+  </div>
+
+  <script>
+    let currentSlide = 1;
+    const totalSlides = 14;
+
+    function goToSlide(n) {
+      currentSlide = Math.max(1, Math.min(totalSlides, n));
+      const el = document.getElementById('slide-' + currentSlide);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      document.getElementById('slideIndicator').innerText = currentSlide + ' / ' + totalSlides;
+    }
+
+    function nextSlide() { goToSlide(currentSlide + 1); }
+    function prevSlide() { goToSlide(currentSlide - 1); }
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') {
+        e.preventDefault();
+        nextSlide();
+      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+        e.preventDefault();
+        prevSlide();
+      }
+    });
+  </script>
+</body>
+</html>
