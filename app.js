@@ -851,6 +851,7 @@ window.onCloudSync = function(type, data) {
     }
   } else if (type === 'users') {
     currentUsers = data;
+    if (typeof renderQuickLoginAccounts === 'function') renderQuickLoginAccounts();
     if (currentUser) {
       const me = currentUsers.find(u => u.id === currentUser.id);
       if (me) {
@@ -883,6 +884,128 @@ window.onCloudSync = function(type, data) {
   }
 };
 
+function renderQuickLoginAccounts() {
+  const container = document.getElementById('quickLoginDynamicList');
+  if (!container) return;
+
+  const users = (Array.isArray(currentUsers) && currentUsers.length > 0)
+    ? currentUsers
+    : ((typeof DataStore !== 'undefined' && typeof DataStore.getUsers === 'function') ? DataStore.getUsers() : []);
+
+  if (!Array.isArray(users) || users.length === 0) return;
+
+  const developers = users.filter(u => u && (u.role === 'developer' || u.role === 'admin' || ['ozgur', 'merve', 'onder'].includes((u.username || '').toLowerCase())));
+  const teachers = users.filter(u => u && u.role === 'teacher' && !developers.includes(u));
+  const managers = users.filter(u => u && (u.role === 'department_head' || u.role === 'supervisor') && !developers.includes(u));
+
+  const esc = (str) => String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
+  let html = '';
+
+  if (developers.length > 0) {
+    html += `
+      <div>
+        <span class="text-[10px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider block mb-1 flex items-center gap-1">
+          <i data-lucide="code" class="w-3 h-3 text-amber-500"></i>
+          Geliştiriciler (Tam Yetkili)
+        </span>
+        <div class="grid grid-cols-3 gap-1.5 sm:gap-2">
+          ${developers.map(u => `
+            <button
+              type="button"
+              data-quick-user="${esc(u.username)}"
+              data-quick-pass="123"
+              class="p-2 text-left rounded-xl border border-amber-300 dark:border-amber-700/60 bg-amber-50/60 dark:bg-amber-950/20 hover:bg-amber-100 dark:hover:bg-amber-950/40 hover:border-amber-500 transition text-xs group cursor-pointer"
+            >
+              <div class="flex items-center justify-between gap-1">
+                <span class="font-bold text-slate-800 dark:text-slate-100 group-hover:text-amber-700 dark:group-hover:text-[#FFF3B0] truncate">${esc(u.fullName || u.username)}</span>
+                <span class="text-[8px] px-1 py-0.5 rounded bg-amber-600 text-white font-bold shrink-0">Dev</span>
+              </div>
+              <div class="font-mono text-[9.5px] text-amber-700 dark:text-amber-300 mt-0.5 truncate">${esc(u.username)}${u.area ? ' • ' + esc(u.area) : ''}</div>
+            </button>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  }
+
+  if (teachers.length > 0) {
+    const gridCols = teachers.length === 1 ? 'grid-cols-1 sm:grid-cols-2' : (teachers.length === 2 ? 'grid-cols-2' : 'grid-cols-3');
+    html += `
+      <div class="pt-1.5 border-t border-slate-100 dark:border-[#23353c]">
+        <span class="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider block mb-1 flex items-center gap-1">
+          <i data-lucide="graduation-cap" class="w-3 h-3 text-emerald-500"></i>
+          Eğitmenler (Öğretici Paneli)
+        </span>
+        <div class="grid ${gridCols} gap-1.5 sm:gap-2">
+          ${teachers.map(u => `
+            <button
+              type="button"
+              data-quick-user="${esc(u.username)}"
+              data-quick-pass="123"
+              class="p-2 text-left rounded-xl border border-emerald-300 dark:border-emerald-700/60 bg-emerald-50/60 dark:bg-emerald-950/20 hover:bg-emerald-100 dark:hover:bg-emerald-950/40 hover:border-emerald-500 transition text-xs group cursor-pointer"
+            >
+              <div class="flex items-center justify-between gap-1">
+                <span class="font-bold text-slate-800 dark:text-slate-100 group-hover:text-emerald-700 dark:group-hover:text-[#FFF3B0] truncate">${esc(u.fullName || u.username)}</span>
+                <span class="text-[8px] px-1.5 py-0.5 rounded bg-emerald-600 text-white font-bold shrink-0">Eğitmen</span>
+              </div>
+              <div class="font-mono text-[9.5px] text-emerald-700 dark:text-emerald-300 mt-0.5 truncate">${esc(u.username)}${u.area ? ' • ' + esc(u.area) : ''}</div>
+            </button>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  }
+
+  if (managers.length > 0) {
+    const gridCols = managers.length >= 3 ? 'grid-cols-1 sm:grid-cols-3' : 'grid-cols-2';
+    html += `
+      <div class="pt-1.5 border-t border-slate-100 dark:border-[#23353c]">
+        <span class="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider block mb-1 flex items-center gap-1">
+          <i data-lucide="shield-check" class="w-3 h-3 text-indigo-500"></i>
+          Zümre Başkanları &amp; Eğitim Sorumlusu
+        </span>
+        <div class="grid ${gridCols} gap-1.5 sm:gap-2">
+          ${managers.map(u => {
+            const isSup = u.role === 'supervisor';
+            const badgeText = isSup ? 'Sorumlu' : 'Zümre';
+            const borderCls = isSup
+              ? 'border-teal-300 dark:border-teal-700/60 bg-teal-50/60 dark:bg-teal-950/20 hover:bg-teal-100 dark:hover:bg-teal-950/40 hover:border-teal-500'
+              : 'border-indigo-300 dark:border-indigo-700/60 bg-indigo-50/60 dark:bg-indigo-950/20 hover:bg-indigo-100 dark:hover:bg-indigo-950/40 hover:border-indigo-500';
+            const badgeCls = isSup ? 'bg-teal-600' : 'bg-indigo-600';
+            const subCls = isSup ? 'text-teal-700 dark:text-teal-300' : 'text-indigo-700 dark:text-indigo-300';
+            const subInfo = isSup ? 'Eğitim Sorumlusu' : (u.area || 'Zümre Başkanı');
+            return `
+              <button
+                type="button"
+                data-quick-user="${esc(u.username)}"
+                data-quick-pass="123"
+                class="p-2 text-left rounded-xl border ${borderCls} transition text-xs group cursor-pointer"
+              >
+                <div class="flex items-center justify-between gap-1">
+                  <span class="font-bold text-slate-800 dark:text-slate-100 truncate">${esc(u.fullName || u.username)}</span>
+                  <span class="text-[8px] px-1 py-0.5 rounded ${badgeCls} text-white font-bold shrink-0">${badgeText}</span>
+                </div>
+                <div class="font-mono text-[9.5px] ${subCls} mt-0.5 truncate">${esc(u.username)} • ${esc(subInfo)}</div>
+              </button>
+            `;
+          }).join('')}
+        </div>
+      </div>
+    `;
+  }
+
+  if (html) {
+    container.innerHTML = html;
+    const summaryEl = document.getElementById('quickLoginInfoSummaryText');
+    if (summaryEl) {
+      summaryEl.textContent = `Hızlı Giriş Hesapları (${users.length} Mevcut Kullanıcı - Şifre: 123)`;
+    }
+    if (typeof refreshLucide === 'function') refreshLucide();
+  }
+}
+window.renderQuickLoginAccounts = renderQuickLoginAccounts;
+
 function loadData() {
   currentCourses = DataStore.getCourses();
   currentCenters = DataStore.getCenters();
@@ -897,6 +1020,7 @@ function loadData() {
   currentTemplates = Array.from(tmplMap.values());
   currentTemplates.sort((a, b) => (a.name || '').localeCompare(b.name || '', 'tr', { sensitivity: 'base' }));
   currentUsers = DataStore.getUsers();
+  renderQuickLoginAccounts();
 
   // Kurs merkez bilgisini senkronize et (institution <-> center)
   currentCourses.forEach(c => {
@@ -1699,16 +1823,24 @@ function handleSaveProfile(e) {
 // Event Dinleyicileri
 function setupEventListeners() {
   // Giriş Formu
-  loginForm.addEventListener('submit', (e) => {
+  loginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     loginError.classList.add('hidden');
 
     const uName = loginUsernameInput.value.trim().toLowerCase();
     const pass = loginPasswordInput.value.trim();
 
-    const users = (typeof DataStore !== 'undefined' && typeof DataStore.getUsers === 'function')
+    let users = (typeof DataStore !== 'undefined' && typeof DataStore.getUsers === 'function')
       ? DataStore.getUsers()
       : [];
+    if ((!users || users.length === 0) && typeof DataStore !== 'undefined' && typeof DataStore.initCloudListeners === 'function') {
+      try {
+        await DataStore.initCloudListeners();
+        users = DataStore.getUsers();
+      } catch (err) {
+        console.warn('Cloud sync before login failed:', err);
+      }
+    }
     const found = users.find((u) => {
       const dbUser = (u.username || '').toLowerCase();
       const matchUser = (dbUser === uName) ||
@@ -1741,7 +1873,7 @@ function setupEventListeners() {
         DataStore.initCloudListeners();
       }
     } else {
-      loginErrorText.innerText = 'Kullanıcı adı veya şifre hatalı! Lütfen deneme hesaplarını kullanınız.';
+      loginErrorText.innerText = 'Kullanıcı adı veya şifre hatalı! Lütfen hızlı giriş hesaplarını kontrol ediniz.';
       loginError.classList.remove('hidden');
       refreshLucide();
     }
@@ -1774,15 +1906,17 @@ function setupEventListeners() {
     refreshLucide();
   });
 
-  // Hızlı Giriş Butonları (Tüm Tanımlı Hesaplar)
-  document.querySelectorAll('[data-quick-user]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const uName = btn.getAttribute('data-quick-user');
-      const pass = btn.getAttribute('data-quick-pass') || '123';
+  // Hızlı Giriş Butonları (Dinamik Event Delegation - Tüm Tanımlı Hesaplar)
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-quick-user]');
+    if (!btn) return;
+    const uName = btn.getAttribute('data-quick-user');
+    const pass = btn.getAttribute('data-quick-pass') || '123';
+    if (loginUsernameInput && loginPasswordInput && loginForm) {
       loginUsernameInput.value = uName;
       loginPasswordInput.value = pass;
       loginForm.dispatchEvent(new Event('submit'));
-    });
+    }
   });
 
   if (quickLoginAdmin) {
