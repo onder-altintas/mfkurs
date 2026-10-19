@@ -358,10 +358,10 @@
       <div class="absolute -bottom-40 -left-40 w-96 h-96 bg-[#FFF3B0]/10 rounded-full blur-3xl"></div>
     </div>
 
-    <div class="relative w-full max-w-5xl grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+    <div class="relative w-full max-w-5xl grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-center">
       
-      <!-- Sol Tanıtım Bölümü -->
-      <div class="lg:col-span-6 text-white space-y-6">
+      <!-- Sol Tanıtım Bölümü (Mobilde giriş formunun altında, masaüstünde solda) -->
+      <div class="order-2 lg:order-1 lg:col-span-6 text-white space-y-5">
         <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#FFF3B0]/15 border border-[#FFF3B0]/30 text-[#FFF3B0] text-xs sm:text-sm font-medium">
           <i data-lucide="sparkles" class="w-4 h-4 text-[#FFF3B0]"></i>
           <span>Otomatik Evrak & Kurs Yönetim Sistemi</span>
@@ -383,43 +383,43 @@
         </div>
 
         <!-- Özellikler -->
-        <div class="space-y-3 pt-2">
-          <div class="flex items-start gap-3 text-slate-200 text-sm">
+        <div class="space-y-2.5 pt-1">
+          <div class="flex items-start gap-3 text-slate-200 text-xs sm:text-sm">
             <i data-lucide="shield-check" class="w-5 h-5 text-[#E09F3E] shrink-0 mt-0.5"></i>
             <span><strong>Admin Paneli:</strong> Kurs merkezlerini ve her saat için anlatılacak konu planlarını (müfredat) merkezi olarak yönetin.</span>
           </div>
-          <div class="flex items-start gap-3 text-slate-200 text-sm">
+          <div class="flex items-start gap-3 text-slate-200 text-xs sm:text-sm">
             <i data-lucide="check-circle-2" class="w-5 h-5 text-[#FFF3B0] shrink-0 mt-0.5"></i>
             <span><strong>Eğitmen Alanı:</strong> Eğitmenler hazır merkez ve kurs şablonlarını seçerek kendi kurs ve kursiyerlerini yönetir.</span>
           </div>
-          <div class="flex items-start gap-3 text-slate-200 text-sm">
+          <div class="flex items-start gap-3 text-slate-200 text-xs sm:text-sm">
             <i data-lucide="check-circle-2" class="w-5 h-5 text-[#FFF3B0] shrink-0 mt-0.5"></i>
             <span><strong>Resmi Şablonlar & Arşiv:</strong> Sınav tutanakları, not çizelgesi ve saatlik ders defteri tek tıkla yazdırılabilir.</span>
           </div>
         </div>
 
         <!-- Bilgilendirme Notu -->
-        <div class="p-4 rounded-xl bg-black/30 border border-white/10 backdrop-blur-sm flex items-start gap-3">
+        <div class="p-3.5 rounded-xl bg-black/30 border border-white/10 backdrop-blur-sm flex items-start gap-3">
           <i data-lucide="info" class="w-5 h-5 text-[#FFF3B0] shrink-0 mt-0.5"></i>
           <div class="text-xs text-slate-200 space-y-1">
             <p class="font-semibold text-[#FFF3B0]">Tanımlı Hızlı Giriş Hesapları:</p>
-            <p>Geliştiriciler (Özgür, Merve, Önder), Eğitmenler (Eğitmen 1, 2, 3), Zümre Başkanı ve Eğitim Sorumlusu hesaplarını sağdaki panelden tek tıkla kullanabilirsiniz (Tüm şifreler: <strong>123</strong>).</p>
+            <p>Geliştiriciler (Özgür, Merve, Önder), Eğitmenler (Eğitmen 1, 2, 3), Zümre Başkanı ve Eğitim Sorumlusu hesaplarını giriş kartından tek tıkla kullanabilirsiniz (Tüm şifreler: <strong>123</strong>).</p>
           </div>
         </div>
       </div>
 
-      <!-- Sağ Giriş Formu -->
-      <div class="lg:col-span-6">
-        <div class="bg-white/95 dark:bg-[#152125]/95 backdrop-blur-md rounded-3xl p-6 sm:p-8 shadow-2xl border border-white/20 dark:border-[#335C67]/40">
-          <div class="text-center mb-6">
-            <div class="inline-flex items-center justify-center gap-2 mb-2">
-              <img src="logo.png" alt="MEFPORTAL Logo" class="w-10 h-10 object-contain drop-shadow-xs" />
+      <!-- Sağ Giriş Formu (Mobilde en üstte) -->
+      <div class="order-1 lg:order-2 lg:col-span-6">
+        <div class="bg-white/95 dark:bg-[#152125]/95 backdrop-blur-md rounded-3xl p-5 sm:p-8 shadow-2xl border border-white/20 dark:border-[#335C67]/40">
+          <div class="text-center mb-5">
+            <div class="inline-flex items-center justify-center gap-2 mb-1.5">
+              <img src="logo.png" alt="MEFPORTAL Logo" class="w-9 h-9 sm:w-10 sm:h-10 object-contain drop-shadow-xs" />
               <span class="text-xl font-black text-slate-800 dark:text-slate-100 tracking-tight">MEF<span class="text-[#335C67] dark:text-[#FFF3B0]">PORTAL</span></span>
             </div>
             <h2 class="text-xl sm:text-2xl font-bold text-slate-800 dark:text-slate-100">
               Sisteme Giriş Yapın
             </h2>
-            <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">
+            <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">
               Kullanıcı adı ve şifrenizle panelinize erişin
             </p>
           </div>
@@ -430,7 +430,7 @@
             <span id="loginErrorText">Kullanıcı adı veya şifre hatalı!</span>
           </div>
 
-          <form id="loginForm" class="space-y-4">
+          <form id="loginForm" class="space-y-3.5">
             <div>
               <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5 uppercase tracking-wider">
                 Kullanıcı Adı
@@ -442,9 +442,9 @@
                 <input
                   type="text"
                   id="loginUsername"
-                  placeholder="Örn: admin veya egitmen1"
+                  placeholder="Örn: ozgur veya egitmen1"
                   required
-                  class="w-full pl-11 pr-4 py-2.5 bg-slate-50 dark:bg-[#10191b] border border-slate-200 dark:border-[#2b3e45] rounded-xl text-slate-800 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-[#335C67] focus:bg-white transition"
+                  class="w-full pl-11 pr-4 py-3 bg-slate-50 dark:bg-[#10191b] border border-slate-200 dark:border-[#2b3e45] rounded-xl text-slate-800 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-[#335C67] focus:bg-white transition"
                 />
               </div>
             </div>
@@ -462,12 +462,12 @@
                   id="loginPassword"
                   placeholder="••••••"
                   required
-                  class="w-full pl-11 pr-11 py-2.5 bg-slate-50 dark:bg-[#10191b] border border-slate-200 dark:border-[#2b3e45] rounded-xl text-slate-800 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-[#335C67] focus:bg-white transition"
+                  class="w-full pl-11 pr-11 py-3 bg-slate-50 dark:bg-[#10191b] border border-slate-200 dark:border-[#2b3e45] rounded-xl text-slate-800 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-[#335C67] focus:bg-white transition"
                 />
                 <button
                   type="button"
                   id="togglePasswordBtn"
-                  class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600"
+                  class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 cursor-pointer"
                 >
                   <i data-lucide="eye" id="eyeIcon" class="w-5 h-5"></i>
                 </button>
@@ -475,7 +475,7 @@
             </div>
 
             <!-- Beni Hatırla -->
-            <div class="flex items-center justify-between pt-1">
+            <div class="flex items-center justify-between pt-0.5">
               <label class="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-400 hover:text-slate-800 cursor-pointer select-none">
                 <input
                   type="checkbox"
@@ -489,10 +489,10 @@
 
             <button
               type="submit"
-              class="w-full py-3 px-4 bg-gradient-to-r from-[#335C67] to-[#540B0E] hover:from-[#274851] hover:to-[#43090b] text-white font-semibold rounded-xl shadow-lg shadow-[#335C67]/25 flex items-center justify-center gap-2 transition cursor-pointer"
+              class="w-full py-3.5 px-5 bg-gradient-to-r from-[#335C67] via-[#284952] to-[#540B0E] hover:from-[#274851] hover:to-[#43090b] text-white font-extrabold text-sm sm:text-base rounded-2xl shadow-xl shadow-[#335C67]/30 ring-2 ring-[#E09F3E]/40 flex items-center justify-center gap-2.5 transition-all active:scale-[0.99] cursor-pointer"
             >
-              <span>Giriş Yap</span>
-              <i data-lucide="arrow-right" class="w-4 h-4"></i>
+              <span>Sisteme Giriş Yap</span>
+              <i data-lucide="arrow-right" class="w-4 h-4 text-[#FFF3B0]"></i>
             </button>
 
             <div class="pt-1 text-center">
@@ -508,22 +508,22 @@
           </form>
 
           <!-- Hazır Deneme Hesapları -->
-          <div class="mt-6 pt-5 border-t border-slate-100 dark:border-[#23353c] space-y-3">
+          <div class="mt-5 pt-4 border-t border-slate-100 dark:border-[#23353c] space-y-2.5">
             <div class="flex items-center justify-between">
-              <span class="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
-                <i data-lucide="key" class="w-4 h-4 text-[#E09F3E]"></i>
+              <span class="text-[11px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+                <i data-lucide="key" class="w-3.5 h-3.5 text-[#E09F3E]"></i>
                 Hızlı Giriş Hesapları
               </span>
-              <span class="text-[11px] text-slate-400 font-mono">Tüm Şifreler: 123</span>
+              <span class="text-[10px] text-slate-400 font-mono">Şifre: 123</span>
             </div>
 
             <!-- Geliştiriciler (Özgür, Merve, Önder) -->
             <div>
-              <span class="text-[10px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider block mb-1.5 flex items-center gap-1">
-                <i data-lucide="code" class="w-3.5 h-3.5 text-amber-500"></i>
-                Geliştiriciler (Tam Yetkili &amp; To-Do)
+              <span class="text-[10px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider block mb-1 flex items-center gap-1">
+                <i data-lucide="code" class="w-3 h-3 text-amber-500"></i>
+                Geliştiriciler (Tam Yetkili)
               </span>
-              <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+              <div class="grid grid-cols-3 gap-1.5 sm:gap-2">
                 <button
                   type="button"
                   id="quickLoginOzgur"
@@ -531,11 +531,11 @@
                   data-quick-pass="123"
                   class="p-2 text-left rounded-xl border border-amber-300 dark:border-amber-700/60 bg-amber-50/60 dark:bg-amber-950/20 hover:bg-amber-100 dark:hover:bg-amber-950/40 hover:border-amber-500 transition text-xs group cursor-pointer"
                 >
-                  <div class="flex items-center justify-between">
-                    <span class="font-bold text-slate-800 dark:text-slate-100 group-hover:text-amber-700 dark:group-hover:text-[#FFF3B0]">Özgür</span>
-                    <span class="text-[9px] px-1.5 py-0.5 rounded bg-amber-600 text-white font-bold">Dev</span>
+                  <div class="flex items-center justify-between gap-1">
+                    <span class="font-bold text-slate-800 dark:text-slate-100 group-hover:text-amber-700 dark:group-hover:text-[#FFF3B0] truncate">Özgür</span>
+                    <span class="text-[8px] px-1 py-0.5 rounded bg-amber-600 text-white font-bold shrink-0">Dev</span>
                   </div>
-                  <div class="font-mono text-[10px] text-amber-700 dark:text-amber-300 mt-1">ozgur / 123</div>
+                  <div class="font-mono text-[9.5px] text-amber-700 dark:text-amber-300 mt-0.5 truncate">ozgur</div>
                 </button>
 
                 <button
@@ -545,11 +545,11 @@
                   data-quick-pass="123"
                   class="p-2 text-left rounded-xl border border-amber-300 dark:border-amber-700/60 bg-amber-50/60 dark:bg-amber-950/20 hover:bg-amber-100 dark:hover:bg-amber-950/40 hover:border-amber-500 transition text-xs group cursor-pointer"
                 >
-                  <div class="flex items-center justify-between">
-                    <span class="font-bold text-slate-800 dark:text-slate-100 group-hover:text-amber-700 dark:group-hover:text-[#FFF3B0]">Merve</span>
-                    <span class="text-[9px] px-1.5 py-0.5 rounded bg-amber-600 text-white font-bold">Dev</span>
+                  <div class="flex items-center justify-between gap-1">
+                    <span class="font-bold text-slate-800 dark:text-slate-100 group-hover:text-amber-700 dark:group-hover:text-[#FFF3B0] truncate">Merve</span>
+                    <span class="text-[8px] px-1 py-0.5 rounded bg-amber-600 text-white font-bold shrink-0">Dev</span>
                   </div>
-                  <div class="font-mono text-[10px] text-amber-700 dark:text-amber-300 mt-1">merve / 123</div>
+                  <div class="font-mono text-[9.5px] text-amber-700 dark:text-amber-300 mt-0.5 truncate">merve</div>
                 </button>
 
                 <button
@@ -559,22 +559,22 @@
                   data-quick-pass="123"
                   class="p-2 text-left rounded-xl border border-orange-300 dark:border-orange-700/60 bg-orange-50/60 dark:bg-orange-950/20 hover:bg-orange-100 dark:hover:bg-orange-950/40 hover:border-orange-500 transition text-xs group cursor-pointer"
                 >
-                  <div class="flex items-center justify-between">
-                    <span class="font-bold text-slate-800 dark:text-slate-100 group-hover:text-orange-700 dark:group-hover:text-[#FFF3B0]">Önder</span>
-                    <span class="text-[9px] px-1.5 py-0.5 rounded bg-orange-600 text-white font-bold">Dev</span>
+                  <div class="flex items-center justify-between gap-1">
+                    <span class="font-bold text-slate-800 dark:text-slate-100 group-hover:text-orange-700 dark:group-hover:text-[#FFF3B0] truncate">Önder</span>
+                    <span class="text-[8px] px-1 py-0.5 rounded bg-orange-600 text-white font-bold shrink-0">Dev</span>
                   </div>
-                  <div class="font-mono text-[10px] text-orange-700 dark:text-orange-300 mt-1">onder / 123</div>
+                  <div class="font-mono text-[9.5px] text-orange-700 dark:text-orange-300 mt-0.5 truncate">onder</div>
                 </button>
               </div>
             </div>
 
             <!-- Eğitmenler (egitmen1, egitmen2, egitmen3) -->
-            <div class="pt-2 border-t border-slate-100 dark:border-[#23353c]">
-              <span class="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider block mb-1.5 flex items-center gap-1">
-                <i data-lucide="graduation-cap" class="w-3.5 h-3.5 text-emerald-500"></i>
+            <div class="pt-1.5 border-t border-slate-100 dark:border-[#23353c]">
+              <span class="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider block mb-1 flex items-center gap-1">
+                <i data-lucide="graduation-cap" class="w-3 h-3 text-emerald-500"></i>
                 Eğitmenler (Öğretici Paneli)
               </span>
-              <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+              <div class="grid grid-cols-3 gap-1.5 sm:gap-2">
                 <button
                   type="button"
                   id="quickLoginEgitmen1"
@@ -582,11 +582,10 @@
                   data-quick-pass="123"
                   class="p-2 text-left rounded-xl border border-emerald-300 dark:border-emerald-700/60 bg-emerald-50/60 dark:bg-emerald-950/20 hover:bg-emerald-100 dark:hover:bg-emerald-950/40 hover:border-emerald-500 transition text-xs group cursor-pointer"
                 >
-                  <div class="flex items-center justify-between">
-                    <span class="font-bold text-slate-800 dark:text-slate-100 group-hover:text-emerald-700 dark:group-hover:text-[#FFF3B0]">Eğitmen 1</span>
-                    <span class="text-[9px] px-1.5 py-0.5 rounded bg-emerald-600 text-white font-bold">Eğitmen</span>
+                  <div class="flex items-center justify-between gap-1">
+                    <span class="font-bold text-slate-800 dark:text-slate-100 group-hover:text-emerald-700 dark:group-hover:text-[#FFF3B0] truncate">Eğitmen 1</span>
                   </div>
-                  <div class="font-mono text-[10px] text-emerald-700 dark:text-emerald-300 mt-1">egitmen1 / 123</div>
+                  <div class="font-mono text-[9.5px] text-emerald-700 dark:text-emerald-300 mt-0.5 truncate">egitmen1</div>
                 </button>
 
                 <button
@@ -596,11 +595,10 @@
                   data-quick-pass="123"
                   class="p-2 text-left rounded-xl border border-emerald-300 dark:border-emerald-700/60 bg-emerald-50/60 dark:bg-emerald-950/20 hover:bg-emerald-100 dark:hover:bg-emerald-950/40 hover:border-emerald-500 transition text-xs group cursor-pointer"
                 >
-                  <div class="flex items-center justify-between">
-                    <span class="font-bold text-slate-800 dark:text-slate-100 group-hover:text-emerald-700 dark:group-hover:text-[#FFF3B0]">Eğitmen 2</span>
-                    <span class="text-[9px] px-1.5 py-0.5 rounded bg-emerald-600 text-white font-bold">Eğitmen</span>
+                  <div class="flex items-center justify-between gap-1">
+                    <span class="font-bold text-slate-800 dark:text-slate-100 group-hover:text-emerald-700 dark:group-hover:text-[#FFF3B0] truncate">Eğitmen 2</span>
                   </div>
-                  <div class="font-mono text-[10px] text-emerald-700 dark:text-emerald-300 mt-1">egitmen2 / 123</div>
+                  <div class="font-mono text-[9.5px] text-emerald-700 dark:text-emerald-300 mt-0.5 truncate">egitmen2</div>
                 </button>
 
                 <button
@@ -610,22 +608,21 @@
                   data-quick-pass="123"
                   class="p-2 text-left rounded-xl border border-emerald-300 dark:border-emerald-700/60 bg-emerald-50/60 dark:bg-emerald-950/20 hover:bg-emerald-100 dark:hover:bg-emerald-950/40 hover:border-emerald-500 transition text-xs group cursor-pointer"
                 >
-                  <div class="flex items-center justify-between">
-                    <span class="font-bold text-slate-800 dark:text-slate-100 group-hover:text-emerald-700 dark:group-hover:text-[#FFF3B0]">Eğitmen 3</span>
-                    <span class="text-[9px] px-1.5 py-0.5 rounded bg-emerald-600 text-white font-bold">Eğitmen</span>
+                  <div class="flex items-center justify-between gap-1">
+                    <span class="font-bold text-slate-800 dark:text-slate-100 group-hover:text-emerald-700 dark:group-hover:text-[#FFF3B0] truncate">Eğitmen 3</span>
                   </div>
-                  <div class="font-mono text-[10px] text-emerald-700 dark:text-emerald-300 mt-1">egitmen3 / 123</div>
+                  <div class="font-mono text-[9.5px] text-emerald-700 dark:text-emerald-300 mt-0.5 truncate">egitmen3</div>
                 </button>
               </div>
             </div>
 
             <!-- Zümre Başkanı & Eğitim Sorumlusu -->
-            <div class="pt-2 border-t border-slate-100 dark:border-[#23353c]">
-              <span class="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider block mb-1.5 flex items-center gap-1">
-                <i data-lucide="shield-check" class="w-3.5 h-3.5 text-indigo-500"></i>
+            <div class="pt-1.5 border-t border-slate-100 dark:border-[#23353c]">
+              <span class="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider block mb-1 flex items-center gap-1">
+                <i data-lucide="shield-check" class="w-3 h-3 text-indigo-500"></i>
                 Yönetim &amp; Sorumlu Hesapları
               </span>
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <div class="grid grid-cols-2 gap-1.5 sm:gap-2">
                 <button
                   type="button"
                   id="quickLoginZumre"
@@ -633,11 +630,11 @@
                   data-quick-pass="123"
                   class="p-2 text-left rounded-xl border border-indigo-300 dark:border-indigo-700/60 bg-indigo-50/60 dark:bg-indigo-950/20 hover:bg-indigo-100 dark:hover:bg-indigo-950/40 hover:border-indigo-500 transition text-xs group cursor-pointer"
                 >
-                  <div class="flex items-center justify-between">
-                    <span class="font-bold text-slate-800 dark:text-slate-100 group-hover:text-indigo-700 dark:group-hover:text-[#FFF3B0]">Zümre Başkanı</span>
-                    <span class="text-[9px] px-1.5 py-0.5 rounded bg-indigo-600 text-white font-bold">Zümre</span>
+                  <div class="flex items-center justify-between gap-1">
+                    <span class="font-bold text-slate-800 dark:text-slate-100 group-hover:text-indigo-700 dark:group-hover:text-[#FFF3B0] truncate">Zümre Başkanı</span>
+                    <span class="text-[8px] px-1 py-0.5 rounded bg-indigo-600 text-white font-bold shrink-0">Zümre</span>
                   </div>
-                  <div class="font-mono text-[10px] text-indigo-700 dark:text-indigo-300 mt-1">zumrebaskani / 123</div>
+                  <div class="font-mono text-[9.5px] text-indigo-700 dark:text-indigo-300 mt-0.5 truncate">zumrebaskani</div>
                 </button>
 
                 <button
@@ -647,11 +644,11 @@
                   data-quick-pass="123"
                   class="p-2 text-left rounded-xl border border-teal-300 dark:border-teal-700/60 bg-teal-50/60 dark:bg-teal-950/20 hover:bg-teal-100 dark:hover:bg-teal-950/40 hover:border-teal-500 transition text-xs group cursor-pointer"
                 >
-                  <div class="flex items-center justify-between">
-                    <span class="font-bold text-slate-800 dark:text-slate-100 group-hover:text-teal-700 dark:group-hover:text-[#FFF3B0]">Eğitim Sorumlusu</span>
-                    <span class="text-[9px] px-1.5 py-0.5 rounded bg-teal-600 text-white font-bold">Sorumlu</span>
+                  <div class="flex items-center justify-between gap-1">
+                    <span class="font-bold text-slate-800 dark:text-slate-100 group-hover:text-teal-700 dark:group-hover:text-[#FFF3B0] truncate">Eğitim Sorumlusu</span>
+                    <span class="text-[8px] px-1 py-0.5 rounded bg-teal-600 text-white font-bold shrink-0">Sorumlu</span>
                   </div>
-                  <div class="font-mono text-[10px] text-teal-700 dark:text-teal-300 mt-1">egitimsorumlusu / 123</div>
+                  <div class="font-mono text-[9.5px] text-teal-700 dark:text-teal-300 mt-0.5 truncate">egitimsorumlusu</div>
                 </button>
               </div>
             </div>
@@ -807,54 +804,55 @@
 
 
     <!-- ================= 1. GÖRÜNÜM: ÖĞRETİCİ / KURS DASHBOARD ================= -->
-    <main id="teacherSection" class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6">
+    <main id="teacherSection" class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-5 sm:py-8 space-y-5 sm:space-y-6">
       
-      <!-- Hoş Geldiniz Banner'ı (İnce & Sade) -->
-      <div class="bg-gradient-to-r from-[#335C67] via-[#284952] to-[#540B0E] rounded-2xl px-5 py-3.5 sm:px-6 sm:py-4 text-white shadow-md relative overflow-hidden border border-[#335C67]/40">
+      <!-- Hoş Geldiniz Banner'ı (İnce & Sade, Mobil Uyumlu) -->
+      <div class="bg-gradient-to-r from-[#335C67] via-[#284952] to-[#540B0E] rounded-2xl p-4 sm:px-6 sm:py-4 text-white shadow-lg relative overflow-hidden border border-[#335C67]/40">
         <div class="absolute right-0 top-0 bottom-0 w-1/3 bg-white/5 rounded-l-full pointer-events-none"></div>
         <div class="absolute -bottom-8 -right-8 w-32 h-32 bg-[#E09F3E]/20 rounded-full blur-xl pointer-events-none"></div>
         
-        <div class="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div class="flex flex-wrap items-center gap-2 sm:gap-4">
-            <h2 class="text-lg sm:text-xl font-bold tracking-tight text-white flex items-center gap-1.5">
+        <div class="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-3.5">
+          <div class="flex flex-wrap items-center justify-between sm:justify-start gap-2 sm:gap-4">
+            <h2 class="text-base sm:text-xl font-bold tracking-tight text-white flex items-center gap-1.5">
               <span>Hoş Geldiniz,</span>
               <span id="welcomeUserName" class="text-[#FFF3B0]">-</span>
             </h2>
-            <div class="flex items-center gap-1.5 text-[#FFF3B0]/90 text-xs font-medium bg-black/20 px-2.5 py-1 rounded-lg border border-white/10">
+            <div class="flex items-center gap-1.5 text-[#FFF3B0]/90 text-[11px] sm:text-xs font-medium bg-black/20 px-2.5 py-1 rounded-lg border border-white/10">
               <i data-lucide="calendar" class="w-3.5 h-3.5 text-[#E09F3E]"></i>
               <span id="currentDateText">28 Eylül 2026</span>
             </div>
           </div>
 
-          <div class="flex items-center gap-2 shrink-0">
-            <!-- Zümre Başkanı & Geliştirici için Kurs Şablonu / Müfredat Yönetim Butonu -->
+          <div class="flex items-center gap-2 shrink-0 w-full sm:w-auto">
+            <!-- Zümre Başkanı için Kurs Şablonu / Müfredat Yönetim Butonu -->
             <button
               type="button"
               id="deptHeadNewTmplBtn"
-              class="hidden px-3.5 py-2 bg-teal-700 hover:bg-teal-800 text-white font-bold text-xs sm:text-sm rounded-xl shadow-md transition items-center justify-center gap-1.5 cursor-pointer border border-teal-500/50"
+              class="hidden flex-1 sm:flex-initial px-3.5 py-2.5 bg-teal-700 hover:bg-teal-800 text-white font-bold text-xs sm:text-sm rounded-xl shadow-md transition items-center justify-center gap-1.5 cursor-pointer border border-teal-400/40"
               title="Kurs ve Müfredat Planlarını Görüntüle ve Düzenle (Zümre Başkanı Yetkisi)"
             >
-              <i data-lucide="layers" class="w-4 h-4 text-teal-200"></i>
-              <span>Kurs ve Müfredat Planları</span>
+              <i data-lucide="layers" class="w-4 h-4 text-teal-200 shrink-0"></i>
+              <span>Müfredat Planları</span>
             </button>
 
-            <!-- Boş Evrak Butonu (Elle Doldurmak İsteyenler İçin) -->
+            <!-- Boş Evrak Butonu (İkincil Sade Buton) -->
             <button
               type="button"
               id="openBlankDocsBtnTop"
               onclick="openBlankDocumentsModal()"
-              class="w-full sm:w-auto px-3.5 py-2 bg-white/15 hover:bg-white/25 text-[#FFF3B0] hover:text-white border border-[#FFF3B0]/30 hover:border-[#FFF3B0]/70 font-bold text-xs sm:text-sm rounded-xl shadow-md transition flex items-center justify-center gap-2 cursor-pointer backdrop-blur-xs"
+              class="flex-1 sm:flex-initial px-3.5 py-2.5 bg-white/10 hover:bg-white/20 text-[#FFF3B0] hover:text-white border border-white/20 hover:border-[#FFF3B0]/60 font-semibold text-xs sm:text-sm rounded-xl transition flex items-center justify-center gap-1.5 cursor-pointer backdrop-blur-xs"
               title="Manuel elle doldurmak için boş resmi kurs sonu evrak şablonları"
             >
-              <i data-lucide="file-text" class="w-4 h-4 text-[#FFF3B0]"></i>
+              <i data-lucide="file-text" class="w-4 h-4 text-[#FFF3B0] shrink-0"></i>
               <span>Boş Evraklar</span>
             </button>
 
+            <!-- Birincil Vurgulu Aksiyon: Yeni Kurs Ekle -->
             <button
               id="openNewCourseModalBtn"
-              class="w-full sm:w-auto px-4 py-2 bg-[#FFF3B0] text-[#540B0E] hover:bg-white font-bold text-xs sm:text-sm rounded-xl shadow-md transition flex items-center justify-center gap-2 group cursor-pointer"
+              class="flex-1 sm:flex-initial px-4 sm:px-5 py-2.5 bg-gradient-to-r from-[#FFF3B0] to-[#ffe07d] text-[#540B0E] hover:from-white hover:to-[#FFF3B0] font-extrabold text-xs sm:text-sm rounded-xl shadow-lg shadow-black/25 ring-2 ring-[#FFF3B0]/50 transition-all active:scale-[0.98] flex items-center justify-center gap-1.5 group cursor-pointer"
             >
-              <i data-lucide="plus" class="w-4 h-4 text-[#540B0E] group-hover:rotate-90 transition-transform duration-200"></i>
+              <i data-lucide="plus-circle" class="w-4 h-4 text-[#540B0E] group-hover:rotate-90 transition-transform duration-200 shrink-0"></i>
               <span>Yeni Kurs Ekle</span>
             </button>
           </div>
@@ -862,58 +860,58 @@
       </div>
 
       <!-- İstatistik Kartları (Palette Colors) -->
-      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div class="bg-white dark:bg-[#152125] p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-[#23353c] shadow-xs flex items-center gap-4 transition-colors">
-          <div class="p-3 rounded-xl bg-[#335C67]/10 text-[#335C67] dark:text-[#FFF3B0]">
-            <i data-lucide="book-open" class="w-6 h-6"></i>
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        <div class="bg-white dark:bg-[#152125] p-3.5 sm:p-5 rounded-2xl border border-slate-200 dark:border-[#23353c] shadow-xs flex items-center gap-3 sm:gap-4 transition-colors">
+          <div class="p-2.5 sm:p-3 rounded-xl bg-[#335C67]/10 text-[#335C67] dark:text-[#FFF3B0] shrink-0">
+            <i data-lucide="book-open" class="w-5 h-5 sm:w-6 sm:h-6"></i>
           </div>
-          <div>
-            <div id="statTotalCourses" class="text-xl sm:text-2xl font-bold text-slate-800 dark:text-slate-100">0</div>
-            <div class="text-xs text-slate-500 dark:text-slate-400 font-medium">Toplam Kurslarım</div>
-          </div>
-        </div>
-
-        <div class="bg-white dark:bg-[#152125] p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-[#23353c] shadow-xs flex items-center gap-4 transition-colors">
-          <div class="p-3 rounded-xl bg-[#E09F3E]/10 text-[#E09F3E]">
-            <i data-lucide="check-circle-2" class="w-6 h-6"></i>
-          </div>
-          <div>
-            <div id="statActiveCourses" class="text-xl sm:text-2xl font-bold text-slate-800 dark:text-slate-100">0</div>
-            <div class="text-xs text-slate-500 dark:text-slate-400 font-medium">Devam Eden Kurslar</div>
+          <div class="min-w-0">
+            <div id="statTotalCourses" class="text-lg sm:text-2xl font-bold text-slate-800 dark:text-slate-100 leading-tight">0</div>
+            <div class="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 font-medium truncate">Toplam Kurslarım</div>
           </div>
         </div>
 
-        <div class="bg-white dark:bg-[#152125] p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-[#23353c] shadow-xs flex items-center gap-4 transition-colors">
-          <div class="p-3 rounded-xl bg-[#540B0E]/10 text-[#540B0E] dark:text-[#FFF3B0]">
-            <i data-lucide="folder-archive" class="w-6 h-6"></i>
+        <div class="bg-white dark:bg-[#152125] p-3.5 sm:p-5 rounded-2xl border border-slate-200 dark:border-[#23353c] shadow-xs flex items-center gap-3 sm:gap-4 transition-colors">
+          <div class="p-2.5 sm:p-3 rounded-xl bg-[#E09F3E]/10 text-[#E09F3E] shrink-0">
+            <i data-lucide="check-circle-2" class="w-5 h-5 sm:w-6 sm:h-6"></i>
           </div>
-          <div>
-            <div id="statCompletedCourses" class="text-xl sm:text-2xl font-bold text-slate-800 dark:text-slate-100">0</div>
-            <div class="text-xs text-slate-500 dark:text-slate-400 font-medium">Arşiv (Tamamlanan)</div>
+          <div class="min-w-0">
+            <div id="statActiveCourses" class="text-lg sm:text-2xl font-bold text-slate-800 dark:text-slate-100 leading-tight">0</div>
+            <div class="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 font-medium truncate">Devam Eden</div>
           </div>
         </div>
 
-        <div class="bg-white dark:bg-[#152125] p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-[#23353c] shadow-xs flex items-center gap-4 transition-colors">
-          <div class="p-3 rounded-xl bg-[#9E2A2B]/10 text-[#9E2A2B]">
-            <i data-lucide="users" class="w-6 h-6"></i>
+        <div class="bg-white dark:bg-[#152125] p-3.5 sm:p-5 rounded-2xl border border-slate-200 dark:border-[#23353c] shadow-xs flex items-center gap-3 sm:gap-4 transition-colors">
+          <div class="p-2.5 sm:p-3 rounded-xl bg-[#540B0E]/10 text-[#540B0E] dark:text-[#FFF3B0] shrink-0">
+            <i data-lucide="folder-archive" class="w-5 h-5 sm:w-6 sm:h-6"></i>
           </div>
-          <div>
-            <div id="statTotalStudents" class="text-xl sm:text-2xl font-bold text-slate-800 dark:text-slate-100">0</div>
-            <div class="text-xs text-slate-500 dark:text-slate-400 font-medium">Toplam Kursiyer</div>
+          <div class="min-w-0">
+            <div id="statCompletedCourses" class="text-lg sm:text-2xl font-bold text-slate-800 dark:text-slate-100 leading-tight">0</div>
+            <div class="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 font-medium truncate">Tamamlanan</div>
+          </div>
+        </div>
+
+        <div class="bg-white dark:bg-[#152125] p-3.5 sm:p-5 rounded-2xl border border-slate-200 dark:border-[#23353c] shadow-xs flex items-center gap-3 sm:gap-4 transition-colors">
+          <div class="p-2.5 sm:p-3 rounded-xl bg-[#9E2A2B]/10 text-[#9E2A2B] shrink-0">
+            <i data-lucide="users" class="w-5 h-5 sm:w-6 sm:h-6"></i>
+          </div>
+          <div class="min-w-0">
+            <div id="statTotalStudents" class="text-lg sm:text-2xl font-bold text-slate-800 dark:text-slate-100 leading-tight">0</div>
+            <div class="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 font-medium truncate">Toplam Kursiyer</div>
           </div>
         </div>
       </div>
 
       <!-- Kurslar Listesi & Arama & Filtreleme -->
-      <div class="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 shadow-xs space-y-6">
+      <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-6 shadow-xs space-y-5">
         
-        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-3.5">
           <div>
-            <h3 class="text-lg font-bold text-slate-800">
+            <h3 class="text-base sm:text-lg font-bold text-slate-800">
               Kurs Yönetim Paneli
             </h3>
             <p class="text-xs text-slate-500">
-              Kayıtlı kurslarınız arasından seçim yaparak kursiyer ve evrak işlemlerine geçebilirsiniz.
+              Kayıtlı kurslarınız arasından seçim yaparak kursiyer, yoklama ve evrak işlemlerine geçebilirsiniz.
             </p>
           </div>
 
@@ -925,28 +923,28 @@
                 type="text"
                 id="searchCourseInput"
                 placeholder="Kurs adı veya kodu ara..."
-                class="w-full sm:w-64 pl-9 pr-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-sky-500 focus:bg-white transition"
+                class="w-full sm:w-64 pl-9 pr-3.5 py-2.5 sm:py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-sky-500 focus:bg-white transition"
               />
             </div>
 
-            <div class="flex items-center gap-1 bg-slate-100 dark:bg-[#10191b] p-1 rounded-xl">
+            <div class="grid grid-cols-3 sm:flex items-center gap-1 bg-slate-100 dark:bg-[#10191b] p-1 rounded-xl">
               <button
                 id="filterAllBtn"
-                class="filter-btn active px-3 py-1.5 rounded-lg text-xs font-semibold bg-white text-slate-800 shadow-xs cursor-pointer"
+                class="filter-btn active px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-semibold bg-white text-slate-800 shadow-xs cursor-pointer text-center"
               >
                 Tümü (<span id="countAll">0</span>)
               </button>
               <button
                 id="filterActiveBtn"
-                class="filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 cursor-pointer"
+                class="filter-btn px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 cursor-pointer text-center"
               >
                 Aktif (<span id="countActive">0</span>)
               </button>
               <button
                 id="filterCompletedBtn"
-                class="filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 cursor-pointer"
+                class="filter-btn px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 cursor-pointer text-center"
               >
-                Tamamlanan (<span id="countCompleted">0</span>)
+                Biten (<span id="countCompleted">0</span>)
               </button>
             </div>
           </div>
@@ -1066,24 +1064,17 @@
         </div>
 
         <!-- Kurs Kartları Grid -->
-        <div id="courseListGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+        <div id="courseListGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5"></div>
 
-        <!-- Kurs Bulunamadı Görünümü -->
-        <div id="noCoursesState" class="hidden text-center py-12 px-4 rounded-2xl border-2 border-dashed border-slate-200">
-          <div class="w-12 h-12 rounded-2xl bg-sky-50 text-sky-600 flex items-center justify-center mx-auto mb-3">
+        <!-- Kurs Bulunamadı Görünümü (Tekrarlayan ekleme butonu kaldırıldı, üstteki ana butona yönlendirir) -->
+        <div id="noCoursesState" class="hidden text-center py-10 px-4 rounded-2xl border-2 border-dashed border-slate-200">
+          <div class="w-12 h-12 rounded-2xl bg-[#335C67]/10 text-[#335C67] dark:text-[#FFF3B0] flex items-center justify-center mx-auto mb-3">
             <i data-lucide="book-open" class="w-6 h-6"></i>
           </div>
           <h4 class="font-bold text-slate-700 text-sm">Kayıtlı Kurs Bulunamadı</h4>
-          <p class="text-xs text-slate-500 max-w-sm mx-auto mt-1 mb-4">
-            Henüz kurs eklenmedi. "Yeni Kurs Ekle" butonuna basarak adminin tanımladığı merkez ve şablonlardan kurs açabilirsiniz.
+          <p class="text-xs text-slate-500 max-w-sm mx-auto mt-1">
+            Henüz kurs eklenmedi. Sağ üstteki <strong>"Yeni Kurs Ekle"</strong> butonuna basarak tanımlı merkez ve şablonlardan yeni kurs açabilirsiniz.
           </p>
-          <button
-            id="emptyStateAddBtn"
-            class="inline-flex items-center gap-2 px-4 py-2 bg-sky-600 hover:bg-sky-700 text-white text-xs font-semibold rounded-xl shadow-xs transition cursor-pointer"
-          >
-            <i data-lucide="plus" class="w-4 h-4"></i>
-            <span>İlk Kursunuzu Ekleyin</span>
-          </button>
         </div>
 
       </div>
@@ -1091,62 +1082,62 @@
     </main>
 
     <!-- ================= 2. GÖRÜNÜM: ADMIN YÖNETİM PANELİ ================= -->
-    <main id="adminSection" class="hidden flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6">
+    <main id="adminSection" class="hidden flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-5 sm:py-8 space-y-5 sm:space-y-6">
       
-      <!-- Admin Başlık Banner -->
-      <div class="bg-gradient-to-r from-[#540B0E] via-[#381a1f] to-[#335C67] rounded-3xl p-6 sm:p-8 text-white shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4 border border-[#540B0E]/40">
+      <!-- Admin Başlık Banner (Sekmeye Göre Tek Bir Vurgulu Ana Buton Gösterir) -->
+      <div class="bg-gradient-to-r from-[#540B0E] via-[#381a1f] to-[#335C67] rounded-2xl sm:rounded-3xl p-5 sm:p-7 text-white shadow-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 border border-[#540B0E]/40">
         <div>
-          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FFF3B0]/15 text-[#FFF3B0] text-xs font-semibold border border-[#FFF3B0]/30 mb-2">
-            <i data-lucide="shield-check" class="w-4 h-4 text-[#FFF3B0]"></i>
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FFF3B0]/15 text-[#FFF3B0] text-[11px] sm:text-xs font-semibold border border-[#FFF3B0]/30 mb-1.5">
+            <i data-lucide="shield-check" class="w-3.5 h-3.5 text-[#FFF3B0]"></i>
             <span>Sistem & Kurum Yönetimi</span>
           </div>
-          <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight">Admin Yönetim Paneli</h2>
-          <p class="text-slate-200 text-xs sm:text-sm mt-1 max-w-2xl">
+          <h2 class="text-xl sm:text-3xl font-extrabold tracking-tight">Admin Yönetim Paneli</h2>
+          <p class="text-slate-200 text-xs sm:text-sm mt-0.5 max-w-2xl">
             Kurum, merkez, alan ve müfredat yönetimi.
           </p>
         </div>
 
-        <div class="flex items-center gap-2.5">
+        <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
           <button
             id="openAddCenterModalBtn"
-            class="px-4 py-2.5 bg-[#335C67] hover:bg-[#274851] text-white rounded-xl text-xs font-bold shadow-md shadow-[#335C67]/30 flex items-center gap-2 transition cursor-pointer"
+            class="w-full sm:w-auto px-5 py-3 bg-gradient-to-r from-[#FFF3B0] to-[#ffe07d] hover:from-white hover:to-[#FFF3B0] text-[#540B0E] rounded-xl text-xs sm:text-sm font-extrabold shadow-lg shadow-black/25 ring-2 ring-[#FFF3B0]/50 flex items-center justify-center gap-2 transition cursor-pointer"
           >
-            <i data-lucide="building-2" class="w-4 h-4 text-[#FFF3B0]"></i>
-            <span>Yeni Merkez</span>
+            <i data-lucide="plus-circle" class="w-4 h-4 text-[#540B0E]"></i>
+            <span>Yeni Kurs Merkezi Ekle</span>
           </button>
 
           <button
             id="openAddAreaModalBtn"
-            class="px-4 py-2.5 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-bold shadow-md shadow-teal-600/30 flex items-center gap-2 transition cursor-pointer"
+            class="hidden w-full sm:w-auto px-5 py-3 bg-gradient-to-r from-[#FFF3B0] to-[#ffe07d] hover:from-white hover:to-[#FFF3B0] text-[#540B0E] rounded-xl text-xs sm:text-sm font-extrabold shadow-lg shadow-black/25 ring-2 ring-[#FFF3B0]/50 flex items-center justify-center gap-2 transition cursor-pointer"
           >
-            <i data-lucide="tag" class="w-4 h-4 text-white"></i>
-            <span>Yeni Alan Ekle</span>
+            <i data-lucide="plus-circle" class="w-4 h-4 text-[#540B0E]"></i>
+            <span>Yeni Kurs Alanı Ekle</span>
           </button>
 
           <button
             id="openAddCourseTmplModalBtn"
-            class="px-4 py-2.5 bg-[#E09F3E] hover:bg-[#c9892c] text-white rounded-xl text-xs font-bold shadow-md shadow-[#E09F3E]/30 flex items-center gap-2 transition cursor-pointer"
+            class="hidden w-full sm:w-auto px-5 py-3 bg-gradient-to-r from-[#FFF3B0] to-[#ffe07d] hover:from-white hover:to-[#FFF3B0] text-[#540B0E] rounded-xl text-xs sm:text-sm font-extrabold shadow-lg shadow-black/25 ring-2 ring-[#FFF3B0]/50 flex items-center justify-center gap-2 transition cursor-pointer"
           >
-            <i data-lucide="book-plus" class="w-4 h-4 text-white"></i>
-            <span>Yeni Kurs/Müfredat</span>
+            <i data-lucide="plus-circle" class="w-4 h-4 text-[#540B0E]"></i>
+            <span>Yeni Kurs / Müfredat Ekle</span>
           </button>
 
           <button
             id="openAddUserModalBtn"
-            class="px-4 py-2.5 bg-[#540B0E] hover:bg-[#40080a] text-white rounded-xl text-xs font-bold shadow-md shadow-[#540B0E]/30 flex items-center gap-2 transition cursor-pointer border border-[#FFF3B0]/20"
+            class="hidden w-full sm:w-auto px-5 py-3 bg-gradient-to-r from-[#FFF3B0] to-[#ffe07d] hover:from-white hover:to-[#FFF3B0] text-[#540B0E] rounded-xl text-xs sm:text-sm font-extrabold shadow-lg shadow-black/25 ring-2 ring-[#FFF3B0]/50 flex items-center justify-center gap-2 transition cursor-pointer"
           >
-            <i data-lucide="user-plus" class="w-4 h-4 text-[#FFF3B0]"></i>
+            <i data-lucide="user-plus" class="w-4 h-4 text-[#540B0E]"></i>
             <span>Yeni Kullanıcı Ekle</span>
           </button>
         </div>
       </div>
 
       <!-- Admin Alt Sekmeleri -->
-      <div class="flex border-b border-slate-200 bg-white rounded-t-2xl px-6 pt-3 shadow-xs overflow-x-auto">
+      <div class="flex border-b border-slate-200 bg-white rounded-t-2xl px-3 sm:px-6 pt-2.5 shadow-xs overflow-x-auto no-scrollbar">
         <button
           id="adminTabCentersBtn"
           onclick="switchAdminTab('centers')"
-          class="flex items-center gap-2 px-5 py-3 text-xs sm:text-sm font-bold border-b-2 border-indigo-600 text-indigo-700 transition cursor-pointer whitespace-nowrap"
+          class="flex items-center gap-2 px-4 sm:px-5 py-3 text-xs sm:text-sm font-bold border-b-2 border-indigo-600 text-indigo-700 transition cursor-pointer whitespace-nowrap"
         >
           <i data-lucide="building-2" class="w-4 h-4"></i>
           <span>Kurs Merkezleri (<span id="adminCentersCount">0</span>)</span>
@@ -1155,7 +1146,7 @@
         <button
           id="adminTabAreasBtn"
           onclick="switchAdminTab('areas')"
-          class="flex items-center gap-2 px-5 py-3 text-xs sm:text-sm font-bold border-b-2 border-transparent text-slate-600 hover:text-slate-900 transition cursor-pointer whitespace-nowrap"
+          class="flex items-center gap-2 px-4 sm:px-5 py-3 text-xs sm:text-sm font-bold border-b-2 border-transparent text-slate-600 hover:text-slate-900 transition cursor-pointer whitespace-nowrap"
         >
           <i data-lucide="tag" class="w-4 h-4"></i>
           <span>Kurs Alanları (<span id="adminAreasCount">0</span>)</span>
@@ -1164,7 +1155,7 @@
         <button
           id="adminTabTemplatesBtn"
           onclick="switchAdminTab('templates')"
-          class="flex items-center gap-2 px-5 py-3 text-xs sm:text-sm font-bold border-b-2 border-transparent text-slate-600 hover:text-slate-900 transition cursor-pointer whitespace-nowrap"
+          class="flex items-center gap-2 px-4 sm:px-5 py-3 text-xs sm:text-sm font-bold border-b-2 border-transparent text-slate-600 hover:text-slate-900 transition cursor-pointer whitespace-nowrap"
         >
           <i data-lucide="layers" class="w-4 h-4"></i>
           <span>Kurs ve Müfredat Planları (<span id="adminTemplatesCount">0</span>)</span>
@@ -1173,16 +1164,16 @@
         <button
           id="adminTabUsersBtn"
           onclick="switchAdminTab('users')"
-          class="flex items-center gap-2 px-5 py-3 text-xs sm:text-sm font-bold border-b-2 border-transparent text-slate-600 hover:text-slate-900 transition cursor-pointer whitespace-nowrap"
+          class="flex items-center gap-2 px-4 sm:px-5 py-3 text-xs sm:text-sm font-bold border-b-2 border-transparent text-slate-600 hover:text-slate-900 transition cursor-pointer whitespace-nowrap"
         >
           <i data-lucide="users-2" class="w-4 h-4"></i>
-          <span>Kullanıcı Yönetimi & Yetkiler (<span id="adminUsersCount">0</span>)</span>
+          <span>Kullanıcılar & Yetkiler (<span id="adminUsersCount">0</span>)</span>
         </button>
 
         <button
           id="adminTabTodosBtn"
           onclick="switchAdminTab('todos')"
-          class="flex items-center gap-2 px-5 py-3 text-xs sm:text-sm font-bold border-b-2 border-transparent text-slate-600 hover:text-slate-900 transition cursor-pointer whitespace-nowrap"
+          class="flex items-center gap-2 px-4 sm:px-5 py-3 text-xs sm:text-sm font-bold border-b-2 border-transparent text-slate-600 hover:text-slate-900 transition cursor-pointer whitespace-nowrap"
         >
           <i data-lucide="check-square" class="w-4 h-4 text-amber-600"></i>
           <span>Geliştirici Todo (<span id="adminDevTodoCount">0</span>)</span>
@@ -1191,7 +1182,7 @@
 
       <!-- Admin Sekme 1: Kurs Merkezleri -->
       <div id="adminTabCentersContent" class="hidden space-y-4">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5" id="centersGrid">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5" id="centersGrid">
           <!-- JS ile doldurulacak -->
         </div>
       </div>
@@ -1200,7 +1191,7 @@
       <div id="adminTabAreasContent" class="hidden space-y-4">
         <div class="flex items-center justify-between bg-teal-50/60 border border-teal-200/80 rounded-2xl p-4">
           <div class="flex items-center gap-3">
-            <div class="p-2.5 bg-teal-600 text-white rounded-xl shadow-xs">
+            <div class="p-2.5 bg-teal-600 text-white rounded-xl shadow-xs shrink-0">
               <i data-lucide="tag" class="w-5 h-5"></i>
             </div>
             <div>
@@ -1208,14 +1199,6 @@
               <p class="text-xs text-teal-700/80">Yeni kurs tanımlarken ve eğitmenlerin alan eşleştirmelerinde kullanılan tüm alanlar</p>
             </div>
           </div>
-          <button
-            type="button"
-            onclick="openAreaModal()"
-            class="px-3.5 py-2 bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold rounded-xl shadow-xs flex items-center gap-1.5 transition cursor-pointer"
-          >
-            <i data-lucide="plus" class="w-4 h-4"></i>
-            <span>Yeni Alan Ekle</span>
-          </button>
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" id="areasGrid">
           <!-- JS ile doldurulacak -->
@@ -1231,24 +1214,15 @@
 
       <!-- Admin Sekme 3: Kullanıcı Yönetimi & Şifreler & Yetkiler -->
       <div id="adminTabUsersContent" class="hidden space-y-4">
-        <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4">
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div>
-              <h3 class="font-bold text-slate-800 text-base flex items-center gap-2">
-                <i data-lucide="shield-check" class="w-5 h-5 text-purple-600"></i>
-                <span>Sistemdeki Tüm Kullanıcı Hesapları</span>
-              </h3>
-              <p class="text-xs text-slate-500">
-                Kullanıcıların kullanıcı adlarını, şifrelerini görebilir, değiştirebilir ve Admin yetkisi tanımlayabilirsiniz.
-              </p>
-            </div>
-            <button
-              id="adminAddUserSecondaryBtn"
-              class="inline-flex items-center gap-1.5 px-3.5 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-bold shadow-xs transition cursor-pointer self-start sm:self-auto"
-            >
-              <i data-lucide="user-plus" class="w-4 h-4"></i>
-              <span>+ Yeni Kullanıcı Oluştur</span>
-            </button>
+        <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 shadow-xs space-y-4">
+          <div>
+            <h3 class="font-bold text-slate-800 text-base flex items-center gap-2">
+              <i data-lucide="shield-check" class="w-5 h-5 text-purple-600"></i>
+              <span>Sistemdeki Tüm Kullanıcı Hesapları</span>
+            </h3>
+            <p class="text-xs text-slate-500 mt-0.5">
+              Kullanıcıların kullanıcı adlarını, şifrelerini görebilir, değiştirebilir ve yetki tanımlayabilirsiniz. Yeni kullanıcı eklemek için sağ üstteki butonu kullanın.
+            </p>
           </div>
 
           <!-- Kullanıcı Tablosu -->
@@ -1531,16 +1505,6 @@
 
           <div class="flex items-center gap-2">
             <span id="supCourseCountText" class="text-xs text-slate-500 font-medium">Toplam 0 kurs listeleniyor</span>
-            <button
-              type="button"
-              id="supBackToAdminBtn"
-              onclick="switchView('admin')"
-              class="hidden px-2.5 py-1 text-xs font-bold text-slate-700 dark:text-slate-200 bg-slate-100 hover:bg-slate-200 dark:bg-[#1f2d31] dark:hover:bg-[#2b3e45] border border-slate-200 dark:border-[#2b3e45] rounded-lg transition items-center gap-1 cursor-pointer"
-              title="Geliştirici Yönetim Paneline Geri Dön"
-            >
-              <i data-lucide="arrow-left" class="w-3 h-3"></i>
-              <span>Geliştirici Paneli</span>
-            </button>
             <button
               type="button"
               id="supResetFiltersBtn"
@@ -2753,78 +2717,63 @@
   <div id="detailModal" class="hidden fixed inset-0 z-50 bg-slate-100 flex flex-col w-full h-full overflow-hidden">
     <div class="bg-white w-full h-full flex flex-col overflow-hidden">
       
-      <!-- Başlık (Tam Sayfa Barı) -->
-      <div class="p-4 sm:p-5 border-b border-slate-200 bg-white flex items-center justify-between shadow-xs z-10 shrink-0">
-        <div class="flex items-center gap-3">
-          <button id="closeDetailModalBtn" class="flex items-center gap-1.5 px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition cursor-pointer" title="Kurs Listesine Dön">
+      <!-- Başlık (Tam Sayfa Barı - Mobil Uyumlu & Sadeleştirilmiş) -->
+      <div class="p-3 sm:p-4 sm:px-6 border-b border-slate-200 dark:border-[#23353c] bg-white dark:bg-[#152125] flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-4 shadow-xs z-10 shrink-0">
+        <div class="flex items-start sm:items-center gap-2.5 sm:gap-3 min-w-0">
+          <button id="closeDetailModalBtn" class="flex items-center gap-1.5 px-3 sm:px-3.5 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-[#10191b] dark:hover:bg-[#1c2c32] text-slate-700 dark:text-slate-200 border border-slate-200/80 dark:border-[#2b3e45] rounded-xl text-xs font-bold transition cursor-pointer shrink-0" title="Kurs Listesine Dön">
             <i data-lucide="arrow-left" class="w-4 h-4"></i>
-            <span>Kurs Listesine Dön</span>
+            <span class="hidden sm:inline">Kurs Listesine Dön</span>
+            <span class="sm:hidden">Geri</span>
           </button>
-          <div class="h-6 w-px bg-slate-200 hidden sm:block"></div>
-          <div class="hidden sm:flex items-center gap-2 shrink-0">
-            <img src="logo.png" alt="MEFPORTAL Logo" class="w-7 h-7 object-contain rounded-lg p-0.5 bg-slate-50 border border-slate-200" onerror="this.style.display='none'" />
-            <span class="font-extrabold text-xs text-slate-700 tracking-tight">MEF<span class="text-[#335C67]">PORTAL</span></span>
-          </div>
-          <div class="h-6 w-px bg-slate-200 hidden sm:block"></div>
-          <div>
-            <div class="flex items-center gap-2">
-              <span id="detailStatusBadge" class="px-2 py-0.5 rounded text-xs font-semibold bg-emerald-100 text-emerald-700">
+          <div class="h-6 w-px bg-slate-200 dark:bg-[#23353c] hidden sm:block shrink-0"></div>
+          <div class="min-w-0 flex-1">
+            <div class="flex flex-wrap items-center gap-1.5 sm:gap-2">
+              <span id="detailStatusBadge" class="px-2 py-0.5 rounded text-[11px] font-semibold bg-emerald-100 text-emerald-700">
                 Devam Eden Kurs
               </span>
-              <span id="detailDocumentTypeBadge" class="px-2 py-0.5 rounded text-xs font-bold bg-[#E09F3E]/20 text-[#540B0E] border border-[#E09F3E]/40 flex items-center gap-1">
-                <i data-lucide="award" class="w-3.5 h-3.5 text-[#E09F3E]"></i>
+              <span id="detailDocumentTypeBadge" class="px-2 py-0.5 rounded text-[11px] font-bold bg-[#E09F3E]/20 text-[#540B0E] border border-[#E09F3E]/40 flex items-center gap-1">
+                <i data-lucide="award" class="w-3 h-3 text-[#E09F3E]"></i>
                 <span id="detailDocumentTypeText">Sertifika</span>
               </span>
-              <span id="detailCourseCode" class="text-xs text-slate-500 font-mono">BLG-2026-01</span>
+              <span id="detailCourseCode" class="text-[11px] text-slate-500 font-mono">BLG-2026-01</span>
             </div>
-            <h3 id="detailCourseName" class="text-lg sm:text-2xl font-extrabold text-slate-800 mt-0.5">
+            <h3 id="detailCourseName" class="text-base sm:text-xl font-extrabold text-slate-800 dark:text-slate-100 mt-0.5 truncate">
               Kurs Adı
             </h3>
-            <p id="detailCourseMeta" class="text-xs text-slate-500 mt-0.5">
+            <p id="detailCourseMeta" class="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 mt-0.5 line-clamp-1 sm:line-clamp-none">
               Kurum • 120 Saat • Eğitmen
             </p>
           </div>
         </div>
-        <div class="flex items-center gap-2">
-          <button id="detailKursPlaniQuickBtn" onclick="openKursPlaniConfigModal()" class="flex items-center gap-1.5 px-3.5 py-2 bg-teal-50 hover:bg-teal-100 text-teal-800 border border-teal-200 dark:border-teal-700/50 dark:bg-teal-950/40 dark:text-teal-200 rounded-xl text-xs font-bold transition cursor-pointer shadow-2xs" title="Kurs Planı Oluştur (Yöntem, Araç-Gereç ve Ölçme Seçimi)">
-            <i data-lucide="file-spreadsheet" class="w-4 h-4 text-teal-600 dark:text-teal-400"></i>
-            <span>Kurs Planı Oluştur</span>
-          </button>
-          <button id="detailEditCourseBtn" class="flex items-center gap-1.5 px-3.5 py-2 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 dark:border-amber-700/50 dark:bg-amber-950/40 dark:text-amber-200 rounded-xl text-xs font-bold transition cursor-pointer" title="Kurs Bilgilerini, Günleri ve Saatleri Düzenle">
-            <i data-lucide="edit" class="w-4 h-4 text-amber-600 dark:text-amber-400"></i>
+        <div class="flex items-center gap-2 shrink-0 self-end sm:self-auto w-full sm:w-auto justify-end border-t sm:border-t-0 pt-2 sm:pt-0 border-slate-100 dark:border-[#23353c]">
+          <button id="detailEditCourseBtn" class="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-3.5 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-[#10191b] dark:hover:bg-[#1c2c32] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-[#2b3e45] rounded-xl text-xs font-bold transition cursor-pointer" title="Kurs Bilgilerini, Günleri ve Saatleri Düzenle">
+            <i data-lucide="edit-3" class="w-3.5 h-3.5 text-[#335C67] dark:text-[#FFF3B0]"></i>
             <span>Kursu Düzenle</span>
           </button>
-          <button id="detailCloseCourseBtn" onclick="handleCloseCourseClick()" class="flex items-center gap-1.5 px-3.5 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold transition cursor-pointer shadow-xs" title="Kursu Kapat ve Kurs Sonu Evraklarını İndir">
-            <i data-lucide="lock" class="w-4 h-4 text-white"></i>
+          <button id="detailCloseCourseBtn" onclick="handleCloseCourseClick()" class="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-4 py-2 bg-gradient-to-r from-rose-600 to-[#9E2A2B] hover:from-rose-700 hover:to-[#7c2021] text-white rounded-xl text-xs font-extrabold transition cursor-pointer shadow-md shadow-rose-600/25 ring-2 ring-rose-500/20" title="Kursu Tamamla / Kapat ve Kurs Sonu Evraklarını Hazırla">
+            <i data-lucide="lock" class="w-3.5 h-3.5 text-white"></i>
             <span>Kursu Kapat</span>
           </button>
-          <button id="detailDownloadDocsQuickBtn" onclick="openSaveAllDocumentsModal()" class="hidden flex items-center gap-1.5 px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition cursor-pointer shadow-xs" title="Kurs Sonu Resmi Evraklarını İndir / Yazdır">
-            <i data-lucide="file-down" class="w-4 h-4 text-white"></i>
-            <span>Kurs Sonu Evrakları</span>
-          </button>
-          <button id="detailReopenCourseBtn" onclick="handleReopenCourseClick()" class="hidden flex items-center gap-1.5 px-3.5 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-xs font-bold transition cursor-pointer shadow-xs" title="Kapatmayı İptal Et / Kursu Yeniden Aç ve Düzenlenebilir Yap (Geliştirici)">
-            <i data-lucide="unlock" class="w-4 h-4 text-white"></i>
+          <button id="detailReopenCourseBtn" onclick="handleReopenCourseClick()" class="hidden flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-xs font-extrabold transition cursor-pointer shadow-md" title="Kapatmayı İptal Et / Kursu Yeniden Aç ve Düzenlenebilir Yap (Geliştirici)">
+            <i data-lucide="unlock" class="w-3.5 h-3.5 text-white"></i>
             <span>Kapatmayı İptal Et</span>
-          </button>
-          <button id="closeDetailModalTopRightBtn" class="p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-xl cursor-pointer transition" title="Kapat">
-            <i data-lucide="x" class="w-6 h-6"></i>
           </button>
         </div>
       </div>
 
-      <!-- Sekmeler -->
-      <div class="flex items-center border-b border-slate-300 dark:border-[#23353c] bg-slate-200/80 dark:bg-[#0f1719] px-6 pt-2.5 gap-2 overflow-x-auto shadow-inner">
+      <!-- Sekmeler (Mobil Kaydırılabilir & Kompakt) -->
+      <div class="flex items-center border-b border-slate-300 dark:border-[#23353c] bg-slate-200/80 dark:bg-[#0f1719] px-3 sm:px-6 pt-2 gap-1.5 sm:gap-2 overflow-x-auto no-scrollbar shadow-inner shrink-0">
         <button
           id="tabStudentsBtn"
-          class="flex items-center gap-2 px-4 sm:px-5 py-3 text-xs sm:text-sm font-extrabold border-b-2 border-[#335C67] dark:border-[#FFF3B0] text-[#335C67] dark:text-[#FFF3B0] bg-white dark:bg-[#152125] rounded-t-xl transition cursor-pointer whitespace-nowrap shadow-sm"
+          class="flex items-center gap-1.5 sm:gap-2 px-3.5 sm:px-5 py-2.5 sm:py-3 text-xs sm:text-sm font-extrabold border-b-2 border-[#335C67] dark:border-[#FFF3B0] text-[#335C67] dark:text-[#FFF3B0] bg-white dark:bg-[#152125] rounded-t-xl transition cursor-pointer whitespace-nowrap shadow-sm"
         >
           <i data-lucide="users" class="w-4 h-4 text-[#335C67] dark:text-[#FFF3B0]"></i>
-          <span>Kursiyer Listesi (<span id="detailStudentCount" class="font-extrabold">0</span>)</span>
+          <span>Kursiyerler (<span id="detailStudentCount" class="font-extrabold">0</span>)</span>
         </button>
 
         <button
           id="tabAttendanceBtn"
-          class="flex items-center gap-2 px-4 sm:px-5 py-3 text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-200 hover:text-slate-950 dark:hover:text-white hover:bg-slate-300/60 dark:hover:bg-[#1c2c32] rounded-t-xl transition cursor-pointer whitespace-nowrap border-b-2 border-transparent"
+          class="flex items-center gap-1.5 sm:gap-2 px-3.5 sm:px-5 py-2.5 sm:py-3 text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-200 hover:text-slate-950 dark:hover:text-white hover:bg-slate-300/60 dark:hover:bg-[#1c2c32] rounded-t-xl transition cursor-pointer whitespace-nowrap border-b-2 border-transparent"
         >
           <i data-lucide="calendar-check-2" class="w-4 h-4 text-emerald-600 dark:text-emerald-400"></i>
           <span>Devamsızlık</span>
@@ -2832,115 +2781,99 @@
 
         <button
           id="tabExamsBtn"
-          class="flex items-center gap-2 px-4 sm:px-5 py-3 text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-200 hover:text-slate-950 dark:hover:text-white hover:bg-slate-300/60 dark:hover:bg-[#1c2c32] rounded-t-xl transition cursor-pointer whitespace-nowrap border-b-2 border-transparent"
+          class="flex items-center gap-1.5 sm:gap-2 px-3.5 sm:px-5 py-2.5 sm:py-3 text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-200 hover:text-slate-950 dark:hover:text-white hover:bg-slate-300/60 dark:hover:bg-[#1c2c32] rounded-t-xl transition cursor-pointer whitespace-nowrap border-b-2 border-transparent"
         >
           <i data-lucide="award" class="w-4 h-4 text-purple-600 dark:text-purple-400"></i>
-          <span>Modül Sınavları & Not Girişi</span>
-          <span id="detailModuleBadge" class="px-2 py-0.5 bg-purple-100 dark:bg-purple-900/40 text-purple-800 dark:text-purple-300 text-[11px] font-bold rounded-full border border-purple-200 dark:border-purple-800/50">
+          <span>Modül Sınavları</span>
+          <span id="detailModuleBadge" class="px-1.5 py-0.5 bg-purple-100 dark:bg-purple-900/40 text-purple-800 dark:text-purple-300 text-[10px] font-bold rounded-full border border-purple-200 dark:border-purple-800/50">
             1 Modül
           </span>
         </button>
 
         <button
           id="tabSyllabusBtn"
-          class="flex items-center gap-2 px-4 sm:px-5 py-3 text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-200 hover:text-slate-950 dark:hover:text-white hover:bg-slate-300/60 dark:hover:bg-[#1c2c32] rounded-t-xl transition cursor-pointer whitespace-nowrap border-b-2 border-transparent"
+          class="flex items-center gap-1.5 sm:gap-2 px-3.5 sm:px-5 py-2.5 sm:py-3 text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-200 hover:text-slate-950 dark:hover:text-white hover:bg-slate-300/60 dark:hover:bg-[#1c2c32] rounded-t-xl transition cursor-pointer whitespace-nowrap border-b-2 border-transparent"
         >
           <i data-lucide="calendar" class="w-4 h-4 text-sky-600 dark:text-sky-400"></i>
-          <span>Saatlik Konu Planı (<span id="detailSyllabusCount" class="font-extrabold">0</span> Saat)</span>
+          <span>Konu Planı (<span id="detailSyllabusCount" class="font-extrabold">0</span> Sa)</span>
         </button>
 
         <button
           id="tabOpeningDocsBtn"
-          class="flex items-center gap-2 px-4 sm:px-5 py-3 text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-200 hover:text-slate-950 dark:hover:text-white hover:bg-slate-300/60 dark:hover:bg-[#1c2c32] rounded-t-xl transition cursor-pointer whitespace-nowrap border-b-2 border-transparent"
+          class="flex items-center gap-1.5 sm:gap-2 px-3.5 sm:px-5 py-2.5 sm:py-3 text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-200 hover:text-slate-950 dark:hover:text-white hover:bg-slate-300/60 dark:hover:bg-[#1c2c32] rounded-t-xl transition cursor-pointer whitespace-nowrap border-b-2 border-transparent"
         >
           <i data-lucide="folder-check" class="w-4 h-4 text-teal-600 dark:text-teal-400"></i>
-          <span>Kurs Açılış Evrakları</span>
-          <span class="px-2 py-0.5 bg-teal-100 dark:bg-teal-900/40 text-teal-800 dark:text-teal-300 text-[11px] font-bold rounded-full border border-teal-200 dark:border-teal-800/50">
-            3 Belge
+          <span>Açılış Evrakları</span>
+          <span class="px-1.5 py-0.5 bg-teal-100 dark:bg-teal-900/40 text-teal-800 dark:text-teal-300 text-[10px] font-bold rounded-full border border-teal-200 dark:border-teal-800/50">
+            3
           </span>
         </button>
 
         <button
           id="tabClosingDocsBtn"
-          class="flex items-center gap-2 px-4 sm:px-5 py-3 text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-200 hover:text-slate-950 dark:hover:text-white hover:bg-slate-300/60 dark:hover:bg-[#1c2c32] rounded-t-xl transition cursor-pointer whitespace-nowrap border-b-2 border-transparent"
+          class="flex items-center gap-1.5 sm:gap-2 px-3.5 sm:px-5 py-2.5 sm:py-3 text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-200 hover:text-slate-950 dark:hover:text-white hover:bg-slate-300/60 dark:hover:bg-[#1c2c32] rounded-t-xl transition cursor-pointer whitespace-nowrap border-b-2 border-transparent"
         >
           <i data-lucide="folder-lock" class="w-4 h-4 text-amber-600 dark:text-amber-400" id="tabClosingDocsIcon"></i>
           <span>Kurs Sonu Evrakları</span>
-          <span id="tabClosingDocsBadge" class="px-2 py-0.5 bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300 text-[11px] font-bold rounded-full border border-amber-200 dark:border-amber-800/50">
-            3 Belge
+          <span id="tabClosingDocsBadge" class="px-1.5 py-0.5 bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300 text-[10px] font-bold rounded-full border border-amber-200 dark:border-amber-800/50">
+            3
           </span>
         </button>
       </div>
 
       <!-- Sekme 1: Kursiyer Listesi -->
-      <div id="tabStudentsContent" class="p-5 overflow-y-auto flex-1 space-y-4">
+      <div id="tabStudentsContent" class="p-3.5 sm:p-5 overflow-y-auto flex-1 space-y-4">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <h4 class="font-semibold text-slate-800 text-sm">Kayıtlı Kursiyerler</h4>
-            <p class="text-xs text-slate-500">Kursiyer ekleme alanında sadece temel kimlik ve iletişim bilgileri yer alır</p>
+            <h4 class="font-bold text-slate-800 dark:text-slate-100 text-sm">Kayıtlı Kursiyerler</h4>
+            <p class="text-xs text-slate-500 dark:text-slate-400">Kursiyer ekleme, düzenleme ve Excel aktarım işlemleri</p>
           </div>
-          <div class="flex items-center gap-2">
+          <!-- Sadeleştirilmiş & Vurgulu Kursiyer Aksiyon Butonları (Tekrarlayan sekme geçiş butonları kaldırıldı) -->
+          <div class="grid grid-cols-2 sm:flex items-center gap-2">
             <button
-              id="switchDirectToAttendanceBtn"
-              class="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 rounded-lg text-xs font-semibold shadow-2xs transition cursor-pointer"
+              id="toggleStudentFormBtn"
+              class="col-span-2 sm:col-span-1 flex items-center justify-center gap-1.5 px-4 py-2.5 sm:py-2 bg-gradient-to-r from-[#335C67] to-[#284952] hover:from-[#274851] hover:to-[#1e373e] text-white rounded-xl text-xs font-extrabold shadow-md shadow-[#335C67]/25 ring-2 ring-[#335C67]/20 transition cursor-pointer"
             >
-              <i data-lucide="calendar-check-2" class="w-4 h-4"></i>
-              <span>Devamsızlık</span>
+              <i data-lucide="user-plus" class="w-4 h-4 text-[#FFF3B0]"></i>
+              <span>+ Yeni Kursiyer Ekle</span>
             </button>
             <button
-              id="switchDirectToExamsBtn"
-              class="flex items-center gap-1.5 px-3 py-1.5 bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 rounded-lg text-xs font-semibold shadow-2xs transition cursor-pointer"
+              id="toggleBulkStudentBtn"
+              class="flex items-center justify-center gap-1.5 px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-xs transition cursor-pointer"
             >
-              <i data-lucide="award" class="w-4 h-4"></i>
-              <span>Modül Sınavları Ekranı</span>
-            </button>
-            <button
-              id="exportStudentsExcelBtn"
-              type="button"
-              class="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-300 rounded-lg text-xs font-semibold shadow-2xs transition cursor-pointer"
-              title="Kursiyer listesini ve notlarını Excel (.xlsx) olarak indir"
-            >
-              <i data-lucide="file-spreadsheet" class="w-4 h-4 text-emerald-600"></i>
-              <span>Excel İndir</span>
+              <i data-lucide="users" class="w-4 h-4"></i>
+              <span>Toplu Ekle</span>
             </button>
             <button
               id="importStudentsExcelBtn"
               type="button"
-              class="flex items-center gap-1.5 px-3 py-1.5 bg-teal-50 hover:bg-teal-100 text-teal-700 border border-teal-300 rounded-lg text-xs font-semibold shadow-2xs transition cursor-pointer"
+              class="flex items-center justify-center gap-1.5 px-3 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-[#10191b] dark:hover:bg-[#1c2c32] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-[#2b3e45] rounded-xl text-xs font-semibold transition cursor-pointer"
               title="e-Yaygın veya Excel kursiyer listesini içe aktar"
             >
-              <i data-lucide="upload" class="w-4 h-4 text-teal-600"></i>
-              <span>Excel'den Yükle</span>
+              <i data-lucide="upload" class="w-3.5 h-3.5 text-teal-600"></i>
+              <span>Excel Yükle</span>
             </button>
             <input type="file" id="importStudentsExcelInput" accept=".xlsx, .xls, .csv" class="hidden" />
             <button
-              id="toggleStudentFormBtn"
-              class="flex items-center gap-1.5 px-3.5 py-1.5 bg-sky-600 hover:bg-sky-700 text-white rounded-lg text-xs font-semibold shadow-xs transition cursor-pointer"
+              id="exportStudentsExcelBtn"
+              type="button"
+              class="col-span-2 sm:col-span-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-[#10191b] dark:hover:bg-[#1c2c32] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-[#2b3e45] rounded-xl text-xs font-semibold transition cursor-pointer"
+              title="Kursiyer listesini ve notlarını Excel (.xlsx) olarak indir"
             >
-              <i data-lucide="user-plus" class="w-4 h-4"></i>
-              <span>Yeni Kursiyer Ekle</span>
-            </button>
-            <button
-              id="toggleBulkStudentBtn"
-              class="flex items-center gap-1.5 px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold shadow-xs transition cursor-pointer"
-            >
-              <i data-lucide="users" class="w-4 h-4"></i>
-              <span>Toplu Kursiyer Ekle</span>
+              <i data-lucide="file-spreadsheet" class="w-3.5 h-3.5 text-emerald-600"></i>
+              <span>Excel İndir</span>
             </button>
           </div>
         </div>
 
         <!-- Kursiyer Ekleme / Düzenleme Formu: SADECE Adı, Soyadı, Telefon ve TC Bilgileri -->
-        <form id="studentAddForm" class="hidden p-4 bg-sky-50/70 border border-sky-200 rounded-xl space-y-3">
+        <form id="studentAddForm" class="hidden p-4 bg-sky-50/70 border border-sky-200 rounded-2xl space-y-3">
           <input type="hidden" id="stdEditId" value="" />
           <div class="font-semibold text-xs text-sky-900 flex items-center justify-between">
             <span class="flex items-center gap-1.5">
               <i data-lucide="user-check" class="w-4 h-4 text-sky-600"></i>
               <strong id="studentFormTitle">Yeni Kursiyer Ekleme</strong> (Sadece Temel Bilgiler)
             </span>
-            <button type="button" id="closeStudentFormBtn" class="text-slate-400 hover:text-slate-600 cursor-pointer">
-              <i data-lucide="x" class="w-4 h-4"></i>
-            </button>
           </div>
 
           <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
@@ -2991,23 +2924,23 @@
             </div>
           </div>
 
-          <div class="flex items-center justify-between pt-1 border-t border-sky-100">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-2 border-t border-sky-100">
             <span class="text-[11px] text-sky-800 italic">
               ℹ️ Enter tuşuna basarak hızlıca ekleyebilir, formu kapatmadan peş peşe kursiyer kaydedebilirsiniz.
             </span>
-            <div class="flex items-center gap-2">
+            <div class="flex items-center justify-end gap-2">
               <button
                 type="button"
                 id="cancelStudentAddBtn"
-                class="px-3 py-1.5 text-xs text-slate-600 hover:bg-slate-200 rounded-lg cursor-pointer"
+                class="px-3.5 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-200 rounded-xl cursor-pointer"
               >
                 İptal
               </button>
               <button
                 type="submit"
-                class="px-4 py-1.5 text-xs font-bold text-white bg-sky-600 hover:bg-sky-700 rounded-lg shadow-xs cursor-pointer flex items-center gap-1.5"
+                class="px-5 py-2 text-xs font-extrabold text-white bg-sky-600 hover:bg-sky-700 rounded-xl shadow-md cursor-pointer flex items-center gap-1.5"
               >
-                <i data-lucide="check" class="w-3.5 h-3.5"></i>
+                <i data-lucide="check" class="w-4 h-4"></i>
                 <span id="studentFormSubmitText">Kursiyeri Kaydet</span>
               </button>
             </div>
@@ -3015,15 +2948,12 @@
         </form>
 
         <!-- Toplu Kursiyer Ekleme Formu -->
-        <div id="bulkStudentForm" class="hidden p-4 bg-emerald-50/70 border border-emerald-200 rounded-xl space-y-3">
+        <div id="bulkStudentForm" class="hidden p-4 bg-emerald-50/70 border border-emerald-200 rounded-2xl space-y-3">
           <div class="font-semibold text-xs text-emerald-900 flex items-center justify-between">
             <span class="flex items-center gap-1.5">
               <i data-lucide="users" class="w-4 h-4 text-emerald-600"></i>
               <strong>Toplu Kursiyer Ekleme</strong> (Her Satıra Bir Kursiyer)
             </span>
-            <button type="button" id="closeBulkStudentBtn" class="text-slate-400 hover:text-slate-600 cursor-pointer">
-              <i data-lucide="x" class="w-4 h-4"></i>
-            </button>
           </div>
 
           <div class="text-[11px] text-emerald-900 bg-white/90 p-3 rounded-lg border border-emerald-200 space-y-1">
@@ -3074,57 +3004,43 @@
             </div>
           </div>
 
-          <div class="flex items-center justify-between pt-1 border-t border-emerald-100">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-2 border-t border-emerald-100">
             <span class="text-[11px] text-slate-500" id="bulkStatusText">
               Metin kutusuna kursiyerleri yapıştırınız.
             </span>
-            <div class="flex items-center gap-2">
+            <div class="flex items-center justify-end gap-2">
               <button
                 type="button"
                 id="cancelBulkStudentBtn"
-                class="px-3 py-1.5 text-xs text-slate-600 hover:bg-slate-200 rounded-lg cursor-pointer"
+                class="px-3.5 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-200 rounded-xl cursor-pointer"
               >
                 İptal
               </button>
               <button
                 type="button"
                 id="saveBulkStudentBtn"
-                class="px-4 py-1.5 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg shadow-xs cursor-pointer flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
+                class="px-5 py-2 text-xs font-extrabold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl shadow-md cursor-pointer flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
                 disabled
               >
-                <i data-lucide="check" class="w-3.5 h-3.5"></i>
+                <i data-lucide="check" class="w-4 h-4"></i>
                 <span id="saveBulkBtnText">Toplu Kursiyerleri Kursa Ekle</span>
               </button>
             </div>
           </div>
         </div>
 
-        <!-- Kursiyer Eklendiğinde Gösterilen Hızlı Yönlendirme Bildirimi -->
+        <!-- Kursiyer Eklendiğinde Gösterilen Hızlı Bilgilendirme (Tekrarlayan sekme butonları kaldırıldı) -->
         <div id="studentAddedNotice" class="hidden p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-xs text-emerald-800 flex items-center justify-between">
           <div class="flex items-center gap-2">
             <i data-lucide="check-circle" class="w-4 h-4 text-emerald-600 shrink-0"></i>
-            <span>Kursiyer başarıyla kaydedildi! Şimdi devamsızlık veya modül sınavı girebilirsiniz:</span>
+            <span>Kursiyer başarıyla kaydedildi! Üstteki sekmelerden devamsızlık veya sınav notu girebilirsiniz.</span>
           </div>
-          <div class="flex items-center gap-2">
-            <button
-              id="noticeGoAttendanceBtn"
-              class="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-[11px] font-bold shadow-2xs cursor-pointer"
-            >
-              Devamsızlık
-            </button>
-            <button
-              id="noticeGoExamsBtn"
-              class="px-2.5 py-1 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-[11px] font-bold shadow-2xs cursor-pointer"
-            >
-              Modül Sınavı Girişi
-            </button>
-            <button
-              onclick="document.getElementById('studentAddedNotice').classList.add('hidden')"
-              class="text-emerald-500 hover:text-emerald-700 p-1"
-            >
-              <i data-lucide="x" class="w-3.5 h-3.5"></i>
-            </button>
-          </div>
+          <button
+            onclick="document.getElementById('studentAddedNotice').classList.add('hidden')"
+            class="text-emerald-500 hover:text-emerald-700 p-1 cursor-pointer"
+          >
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
         </div>
 
         <div class="overflow-x-auto border border-slate-200 dark:border-[#23353c] rounded-xl shadow-2xs">
@@ -3164,7 +3080,7 @@
       </div>
 
       <!-- Sekme 2: DEVAMSIZLIK EKRANI (DERS GÜNÜ BAZLI) -->
-      <div id="tabAttendanceContent" class="hidden p-4 sm:p-5 overflow-y-auto flex-1 space-y-3">
+      <div id="tabAttendanceContent" class="hidden p-3.5 sm:p-5 overflow-y-auto flex-1 space-y-3">
         
         <!-- Yasal Sınır ve Kurs Bilgilendirme Kartı (Kompakt) -->
         <div id="attendanceInfoCard" class="p-3 bg-slate-50 dark:bg-[#10191b] border border-slate-200 dark:border-[#23353c] rounded-xl grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
@@ -3186,86 +3102,79 @@
           </div>
         </div>
 
-        <!-- TARİH GEZİNME BARI: Sol Ok (Önceki Gün), Seçili Tarih (Ders Günleri), Sağ Ok (Sonraki Gün) -->
-        <div id="attDateNavBar" class="sticky top-0 z-30 bg-white/95 dark:bg-[#152125]/95 backdrop-blur-md p-3 sm:p-4 rounded-2xl border-2 border-[#335C67]/40 shadow-md shadow-slate-300/40 dark:shadow-black/60 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <!-- Sol Ok (Önceki Gün Butonu - Büyük & Belirgin) -->
+        <!-- TARİH GEZİNME BARI: Mobilde ve Masaüstünde Tek Satır Kompakt Ergonomik Gezinme -->
+        <div id="attDateNavBar" class="sticky top-0 z-30 bg-white/95 dark:bg-[#152125]/95 backdrop-blur-md p-2.5 sm:p-3.5 rounded-2xl border-2 border-[#335C67]/40 shadow-md shadow-slate-300/40 dark:shadow-black/60 flex items-center justify-between gap-2 sm:gap-3">
+          <!-- Sol Ok (Önceki Gün Butonu) -->
           <button
             type="button"
             id="attPrevDateBtn"
-            class="w-full sm:w-auto px-5 py-3 sm:py-3.5 bg-gradient-to-r from-[#284952] to-[#335C67] hover:from-[#1f383f] hover:to-[#284952] text-white font-extrabold rounded-2xl text-xs sm:text-sm shadow-md shadow-[#335C67]/25 transition-all duration-200 cursor-pointer flex items-center justify-center gap-2 border border-[#335C67]/40 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-25 disabled:pointer-events-none disabled:transform-none select-none"
+            class="px-3 sm:px-5 py-2.5 sm:py-3 bg-gradient-to-r from-[#284952] to-[#335C67] hover:from-[#1f383f] hover:to-[#284952] text-white font-extrabold rounded-xl sm:rounded-2xl text-xs sm:text-sm shadow-md shadow-[#335C67]/25 transition-all duration-200 cursor-pointer flex items-center justify-center gap-1.5 border border-[#335C67]/40 active:scale-[0.97] disabled:opacity-25 disabled:pointer-events-none select-none shrink-0"
             title="Önceki Ders Gününe Git"
           >
             <i data-lucide="chevron-left" class="w-5 h-5 text-amber-300"></i>
-            <span>Önceki Gün</span>
+            <span class="hidden sm:inline">Önceki Gün</span>
           </button>
 
           <!-- Orta Bölüm: Seçili Tarih & Gün Rozeti -->
-          <div class="text-center space-y-1.5 py-1 px-2">
-            <div class="flex flex-wrap items-center justify-center gap-2 sm:gap-3">
-              <span class="p-1.5 rounded-xl bg-[#335C67]/10 dark:bg-[#335C67]/25 text-[#335C67] dark:text-[#FFF3B0]">
-                <i data-lucide="calendar" class="w-5 h-5"></i>
-              </span>
-              <span id="attCurrentDateDisplay" class="text-base sm:text-lg font-black text-slate-900 dark:text-slate-100 tracking-tight">
+          <div class="text-center space-y-1 flex-1 min-w-0">
+            <div class="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2.5">
+              <span id="attCurrentDateDisplay" class="text-xs sm:text-base font-black text-slate-900 dark:text-slate-100 tracking-tight truncate">
                 -
               </span>
-              <select id="attDateSelectDropdown" class="text-xs sm:text-sm px-2.5 py-1.5 rounded-xl bg-slate-50 dark:bg-[#10191b] border-2 border-slate-200 dark:border-[#23353c] text-slate-800 dark:text-slate-200 font-bold cursor-pointer hover:border-[#335C67] transition" title="Tüm ders günleri listesinden seç">
+              <select id="attDateSelectDropdown" class="text-xs px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-xl bg-slate-50 dark:bg-[#10191b] border-2 border-slate-200 dark:border-[#23353c] text-slate-800 dark:text-slate-200 font-bold cursor-pointer hover:border-[#335C67] transition max-w-[170px] sm:max-w-none" title="Tüm ders günleri listesinden seç">
                 <!-- JS ile doldurulacak -->
               </select>
             </div>
-            <div class="flex flex-wrap items-center justify-center gap-2 text-xs text-slate-500 dark:text-slate-400">
-              <span id="attLessonDayBadge" class="px-2.5 py-0.5 rounded-full text-xs font-black bg-[#335C67]/10 text-[#335C67] dark:text-[#FFF3B0] border border-[#335C67]/25">
+            <div class="flex flex-wrap items-center justify-center gap-1.5 text-[11px] text-slate-500 dark:text-slate-400">
+              <span id="attLessonDayBadge" class="px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-black bg-[#335C67]/10 text-[#335C67] dark:text-[#FFF3B0] border border-[#335C67]/25">
                 1. Ders Günü
               </span>
-              <span>•</span>
-              <span id="attLessonDailyHoursNotice" class="font-semibold text-slate-700 dark:text-slate-300">
+              <span class="hidden md:inline">•</span>
+              <span id="attLessonDailyHoursNotice" class="hidden md:inline font-semibold text-slate-700 dark:text-slate-300">
                 Günlük Ders Saati: 4 Saat
               </span>
               <span>•</span>
-              <span class="inline-flex items-center gap-1.5 text-xs text-emerald-700 dark:text-emerald-300 font-bold bg-emerald-50 dark:bg-emerald-950/60 px-2.5 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-800 shadow-2xs" title="Tüm devamsızlık girişleri anında buluta ve hafızaya otomatik olarak kaydedilir">
-                <i data-lucide="zap" class="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400"></i>
-                <span>Otomatik Kaydedilir</span>
+              <span class="inline-flex items-center gap-1 text-[10px] sm:text-xs text-emerald-700 dark:text-emerald-300 font-bold bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-800">
+                <i data-lucide="zap" class="w-3 h-3 text-emerald-600 dark:text-emerald-400"></i>
+                <span>Otomatik Kayıt</span>
               </span>
             </div>
           </div>
 
-          <!-- Sağ Ok (Sonraki Gün Butonu - Büyük & Belirgin) -->
+          <!-- Sağ Ok (Sonraki Gün Butonu) -->
           <button
             type="button"
             id="attNextDateBtn"
-            class="w-full sm:w-auto px-5 py-3 sm:py-3.5 bg-gradient-to-r from-[#335C67] to-[#284952] hover:from-[#284952] hover:to-[#1f383f] text-white font-extrabold rounded-2xl text-xs sm:text-sm shadow-md shadow-[#335C67]/25 transition-all duration-200 cursor-pointer flex items-center justify-center gap-2 border border-[#335C67]/40 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-25 disabled:pointer-events-none disabled:transform-none select-none"
+            class="px-3 sm:px-5 py-2.5 sm:py-3 bg-gradient-to-r from-[#335C67] to-[#284952] hover:from-[#284952] hover:to-[#1f383f] text-white font-extrabold rounded-xl sm:rounded-2xl text-xs sm:text-sm shadow-md shadow-[#335C67]/25 transition-all duration-200 cursor-pointer flex items-center justify-center gap-1.5 border border-[#335C67]/40 active:scale-[0.97] disabled:opacity-25 disabled:pointer-events-none select-none shrink-0"
             title="Sonraki Ders Gününe Git"
           >
-            <span>Sonraki Gün</span>
+            <span class="hidden sm:inline">Sonraki Gün</span>
             <i data-lucide="chevron-right" class="w-5 h-5 text-amber-300"></i>
           </button>
         </div>
 
         <!-- Mobil Hızlı Yoklama Modu ve Günlük Toplu İşlem Çubuğu -->
-        <div class="flex flex-wrap items-center justify-between gap-2 px-1">
-          <div class="flex items-center gap-2">
-            <button
-              type="button"
-              id="toggleQuickAttModeBtn"
-              onclick="toggleMobileQuickAttendanceMode()"
-              class="px-3 py-1.5 rounded-xl text-xs font-bold border border-[#335C67]/30 bg-[#335C67]/10 text-[#335C67] dark:bg-[#335C67]/25 dark:text-[#FFF3B0] hover:bg-[#335C67]/20 transition flex items-center gap-1.5 cursor-pointer"
-              title="Telefon ve tabletler için yatay kaydırma gerektirmeyen hızlı kart yoklama görünümü"
-            >
-              <i data-lucide="smartphone" class="w-3.5 h-3.5"></i>
-              <span id="toggleQuickAttModeText">Hızlı Kart Yoklama Modu (Mobil)</span>
-            </button>
-          </div>
-          <div class="flex items-center gap-2">
-            <button
-              type="button"
-              id="markAllPresentTodayBtn"
-              onclick="markAllStudentsPresentOnSelectedDate()"
-              class="px-3 py-1.5 rounded-xl text-xs font-bold border border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100 transition flex items-center gap-1.5 cursor-pointer"
-              title="Seçili ders gününde tüm kursiyerleri Geldi (0 Saat Devamsızlık) olarak işaretle"
-            >
-              <i data-lucide="check-check" class="w-3.5 h-3.5"></i>
-              <span>Bugün Tümünü Geldi İşaretle (0 Sa)</span>
-            </button>
-          </div>
+        <div class="flex flex-wrap items-center justify-between gap-2 px-0.5">
+          <button
+            type="button"
+            id="toggleQuickAttModeBtn"
+            onclick="toggleMobileQuickAttendanceMode()"
+            class="flex-1 sm:flex-initial justify-center px-3 py-2 rounded-xl text-xs font-bold border border-[#335C67]/30 bg-[#335C67]/10 text-[#335C67] dark:bg-[#335C67]/25 dark:text-[#FFF3B0] hover:bg-[#335C67]/20 transition flex items-center gap-1.5 cursor-pointer"
+            title="Telefon ve tabletler için yatay kaydırma gerektirmeyen hızlı kart yoklama görünümü"
+          >
+            <i data-lucide="smartphone" class="w-3.5 h-3.5 shrink-0"></i>
+            <span id="toggleQuickAttModeText">Hızlı Kart Yoklama Modu</span>
+          </button>
+          <button
+            type="button"
+            id="markAllPresentTodayBtn"
+            onclick="markAllStudentsPresentOnSelectedDate()"
+            class="flex-1 sm:flex-initial justify-center px-3.5 py-2 rounded-xl text-xs font-extrabold bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm shadow-emerald-600/20 transition flex items-center gap-1.5 cursor-pointer"
+            title="Seçili ders gününde tüm kursiyerleri Geldi (0 Saat Devamsızlık) olarak işaretle"
+          >
+            <i data-lucide="check-check" class="w-4 h-4 shrink-0"></i>
+            <span>Tümünü Geldi İşaretle (0 Sa)</span>
+          </button>
         </div>
 
         <!-- Mobil / Tablet Hızlı Yoklama Kart Görünümü -->
@@ -3473,7 +3382,7 @@
       </div>
 
       <!-- Sekme 3: Kurs Açılış Evrakları -->
-      <div id="tabOpeningDocsContent" class="hidden p-5 overflow-y-auto flex-1 space-y-5">
+      <div id="tabOpeningDocsContent" class="hidden p-3.5 sm:p-5 overflow-y-auto flex-1 space-y-4 sm:space-y-5">
         
         <!-- Üst Başlık & Açıklama & Hızlı İşlem Barı -->
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-200 dark:border-[#23353c]">
@@ -3489,6 +3398,14 @@
               Kursun açılış planı, günlük ders katılım imza listesi ve sınav katılım belgesi kurs süresi boyunca <strong>her zaman erişilebilir ve yazdırılabilir</strong> durumdadır.
             </p>
           </div>
+          <button
+            type="button"
+            onclick="printMergedOpeningDocuments()"
+            class="w-full sm:w-auto px-4 py-2.5 bg-gradient-to-r from-[#335C67] to-[#284952] hover:from-[#274851] hover:to-[#1e373e] text-white rounded-xl text-xs font-extrabold shadow-md shadow-[#335C67]/25 flex items-center justify-center gap-2 transition cursor-pointer shrink-0"
+          >
+            <i data-lucide="printer" class="w-4 h-4 text-[#FFF3B0]"></i>
+            <span>Tüm Açılış Evraklarını Yazdır</span>
+          </button>
         </div>
 
         <!-- Bilgi Kutusu -->
@@ -3502,10 +3419,10 @@
         </div>
 
         <!-- 3 Sütunlu Kart Izgarası (Kurs Açılış Belgeleri: Plan, İmza Listesi, Sınav Katılım Belgesi) -->
-        <div id="courseOpeningDocumentsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 my-3">
+        <div id="courseOpeningDocumentsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 my-3">
 
           <!-- 1. Belge: Modüler Kurs Çerçeve ve Çalışma Planı -->
-          <div class="flex flex-col justify-between p-6 sm:p-7 min-h-[300px] rounded-2xl border border-slate-200 dark:border-[#23353c] bg-white dark:bg-[#152125] shadow-xs hover:shadow-lg hover:border-[#335C67] dark:hover:border-[#FFF3B0]/60 transition-all duration-200 group">
+          <div class="flex flex-col justify-between p-5 sm:p-7 min-h-[260px] sm:min-h-[300px] rounded-2xl border border-slate-200 dark:border-[#23353c] bg-white dark:bg-[#152125] shadow-xs hover:shadow-lg hover:border-[#335C67] dark:hover:border-[#FFF3B0]/60 transition-all duration-200 group">
             <div class="space-y-4">
               <div class="flex items-start justify-between gap-3">
                 <div class="flex items-center gap-3.5">
@@ -3538,13 +3455,13 @@
                   class="flex-1 flex items-center justify-center gap-1.5 px-3.5 py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-[#10191b] dark:hover:bg-[#19272c] text-slate-800 dark:text-slate-100 rounded-xl text-xs sm:text-sm font-bold transition cursor-pointer border border-slate-200 dark:border-[#2b3e45]"
                   title="Planı Yapılandır ve Önizle"
                 >
-                  <i data-lucide="sparkles" class="w-4 h-4 text-[#335C67] dark:text-[#FFF3B0]"></i>
-                  <span>Plan Oluştur</span>
+                  <i data-lucide="sliders" class="w-4 h-4 text-[#335C67] dark:text-[#FFF3B0]"></i>
+                  <span>Yapılandır &amp; Önizle</span>
                 </button>
                 <button
                   type="button"
                   onclick="triggerPrintKursPlani()"
-                  class="flex-1 flex items-center justify-center gap-1.5 px-3.5 py-2.5 bg-[#335C67] hover:bg-[#274851] text-white rounded-xl text-xs sm:text-sm font-bold shadow-xs transition cursor-pointer"
+                  class="flex-1 flex items-center justify-center gap-1.5 px-3.5 py-2.5 bg-[#335C67] hover:bg-[#274851] text-white rounded-xl text-xs sm:text-sm font-extrabold shadow-sm transition cursor-pointer"
                   title="Yazdır"
                 >
                   <i data-lucide="printer" class="w-4 h-4 text-[#FFF3B0]"></i>
@@ -3555,7 +3472,7 @@
           </div>
 
           <!-- 2. Belge: İmza Listesi (Günlük İmza Çizelgesi) -->
-          <div class="flex flex-col justify-between p-6 sm:p-7 min-h-[300px] rounded-2xl border border-slate-200 dark:border-[#23353c] bg-white dark:bg-[#152125] shadow-xs hover:shadow-lg hover:border-[#335C67] dark:hover:border-[#FFF3B0]/60 transition-all duration-200 group">
+          <div class="flex flex-col justify-between p-5 sm:p-7 min-h-[260px] sm:min-h-[300px] rounded-2xl border border-slate-200 dark:border-[#23353c] bg-white dark:bg-[#152125] shadow-xs hover:shadow-lg hover:border-[#335C67] dark:hover:border-[#FFF3B0]/60 transition-all duration-200 group">
             <div class="space-y-4">
               <div class="flex items-start justify-between gap-3">
                 <div class="flex items-center gap-3.5">
@@ -3594,7 +3511,7 @@
                 <button
                   type="button"
                   onclick="triggerPrintImzaListesi()"
-                  class="flex-1 flex items-center justify-center gap-1.5 px-3.5 py-2.5 bg-[#335C67] hover:bg-[#274851] text-white rounded-xl text-xs sm:text-sm font-bold shadow-xs transition cursor-pointer"
+                  class="flex-1 flex items-center justify-center gap-1.5 px-3.5 py-2.5 bg-[#335C67] hover:bg-[#274851] text-white rounded-xl text-xs sm:text-sm font-extrabold shadow-sm transition cursor-pointer"
                   title="Yazdır"
                 >
                   <i data-lucide="printer" class="w-4 h-4 text-[#FFF3B0]"></i>
@@ -3605,7 +3522,7 @@
           </div>
 
           <!-- 3. Belge: Sınav Katılım Belgesi (Sınav Tutanağı) -->
-          <div class="flex flex-col justify-between p-6 sm:p-7 min-h-[300px] rounded-2xl border border-slate-200 dark:border-[#23353c] bg-white dark:bg-[#152125] shadow-xs hover:shadow-lg hover:border-[#335C67] dark:hover:border-[#FFF3B0]/60 transition-all duration-200 group">
+          <div class="flex flex-col justify-between p-5 sm:p-7 min-h-[260px] sm:min-h-[300px] rounded-2xl border border-slate-200 dark:border-[#23353c] bg-white dark:bg-[#152125] shadow-xs hover:shadow-lg hover:border-[#335C67] dark:hover:border-[#FFF3B0]/60 transition-all duration-200 group">
             <div class="space-y-4">
               <div class="flex items-start justify-between gap-3">
                 <div class="flex items-center gap-3.5">
@@ -3644,7 +3561,7 @@
                 <button
                   type="button"
                   onclick="triggerPrintSinavTutanagi()"
-                  class="flex-1 flex items-center justify-center gap-1.5 px-3.5 py-2.5 bg-[#335C67] hover:bg-[#274851] text-white rounded-xl text-xs sm:text-sm font-bold shadow-xs transition cursor-pointer"
+                  class="flex-1 flex items-center justify-center gap-1.5 px-3.5 py-2.5 bg-[#335C67] hover:bg-[#274851] text-white rounded-xl text-xs sm:text-sm font-extrabold shadow-sm transition cursor-pointer"
                   title="Yazdır"
                 >
                   <i data-lucide="printer" class="w-4 h-4 text-[#FFF3B0]"></i>
@@ -3659,7 +3576,7 @@
       </div>
 
       <!-- Sekme 4: Kurs Sonu Evrakları -->
-      <div id="tabClosingDocsContent" class="hidden p-5 overflow-y-auto flex-1 space-y-5">
+      <div id="tabClosingDocsContent" class="hidden p-3.5 sm:p-5 overflow-y-auto flex-1 space-y-4 sm:space-y-5">
         
         <!-- Üst Başlık & Açıklama & Hızlı İşlem Barı -->
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-200 dark:border-[#23353c]">
@@ -3675,15 +3592,23 @@
               Kurs tamamlanıp kapatıldıktan sonra resmi onay süreçlerine teslim edilecek olan nihai resmi evraklar sistem tarafından otomatik hazırlanır.
             </p>
           </div>
+          <button
+            type="button"
+            onclick="printMergedAllDocuments()"
+            class="w-full sm:w-auto px-4 py-2.5 bg-gradient-to-r from-[#335C67] via-[#284952] to-[#540B0E] hover:from-[#274851] hover:to-[#43090b] text-white rounded-xl text-xs font-extrabold shadow-md shadow-[#335C67]/25 flex items-center justify-center gap-2 transition cursor-pointer shrink-0"
+          >
+            <i data-lucide="printer" class="w-4 h-4 text-[#FFF3B0]"></i>
+            <span>Tüm Kurs Sonu Evraklarını Yazdır</span>
+          </button>
         </div>
 
-        <!-- Kurs Kapatılmamışsa Gösterilecek Uyarı ve Bilgilendirme Kutusu -->
+        <!-- Kurs Kapatılmamışsa Gösterilecek Uyarı ve Bilgilendirme Kutusu (Tekrarlayan Kursu Kapat butonu kaldırıldı, üst bara yönlendirir) -->
         <div id="courseDocumentsLockedBanner" class="p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/30 border-2 border-amber-300 dark:border-amber-800/60 text-amber-950 dark:text-amber-200 shadow-sm flex items-start gap-3.5">
           <div class="p-2.5 bg-amber-200/80 dark:bg-amber-900/60 rounded-xl shrink-0 mt-0.5">
             <i data-lucide="lock" class="w-5 h-5 text-amber-800 dark:text-amber-300"></i>
           </div>
           <div class="space-y-1 flex-1 text-xs">
-            <h5 class="font-extrabold text-sm text-amber-900 dark:text-amber-100 flex items-center gap-1.5">
+            <h5 class="font-extrabold text-sm text-amber-900 dark:text-amber-100 flex items-center gap-1.5 flex-wrap">
               <span>Kurs Kapatılmadan Kurs Sonu Evrakları Görüntülenemez</span>
               <span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-rose-100 text-rose-800 border border-rose-300">İşlem Gerekli</span>
             </h5>
@@ -3691,25 +3616,16 @@
               Mevzuat gereği; <strong>Kursiyer Karar Durumu, Yoklama ve Ders Defteri ile Modül Değerlendirme Çizelgesi</strong> gibi resmi kurs sonu evraklarının kesinleşmesi için kursun tamamlanmış ve kapatılmış olması şarttır.
             </p>
             <p class="text-[11px] text-amber-800/90 dark:text-amber-300/90 pt-0.5">
-              💡 Kursu kapatmak için sağdaki <strong class="text-rose-700 dark:text-rose-400">"Kursu Kapat"</strong> butonuna tıklayınız. Kurs kapatıldığında bu resmi evraklar otomatik olarak açılacak ve yazdırılabilecektir.
+              💡 Kursu kapatmak için sağ üstteki kırmızı <strong class="text-rose-700 dark:text-rose-400">"Kursu Kapat"</strong> butonuna tıklayınız. Kurs kapatıldığında bu resmi evraklar otomatik olarak açılacak ve yazdırılabilecektir.
             </p>
           </div>
-          <button
-            type="button"
-            onclick="handleCloseCourseClick()"
-            class="px-3 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold shrink-0 shadow-xs cursor-pointer transition flex items-center gap-1.5"
-            title="Kursu Kapat ve Evrakları Aç"
-          >
-            <i data-lucide="lock" class="w-3.5 h-3.5 text-white"></i>
-            <span>Kursu Kapat</span>
-          </button>
         </div>
 
         <!-- 3 Sütunlu Kart Izgarası (Kurs Sonu Belgeleri: Karar Durumu, Defter, Modül Değerlendirme Çizelgesi) -->
-        <div id="courseClosingDocumentsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 my-3">
+        <div id="courseClosingDocumentsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 my-3">
 
           <!-- 1. Belge: Kursiyer Karar Durumu -->
-          <div class="closing-doc-card flex flex-col justify-between p-6 sm:p-7 min-h-[300px] rounded-2xl border border-slate-200 dark:border-[#23353c] bg-white dark:bg-[#152125] shadow-xs hover:shadow-lg hover:border-[#335C67] dark:hover:border-[#FFF3B0]/60 transition-all duration-200 group">
+          <div class="closing-doc-card flex flex-col justify-between p-5 sm:p-7 min-h-[260px] sm:min-h-[300px] rounded-2xl border border-slate-200 dark:border-[#23353c] bg-white dark:bg-[#152125] shadow-xs hover:shadow-lg hover:border-[#335C67] dark:hover:border-[#FFF3B0]/60 transition-all duration-200 group">
             <div class="space-y-4">
               <div class="flex items-start justify-between gap-3">
                 <div class="flex items-center gap-3.5">
@@ -3748,7 +3664,7 @@
                 <button
                   type="button"
                   onclick="triggerPrintKararDurumu()"
-                  class="flex-1 flex items-center justify-center gap-1.5 px-3.5 py-2.5 bg-[#335C67] hover:bg-[#274851] text-white rounded-xl text-xs sm:text-sm font-bold shadow-xs transition cursor-pointer"
+                  class="flex-1 flex items-center justify-center gap-1.5 px-3.5 py-2.5 bg-[#335C67] hover:bg-[#274851] text-white rounded-xl text-xs sm:text-sm font-extrabold shadow-sm transition cursor-pointer"
                   title="Yazdır"
                 >
                   <i data-lucide="printer" class="w-4 h-4 text-[#FFF3B0]"></i>
@@ -3759,7 +3675,7 @@
           </div>
 
           <!-- 2. Belge: Yoklama ve Ders Defteri -->
-          <div class="closing-doc-card flex flex-col justify-between p-6 sm:p-7 min-h-[300px] rounded-2xl border border-slate-200 dark:border-[#23353c] bg-white dark:bg-[#152125] shadow-xs hover:shadow-lg hover:border-[#335C67] dark:hover:border-[#FFF3B0]/60 transition-all duration-200 group">
+          <div class="closing-doc-card flex flex-col justify-between p-5 sm:p-7 min-h-[260px] sm:min-h-[300px] rounded-2xl border border-slate-200 dark:border-[#23353c] bg-white dark:bg-[#152125] shadow-xs hover:shadow-lg hover:border-[#335C67] dark:hover:border-[#FFF3B0]/60 transition-all duration-200 group">
             <div class="space-y-4">
               <div class="flex items-start justify-between gap-3">
                 <div class="flex items-center gap-3.5">
@@ -3798,7 +3714,7 @@
                 <button
                   type="button"
                   onclick="triggerPrintDefter()"
-                  class="flex-1 flex items-center justify-center gap-1.5 px-3.5 py-2.5 bg-[#335C67] hover:bg-[#274851] text-white rounded-xl text-xs sm:text-sm font-bold shadow-xs transition cursor-pointer"
+                  class="flex-1 flex items-center justify-center gap-1.5 px-3.5 py-2.5 bg-[#335C67] hover:bg-[#274851] text-white rounded-xl text-xs sm:text-sm font-extrabold shadow-sm transition cursor-pointer"
                   title="Yazdır"
                 >
                   <i data-lucide="printer" class="w-4 h-4 text-[#FFF3B0]"></i>
@@ -3809,7 +3725,7 @@
           </div>
 
           <!-- 3. Belge: Modül Değerlendirme (Not) Çizelgesi -->
-          <div class="closing-doc-card flex flex-col justify-between p-6 sm:p-7 min-h-[300px] rounded-2xl border border-slate-200 dark:border-[#23353c] bg-white dark:bg-[#152125] shadow-xs hover:shadow-lg hover:border-[#335C67] dark:hover:border-[#FFF3B0]/60 transition-all duration-200 group">
+          <div class="closing-doc-card flex flex-col justify-between p-5 sm:p-7 min-h-[260px] sm:min-h-[300px] rounded-2xl border border-slate-200 dark:border-[#23353c] bg-white dark:bg-[#152125] shadow-xs hover:shadow-lg hover:border-[#335C67] dark:hover:border-[#FFF3B0]/60 transition-all duration-200 group">
             <div class="space-y-4">
               <div class="flex items-start justify-between gap-3">
                 <div class="flex items-center gap-3.5">
@@ -3848,7 +3764,7 @@
                 <button
                   type="button"
                   onclick="triggerPrintNotCizelgesi()"
-                  class="flex-1 flex items-center justify-center gap-1.5 px-3.5 py-2.5 bg-[#335C67] hover:bg-[#274851] text-white rounded-xl text-xs sm:text-sm font-bold shadow-xs transition cursor-pointer"
+                  class="flex-1 flex items-center justify-center gap-1.5 px-3.5 py-2.5 bg-[#335C67] hover:bg-[#274851] text-white rounded-xl text-xs sm:text-sm font-extrabold shadow-sm transition cursor-pointer"
                   title="Yazdır"
                 >
                   <i data-lucide="printer" class="w-4 h-4 text-[#FFF3B0]"></i>
@@ -3860,15 +3776,6 @@
 
         </div>
 
-      </div>
-
-      <!-- Alt Kısım -->
-      <div class="p-3.5 px-6 border-t border-slate-200 bg-slate-50 flex items-center justify-between shrink-0">
-        <span class="text-xs text-slate-400">Veriler tarayıcınızda ve sistemde saklanmaktadır.</span>
-        <button id="bottomCloseDetailBtn" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-xl text-xs font-semibold cursor-pointer flex items-center gap-1.5">
-          <i data-lucide="arrow-left" class="w-4 h-4"></i>
-          <span>Kurs Listesine Dön</span>
-        </button>
       </div>
 
     </div>

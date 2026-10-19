@@ -1519,10 +1519,10 @@ function switchView(view, push = true) {
       navTeacherViewBtn.className = 'px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-white dark:bg-[#152125] text-[#335C67] dark:text-[#FFF3B0] shadow-xs cursor-pointer flex items-center gap-1.5 transition border border-[#335C67]/20';
     }
 
-    // Zümre Başkanı veya Geliştirici ise "Yeni Müfredat Tanımla" butonunu göster
+    // Yalnızca Zümre Başkanı ise "Müfredat Planları" butonunu göster (Geliştiricide üst menüde zaten geçiş var)
     const deptHeadBtn = document.getElementById('deptHeadNewTmplBtn');
     if (deptHeadBtn) {
-      if (isDeveloper(currentUser) || isDepartmentHead(currentUser)) {
+      if (isDepartmentHead(currentUser) && !isDeveloper(currentUser)) {
         deptHeadBtn.classList.remove('hidden');
         deptHeadBtn.classList.add('flex');
       } else {
@@ -1865,26 +1865,26 @@ function setupEventListeners() {
   areaForm?.addEventListener('submit', handleSaveArea);
 
   // Kullanıcı Yönetimi Ekleme / Düzenleme
-  openAddUserModalBtn.addEventListener('click', () => openUserModal());
-  adminAddUserSecondaryBtn.addEventListener('click', () => openUserModal());
-  closeUserModalBtn.addEventListener('click', () => closeUserModal());
-  cancelUserModalBtn.addEventListener('click', () => closeUserModal());
-  userForm.addEventListener('submit', handleSaveUser);
+  openAddUserModalBtn?.addEventListener('click', () => openUserModal());
+  adminAddUserSecondaryBtn?.addEventListener('click', () => openUserModal());
+  closeUserModalBtn?.addEventListener('click', () => closeUserModal());
+  cancelUserModalBtn?.addEventListener('click', () => closeUserModal());
+  userForm?.addEventListener('submit', handleSaveUser);
   [roleDeveloper, roleSupervisor, roleDeptHead, roleTeacher].forEach(r => {
     r?.addEventListener('change', () => { if (typeof toggleUserModalRoleFields === 'function') toggleUserModalRoleFields(); });
   });
 
   // Merkez Ekleme
-  openAddCenterModalBtn.addEventListener('click', () => openCenterModal());
-  closeCenterModalBtn.addEventListener('click', () => closeCenterModal());
-  cancelCenterModalBtn.addEventListener('click', () => closeCenterModal());
-  centerForm.addEventListener('submit', handleSaveCenter);
+  openAddCenterModalBtn?.addEventListener('click', () => openCenterModal());
+  closeCenterModalBtn?.addEventListener('click', () => closeCenterModal());
+  cancelCenterModalBtn?.addEventListener('click', () => closeCenterModal());
+  centerForm?.addEventListener('submit', handleSaveCenter);
 
   // Kurs Şablonu / Müfredat Ekleme
-  openAddCourseTmplModalBtn.addEventListener('click', () => openCourseTmplModal());
-  closeCourseTmplModalBtn.addEventListener('click', () => closeCourseTmplModal());
-  cancelCourseTmplModalBtn.addEventListener('click', () => closeCourseTmplModal());
-  courseTmplForm.addEventListener('submit', handleSaveCourseTemplate);
+  openAddCourseTmplModalBtn?.addEventListener('click', () => openCourseTmplModal());
+  closeCourseTmplModalBtn?.addEventListener('click', () => closeCourseTmplModal());
+  cancelCourseTmplModalBtn?.addEventListener('click', () => closeCourseTmplModal());
+  courseTmplForm?.addEventListener('submit', handleSaveCourseTemplate);
 
   if (addModuleBtn) {
     addModuleBtn.addEventListener('click', () => addNewModuleCard());
@@ -1898,14 +1898,14 @@ function setupEventListeners() {
   }
 
   // Eğitmen Kurs Arama & Filtre
-  searchCourseInput.addEventListener('input', (e) => {
+  searchCourseInput?.addEventListener('input', (e) => {
     searchQuery = e.target.value.trim().toLowerCase();
     renderCourseList();
   });
 
-  filterAllBtn.addEventListener('click', () => setCourseFilter('all'));
-  filterActiveBtn.addEventListener('click', () => setCourseFilter('active'));
-  filterCompletedBtn.addEventListener('click', () => setCourseFilter('completed'));
+  filterAllBtn?.addEventListener('click', () => setCourseFilter('all'));
+  filterActiveBtn?.addEventListener('click', () => setCourseFilter('active'));
+  filterCompletedBtn?.addEventListener('click', () => setCourseFilter('completed'));
 
   // Geliştirici Kurs Filtreleme & Sıralama Olay Dinleyicileri
   if (devCourseFilterCenter) {
@@ -1957,11 +1957,11 @@ function setupEventListeners() {
   }
 
   // Eğitmen Yeni Kurs Modalı
-  openNewCourseModalBtn.addEventListener('click', () => openCourseModal());
-  emptyStateAddBtn.addEventListener('click', () => openCourseModal());
-  closeCourseModalBtn.addEventListener('click', () => closeCourseModal());
-  cancelCourseModalBtn.addEventListener('click', () => closeCourseModal());
-  courseForm.addEventListener('submit', handleSaveCourse);
+  openNewCourseModalBtn?.addEventListener('click', () => openCourseModal());
+  emptyStateAddBtn?.addEventListener('click', () => openCourseModal());
+  closeCourseModalBtn?.addEventListener('click', () => closeCourseModal());
+  cancelCourseModalBtn?.addEventListener('click', () => closeCourseModal());
+  courseForm?.addEventListener('submit', handleSaveCourse);
 
   // Ders Yapılmayan Günler Ekle Butonu
   if (addOffDayBtn) {
@@ -2010,8 +2010,8 @@ function setupEventListeners() {
   }
 
   // Kurs Detay Modalı
-  closeDetailModalBtn.addEventListener('click', () => closeDetailModal());
-  bottomCloseDetailBtn.addEventListener('click', () => closeDetailModal());
+  closeDetailModalBtn?.addEventListener('click', () => closeDetailModal());
+  bottomCloseDetailBtn?.addEventListener('click', () => closeDetailModal());
   document.getElementById('closeDetailModalTopRightBtn')?.addEventListener('click', () => closeDetailModal());
   document.getElementById('detailEditCourseBtn')?.addEventListener('click', () => {
     if (activeCourseForDetail) openCourseModal(activeCourseForDetail);
@@ -2040,7 +2040,7 @@ function setupEventListeners() {
     noticeGoExamsBtn.addEventListener('click', () => switchDetailTab('exams'));
   }
 
-  toggleStudentFormBtn.addEventListener('click', () => {
+  toggleStudentFormBtn?.addEventListener('click', () => {
     studentAddForm.reset();
     bulkStudentForm?.classList.add('hidden');
     const stdEditId = document.getElementById('stdEditId');
@@ -2054,9 +2054,9 @@ function setupEventListeners() {
     studentAddForm.classList.remove('hidden');
     document.getElementById('stdFirstName')?.focus();
   });
-  closeStudentFormBtn.addEventListener('click', () => studentAddForm.classList.add('hidden'));
-  cancelStudentAddBtn.addEventListener('click', () => studentAddForm.classList.add('hidden'));
-  studentAddForm.addEventListener('submit', handleAddStudent);
+  closeStudentFormBtn?.addEventListener('click', () => studentAddForm.classList.add('hidden'));
+  cancelStudentAddBtn?.addEventListener('click', () => studentAddForm.classList.add('hidden'));
+  studentAddForm?.addEventListener('submit', handleAddStudent);
 
   // T.C. Kimlik No Canlı Algoritma Doğrulama Geri Bildirimi
   const stdTcNoInput = document.getElementById('stdTcNo');
@@ -2199,6 +2199,8 @@ function setupEventListeners() {
 
 // =================== ADMIN YÖNETİM PANELİ İŞLEMLERİ ===================
 
+let currentActiveAdminTab = 'centers';
+
 function switchAdminTab(tab) {
   const isHead = isDepartmentHead(currentUser);
   const isDev = isDeveloper(currentUser);
@@ -2210,6 +2212,8 @@ function switchAdminTab(tab) {
     return;
   }
 
+  currentActiveAdminTab = tab;
+
   // Tüm içerik alanlarını gizle
   if (adminTabCentersContent) adminTabCentersContent.classList.add('hidden');
   if (adminTabAreasContent) adminTabAreasContent.classList.add('hidden');
@@ -2217,8 +2221,14 @@ function switchAdminTab(tab) {
   if (adminTabUsersContent) adminTabUsersContent.classList.add('hidden');
   if (adminTabTodosContent) adminTabTodosContent.classList.add('hidden');
 
+  // Üst banner'daki ekleme butonlarından YALNIZCA aktif sekmeye ait olanı göster (Aynı anda çoklu buton kalabalığını önler)
+  if (openAddCenterModalBtn) openAddCenterModalBtn.classList.toggle('hidden', !(tab === 'centers' && isDev));
+  if (openAddAreaModalBtn) openAddAreaModalBtn.classList.toggle('hidden', !(tab === 'areas' && isDev));
+  if (openAddCourseTmplModalBtn) openAddCourseTmplModalBtn.classList.toggle('hidden', !(tab === 'templates'));
+  if (openAddUserModalBtn) openAddUserModalBtn.classList.toggle('hidden', !(tab === 'users' && isDev));
+
   // Sekme butonlarını pasif yap (Zümre başkanı için diğer butonları gizli tut!)
-  const inactiveBtnClass = 'flex items-center gap-2 px-5 py-3 text-xs sm:text-sm font-bold border-b-2 border-transparent text-slate-600 hover:text-slate-900 transition cursor-pointer whitespace-nowrap';
+  const inactiveBtnClass = 'flex items-center gap-2 px-4 sm:px-5 py-3 text-xs sm:text-sm font-bold border-b-2 border-transparent text-slate-600 hover:text-slate-900 transition cursor-pointer whitespace-nowrap';
 
   if (adminTabCentersBtn) {
     adminTabCentersBtn.className = inactiveBtnClass;
@@ -2241,24 +2251,24 @@ function switchAdminTab(tab) {
   }
 
   if (tab === 'centers' && isDev) {
-    if (adminTabCentersBtn) adminTabCentersBtn.className = 'flex items-center gap-2 px-5 py-3 text-xs sm:text-sm font-bold border-b-2 border-indigo-600 text-indigo-700 transition cursor-pointer whitespace-nowrap';
+    if (adminTabCentersBtn) adminTabCentersBtn.className = 'flex items-center gap-2 px-4 sm:px-5 py-3 text-xs sm:text-sm font-bold border-b-2 border-indigo-600 text-indigo-700 transition cursor-pointer whitespace-nowrap';
     if (adminTabCentersContent) adminTabCentersContent.classList.remove('hidden');
     renderAdminCenters();
   } else if (tab === 'areas' && isDev) {
-    if (adminTabAreasBtn) adminTabAreasBtn.className = 'flex items-center gap-2 px-5 py-3 text-xs sm:text-sm font-bold border-b-2 border-teal-600 text-teal-700 transition cursor-pointer whitespace-nowrap';
+    if (adminTabAreasBtn) adminTabAreasBtn.className = 'flex items-center gap-2 px-4 sm:px-5 py-3 text-xs sm:text-sm font-bold border-b-2 border-teal-600 text-teal-700 transition cursor-pointer whitespace-nowrap';
     if (adminTabAreasContent) adminTabAreasContent.classList.remove('hidden');
     renderAdminAreas();
   } else if (tab === 'templates') {
-    if (adminTabTemplatesBtn) adminTabTemplatesBtn.className = 'flex items-center gap-2 px-5 py-3 text-xs sm:text-sm font-bold border-b-2 border-sky-600 text-sky-700 transition cursor-pointer whitespace-nowrap';
+    if (adminTabTemplatesBtn) adminTabTemplatesBtn.className = 'flex items-center gap-2 px-4 sm:px-5 py-3 text-xs sm:text-sm font-bold border-b-2 border-sky-600 text-sky-700 transition cursor-pointer whitespace-nowrap';
     if (adminTabTemplatesContent) adminTabTemplatesContent.classList.remove('hidden');
     renderAdminTemplates();
   } else if (tab === 'users' && isDev) {
-    if (adminTabUsersBtn) adminTabUsersBtn.className = 'flex items-center gap-2 px-5 py-3 text-xs sm:text-sm font-bold border-b-2 border-purple-600 text-purple-700 transition cursor-pointer whitespace-nowrap';
+    if (adminTabUsersBtn) adminTabUsersBtn.className = 'flex items-center gap-2 px-4 sm:px-5 py-3 text-xs sm:text-sm font-bold border-b-2 border-purple-600 text-purple-700 transition cursor-pointer whitespace-nowrap';
     if (adminTabUsersContent) adminTabUsersContent.classList.remove('hidden');
     renderAdminUsers();
   } else if (tab === 'todos' && isDev) {
     if (adminTabTodosBtn) {
-      adminTabTodosBtn.className = 'flex items-center gap-2 px-5 py-3 text-xs sm:text-sm font-bold border-b-2 border-amber-600 text-amber-800 transition cursor-pointer whitespace-nowrap';
+      adminTabTodosBtn.className = 'flex items-center gap-2 px-4 sm:px-5 py-3 text-xs sm:text-sm font-bold border-b-2 border-amber-600 text-amber-800 transition cursor-pointer whitespace-nowrap';
     }
     if (adminTabTodosContent) adminTabTodosContent.classList.remove('hidden');
     renderDevTodos();
@@ -2276,11 +2286,6 @@ function renderAdminPanel() {
 
   // Zümre Başkanı ise sadece Müfredat Planları sekmesini ve yeni müfredat ekleme butonunu göster
   if (isHead && !isDev) {
-    if (openAddCenterModalBtn) openAddCenterModalBtn.classList.add('hidden');
-    if (openAddAreaModalBtn) openAddAreaModalBtn.classList.add('hidden');
-    if (openAddUserModalBtn) openAddUserModalBtn.classList.add('hidden');
-    if (openAddCourseTmplModalBtn) openAddCourseTmplModalBtn.classList.remove('hidden');
-
     if (adminTabCentersBtn) adminTabCentersBtn.classList.add('hidden');
     if (adminTabAreasBtn) adminTabAreasBtn.classList.add('hidden');
     if (adminTabUsersBtn) adminTabUsersBtn.classList.add('hidden');
@@ -2295,11 +2300,6 @@ function renderAdminPanel() {
 
     switchAdminTab('templates');
   } else if (isDev) {
-    if (openAddCenterModalBtn) openAddCenterModalBtn.classList.remove('hidden');
-    if (openAddAreaModalBtn) openAddAreaModalBtn.classList.remove('hidden');
-    if (openAddUserModalBtn) openAddUserModalBtn.classList.remove('hidden');
-    if (openAddCourseTmplModalBtn) openAddCourseTmplModalBtn.classList.remove('hidden');
-
     if (adminTabCentersBtn) adminTabCentersBtn.classList.remove('hidden');
     if (adminTabAreasBtn) adminTabAreasBtn.classList.remove('hidden');
     if (adminTabUsersBtn) adminTabUsersBtn.classList.remove('hidden');
@@ -2315,6 +2315,7 @@ function renderAdminPanel() {
     renderAdminAreas();
     renderAdminTemplates();
     renderAdminUsers();
+    switchAdminTab(currentActiveAdminTab || 'centers');
   }
 }
 
@@ -4658,8 +4659,7 @@ window.openCourseDetail = function(courseId, push = true) {
 
   if (isClosed) {
     detailStatusBadge.className = 'px-2.5 py-0.5 rounded text-xs font-bold bg-slate-200 dark:bg-[#10191b] text-slate-800 dark:text-slate-300 border border-slate-300 dark:border-[#23353c] inline-flex items-center gap-1.5 flex-wrap';
-    detailStatusBadge.innerHTML = '<i data-lucide="lock" class="w-3 h-3 text-slate-500"></i> Kapatılmış Kurs (Salt-Okunur)' +
-      (isDeveloper(currentUser) ? ' <button type="button" onclick="handleReopenCourseClick()" class="ml-1 text-amber-700 dark:text-amber-400 hover:text-amber-800 underline font-extrabold cursor-pointer text-[11px]" title="Kapatma işlemini iptal et ve kursu düzenlemeye aç">[Kapatmayı İptal Et]</button>' : '');
+    detailStatusBadge.innerHTML = '<i data-lucide="lock" class="w-3 h-3 text-slate-500"></i> Kapatılmış Kurs (Salt-Okunur)';
   } else {
     detailStatusBadge.className = 'px-2.5 py-0.5 rounded text-xs font-semibold bg-emerald-100 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800';
     detailStatusBadge.innerText = 'Devam Eden Kurs';
@@ -5312,26 +5312,8 @@ function renderDetailSyllabus(filterKeyword = '') {
             </div>
             <p class="font-bold text-slate-700 dark:text-slate-300 text-sm">Bu kurs için henüz saatlik konu planı tanımlanmamış.</p>
             <p class="text-xs text-slate-500 dark:text-slate-400 text-center">
-              Yukarıdaki "Toplu Konu Düzenle" butonundan listenizi yapıştırabilir veya "Yeni Saat Ekle" butonuna basarak ilk ders saatini oluşturabilirsiniz.
+              Yukarıdaki <strong>"Toplu Konu Düzenle"</strong> veya <strong>"Yeni Saat Ekle"</strong> butonunu kullanarak ders saatlerini oluşturabilirsiniz.
             </p>
-            <div class="flex items-center gap-2 mt-2">
-              <button
-                type="button"
-                onclick="openBulkSyllabusEditModal()"
-                class="px-3.5 py-2 bg-[#335C67] hover:bg-[#274851] text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition cursor-pointer shadow-xs"
-              >
-                <i data-lucide="file-edit" class="w-4 h-4 text-[#FFF3B0]"></i>
-                <span>Toplu Konu Oluştur</span>
-              </button>
-              <button
-                type="button"
-                onclick="openAddSyllabusHourModal()"
-                class="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-[#18262b] dark:hover:bg-[#203138] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-[#2b3e45] rounded-xl text-xs font-bold flex items-center gap-1.5 transition cursor-pointer"
-              >
-                <i data-lucide="plus" class="w-4 h-4 text-[#335C67] dark:text-[#FFF3B0]"></i>
-                <span>İlk Saati Ekle</span>
-              </button>
-            </div>
           </div>
         </td>
       </tr>
@@ -6758,7 +6740,7 @@ function renderAttendanceTab() {
   refreshLucide();
 }
 
-let isMobileQuickAttMode = false;
+let isMobileQuickAttMode = typeof window !== 'undefined' && window.innerWidth < 768;
 
 window.toggleMobileQuickAttendanceMode = function() {
   isMobileQuickAttMode = !isMobileQuickAttMode;
@@ -6780,6 +6762,7 @@ function renderMobileQuickAttendanceCards(selectedDate, dailyHours, maxAllowed) 
   const grid = document.getElementById('mobileQuickAttendanceGrid');
   const tableWrap = document.getElementById('attendanceTableWrapper');
   const markAllBtn = document.getElementById('markAllPresentTodayBtn');
+  const btnText = document.getElementById('toggleQuickAttModeText');
   if (!grid || !activeCourseForDetail) return;
 
   const isLocked = activeCourseForDetail.status === 'completed' && !isDeveloper(currentUser);
@@ -6789,6 +6772,11 @@ function renderMobileQuickAttendanceCards(selectedDate, dailyHours, maxAllowed) 
   if (tableWrap) {
     grid.classList.toggle('hidden', !isMobileQuickAttMode);
     tableWrap.classList.toggle('hidden', isMobileQuickAttMode);
+  }
+  if (btnText) {
+    btnText.innerText = isMobileQuickAttMode
+      ? 'Tablo Görünümüne Dön'
+      : 'Hızlı Kart Yoklama Modu (Mobil)';
   }
 
   const students = activeCourseForDetail.students || [];
