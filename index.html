@@ -838,7 +838,7 @@
               <span>Kurs ve Müfredat Planları</span>
             </button>
 
-            <!-- Boş Evrak İndirme Butonu (Elle Doldurmak İsteyenler İçin) -->
+            <!-- Boş Evrak Butonu (Elle Doldurmak İsteyenler İçin) -->
             <button
               type="button"
               id="openBlankDocsBtnTop"
@@ -847,7 +847,7 @@
               title="Manuel elle doldurmak için boş resmi kurs sonu evrak şablonları"
             >
               <i data-lucide="file-text" class="w-4 h-4 text-[#FFF3B0]"></i>
-              <span>Boş Evrak İndir</span>
+              <span>Boş Evraklar</span>
             </button>
 
             <button
@@ -4570,42 +4570,23 @@
       <!-- Modal Body -->
       <div class="p-4 sm:p-6 overflow-y-auto flex-1 space-y-4 bg-slate-50/50 dark:bg-[#0c1315]">
         
-        <!-- Hızlı Toplu Aksiyon Kartları -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <button
-            type="button"
-            onclick="downloadAllBlankDocuments()"
-            class="flex items-start gap-3 p-3.5 bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white rounded-xl text-left shadow-sm hover:shadow-md transition cursor-pointer group"
-          >
-            <div class="p-2 bg-white/20 rounded-lg shrink-0 mt-0.5 group-hover:scale-110 transition">
-              <i data-lucide="file-down" class="w-5 h-5 text-white"></i>
-            </div>
-            <div>
-              <div class="font-bold text-xs sm:text-sm text-white flex items-center gap-1.5">
-                <span>Tüm Boş Evrakları İndir</span>
-                <span class="px-1.5 py-0.2 bg-white/20 text-[10px] rounded">6 PDF Belgesi</span>
-              </div>
-              <p class="text-[11px] text-emerald-100 mt-0.5">
-                Tüm boş matbu evraklar bilgisayardan bağımsız doldurulmak üzere cihazınıza PDF olarak indirilir.
-              </p>
-            </div>
-          </button>
-
+        <!-- Hızlı Toplu Aksiyon Kartı -->
+        <div>
           <button
             type="button"
             onclick="printMergedAllBlankDocuments()"
-            class="flex items-start gap-3 p-3.5 bg-gradient-to-r from-[#335C67] to-[#540B0E] hover:from-[#284952] hover:to-[#45090b] text-white rounded-xl text-left shadow-sm hover:shadow-md transition cursor-pointer group"
+            class="w-full flex items-start gap-3 p-3.5 bg-gradient-to-r from-[#335C67] to-[#540B0E] hover:from-[#284952] hover:to-[#45090b] text-white rounded-xl text-left shadow-sm hover:shadow-md transition cursor-pointer group"
           >
             <div class="p-2 bg-white/20 rounded-lg shrink-0 mt-0.5 group-hover:scale-110 transition">
               <i data-lucide="printer" class="w-5 h-5 text-[#FFF3B0]"></i>
             </div>
             <div>
               <div class="font-bold text-xs sm:text-sm text-white flex items-center gap-1.5">
-                <span>Tümünü Tek Seferde Yazdır / PDF</span>
+                <span>Tümünü Tek Seferde Yazdır</span>
                 <span class="px-1.5 py-0.2 bg-white/20 text-[10px] rounded text-[#FFF3B0]">Kitapçık</span>
               </div>
               <p class="text-[11px] text-slate-200 mt-0.5">
-                6 resmi boş evrak sırasıyla tek bir PDF çıktısında veya doğrudan yazıcıda birleştirilir.
+                6 resmi boş evrak sırasıyla tek bir çıktıda veya doğrudan yazıcıda birleştirilir.
               </p>
             </div>
           </button>
@@ -4614,7 +4595,7 @@
         <!-- Evrak Listesi Başlığı -->
         <div class="pt-2 flex items-center justify-between border-t border-slate-200 dark:border-[#23353c]">
           <span class="text-xs font-bold text-slate-700 dark:text-slate-300">Resmi Boş Evrak Şablonları (6 Belge):</span>
-          <span class="text-[11px] text-slate-400">Tek tek inceleyebilir, yazdırabilir veya indirebilirsiniz</span>
+          <span class="text-[11px] text-slate-400">Her belgeyi önizleyebilir veya yazdırabilirsiniz</span>
         </div>
 
         <!-- 6 Belgenin Kart Listesi -->
@@ -4639,20 +4620,11 @@
               <button
                 type="button"
                 onclick="previewBlankDocument('plan')"
-                class="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-[#23353c] dark:hover:bg-[#2c434c] text-slate-700 dark:text-slate-200 rounded-lg text-xs font-semibold transition cursor-pointer flex items-center gap-1"
+                class="flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-[#23353c] dark:hover:bg-[#2c434c] text-slate-700 dark:text-slate-200 rounded-lg text-xs font-semibold transition cursor-pointer"
                 title="Önizle ve Yazdır"
               >
                 <i data-lucide="eye" class="w-3.5 h-3.5"></i>
-                <span class="hidden sm:inline">Önizle &amp; Yazdır</span>
-              </button>
-              <button
-                type="button"
-                onclick="downloadSingleBlankDocument('plan')"
-                class="px-2.5 py-1.5 bg-sky-600 hover:bg-sky-700 text-white rounded-lg text-xs font-semibold transition cursor-pointer flex items-center gap-1"
-                title="PDF İndir"
-              >
-                <i data-lucide="download" class="w-3.5 h-3.5"></i>
-                <span>İndir</span>
+                <span>Önizle &amp; Yazdır</span>
               </button>
             </div>
           </div>
@@ -4676,20 +4648,11 @@
               <button
                 type="button"
                 onclick="previewBlankDocument('karar')"
-                class="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-[#23353c] dark:hover:bg-[#2c434c] text-slate-700 dark:text-slate-200 rounded-lg text-xs font-semibold transition cursor-pointer flex items-center gap-1"
+                class="flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-[#23353c] dark:hover:bg-[#2c434c] text-slate-700 dark:text-slate-200 rounded-lg text-xs font-semibold transition cursor-pointer"
                 title="Önizle ve Yazdır"
               >
                 <i data-lucide="eye" class="w-3.5 h-3.5"></i>
-                <span class="hidden sm:inline">Önizle &amp; Yazdır</span>
-              </button>
-              <button
-                type="button"
-                onclick="downloadSingleBlankDocument('karar')"
-                class="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold transition cursor-pointer flex items-center gap-1"
-                title="PDF İndir"
-              >
-                <i data-lucide="download" class="w-3.5 h-3.5"></i>
-                <span>İndir</span>
+                <span>Önizle &amp; Yazdır</span>
               </button>
             </div>
           </div>
@@ -4713,20 +4676,11 @@
               <button
                 type="button"
                 onclick="previewBlankDocument('defter')"
-                class="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-[#23353c] dark:hover:bg-[#2c434c] text-slate-700 dark:text-slate-200 rounded-lg text-xs font-semibold transition cursor-pointer flex items-center gap-1"
+                class="flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-[#23353c] dark:hover:bg-[#2c434c] text-slate-700 dark:text-slate-200 rounded-lg text-xs font-semibold transition cursor-pointer"
                 title="Önizle ve Yazdır"
               >
                 <i data-lucide="eye" class="w-3.5 h-3.5"></i>
-                <span class="hidden sm:inline">Önizle &amp; Yazdır</span>
-              </button>
-              <button
-                type="button"
-                onclick="downloadSingleBlankDocument('defter')"
-                class="px-2.5 py-1.5 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-xs font-semibold transition cursor-pointer flex items-center gap-1"
-                title="PDF İndir"
-              >
-                <i data-lucide="download" class="w-3.5 h-3.5"></i>
-                <span>İndir</span>
+                <span>Önizle &amp; Yazdır</span>
               </button>
             </div>
           </div>
@@ -4750,20 +4704,11 @@
               <button
                 type="button"
                 onclick="previewBlankDocument('not')"
-                class="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-[#23353c] dark:hover:bg-[#2c434c] text-slate-700 dark:text-slate-200 rounded-lg text-xs font-semibold transition cursor-pointer flex items-center gap-1"
+                class="flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-[#23353c] dark:hover:bg-[#2c434c] text-slate-700 dark:text-slate-200 rounded-lg text-xs font-semibold transition cursor-pointer"
                 title="Önizle ve Yazdır"
               >
                 <i data-lucide="eye" class="w-3.5 h-3.5"></i>
-                <span class="hidden sm:inline">Önizle &amp; Yazdır</span>
-              </button>
-              <button
-                type="button"
-                onclick="downloadSingleBlankDocument('not')"
-                class="px-2.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-semibold transition cursor-pointer flex items-center gap-1"
-                title="PDF İndir"
-              >
-                <i data-lucide="download" class="w-3.5 h-3.5"></i>
-                <span>İndir</span>
+                <span>Önizle &amp; Yazdır</span>
               </button>
             </div>
           </div>
@@ -4787,20 +4732,11 @@
               <button
                 type="button"
                 onclick="previewBlankDocument('sinav')"
-                class="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-[#23353c] dark:hover:bg-[#2c434c] text-slate-700 dark:text-slate-200 rounded-lg text-xs font-semibold transition cursor-pointer flex items-center gap-1"
+                class="flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-[#23353c] dark:hover:bg-[#2c434c] text-slate-700 dark:text-slate-200 rounded-lg text-xs font-semibold transition cursor-pointer"
                 title="Önizle ve Yazdır"
               >
                 <i data-lucide="eye" class="w-3.5 h-3.5"></i>
-                <span class="hidden sm:inline">Önizle &amp; Yazdır</span>
-              </button>
-              <button
-                type="button"
-                onclick="downloadSingleBlankDocument('sinav')"
-                class="px-2.5 py-1.5 bg-rose-600 hover:bg-rose-700 text-white rounded-lg text-xs font-semibold transition cursor-pointer flex items-center gap-1"
-                title="PDF İndir"
-              >
-                <i data-lucide="download" class="w-3.5 h-3.5"></i>
-                <span>İndir</span>
+                <span>Önizle &amp; Yazdır</span>
               </button>
             </div>
           </div>
@@ -4824,20 +4760,11 @@
               <button
                 type="button"
                 onclick="previewBlankDocument('imza')"
-                class="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-[#23353c] dark:hover:bg-[#2c434c] text-slate-700 dark:text-slate-200 rounded-lg text-xs font-semibold transition cursor-pointer flex items-center gap-1"
+                class="flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-[#23353c] dark:hover:bg-[#2c434c] text-slate-700 dark:text-slate-200 rounded-lg text-xs font-semibold transition cursor-pointer"
                 title="Önizle ve Yazdır"
               >
                 <i data-lucide="eye" class="w-3.5 h-3.5"></i>
-                <span class="hidden sm:inline">Önizle &amp; Yazdır</span>
-              </button>
-              <button
-                type="button"
-                onclick="downloadSingleBlankDocument('imza')"
-                class="px-2.5 py-1.5 bg-teal-600 hover:bg-teal-700 text-white rounded-lg text-xs font-semibold transition cursor-pointer flex items-center gap-1"
-                title="PDF İndir"
-              >
-                <i data-lucide="download" class="w-3.5 h-3.5"></i>
-                <span>İndir</span>
+                <span>Önizle &amp; Yazdır</span>
               </button>
             </div>
           </div>
@@ -4889,14 +4816,6 @@
           >
             <i data-lucide="printer" class="w-3.5 h-3.5 text-[#FFF3B0]"></i>
             <span>Yazdır / PDF</span>
-          </button>
-          <button
-            type="button"
-            id="blankDocPreviewDownloadBtn"
-            class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold transition cursor-pointer flex items-center gap-1.5 shadow-xs"
-          >
-            <i data-lucide="file-down" class="w-3.5 h-3.5"></i>
-            <span>PDF İndir</span>
           </button>
           <button
             type="button"

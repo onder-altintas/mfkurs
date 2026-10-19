@@ -12410,7 +12410,6 @@ window.previewBlankDocument = function(docType) {
   const titleEl = document.getElementById('blankDocPreviewTitle');
   const container = document.getElementById('blankDocPreviewContainer');
   const printBtn = document.getElementById('blankDocPreviewPrintBtn');
-  const dlBtn = document.getElementById('blankDocPreviewDownloadBtn');
 
   if (titleEl) titleEl.innerText = meta.title;
   if (container) container.innerHTML = meta.html;
@@ -12418,12 +12417,6 @@ window.previewBlankDocument = function(docType) {
   if (printBtn) {
     printBtn.onclick = () => {
       safePrint(meta.html, meta.isLandscape, meta.fileName);
-    };
-  }
-
-  if (dlBtn) {
-    dlBtn.onclick = () => {
-      window.downloadSingleBlankDocument(docType);
     };
   }
 
