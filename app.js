@@ -1706,6 +1706,9 @@ function setupEventListeners() {
     const uName = loginUsernameInput.value.trim().toLowerCase();
     const pass = loginPasswordInput.value.trim();
 
+    const users = (typeof DataStore !== 'undefined' && typeof DataStore.getUsers === 'function')
+      ? DataStore.getUsers()
+      : [];
     const found = users.find((u) => {
       const dbUser = (u.username || '').toLowerCase();
       const matchUser = (dbUser === uName) ||
