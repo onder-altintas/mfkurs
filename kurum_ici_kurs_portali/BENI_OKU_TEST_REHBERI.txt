@@ -1,0 +1,41 @@
+================================================================================
+       KURUM İÇİ AĞ SENKRONİZASYON DENEME REHBERİ (3 DAKİKALIK TEST)
+================================================================================
+
+Bu testin amacı:
+Kurum içi ağda bulunan 2 farklı bilgisayarın harici hiçbir internet veya bulut 
+sunucusuna ihtiyaç duymadan birbiriyle anlık senkron çalışıp çalışmadığını görmektir.
+
+--------------------------------------------------------------------------------
+ADIM 1: SUNUCUYU BAŞLATMA (Sabit diskin veya ana bilgisayarın olduğu PC'de)
+--------------------------------------------------------------------------------
+1. "1_SUNUCUYU_BASLAT.bat" dosyasına çift tıklayın.
+2. Açılan siyah ekranda sunucunuzun yerel IP adresi görünecektir.
+   Örnek ekran görüntüsü:
+   --> http://192.168.1.45:3000 (Ethernet / Wi-Fi)
+3. Bu siyah pencereyi kapatmayın, açık kalsın (arka planda çalışır).
+
+* Eğer "Windows Güvenlik Duvarı" uyarı penceresi açılırsa:
+  "Özel ağlara izin ver" seçeneğini işaretleyip "İzin Ver" butonuna tıklayın.
+
+--------------------------------------------------------------------------------
+ADIM 2: BİRİNCİ BİLGİSAYARDAN AÇMA
+--------------------------------------------------------------------------------
+Aynı bilgisayarda tarayıcınızı açıp adres çubuğuna şunu yazın:
+http://localhost:3000
+
+Mavi renkli "Kurum İçi Ağ Senkronizasyon Testi" ekranının geldiğini göreceksiniz.
+
+--------------------------------------------------------------------------------
+ADIM 3: İKİNCİ BİLGİSAYARDAN TEST ETME (KRİTİK TEST)
+--------------------------------------------------------------------------------
+1. Kurumdaki herhangi bir sınıfta veya odada bulunan İKİNCİ bir bilgisayara gidin.
+2. O bilgisayarda Edge veya Chrome tarayıcısını açın.
+3. Adres çubuğuna Adım 1'de gördüğünüz IP adresini yazın:
+   Örnek: http://192.168.1.45:3000
+4. Açılan sayfada adınızı yazıp "Test Et & Senkronize Et" butonuna tıklayın.
+
+SONUÇ:
+Her iki bilgisayardaki sayaç ve loglar saniyesinde güncelleniyorsa, 
+kurumunuzun iç ağı bu sistem için %100 UYGUNDUR ve hiçbir engel yoktur!
+================================================================================

@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kurum İçi Ağ Senkronizasyon Testi</title>
+  <style>
+    :root {
+      --primary: #0284c7;
+      --primary-dark: #0369a1;
+      --success: #16a34a;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --border: #e2e8f0;
+      --text: #0f172a;
+      --text-muted: #64748b;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 24px 16px;
+    }
+    .container {
+      width: 100%;
+      max-width: 720px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .header {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .icon-badge {
+      width: 52px;
+      height: 52px;
+      border-radius: 12px;
+      background: #e0f2fe;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+    }
+    .header-text h1 {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .header-text p {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+    }
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 600;
+      background: #dcfce7;
+      color: #15803d;
+    }
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #16a34a;
+      box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.3);
+      animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse {
+      0% { transform: scale(0.95); opacity: 0.8; }
+      50% { transform: scale(1.1); opacity: 1; }
+      100% { transform: scale(0.95); opacity: 0.8; }
+    }
+    .grid-info {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-top: 16px;
+    }
+    .info-box {
+      background: #f1f5f9;
+      padding: 14px;
+      border-radius: 10px;
+      border: 1px solid #e2e8f0;
+    }
+    .info-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .info-val {
+      font-size: 15px;
+      font-weight: 700;
+      margin-top: 4px;
+      color: #0369a1;
+      word-break: break-all;
+    }
+    .test-section {
+      text-align: center;
+      padding: 12px 0;
+    }
+    .counter-display {
+      font-size: 48px;
+      font-weight: 800;
+      color: var(--primary);
+      margin: 10px 0;
+    }
+    .input-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 16px;
+    }
+    input[type="text"] {
+      flex: 1;
+      padding: 12px 16px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      font-size: 14px;
+      outline: none;
+      transition: border 0.2s;
+    }
+    input[type="text"]:focus {
+      border-color: var(--primary);
+    }
+    button {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+    }
+    button:hover {
+      background: var(--primary-dark);
+    }
+    button:active {
+      transform: scale(0.98);
+    }
+    .log-box {
+      margin-top: 20px;
+      max-height: 180px;
+      overflow-y: auto;
+      background: #0f172a;
+      border-radius: 10px;
+      padding: 12px 16px;
+      color: #94a3b8;
+      font-family: monospace;
+      font-size: 12px;
+      text-align: left;
+    }
+    .log-entry {
+      padding: 4px 0;
+      border-bottom: 1px solid #1e293b;
+    }
+    .log-entry span.time {
+      color: #38bdf8;
+    }
+    .log-entry span.from {
+      color: #4ade80;
+      font-weight: bold;
+    }
+    .tips {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.6;
+      background: #f8fafc;
+      padding: 14px;
+      border-radius: 10px;
+      border-left: 4px solid var(--primary);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <div class="icon-badge">🏢</div>
+      <div class="header-text">
+        <h1>Kurum İçi Ağ (Intranet) Senkronizasyon Testi</h1>
+        <p>Harici Sunucu Yok • Dış İnternet Yok • %100 Kurum İçi Güvenli</p>
+      </div>
+    </div>
+
+    <!-- Bağlantı Durumu Kartı -->
+    <div class="card">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h2 style="font-size: 16px; font-weight: 700;">Ağ Durumu</h2>
+        <div class="status-badge">
+          <div class="pulse-dot"></div>
+          <span>Sunucuya Bağlı & Canlı</span>
+        </div>
+      </div>
+
+      <div class="grid-info">
+        <div class="info-box">
+          <div class="info-label">Sizin Cihazınız (İstemci)</div>
+          <div class="info-val" id="clientIp">Yükleniyor...</div>
+        </div>
+        <div class="info-box">
+          <div class="info-label">Sunucu Saati</div>
+          <div class="info-val" id="serverTime">--:--:--</div>
+        </div>
+        <div class="info-box">
+          <div class="info-label">Ağ Bağlantı Türü</div>
+          <div class="info-val" style="color: #16a34a;">Yerel Ağ (LAN)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Eşzamanlılık Testi Kartı -->
+    <div class="card">
+      <h2 style="font-size: 16px; font-weight: 700; margin-bottom: 8px;">Çoklu Bilgisayar Eşzamanlılık Testi</h2>
+      <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">
+        Kurumdaki <strong>başka bir bilgisayardan</strong> bu adrese girip aşağıdaki butona bastığınızda, bu ekrandaki sayaç ve loglar anında güncellenecektir.
+      </p>
+
+      <div class="test-section">
+        <div style="font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase;">
+          Ortak Senkron Sayaç
+        </div>
+        <div class="counter-display" id="counterVal">0</div>
+
+        <div class="input-row">
+          <input type="text" id="senderName" placeholder="Adınız / Bulunduğunuz Sınıf (Örn: A Odası - Ahmet Hoca)" />
+          <button onclick="sendInteraction()">Test Et & Senkronize Et</button>
+        </div>
+      </div>
+
+      <div class="log-box" id="logBox">
+        <div style="color: #64748b;">Henüz bir işlem kaydedilmedi. Başlatmak için butona tıklayın.</div>
+      </div>
+    </div>
+
+    <!-- Bilgi Notu -->
+    <div class="tips">
+      <strong>Nasıl Test Edeceksiniz?</strong><br>
+      1. Bu sayfanın adres çubuğundaki adresi (Örn: <code>http://192.168.1.XX:3000</code>) not alın.<br>
+      2. Kurumdaki <strong>ikinci bir bilgisayara</strong> gidin ve tarayıcısını açıp bu adresi yazın.<br>
+      3. İkinci bilgisayardan isminizi yazıp butona tıklayın; iki ekranda da sayacın aynı anda değiştiğini göreceksiniz.
+    </div>
+  </div>
+
+  <script>
+    const clientIpEl = document.getElementById('clientIp');
+    const serverTimeEl = document.getElementById('serverTime');
+    const counterValEl = document.getElementById('counterVal');
+    const logBoxEl = document.getElementById('logBox');
+    const senderNameEl = document.getElementById('senderName');
+
+    // Sunucu durumunu periyodik çek (Polling 1.5 sn)
+    async function checkStatus() {
+      try {
+        const res = await fetch('/api/status');
+        if (!res.ok) return;
+        const data = await res.json();
+        
+        clientIpEl.textContent = data.clientIp;
+        serverTimeEl.textContent = data.serverTime;
+        counterValEl.textContent = data.counter;
+
+        if (data.logs && data.logs.length > 0) {
+          logBoxEl.innerHTML = data.logs.slice().reverse().map(log => `
+            <div class="log-entry">
+              <span class="time">[${log.time}]</span> 
+              <span class="from">${escapeHtml(log.from)}</span>: ${escapeHtml(log.action)} (Toplam: ${log.totalCount})
+            </div>
+          `).join('');
+        }
+      } catch (err) {
+        console.error('Sunucu yanıt vermiyor:', err);
+      }
+    }
+
+    async function sendInteraction() {
+      const sender = senderNameEl.value.trim() || 'Anonim Eğitmen';
+      try {
+        const res = await fetch('/api/interact', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ sender: sender, action: 'İşlem Gönderdi' })
+        });
+        if (res.ok) {
+          checkStatus();
+        }
+      } catch (err) {
+        alert('Sunucuya bağlanılamadı. Lütfen sunucunun açık olduğundan emin olun.');
+      }
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // Başlangıç ve sürekli yenileme
+    checkStatus();
+    setInterval(checkStatus, 1500);
+  </script>
+</body>
+</html>
