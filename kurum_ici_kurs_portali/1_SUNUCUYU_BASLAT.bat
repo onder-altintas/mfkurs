@@ -1,29 +1,65 @@
 @echo off
 chcp 65001 >nul
-title Kurum İçi Test Sunucusu
+title Kurum Ici Test Sunucusu
 cls
 
 echo ===============================================================
-echo     KURUM İÇİ YEREL AĞ TEST SUNUCUSU BAŞLATILIYOR...
+echo     KURUM ICI YEREL AG TEST SUNUCUSU BASLATILIYOR...
 echo ===============================================================
 echo.
 
+:: 1. Sistemde PATH icinde node var mi?
+set NODE_EXE=
 where node >nul 2>nul
-if %errorlevel% neq 0 (
-    echo [HATA] Bu bilgisayarda Node.js kurulu görünmüyor!
-    echo.
-    echo Sunucuyu başlatabilmek için bu tek ana bilgisayara Node.js kurulmalıdır:
-    echo 1. https://nodejs.org/en adresinden "LTS" sürümünü indirin.
-    echo 2. Kurulumu tamamladıktan sonra bu dosyaya tekrar çift tıklayın.
-    echo.
-    echo (Not: Bu kurulum SADECE sunucunun duracağı BU BİLGİSAYARDA 1 kez yapılır.
-    echo  Diğer 100 bilgisayara hiçbir şey kurulmayacaktır.)
-    echo.
-    pause
-    exit /b
+if %errorlevel% equ 0 (
+    set NODE_EXE=node
+    goto :start_node
 )
 
-echo Node.js tespit edildi. Sunucu çalıştırılıyor...
+:: 2. Program Files altinda kurulu mu?
+if exist "C:\Program Files\nodejs\node.exe" (
+    set NODE_EXE="C:\Program Files\nodejs\node.exe"
+    goto :start_node
+)
+
+:: 3. Ayni klasorde tasinabilir node.exe var mi?
+if exist "%~dp0node.exe" (
+    set NODE_EXE="%~dp0node.exe"
+    goto :start_node
+)
+
+:: Eger hicbiri yoksa hata goster ve PowerShell sunucusuna yonlendir
+echo [BILGI] Bu bilgisayarda Node.js kurulu gorunmuyor.
 echo.
-node server.js
+echo Iki seceneginiz var:
+echo.
+echo [SECENEK 1 - SIFIR KURULUM]:
+echo "1_BASLAT_KURULUMSUZ_POWERSHELL.bat" dosyasini calistirabilirsiniz.
+echo Bu yontem hicbir program veya Node.js kurmadan Windows'un kendi
+echo altyapisiyla sunucuyu HEMEN baslatir.
+echo.
+echo [SECENEK 2 - NODE.JS KURULUMU]:
+echo https://nodejs.org adresinden Node.js indirip kurabilirsiniz.
+echo.
+echo ===============================================================
+echo Simdi Kurulumsuz PowerShell sunucusu baslatilsin mi? (E/H)
+set /p SECIM="Seciminiz: "
+if /i "%SECIM%"=="E" (
+    goto :run_powershell
+)
 pause
+exit /b
+
+:start_node
+echo Node.js bulundu. Sunucu baslatiliyor...
+echo.
+cd /d "%~dp0"
+%NODE_EXE% server.js
+pause
+exit /b
+
+:run_powershell
+cd /d "%~dp0"
+powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0server.ps1"
+pause
+exit /b

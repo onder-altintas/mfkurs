@@ -1976,6 +1976,26 @@
         <input type="hidden" id="tmplFormTotalHours" value="20" />
         <input type="hidden" id="tmplFormModuleCount" value="1" />
 
+        <!-- Canlı Müfredat Süre & Modül Özeti -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 p-3 rounded-xl bg-slate-50 border border-slate-200">
+          <div class="text-center">
+            <span class="block text-[10px] font-semibold text-slate-500 uppercase">Modül Sayısı</span>
+            <span id="tmplLiveModuleCount" class="font-extrabold text-xs sm:text-sm text-sky-700">1 Modül</span>
+          </div>
+          <div class="text-center">
+            <span class="block text-[10px] font-semibold text-slate-500 uppercase">Ders Saati</span>
+            <span id="tmplLiveLessonHours" class="font-extrabold text-xs sm:text-sm text-teal-700">18 Saat</span>
+          </div>
+          <div class="text-center">
+            <span class="block text-[10px] font-semibold text-slate-500 uppercase">Sınav Saati</span>
+            <span id="tmplLiveExamHours" class="font-extrabold text-xs sm:text-sm text-purple-700">2 Saat</span>
+          </div>
+          <div class="text-center">
+            <span class="block text-[10px] font-semibold text-slate-500 uppercase">Toplam Süre</span>
+            <span id="tmplLiveTotalHours" class="font-extrabold text-xs sm:text-sm text-slate-800">20 Saat</span>
+          </div>
+        </div>
+
         <!-- ================= MODÜL MODÜL MÜFREDAT TANIMLAMA BÖLÜMÜ ================= -->
         <div class="pt-4 border-t border-slate-100 space-y-3.5">
           <div class="flex items-center justify-between gap-2.5">
@@ -5656,8 +5676,8 @@
 
   <!-- Supabase JS SDK (PostgreSQL & Realtime) -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="supabase-config.js?v=20261013_1000"></script>
-  <script src="db.js?v=20261013_1000"></script>
-  <script src="app.js?v=20261013_1000"></script>
+  <script src="supabase-config.js?v=20261022_1530"></script>
+  <script src="db.js?v=20261022_1530"></script>
+  <script src="app.js?v=20261022_1530"></script>
 </body>
 </html>

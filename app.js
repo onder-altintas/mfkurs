@@ -2432,6 +2432,8 @@ function renderAdminPanel() {
     if (adminBannerTitle) adminBannerTitle.innerText = 'Kurs ve Müfredat Planları Yönetimi';
     if (adminBannerDesc) adminBannerDesc.innerText = 'Müfredat ve ders planı yönetimi.';
 
+    populateAllAreaDropdowns();
+    renderAdminTemplates();
     switchAdminTab('templates');
   } else if (isDev) {
     if (adminTabCentersBtn) adminTabCentersBtn.classList.remove('hidden');
@@ -2906,6 +2908,16 @@ function populateAllAreaDropdowns() {
     ? currentAreas.map(a => typeof a === 'string' ? a : a.name).filter(Boolean)
     : [];
 
+  // Kullanıcının yetkili alanlarını da listeye dahil et (özellikle henüz veritabanında ayrı kayıt açılmamış branşlar için)
+  if (currentUser) {
+    const userAreas = getUserAreas(currentUser);
+    userAreas.forEach(ua => {
+      if (ua && !areas.some(a => a.toLowerCase() === ua.toLowerCase())) {
+        areas.push(ua);
+      }
+    });
+  }
+
   const optionsHtml = areas.length > 0
     ? areas.map(a => `<option value="${escapeHtml(a)}">${escapeHtml(a)}</option>`).join('')
     : `<option value="">Tanımlı Alan Yok</option>`;
@@ -3317,7 +3329,11 @@ function renderTmplModules() {
 
     let topicsText = '';
     if (Array.isArray(mod.topics)) {
-      topicsText = mod.topics.map(t => typeof t === 'string' ? t : (t.topic || '')).join('\n');
+      topicsText = mod.topics.map(t => {
+        if (!t) return '';
+        if (typeof t === 'string') return t;
+        return t.topic || '';
+      }).filter(Boolean).join('\n');
     } else if (typeof mod.topics === 'string') {
       topicsText = mod.topics;
     }
@@ -3404,6 +3420,10 @@ function renderTmplModules() {
     const examNotice = card.querySelector('.mod-exam-notice');
     const counterLabel = card.querySelector('.mod-counter-label');
 
+    if (topicsInput) {
+      topicsInput.value = topicsText;
+    }
+
     nameInput?.addEventListener('input', (e) => {
       mod.name = e.target.value;
     });
@@ -3488,37 +3508,104 @@ function openCourseTmplModal(tmplToEdit = null) {
   }
   courseTmplModal.classList.remove('hidden');
 
+  if (typeof populateAllAreaDropdowns === 'function') {
+    populateAllAreaDropdowns();
+  }
+
   if (tmplToEdit) {
     courseTmplModalTitle.innerText = 'Kurs ve Müfredat Tanımını Güncelle';
     tmplFormId.value = tmplToEdit.id;
-    tmplFormName.value = tmplToEdit.name;
+    tmplFormName.value = tmplToEdit.name || '';
     tmplFormCode.value = tmplToEdit.code || '';
-    tmplFormCategory.value = tmplToEdit.category || 'Bilişim Teknolojileri';
-    tmplFormDescription.value = tmplToEdit.description || '';
+
+    const cat = tmplToEdit.category || tmplToEdit.area || 'Bilişim Teknolojileri';
+    if (tmplFormCategory) {
+      let optExists = Array.from(tmplFormCategory.options).some(o => o.value.toLowerCase() === cat.toLowerCase());
+      if (!optExists && cat) {
+        const newOpt = document.createElement('option');
+        newOpt.value = cat;
+        newOpt.textContent = cat;
+        tmplFormCategory.appendChild(newOpt);
+      }
+      tmplFormCategory.value = cat;
+    }
+    if (tmplFormDescription) tmplFormDescription.value = tmplToEdit.description || '';
 
     if (Array.isArray(tmplToEdit.modules) && tmplToEdit.modules.length > 0) {
       editingTmplModules = JSON.parse(JSON.stringify(tmplToEdit.modules));
+    } else if (Array.isArray(tmplToEdit.syllabus) && tmplToEdit.syllabus.length > 0) {
+      const modGroupMap = new Map();
+      const hasModNum = tmplToEdit.syllabus.some(s => s && s.moduleNumber);
+
+      if (hasModNum) {
+        tmplToEdit.syllabus.forEach(item => {
+          if (!item) return;
+          const mNum = Number(item.moduleNumber) || 1;
+          if (!modGroupMap.has(mNum)) {
+            modGroupMap.set(mNum, {
+              id: `mod_${tmplToEdit.id || Date.now()}_${mNum}`,
+              number: mNum,
+              name: item.moduleName || `${mNum}. Modül`,
+              totalHours: 0,
+              lessonHours: 0,
+              examHours: 0,
+              topics: []
+            });
+          }
+          const grp = modGroupMap.get(mNum);
+          grp.totalHours++;
+          if (item.isExam) {
+            grp.examHours++;
+          } else {
+            grp.lessonHours++;
+            const t = typeof item === 'string' ? item : (item.topic || '');
+            if (t) grp.topics.push(t);
+          }
+        });
+        editingTmplModules = Array.from(modGroupMap.values()).sort((a, b) => a.number - b.number);
+      } else {
+        const modCount = Math.max(1, Number(tmplToEdit.moduleCount || tmplToEdit.module_count) || 1);
+        const totalH = Number(tmplToEdit.totalHours || tmplToEdit.total_hours) || tmplToEdit.syllabus.length || 20;
+        const hoursPerMod = Math.max(3, Math.round(totalH / modCount));
+        const oldSyllabus = tmplToEdit.syllabus;
+
+        editingTmplModules = [];
+        for (let i = 1; i <= modCount; i++) {
+          const sliceStart = (i - 1) * hoursPerMod;
+          const sliceEnd = i * hoursPerMod;
+          const modSlice = oldSyllabus.slice(sliceStart, sliceEnd);
+          const modTopics = modSlice
+            .filter(s => s && !s.isExam)
+            .map(s => typeof s === 'string' ? s : (s.topic || ''))
+            .filter(Boolean);
+          const examH = Math.max(1, modSlice.filter(s => s && s.isExam).length || 2);
+          const totalModH = modSlice.length || hoursPerMod;
+
+          editingTmplModules.push({
+            id: `mod_${Date.now()}_${i}`,
+            number: i,
+            name: `${i}. Modül`,
+            totalHours: totalModH,
+            lessonHours: Math.max(1, totalModH - examH),
+            examHours: examH,
+            topics: modTopics
+          });
+        }
+      }
     } else {
-      // Eski şablonu modüler yapıya dönüştür
-      const modCount = Math.max(1, Number(tmplToEdit.moduleCount) || 1);
-      const totalH = Number(tmplToEdit.totalHours) || 20;
-      const hoursPerMod = Math.max(3, Math.round(totalH / modCount));
-      const oldSyllabus = tmplToEdit.syllabus || [];
-
+      const defaultModCount = Math.max(1, Number(tmplToEdit.moduleCount || tmplToEdit.module_count) || 1);
+      const defaultTotalH = Number(tmplToEdit.totalHours || tmplToEdit.total_hours) || 20;
+      const hoursPerMod = Math.max(3, Math.round(defaultTotalH / defaultModCount));
       editingTmplModules = [];
-      for (let i = 1; i <= modCount; i++) {
-        const sliceStart = (i - 1) * (hoursPerMod - 2);
-        const sliceEnd = i * (hoursPerMod - 2);
-        const modTopics = oldSyllabus.slice(sliceStart, sliceEnd).map(s => s.topic);
-
+      for (let i = 1; i <= defaultModCount; i++) {
         editingTmplModules.push({
           id: `mod_${Date.now()}_${i}`,
           number: i,
           name: `${i}. Modül`,
           totalHours: hoursPerMod,
-          lessonHours: hoursPerMod - 2,
+          lessonHours: Math.max(1, hoursPerMod - 2),
           examHours: 2,
-          topics: modTopics
+          topics: []
         });
       }
     }
@@ -3526,7 +3613,18 @@ function openCourseTmplModal(tmplToEdit = null) {
     courseTmplModalTitle.innerText = 'Yeni Kurs ve Müfredat Tanımla';
     courseTmplForm.reset();
     tmplFormId.value = '';
-    if (tmplFormCategory) tmplFormCategory.value = getUserArea(currentUser) || 'Bilişim Teknolojileri';
+    const userArea = getUserArea(currentUser) || 'Bilişim Teknolojileri';
+    if (tmplFormCategory) {
+      let optExists = Array.from(tmplFormCategory.options).some(o => o.value.toLowerCase() === userArea.toLowerCase());
+      if (!optExists && userArea) {
+        const newOpt = document.createElement('option');
+        newOpt.value = userArea;
+        newOpt.textContent = userArea;
+        tmplFormCategory.appendChild(newOpt);
+      }
+      tmplFormCategory.value = userArea;
+    }
+    if (tmplFormDescription) tmplFormDescription.value = '';
 
     editingTmplModules = [
       {

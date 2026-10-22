@@ -551,8 +551,43 @@ const DataStore = {
       if (list.length === 0) list = MemoryStore.templates || [];
       const tmplMap = new Map();
       list.forEach(t => {
+        if (!t) return;
         const k = (t.code || t.name || t.id || '').trim().toLowerCase();
-        if (k && !tmplMap.has(k)) tmplMap.set(k, t);
+        if (k && !tmplMap.has(k)) {
+          // Modül listesi boşsa fakat syllabus varsa modülleri otomatik olarak yapılandır
+          if ((!Array.isArray(t.modules) || t.modules.length === 0) && Array.isArray(t.syllabus) && t.syllabus.length > 0) {
+            const modGroupMap = new Map();
+            const hasModNumber = t.syllabus.some(s => s && s.moduleNumber);
+            if (hasModNumber) {
+              t.syllabus.forEach(item => {
+                if (!item) return;
+                const mNum = Number(item.moduleNumber) || 1;
+                if (!modGroupMap.has(mNum)) {
+                  modGroupMap.set(mNum, {
+                    id: `mod_${t.id || Date.now()}_${mNum}`,
+                    number: mNum,
+                    name: item.moduleName || `${mNum}. Modül`,
+                    totalHours: 0,
+                    lessonHours: 0,
+                    examHours: 0,
+                    topics: []
+                  });
+                }
+                const grp = modGroupMap.get(mNum);
+                grp.totalHours++;
+                if (item.isExam) {
+                  grp.examHours++;
+                } else {
+                  grp.lessonHours++;
+                  const topStr = typeof item === 'string' ? item : (item.topic || '');
+                  if (topStr) grp.topics.push(topStr);
+                }
+              });
+              t.modules = Array.from(modGroupMap.values()).sort((a, b) => a.number - b.number);
+            }
+          }
+          tmplMap.set(k, t);
+        }
       });
       return Array.from(tmplMap.values()).sort((a, b) => (a.name || '').localeCompare(b.name || '', 'tr', { sensitivity: 'base' }));
     } catch (e) {
